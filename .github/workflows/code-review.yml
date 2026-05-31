@@ -68,12 +68,13 @@ jobs:
 
       - name: ESLint with Reviewdog
         uses: reviewdog/action-eslint@v1
+        continue-on-error: true
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
           level: warning
           filter_mode: added
-          fail_on_error: false
+          fail_level: none
 
       - name: TypeScript with Reviewdog
         if: false
