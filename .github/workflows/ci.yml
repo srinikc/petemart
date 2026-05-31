@@ -11,9 +11,12 @@ concurrency:
   group: ci-${{ github.ref_name }}
   cancel-in-progress: true
 
+defaults:
+  run:
+    working-directory: ./agents/03_execution_workspace/07d_integration_agent/petemart-unified
+
 env:
   NODE_VERSION: '20.x'
-  PNPM_VERSION: '9'
   NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
   NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
@@ -24,6 +27,9 @@ jobs:
   secrets-scan:
     name: 🔐 Secrets & Credentials Scan
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
     steps:
       - uses: actions/checkout@v4
         with:
@@ -71,41 +77,36 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: 📦 Setup pnpm ${{ env.PNPM_VERSION }}
-        uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
       - name: ⚡ Setup Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: 'npm'
 
       - name: 📥 Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: 🏗️ Build check
-        run: pnpm build
+        run: npm run build
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'http://localhost:54321' }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' }}
 
       - name: 🔍 Lint check
-        run: pnpm lint
+        run: npm run lint
 
       - name: 🏷️ TypeScript type check
-        run: pnpm typecheck || npx tsc --noEmit
+        run: npm run typecheck || npx tsc --noEmit
 
       - name: 🧪 Unit tests
-        run: pnpm test -- --coverage
+        run: npm test -- --coverage
 
       - name: 📊 Upload coverage report
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: coverage-report
-          path: coverage/
+          path: agents/03_execution_workspace/07d_integration_agent/petemart-unified/coverage/
           retention-days: 7
 
   # ──────────────────────────────────────────────────────────────

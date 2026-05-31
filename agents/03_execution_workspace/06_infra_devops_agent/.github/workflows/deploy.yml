@@ -22,7 +22,6 @@ on:
 
 env:
   NODE_VERSION: '20.x'
-  PNPM_VERSION: '9'
 
 jobs:
   # ──────────────────────────────────────────────────────────────
@@ -89,28 +88,26 @@ jobs:
     name: 🚀 Vercel Deploy (${{ needs.resolve-environment.outputs.environment }})
     needs: [resolve-environment]
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./agents/03_execution_workspace/07d_integration_agent/petemart-unified
     environment:
       name: ${{ needs.resolve-environment.outputs.environment }}
-      url: ${{ needs.resolve-environment.outputs.vercel_alias }}
+      url: https://${{ needs.resolve-environment.outputs.vercel_alias }}
     steps:
       - uses: actions/checkout@v4
-
-      - name: 📦 Setup pnpm ${{ env.PNPM_VERSION }}
-        uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
 
       - name: ⚡ Setup Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: 'npm'
 
       - name: 📥 Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: 🏗️ Build
-        run: pnpm build
+        run: npm run build
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets[format('NEXT_PUBLIC_SUPABASE_URL_{0}', needs.resolve-environment.outputs.environment)] || secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets[format('NEXT_PUBLIC_SUPABASE_ANON_KEY_{0}', needs.resolve-environment.outputs.environment)] || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
