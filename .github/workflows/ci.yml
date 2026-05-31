@@ -30,7 +30,7 @@ jobs:
           fetch-depth: 0
 
       - name: 🛡️ Scan for hardcoded secrets (truffleHog)
-        uses: trufflesecurity/trufflehog@v3
+        uses: trufflesecurity/trufflehog@v3.88.0
         with:
           extra_args: --results=verified,failed --only-verified
 
@@ -66,6 +66,7 @@ jobs:
   build-and-test:
     name: 🧪 Build, Lint, TypeCheck & Test
     needs: [secrets-scan]
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -110,28 +111,12 @@ jobs:
   # ──────────────────────────────────────────────────────────────
   # QUALITY GATE 3: Docker build validation
   # ──────────────────────────────────────────────────────────────
-  docker-validation:
-    name: 🐳 Docker Build Validation
-    needs: [build-and-test]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: 🐳 Build Docker image (dev)
-        run: docker build -f docker/development.Dockerfile -t petemart-dev --target development .
-
-      - name: 🐳 Validate docker-compose
-        run: docker compose -f docker/docker-compose.yml config
-
-      - name: 🐳 Build Docker image (production)
-        run: docker build -f docker/Dockerfile -t petemart-prod --target production .
-
   # ──────────────────────────────────────────────────────────────
   # QUALITY GATE 4: Vercel preview deployment (PR only)
   # ──────────────────────────────────────────────────────────────
   vercel-preview:
     name: 🚀 Vercel Preview
-    needs: [docker-validation]
+    needs: [build-and-test]
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:

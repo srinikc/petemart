@@ -40,7 +40,7 @@ jobs:
 
       # ── Secrets scan (deep) ──
       - name: 🕵️ Deep secrets scan (truffleHog)
-        uses: trufflesecurity/trufflehog@v3
+        uses: trufflesecurity/trufflehog@v3.88.0
         with:
           extra_args: --results=verified,failed --since-commit HEAD~5
 
