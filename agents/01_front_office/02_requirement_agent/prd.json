@@ -1,0 +1,533 @@
+{
+  "prd_metadata": {
+    "document_name": "PeteMart Enterprise-Grade Product Requirements Document",
+    "document_version": "2.0",
+    "author": "Requirement Agent (Enterprise Product Manager / Product Owner)",
+    "status": "Draft (Awaiting HITL Approval)",
+    "date": "2026-05-30",
+    "derived_from": [
+      "Idea Proposal v1.2",
+      "Business Revenue Model v1.4",
+      "Store Inventory Datasets v1.1",
+      "Estimated Merchants v2.1"
+    ],
+    "total_requirements": 103,
+    "total_workflows": 13,
+    "total_use_cases": 65,
+    "total_personas": 5
+  },
+  "executive_summary": {
+    "platform_name": "PeteMart",
+    "platform_type": "Hyperlocal digital commerce marketplace",
+    "target_merchants": 5000,
+    "target_markets": "21 historic Pete markets of Old Bangalore",
+    "interaction_modes": ["Mode A (Direct Purchase)", "Mode B (WhatsApp Enquiry)", "Mode C (Visit Store)"],
+    "commission_structure": {
+      "b2b": "1.5%",
+      "b2c": "4%"
+    },
+    "subscription_plans": {
+      "starter": 499,
+      "growth": 999,
+      "premium": 2499
+    },
+    "requirement_summary": {
+      "total": 103,
+      "by_category": {
+        "UI/UX": 24,
+        "API": 13,
+        "Backend/Data": 26,
+        "Commerce/Monetization": 10,
+        "Infrastructure/Security": 11,
+        "Performance/Scale": 3,
+        "Maintenance/Lifecycle": 5,
+        "Disaster_Recovery": 4,
+        "Funnels/Onboarding": 4,
+        "Data_Privacy/Compliance": 3
+      },
+      "by_priority": {
+        "P0_Critical": 42,
+        "P1_High": 41,
+        "P2_Medium": 16,
+        "P3_Low": 4
+      }
+    }
+  },
+  "personas": [
+    {
+      "id": "PERS-CUST-001",
+      "name": "Priya Sharma",
+      "role": "Hyperlocal Customer / Buyer",
+      "age": 34,
+      "occupation": "Homemaker & Part-Time Boutique Owner",
+      "location": "Basavanagudi, Bangalore",
+      "tech_literacy": "Moderate",
+      "device_preference": "Android smartphone, laptop for bulk orders"
+    },
+    {
+      "id": "PERS-MER-001",
+      "name": "Ramesh Gupta",
+      "role": "Traditional Pete Merchant / Seller",
+      "age": 52,
+      "occupation": "Owner of silk saree showroom in Chickpet (3rd generation)",
+      "location": "Chickpet Main Road, Bangalore",
+      "tech_literacy": "Low-moderate",
+      "device_preference": "Smartphone + shared family laptop"
+    },
+    {
+      "id": "PERS-DLV-001",
+      "name": "Vinay Kumar",
+      "role": "Delivery / Courier Partner",
+      "age": 28,
+      "occupation": "Independent Delivery Partner",
+      "location": "Near Chickpet Micro-Hub",
+      "tech_literacy": "Moderate",
+      "device_preference": "Android smartphone with PeteMart Courier App"
+    },
+    {
+      "id": "PERS-ADM-001",
+      "name": "Ananya Rao",
+      "role": "PeteMart Platform Admin / Operator",
+      "age": 31,
+      "occupation": "Platform Operations Manager",
+      "location": "Remote, Bangalore",
+      "tech_literacy": "High",
+      "device_preference": "Laptop for admin work; smartphone for alerts"
+    },
+    {
+      "id": "PERS-B2B-001",
+      "name": "Deepa Patel",
+      "role": "Bulk B2B Buyer / Wholesale Reseller",
+      "age": 41,
+      "occupation": "Small retail shop owner (provisions store in Jayanagar)",
+      "location": "Jayanagar 4th Block, Bangalore",
+      "tech_literacy": "Moderate",
+      "device_preference": "Smartphone + tablet"
+    }
+  ],
+  "workflows": {
+    "browse_products": {
+      "id": "WF-BROWSE-001",
+      "name": "Browse Products & Discover Merchants",
+      "channels": ["Web App", "Mobile App"],
+      "personas": ["PERS-CUST-001", "PERS-B2B-001"],
+      "steps": 5
+    },
+    "order_mode_a": {
+      "id": "WF-ORDER-A-001",
+      "name": "Place Order — Mode A (Direct Purchase)",
+      "channels": ["Web App", "Mobile App"],
+      "personas": ["PERS-CUST-001"],
+      "steps": 8
+    },
+    "order_mode_b": {
+      "id": "WF-ORDER-B-001",
+      "name": "Place Order — Mode B (WhatsApp Enquiry)",
+      "channels": ["Web App", "Mobile App", "WhatsApp"],
+      "personas": ["PERS-CUST-001", "PERS-B2B-001"],
+      "steps": 5
+    },
+    "order_mode_c": {
+      "id": "WF-ORDER-C-001",
+      "name": "Place Order — Mode C (Visit Store)",
+      "channels": ["Web App", "Mobile App", "Physical Store"],
+      "personas": ["PERS-CUST-001"],
+      "steps": 5
+    },
+    "checkout_consolidation": {
+      "id": "WF-CHECKOUT-001",
+      "name": "Checkout & Payment (Multi-Store Consolidation)",
+      "channels": ["Web App", "Mobile App"],
+      "personas": ["PERS-CUST-001"],
+      "steps": 7
+    },
+    "order_tracking": {
+      "id": "WF-TRACK-001",
+      "name": "Order Tracking & Delivery Status",
+      "channels": ["Web App", "Mobile App"],
+      "personas": ["PERS-CUST-001", "PERS-DLV-001"],
+      "steps": 5
+    },
+    "merchant_onboarding": {
+      "id": "WF-ONBOARD-001",
+      "name": "Merchant Onboarding (Mode Selection)",
+      "channels": ["Web App (Merchant Dashboard)"],
+      "personas": ["PERS-MER-001", "PERS-ADM-001"],
+      "steps": 6
+    },
+    "virtual_try_on": {
+      "id": "WF-TRYON-001",
+      "name": "AI Virtual Try-On (Apparel & Jewellery)",
+      "channels": ["Web App", "Mobile App"],
+      "personas": ["PERS-CUST-001"],
+      "steps": 8,
+      "is_new": true
+    },
+    "jewellery_browsing": {
+      "id": "WF-JEWELLERY-001",
+      "name": "Jewellery Browsing with Live Bullion Rates",
+      "channels": ["Web App", "Mobile App"],
+      "personas": ["PERS-CUST-001"],
+      "steps": 6,
+      "is_new": true
+    },
+    "video_call_appointment": {
+      "id": "WF-VIDEOCALL-001",
+      "name": "Video Call Appointment with Merchant",
+      "channels": ["Web App", "Mobile App"],
+      "personas": ["PERS-CUST-001", "PERS-MER-001"],
+      "steps": 7,
+      "is_new": true
+    },
+    "feature_flag_kill_switch": {
+      "id": "WF-FEATUREFLAG-001",
+      "name": "Feature Flag & Kill Switch Management",
+      "channels": ["Web App (Admin Dashboard)"],
+      "personas": ["PERS-ADM-001"],
+      "steps": 7,
+      "is_new": true
+    },
+    "review_moderation": {
+      "id": "WF-REVIEW-001",
+      "name": "Product & Merchant Review Workflow",
+      "channels": ["Web App", "Mobile App"],
+      "personas": ["PERS-CUST-001", "PERS-ADM-001", "PERS-MER-001"],
+      "steps": 7,
+      "is_new": true
+    },
+    "virtual_walk": {
+      "id": "WF-VIRTUALWALK-001",
+      "name": "Pete Street Virtual Walk",
+      "channels": ["Web App", "Mobile App"],
+      "personas": ["PERS-CUST-001"],
+      "steps": 7,
+      "is_new": true
+    }
+  },
+  "use_cases": {
+    "web": [
+      {"id": "UC-WEB-001", "name": "Landing Page Discovery", "actor": "Customer", "req_ids": ["REQ-UI-001"]},
+      {"id": "UC-WEB-002", "name": "Product Search & Filter", "actor": "Customer", "req_ids": ["REQ-UI-002", "REQ-BE-009"]},
+      {"id": "UC-WEB-003", "name": "Mode A Direct Checkout", "actor": "Customer", "req_ids": ["REQ-UI-003", "REQ-UI-006", "REQ-API-003"]},
+      {"id": "UC-WEB-004", "name": "Mode B WhatsApp Enquiry", "actor": "Customer", "req_ids": ["REQ-UI-004", "REQ-API-004"]},
+      {"id": "UC-WEB-005", "name": "Mode C Store Visit", "actor": "Customer", "req_ids": ["REQ-UI-005", "REQ-API-005"]},
+      {"id": "UC-WEB-006", "name": "Merchant Microsite", "actor": "Customer, Merchant", "req_ids": ["REQ-UI-008"]},
+      {"id": "UC-WEB-007", "name": "Order History & Tracking", "actor": "Customer", "req_ids": ["REQ-UI-007", "REQ-API-007"]},
+      {"id": "UC-WEB-008", "name": "Merchant Dashboard", "actor": "Merchant", "req_ids": ["REQ-UI-011", "REQ-BE-001"]},
+      {"id": "UC-WEB-009", "name": "Admin Console", "actor": "Admin", "req_ids": ["REQ-UI-012", "REQ-BE-004"]},
+      {"id": "UC-WEB-010", "name": "Multi-Language Interface", "actor": "Customer, Merchant", "req_ids": ["REQ-UI-013"]},
+      {"id": "UC-WEB-011", "name": "Merchant Analytics Dashboard", "actor": "Merchant", "req_ids": ["REQ-UI-014", "REQ-BE-017"]},
+      {"id": "UC-WEB-012", "name": "Coupon & Promo Application", "actor": "Customer", "req_ids": ["REQ-COM-007"]},
+      {"id": "UC-WEB-013", "name": "Product Review Submission", "actor": "Customer", "req_ids": ["REQ-BE-012"]},
+      {"id": "UC-WEB-014", "name": "Bulk Order with MOQ Enforcement", "actor": "B2B Buyer", "req_ids": ["REQ-BE-016"]},
+      {"id": "UC-WEB-015", "name": "Guest Browsing & Checkout", "actor": "Customer", "req_ids": ["REQ-FUNNEL-002"]},
+      {"id": "UC-WEB-016", "name": "AI Virtual Try-On for Apparel", "actor": "Customer", "req_ids": ["REQ-UI-015", "REQ-BE-018"], "is_new": true},
+      {"id": "UC-WEB-017", "name": "AI Virtual Try-On for Jewellery", "actor": "Customer", "req_ids": ["REQ-UI-016", "REQ-BE-018"], "is_new": true},
+      {"id": "UC-WEB-018", "name": "Live Bullion Rate Display", "actor": "Customer", "req_ids": ["REQ-UI-017", "REQ-API-012"], "is_new": true},
+      {"id": "UC-WEB-019", "name": "Jewellery Dynamic Pricing Calculator", "actor": "Customer", "req_ids": ["REQ-UI-017", "REQ-BE-019"], "is_new": true},
+      {"id": "UC-WEB-020", "name": "Fabric Texture Zoom & 360° Rotation", "actor": "Customer", "req_ids": ["REQ-COM-009"], "is_new": true},
+      {"id": "UC-WEB-021", "name": "Video Call Appointment with Merchant", "actor": "Customer", "req_ids": ["REQ-COM-009"], "is_new": true},
+      {"id": "UC-WEB-022", "name": "Customer Try-On Gallery", "actor": "Customer", "req_ids": ["REQ-COM-009"], "is_new": true},
+      {"id": "UC-WEB-023", "name": "White-Label Branding Admin", "actor": "Admin", "req_ids": ["REQ-UI-018"], "is_new": true},
+      {"id": "UC-WEB-024", "name": "Multi-City Geographic Selector", "actor": "Customer", "req_ids": ["REQ-UI-019"], "is_new": true},
+      {"id": "UC-WEB-025", "name": "Admin Dynamic Configuration Panel", "actor": "Admin", "req_ids": ["REQ-UI-020", "REQ-BE-021"], "is_new": true},
+      {"id": "UC-WEB-026", "name": "National Shipping via ShipRocket", "actor": "Merchant, Customer", "req_ids": ["REQ-COM-010", "REQ-API-013", "REQ-BE-024"], "is_new": true},
+      {"id": "UC-WEB-027", "name": "Feature Flag & Kill Switch Admin", "actor": "Admin", "req_ids": ["REQ-INFRA-011"], "is_new": true},
+      {"id": "UC-WEB-028", "name": "Merchant Review & Rating Submission", "actor": "Customer", "req_ids": ["REQ-UI-021", "REQ-BE-025"], "is_new": true},
+      {"id": "UC-WEB-029", "name": "Review Moderation Queue", "actor": "Admin", "req_ids": ["REQ-BE-025"], "is_new": true},
+      {"id": "UC-WEB-030", "name": "Pete Street Virtual Walk", "actor": "Customer", "req_ids": ["REQ-UI-022", "REQ-BE-026"], "is_new": true},
+      {"id": "UC-WEB-031", "name": "Live Bazaar Stream Viewing", "actor": "Customer, Merchant", "req_ids": ["REQ-UI-023"], "is_new": true},
+      {"id": "UC-WEB-032", "name": "Shop Together Co-Shopping", "actor": "Customer", "req_ids": ["REQ-UI-024"], "is_new": true}
+    ],
+    "mobile": [
+      {"id": "UC-MOB-001", "name": "Mobile Landing & Browse", "actor": "Customer", "req_ids": ["REQ-UI-009", "REQ-UI-010"]},
+      {"id": "UC-MOB-002", "name": "Scan QR Code Store Access", "actor": "Customer", "req_ids": ["REQ-UI-009", "REQ-UI-010"]},
+      {"id": "UC-MOB-003", "name": "Mobile Checkout (Mode A)", "actor": "Customer", "req_ids": ["REQ-UI-009", "REQ-API-003"]},
+      {"id": "UC-MOB-004", "name": "WhatsApp Deep Link (Mode B)", "actor": "Customer", "req_ids": ["REQ-UI-009", "REQ-API-004"]},
+      {"id": "UC-MOB-005", "name": "GPS Navigation (Mode C)", "actor": "Customer", "req_ids": ["REQ-UI-010", "REQ-API-005"]},
+      {"id": "UC-MOB-006", "name": "Live Delivery Tracking", "actor": "Customer", "req_ids": ["REQ-UI-007", "REQ-API-007"]},
+      {"id": "UC-MOB-007", "name": "Push Notifications", "actor": "Customer", "req_ids": ["REQ-BE-006", "REQ-API-009"]},
+      {"id": "UC-MOB-008", "name": "Courier Partner App", "actor": "Delivery Partner", "req_ids": ["REQ-UI-009", "REQ-API-007"]},
+      {"id": "UC-MOB-009", "name": "Merchant Mobile Dashboard", "actor": "Merchant", "req_ids": ["REQ-UI-011", "REQ-UI-010"]},
+      {"id": "UC-MOB-010", "name": "Offline-First Browsing", "actor": "Customer", "req_ids": ["REQ-BE-014"]},
+      {"id": "UC-MOB-011", "name": "PWA Install & Push Notifications", "actor": "Customer", "req_ids": ["REQ-FUNNEL-004"]},
+      {"id": "UC-MOB-012", "name": "Language Toggle (Mobile)", "actor": "Customer, Merchant", "req_ids": ["REQ-UI-013"]},
+      {"id": "UC-MOB-013", "name": "Referral Sharing via WhatsApp", "actor": "Customer", "req_ids": ["REQ-FUNNEL-001"]},
+      {"id": "UC-MOB-014", "name": "Loyalty Points & Rewards Hub", "actor": "Customer", "req_ids": ["REQ-FUNNEL-003"]},
+      {"id": "UC-MOB-015", "name": "AI Virtual Try-On (Mobile Camera)", "actor": "Customer", "req_ids": ["REQ-UI-015", "REQ-UI-016", "REQ-BE-018"], "is_new": true},
+      {"id": "UC-MOB-016", "name": "Live Bullion Rate Widget (Mobile)", "actor": "Customer", "req_ids": ["REQ-UI-017", "REQ-API-012"], "is_new": true},
+      {"id": "UC-MOB-017", "name": "Jewellery Card Rate Integration", "actor": "Customer", "req_ids": ["REQ-UI-017", "REQ-BE-019"], "is_new": true},
+      {"id": "UC-MOB-018", "name": "360° Product Rotation (Touch)", "actor": "Customer", "req_ids": ["REQ-COM-009"], "is_new": true},
+      {"id": "UC-MOB-019", "name": "Video Call Booking & Join (Mobile)", "actor": "Customer", "req_ids": ["REQ-COM-009"], "is_new": true},
+      {"id": "UC-MOB-020", "name": "Multi-City Selector (Mobile)", "actor": "Customer", "req_ids": ["REQ-UI-019"], "is_new": true},
+      {"id": "UC-MOB-021", "name": "Config Push Notification (Mobile)", "actor": "Merchant, Admin", "req_ids": ["REQ-BE-021"], "is_new": true},
+      {"id": "UC-MOB-022", "name": "National Shipping Tracking (Mobile)", "actor": "Customer", "req_ids": ["REQ-COM-010", "REQ-API-013"], "is_new": true},
+      {"id": "UC-MOB-023", "name": "Mobile Merchant Review Submission", "actor": "Customer", "req_ids": ["REQ-UI-021"], "is_new": true},
+      {"id": "UC-MOB-024", "name": "Mobile Virtual Walk (AR Mode)", "actor": "Customer", "req_ids": ["REQ-UI-022"], "is_new": true},
+      {"id": "UC-MOB-025", "name": "Live Bazaar on Mobile", "actor": "Customer", "req_ids": ["REQ-UI-023"], "is_new": true},
+      {"id": "UC-MOB-026", "name": "Co-Shopping on Mobile", "actor": "Customer", "req_ids": ["REQ-UI-024"], "is_new": true}
+    ]
+  },
+  "requirements": {
+    "by_category": {
+      "ui_ux": {
+        "count": 24,
+        "category_label": "5.1 UI/UX Layer",
+        "priority_breakdown": {"P0": 11, "P1": 9, "P2": 3, "P3": 1},
+        "items": [
+          {"id": "REQ-UI-001", "title": "Landing Page with Pete Tapestry", "priority": "P0-Critical", "personas": ["PERS-CUST-001", "PERS-B2B-001"], "workflow_ref": "WF-BROWSE-001", "cost_ref": ["OC-INFRA-01", "DC-SETUP-03"]},
+          {"id": "REQ-UI-002", "title": "Product Catalog & Search", "priority": "P0-Critical", "personas": ["PERS-CUST-001", "PERS-B2B-001"], "workflow_ref": "WF-BROWSE-001", "cost_ref": ["OC-INFRA-01", "DC-SETUP-03"]},
+          {"id": "REQ-UI-003", "title": "Mode A Product Card & In-App Cart", "priority": "P0-Critical", "personas": ["PERS-CUST-001"], "workflow_ref": "WF-ORDER-A-001, WF-CHECKOUT-001", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-UI-004", "title": "Mode B WhatsApp Enquiry Button", "priority": "P0-Critical", "personas": ["PERS-CUST-001", "PERS-B2B-001"], "workflow_ref": "WF-ORDER-B-001", "cost_ref": ["OC-COMMS-02"]},
+          {"id": "REQ-UI-005", "title": "Mode C Visit Store Interface", "priority": "P0-Critical", "personas": ["PERS-CUST-001"], "workflow_ref": "WF-ORDER-C-001", "cost_ref": ["OC-MAPS-03"]},
+          {"id": "REQ-UI-006", "title": "Multi-Store Checkout Flow", "priority": "P0-Critical", "personas": ["PERS-CUST-001"], "workflow_ref": "WF-CHECKOUT-001", "cost_ref": ["OC-INFRA-01", "DC-SETUP-03"]},
+          {"id": "REQ-UI-007", "title": "Order Tracking Dashboard", "priority": "P1-High", "personas": ["PERS-CUST-001", "PERS-DLV-001"], "workflow_ref": "WF-TRACK-001", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-UI-008", "title": "Merchant Store Microsite", "priority": "P0-Critical", "personas": ["PERS-CUST-001", "PERS-MER-001"], "workflow_ref": "WF-BROWSE-001", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-UI-009", "title": "Mobile App (iOS) — Core Screens", "priority": "P1-High", "personas": ["PERS-CUST-001", "PERS-DLV-001"], "workflow_ref": "All workflows", "cost_ref": ["DC-SETUP-02"]},
+          {"id": "REQ-UI-010", "title": "Mobile App (Android) — Core Screens", "priority": "P1-High", "personas": ["PERS-CUST-001", "PERS-DLV-001"], "workflow_ref": "All workflows", "cost_ref": ["DC-SETUP-02"]},
+          {"id": "REQ-UI-011", "title": "Merchant Onboarding Dashboard", "priority": "P0-Critical", "personas": ["PERS-MER-001"], "workflow_ref": "WF-ONBOARD-001", "cost_ref": ["OC-STAFF-06"]},
+          {"id": "REQ-UI-012", "title": "Admin/Operator Dashboard", "priority": "P1-High", "personas": ["PERS-ADM-001"], "workflow_ref": "WF-ONBOARD-001", "cost_ref": ["OC-STAFF-06"]},
+          {"id": "REQ-UI-013", "title": "Multi-Language / i18n Support", "priority": "P0-Critical", "personas": ["PERS-CUST-001", "PERS-MER-001", "PERS-B2B-001"], "workflow_ref": "All workflows", "cost_ref": ["OC-LOCAL-12", "DC-SETUP-10"]},
+          {"id": "REQ-UI-014", "title": "Merchant Sales & Analytics Dashboard", "priority": "P1-High", "personas": ["PERS-MER-001"], "workflow_ref": "WF-ORDER-A-001, WF-ORDER-B-001, WF-ORDER-C-001", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-UI-015", "title": "AI Virtual Try-On for Apparel", "priority": "P1-High", "personas": ["PERS-CUST-001"], "workflow_ref": "WF-BROWSE-001", "cost_ref": ["OC-AI-04"]},
+          {"id": "REQ-UI-016", "title": "AI Virtual Try-On for Jewellery", "priority": "P1-High", "personas": ["PERS-CUST-001"], "workflow_ref": "WF-BROWSE-001", "cost_ref": ["OC-AI-04"]},
+          {"id": "REQ-UI-017", "title": "Jewellery Product Card with Live Rate Integration", "priority": "P0-Critical", "personas": ["PERS-CUST-001", "PERS-MER-001"], "workflow_ref": "WF-BROWSE-001", "cost_ref": ["OC-API-05"]},
+          {"id": "REQ-UI-018", "title": "White-Label Branding & Theming Engine", "priority": "P1-High", "personas": ["PERS-ADM-001", "PERS-MER-001"], "workflow_ref": "WF-BROWSE-001", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-UI-019", "title": "Multi-City / State Geographic Selector", "priority": "P0-Critical", "personas": ["PERS-CUST-001", "PERS-ADM-001"], "workflow_ref": "WF-BROWSE-001", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-UI-020", "title": "Admin Configuration Dashboard", "priority": "P1-High", "personas": ["PERS-ADM-001"], "workflow_ref": "WF-ONBOARD-001", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-UI-021", "title": "Merchant Review & Feedback Interface", "priority": "P1-High", "personas": ["PERS-CUST-001", "PERS-MER-001", "PERS-ADM-001"], "workflow_ref": "WF-ORDER-A-001, WF-TRACK-001", "cost_ref": ["OC-INFRA-01"], "is_new": true},
+          {"id": "REQ-UI-022", "title": "Pete Street Virtual Walk", "priority": "P2-Medium (Visionary)", "personas": ["PERS-CUST-001"], "workflow_ref": "WF-BROWSE-001", "cost_ref": ["OC-AI-04"], "is_new": true},
+          {"id": "REQ-UI-023", "title": "Live Bazaar", "priority": "P2-Medium (Visionary)", "personas": ["PERS-CUST-001", "PERS-MER-001"], "workflow_ref": "WF-ORDER-A-001", "cost_ref": ["OC-AI-04", "OC-INFRA-01"], "is_new": true},
+          {"id": "REQ-UI-024", "title": "Shop Together — Co-Shopping", "priority": "P3-Low (Future)", "personas": ["PERS-CUST-001"], "workflow_ref": "WF-BROWSE-001, WF-CHECKOUT-001", "cost_ref": ["OC-INFRA-01"], "is_new": true}
+        ]
+      },
+      "api": {
+        "count": 13,
+        "category_label": "5.2 API Layer",
+        "priority_breakdown": {"P0": 8, "P1": 5, "P2": 0, "P3": 0},
+        "items": [
+          {"id": "REQ-API-001", "title": "Product Catalog API", "priority": "P0-Critical", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-API-002", "title": "Order Management API", "priority": "P0-Critical", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-API-003", "title": "Payment Gateway Integration API", "priority": "P0-Critical", "cost_ref": ["OC-INFRA-01", "OC-COMMS-02"]},
+          {"id": "REQ-API-004", "title": "WhatsApp Deep-Linking API", "priority": "P0-Critical", "cost_ref": ["OC-COMMS-02"]},
+          {"id": "REQ-API-005", "title": "Google Maps Integration API", "priority": "P1-High", "cost_ref": ["OC-MAPS-03"]},
+          {"id": "REQ-API-006", "title": "User Authentication & Profile API", "priority": "P0-Critical", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-API-007", "title": "Delivery Tracking API", "priority": "P1-High", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-API-008", "title": "Merchant Management API", "priority": "P0-Critical", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-API-009", "title": "Notification & SMS API", "priority": "P1-High", "cost_ref": ["OC-COMMS-02"]},
+          {"id": "REQ-API-010", "title": "Analytics & Reporting API", "priority": "P2-Medium", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-API-011", "title": "Mode Switching After Onboarding API", "priority": "P1-High", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-API-012", "title": "Live Bullion Rate API Integration", "priority": "P0-Critical", "cost_ref": ["OC-API-05"], "is_new": true},
+          {"id": "REQ-API-013", "title": "ShipRocket API Integration", "priority": "P1-High", "cost_ref": ["OC-COMMS-02"], "is_new": true}
+        ]
+      },
+      "backend_data": {
+        "count": 26,
+        "category_label": "5.3 Backend/Data Layer",
+        "priority_breakdown": {"P0": 10, "P1": 11, "P2": 4, "P3": 1},
+        "items": [
+          {"id": "REQ-BE-001", "title": "Database Schema & Data Models", "priority": "P0-Critical", "cost_ref": ["DC-SETUP-03"]},
+          {"id": "REQ-BE-002", "title": "Order Processing Engine", "priority": "P0-Critical", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-BE-003", "title": "Multi-Store Consolidation Engine", "priority": "P1-High", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-BE-004", "title": "Subscription & Billing Engine", "priority": "P0-Critical", "cost_ref": ["OC-INFRA-01", "DC-SETUP-01"]},
+          {"id": "REQ-BE-005", "title": "Payment Reconciliation & Payouts", "priority": "P1-High", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-BE-006", "title": "Notification Engine", "priority": "P1-High", "cost_ref": ["OC-COMMS-02"]},
+          {"id": "REQ-BE-007", "title": "Delivery/Logistics Engine", "priority": "P1-High", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-BE-008", "title": "Analytics Data Pipeline", "priority": "P2-Medium", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-BE-009", "title": "Search & Discovery Engine", "priority": "P1-High", "cost_ref": ["OC-AI-04"]},
+          {"id": "REQ-BE-010", "title": "Caching & Performance Layer", "priority": "P1-High", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-BE-011", "title": "Merchant Catalog Management", "priority": "P0-Critical", "cost_ref": ["OC-INFRA-01", "OC-STAFF-06"]},
+          {"id": "REQ-BE-012", "title": "Product Review & Rating System", "priority": "P1-High", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-BE-013", "title": "Dispute Resolution & Support Ticketing", "priority": "P1-High", "cost_ref": ["OC-STAFF-06"]},
+          {"id": "REQ-BE-014", "title": "Offline-First Mobile Capability", "priority": "P2-Medium", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-BE-015", "title": "GST/TCS Compliance & Auto-Invoicing", "priority": "P0-Critical", "cost_ref": ["OC-LEGAL-05", "DC-SETUP-04"]},
+          {"id": "REQ-BE-016", "title": "MOQ & Bulk Order Enforcement", "priority": "P1-High", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-BE-017", "title": "Customer Data Platform & Behavioral Analytics", "priority": "P2-Medium", "cost_ref": ["OC-AI-04", "OC-INFRA-01"]},
+          {"id": "REQ-BE-018", "title": "Virtual Try-On Engine (AI/ML Service)", "priority": "P1-High", "cost_ref": ["OC-AI-04", "OC-INFRA-01"]},
+          {"id": "REQ-BE-019", "title": "Jewellery Inventory Management", "priority": "P0-Critical", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-BE-020", "title": "Dynamic Merchant Registry Service", "priority": "P1-High", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-BE-021", "title": "Dynamic Configuration Service", "priority": "P0-Critical", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-BE-022", "title": "Geo-Hierarchy & Region Management", "priority": "P0-Critical", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-BE-023", "title": "City/State Onboarding Workflow", "priority": "P1-High", "cost_ref": ["OC-STAFF-06"]},
+          {"id": "REQ-BE-024", "title": "Hybrid Delivery Orchestrator", "priority": "P1-High", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-BE-025", "title": "Review Moderation & Analytics Engine", "priority": "P1-High", "cost_ref": ["OC-AI-04"], "is_new": true},
+          {"id": "REQ-BE-026", "title": "Virtual Street Content Management System", "priority": "P3-Low (Future)", "cost_ref": ["OC-INFRA-01"], "is_new": true}
+        ]
+      },
+      "commerce": {
+        "count": 10,
+        "category_label": "5.4 Commerce & Monetization",
+        "priority_breakdown": {"P0": 2, "P1": 6, "P2": 2, "P3": 0},
+        "items": [
+          {"id": "REQ-COM-001", "title": "Subscription Plan Management", "priority": "P0-Critical", "cost_ref": ["DC-SETUP-01"]},
+          {"id": "REQ-COM-002", "title": "Transaction Fee Processing", "priority": "P0-Critical", "cost_ref": ["DC-SETUP-01"]},
+          {"id": "REQ-COM-003", "title": "Value-Added Services Billing", "priority": "P1-High", "cost_ref": ["DC-SETUP-01"]},
+          {"id": "REQ-COM-004", "title": "Courier/Delivery Fee Calculator", "priority": "P1-High", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-COM-005", "title": "Revenue Dashboard & Audit Trail", "priority": "P2-Medium", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-COM-006", "title": "Merchant Payout System", "priority": "P1-High", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-COM-007", "title": "Coupon & Promo Engine", "priority": "P1-High", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-COM-008", "title": "Payment Escrow & Hold Period", "priority": "P1-High", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-COM-009", "title": "\"Look, See, Feel\" Trust-Building Features", "priority": "P2-Medium", "cost_ref": ["OC-AI-04"], "is_new": true},
+          {"id": "REQ-COM-010", "title": "National Shipping Integration — ShipRocket", "priority": "P1-High", "cost_ref": ["OC-COMMS-02"], "is_new": true}
+        ]
+      },
+      "infrastructure_security": {
+        "count": 11,
+        "category_label": "5.5 Infrastructure & Security",
+        "priority_breakdown": {"P0": 7, "P1": 3, "P2": 1, "P3": 0},
+        "items": [
+          {"id": "REQ-INFRA-001", "title": "Cloud Infrastructure Provisioning", "priority": "P0-Critical", "cost_ref": ["OC-INFRA-01", "DC-SETUP-03"]},
+          {"id": "REQ-INFRA-002", "title": "CI/CD Pipeline", "priority": "P1-High", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-INFRA-003", "title": "Monitoring & Observability", "priority": "P1-High", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-INFRA-004", "title": "Security & Encryption Framework", "priority": "P0-Critical", "cost_ref": ["DC-SETUP-04"]},
+          {"id": "REQ-INFRA-005", "title": "Backup & Disaster Recovery", "priority": "P2-Medium", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-INFRA-006", "title": "API Gateway & Rate Limiting", "priority": "P1-High", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-INFRA-007", "title": "Database Scaling & Connection Pooling", "priority": "P1-High", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-INFRA-008", "title": "SSL/TLS & Secrets Management", "priority": "P0-Critical", "cost_ref": ["DC-SETUP-04"]},
+          {"id": "REQ-INFRA-009", "title": "PCI DSS Compliance via Razorpay", "priority": "P0-Critical", "cost_ref": ["DC-SETUP-12"]},
+          {"id": "REQ-INFRA-010", "title": "Modular Merchant Onboarding & Deboarding", "priority": "P0-Critical", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-INFRA-011", "title": "Feature Flag & Kill Switch System", "priority": "P0-Critical", "cost_ref": ["OC-INFRA-01"], "is_new": true}
+        ]
+      },
+      "performance_scale": {
+        "count": 3,
+        "category_label": "5.6 Infrastructure & Performance/Scale",
+        "priority_breakdown": {"P0": 2, "P1": 1, "P2": 0, "P3": 0},
+        "items": [
+          {"id": "REQ-PERF-001", "title": "Performance Baseline at 50% Commercial Load", "priority": "P0-Critical", "cost_ref": ["OC-PERF-07", "DC-SETUP-07"]},
+          {"id": "REQ-PERF-002", "title": "Horizontal Scalability Architecture", "priority": "P0-Critical", "cost_ref": ["OC-PERF-07", "OC-INFRA-01"]},
+          {"id": "REQ-PERF-003", "title": "Load Testing & Performance Benchmarking", "priority": "P1-High", "cost_ref": ["OC-PERF-07", "DC-SETUP-07"]}
+        ]
+      },
+      "maintenance": {
+        "count": 5,
+        "category_label": "5.7 Maintenance, Patch & Lifecycle",
+        "priority_breakdown": {"P0": 2, "P1": 3, "P2": 0, "P3": 0},
+        "items": [
+          {"id": "REQ-MAINT-001", "title": "Automated Patch & Security Update Management", "priority": "P0-Critical", "cost_ref": ["OC-TOOLS-13", "OC-INFRA-01"]},
+          {"id": "REQ-MAINT-002", "title": "Zero-Downtime Deployment & Upgrade", "priority": "P1-High", "cost_ref": ["OC-INFRA-01"]},
+          {"id": "REQ-MAINT-003", "title": "Full-Stack Observability & Monitoring", "priority": "P0-Critical", "cost_ref": ["OC-MAINT-08", "DC-SETUP-08"]},
+          {"id": "REQ-MAINT-004", "title": "Dependency Vulnerability & License Scanning", "priority": "P1-High", "cost_ref": ["OC-TOOLS-13"]},
+          {"id": "REQ-MAINT-005", "title": "System Health Dashboard & SLA Reporting", "priority": "P1-High", "cost_ref": ["OC-MAINT-08"]}
+        ]
+      },
+      "disaster_recovery": {
+        "count": 4,
+        "category_label": "5.8 Disaster Recovery & Business Continuity",
+        "priority_breakdown": {"P0": 2, "P1": 1, "P2": 1, "P3": 0},
+        "items": [
+          {"id": "REQ-DR-001", "title": "Disaster Recovery Plan & RPO/RTO Targets", "priority": "P0-Critical", "cost_ref": ["OC-DR-09", "DC-SETUP-09"]},
+          {"id": "REQ-DR-002", "title": "Multi-Region/Multi-AZ Failover Architecture", "priority": "P1-High", "cost_ref": ["OC-DR-09", "DC-SETUP-09"]},
+          {"id": "REQ-DR-003", "title": "Automated Backup & Point-in-Time Recovery", "priority": "P0-Critical", "cost_ref": ["OC-DR-09", "OC-INFRA-01"]},
+          {"id": "REQ-DR-004", "title": "DR Testing & Compliance Program", "priority": "P2-Medium", "cost_ref": ["OC-DR-09"]}
+        ]
+      },
+      "funnels": {
+        "count": 4,
+        "category_label": "5.9 Customer Acquisition Funnels",
+        "priority_breakdown": {"P0": 0, "P1": 3, "P2": 1, "P3": 0},
+        "items": [
+          {"id": "REQ-FUNNEL-001", "title": "Multi-Channel Customer Acquisition Engine", "priority": "P1-High", "cost_ref": ["OC-FUNNEL-10", "DC-SETUP-13"]},
+          {"id": "REQ-FUNNEL-002", "title": "Guest Browsing with Progressive Conversion", "priority": "P1-High", "cost_ref": ["OC-COMMS-02"]},
+          {"id": "REQ-FUNNEL-003", "title": "Onboarding Incentive & Loyalty Program", "priority": "P2-Medium", "cost_ref": ["OC-FUNNEL-10"]},
+          {"id": "REQ-FUNNEL-004", "title": "Progressive Web App (PWA)", "priority": "P1-High", "cost_ref": ["OC-INFRA-01"]}
+        ]
+      },
+      "data_privacy": {
+        "count": 3,
+        "category_label": "5.10 Data Licensing, Privacy & Compliance",
+        "priority_breakdown": {"P0": 1, "P1": 0, "P2": 1, "P3": 1},
+        "items": [
+          {"id": "REQ-DATA-001", "title": "Customer Data Inventory & Consent Management", "priority": "P0-Critical", "cost_ref": ["OC-DATA-11", "DC-SETUP-11"]},
+          {"id": "REQ-DATA-002", "title": "Usage Pattern Analytics & Product Improvement", "priority": "P2-Medium", "cost_ref": ["OC-AI-04", "OC-INFRA-01"]},
+          {"id": "REQ-DATA-003", "title": "Data Licensing & Monetization Framework", "priority": "P3-Low", "cost_ref": ["OC-DATA-11"]}
+        ]
+      }
+    }
+  },
+  "operational_costs": {
+    "monthly_total": {"low": 86300, "high": 139500, "currency": "INR"},
+    "items": [
+      {"ref": "OC-INFRA-01", "name": "Cloud Infrastructure", "low": 1300, "high": 4000, "description": "PostgreSQL DB, serverless functions, static hosting, CDN, GPU inference, white-label config store, geo-routing, dynamic config service"},
+      {"ref": "OC-COMMS-02", "name": "Communications & National Shipping", "low": 3000, "high": 6500, "description": "SMS OTP, Transactional SMS, WhatsApp Business API, ShipRocket API subscription"},
+      {"ref": "OC-MAPS-03", "name": "Google Maps Platform", "low": 1500, "high": 3000, "description": "Geocoding, Distance Matrix, Maps Embed"},
+      {"ref": "OC-AI-04", "name": "AI & Development Suite", "low": 10500, "high": 16000, "description": "LLM, Pictory, OpenAI, Reel Generation, Virtual Try-On CV"},
+      {"ref": "OC-LEGAL-05", "name": "Legal, Compliance & CA", "low": 8000, "high": 10000, "description": "Monthly retainer, GST filings"},
+      {"ref": "OC-STAFF-06", "name": "Field Onboarding Executive & City Expansion", "low": 20000, "high": 25000, "description": "1 field executive for merchant onboarding; city/state expansion support"},
+      {"ref": "OC-PERF-07", "name": "Performance Testing", "low": 2000, "high": 4000, "description": "k6/Artillery cloud, synthetic monitoring"},
+      {"ref": "OC-MAINT-08", "name": "Observability & APM Stack", "low": 15000, "high": 25000, "description": "APM, logging, tracing, RUM, alerting"},
+      {"ref": "OC-DR-09", "name": "Disaster Recovery Infrastructure", "low": 5000, "high": 10000, "description": "Cross-region replication, backup storage"},
+      {"ref": "OC-FUNNEL-10", "name": "Marketing & Customer Acquisition", "low": 8000, "high": 15000, "description": "Referral rewards, loyalty, SEO, affiliates"},
+      {"ref": "OC-DATA-11", "name": "Data Privacy & Compliance", "low": 5000, "high": 8000, "description": "Consent management, DPDP Act compliance"},
+      {"ref": "OC-LOCAL-12", "name": "Localization & i18n", "low": 3000, "high": 5000, "description": "Translation management, locale files"},
+      {"ref": "OC-TOOLS-13", "name": "Security & Patch Management", "low": 2000, "high": 4000, "description": "Snyk/Dependabot, license compliance, SBOM"},
+      {"ref": "OC-API-05", "name": "Bullion Rate API Subscription", "low": 500, "high": 2000, "description": "Live gold/silver rate feed from IndiaBulls/MCX/IBJA", "is_new": true}
+    ]
+  },
+  "deployment_costs": {
+    "one_time_total": {"low": 285000, "high": 468000, "currency": "INR"},
+    "items": [
+      {"ref": "DC-SETUP-01", "name": "Company Registration, Trademarks & IP", "low": 12500, "high": 24000},
+      {"ref": "DC-SETUP-02", "name": "App Store Listings", "low": 10400, "high": 10400},
+      {"ref": "DC-SETUP-03", "name": "Initial Cloud & Database Provisioning", "low": 10000, "high": 20000},
+      {"ref": "DC-SETUP-04", "name": "Legal Documentation", "low": 25000, "high": 40000},
+      {"ref": "DC-SETUP-05", "name": "First 50 Store Concierge Onboarding", "low": 25000, "high": 50000},
+      {"ref": "DC-SETUP-06", "name": "Razorpay Integration & Verification", "low": 5000, "high": 10000},
+      {"ref": "DC-SETUP-07", "name": "Performance Benchmarking Setup", "low": 15000, "high": 25000},
+      {"ref": "DC-SETUP-08", "name": "Full-Stack Observability Setup", "low": 20000, "high": 35000},
+      {"ref": "DC-SETUP-09", "name": "DR Infrastructure Setup", "low": 25000, "high": 40000},
+      {"ref": "DC-SETUP-10", "name": "i18n/Localization Implementation", "low": 20000, "high": 35000},
+      {"ref": "DC-SETUP-11", "name": "Data Privacy & Consent Infrastructure", "low": 15000, "high": 25000},
+      {"ref": "DC-SETUP-12", "name": "PCI DSS Compliance via Razorpay", "low": 5000, "high": 10000},
+      {"ref": "DC-SETUP-13", "name": "Marketing Funnel & Referral Engine", "low": 15000, "high": 25000}
+    ]
+  },
+  "quality_guardrails": {
+    "requirement_cost_coverage": {
+      "status": "PASS",
+      "total_requirement_ids": 103,
+      "all_have_operational_cost": true,
+      "all_have_deployment_cost": true,
+      "verification_detail": [
+        {"range": "REQ-UI-001 through REQ-UI-024", "count": 24, "operational": true, "deployment": true},
+        {"range": "REQ-API-001 through REQ-API-013", "count": 13, "operational": true, "deployment": true},
+        {"range": "REQ-BE-001 through REQ-BE-026", "count": 26, "operational": true, "deployment": true},
+        {"range": "REQ-COM-001 through REQ-COM-010", "count": 10, "operational": true, "deployment": true},
+        {"range": "REQ-INFRA-001 through REQ-INFRA-011", "count": 11, "operational": true, "deployment": true},
+        {"range": "REQ-PERF-001 through REQ-PERF-003", "count": 3, "operational": true, "deployment": true},
+        {"range": "REQ-MAINT-001 through REQ-MAINT-005", "count": 5, "operational": true, "deployment": true},
+        {"range": "REQ-DR-001 through REQ-DR-004", "count": 4, "operational": true, "deployment": true},
+        {"range": "REQ-FUNNEL-001 through REQ-FUNNEL-004", "count": 4, "operational": true, "deployment": true},
+        {"range": "REQ-DATA-001 through REQ-DATA-003", "count": 3, "operational": true, "deployment": true}
+      ]
+    },
+    "workflow_schema_match": {
+      "status": "PASS",
+      "total_workflows": 13,
+      "matches": {
+        "WF-BROWSE-001": ".workflows.browse_products",
+        "WF-ORDER-A-001": ".workflows.order_mode_a",
+        "WF-ORDER-B-001": ".workflows.order_mode_b",
+        "WF-ORDER-C-001": ".workflows.order_mode_c",
+        "WF-CHECKOUT-001": ".workflows.checkout_consolidation",
+        "WF-TRACK-001": ".workflows.order_tracking",
+        "WF-ONBOARD-001": ".workflows.merchant_onboarding",
+        "WF-TRYON-001": ".workflows.virtual_try_on",
+        "WF-JEWELLERY-001": ".workflows.jewellery_browsing",
+        "WF-VIDEOCALL-001": ".workflows.video_call_appointment",
+        "WF-FEATUREFLAG-001": ".workflows.feature_flag_kill_switch",
+        "WF-REVIEW-001": ".workflows.review_moderation",
+        "WF-VIRTUALWALK-001": ".workflows.virtual_walk"
+      }
+    }
+  },
+  "instruct_devops": {
+    "action": "fetch_agile_prd_templates",
+    "target_directory": "C:\\Users\\ADMIN\\Documents\\Srinikc\\AI Products\\petemart-agentic-framework\\.antigravity\\skills\\",
+    "templates_required": [
+      "open-source-agile-prd-template-markdown",
+      "open-source-agile-prd-template-json-schema",
+      "user-story-mapping-template"
+    ]
+  }
+}

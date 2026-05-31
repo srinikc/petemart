@@ -1,0 +1,29 @@
+name: PR-Agent — Automated Code Review
+
+on:
+  pull_request:
+    branches: [develop, qa, staging, main]
+    types: [opened, synchronize, reopened, ready_for_review]
+  issue_comment:
+    types: [created]
+
+concurrency:
+  group: pr-agent-${{ github.event.pull_request.number || github.event.issue.number }}
+
+jobs:
+  pr-agent:
+    name: AI-Powered PR Review
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      checks: write
+    steps:
+      - name: PR-Agent action step
+        uses: the-pr-agent/pr-agent@main
+        env:
+          OPENAI_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          OPENAI.BASE_URL: https://api.deepseek.com/v1
+          CONFIG.MODEL: deepseek-chat
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

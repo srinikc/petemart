@@ -1,0 +1,36 @@
+{
+  "environment": "development",
+  "branch": "develop",
+  "domain": "dev.petemart.vercel.app",
+  "vercelProjectName": "petemart-dev",
+  "supabaseProjectRef": "dev",
+  "isProduction": false,
+  "features": {
+    "enableDebugLogging": true,
+    "enableHotReload": true,
+    "enableMockAuth": true,
+    "bypassPaymentGateway": true,
+    "enableSeedData": true
+  },
+  "resources": {
+    "compute": "free",
+    "vercelTier": "hobby",
+    "supabaseTier": "free",
+    "kubernetesReplicas": 1
+  },
+  "monitoring": {
+    "enabled": false,
+    "logLevel": "debug",
+    "errorReporting": false
+  },
+  "deployment": {
+    "strategy": "rolling",
+    "autoDeployOnPush": true,
+    "requireApproval": false,
+    "previewDeployments": true
+  },
+  "secrets": {
+    "NEXT_PUBLIC_SUPABASE_URL": "https://dev-xxxxx.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJ...dev-anon-key"
+  }
+}

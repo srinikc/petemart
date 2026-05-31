@@ -1,0 +1,259 @@
+﻿{
+    "project_metadata":  {
+                             "name":  "PeteMart",
+                             "version":  "1.4",
+                             "phase":  "Phase 1 - Ideation, Revenue \u0026 Monetisation Model",
+                             "target_geography":  "Old Bangalore Pete Markets (21 Mapped Areas)",
+                             "document_scope":  "This file contains ONLY business ideation, monetisation schemas, and cost-of-delivery models. Full merchant and store inventory data has been migrated to estimated_merchants.json.",
+                             "merchant_data_ref":  "01_front_office/01_ideation_agent/estimated_merchants.json"
+                         },
+    "named_markets_coverage":  [
+                                   {
+                                       "market":  "Chickpet",
+                                       "specialization":  "Textiles, Wholesale Sarees, Fabrics, Dress Materials",
+                                       "total_mapped_stores":  118
+                                   },
+                                   {
+                                       "market":  "Balepet",
+                                       "specialization":  "Plastics, Kitchenware, Household Items, Traditional Sweets",
+                                       "total_mapped_stores":  20
+                                   },
+                                   {
+                                       "market":  "Mamulpet",
+                                       "specialization":  "Dry Fruits, Spices, Wholesale Packaging, Paper Bags",
+                                       "total_mapped_stores":  11
+                                   },
+                                   {
+                                       "market":  "Tharagpet",
+                                       "specialization":  "Grains, Pulses, Spices, Heavy Groceries, Flours",
+                                       "total_mapped_stores":  31
+                                   },
+                                   {
+                                       "market":  "Cubbonpet",
+                                       "specialization":  "Handlooms, Silk Weaving, Cotton Textiles",
+                                       "total_mapped_stores":  11
+                                   },
+                                   {
+                                       "market":  "Avenue Road",
+                                       "specialization":  "Academic Books, Stationery, Toys, Novelties",
+                                       "total_mapped_stores":  18
+                                   },
+                                   {
+                                       "market":  "Raja Market",
+                                       "specialization":  "Imitation Jewellery, Silverware, Gift items",
+                                       "total_mapped_stores":  4
+                                   },
+                                   {
+                                       "market":  "Sultanpet",
+                                       "specialization":  "Wholesale Paper, Wedding Invitation Cards, Envelopes",
+                                       "total_mapped_stores":  40
+                                   },
+                                   {
+                                       "market":  "KR Market",
+                                       "specialization":  "Wholesale Flowers, Fresh Produce, Spices, Puja Goods",
+                                       "total_mapped_stores":  39
+                                   },
+                                   {
+                                       "market":  "Kumbarpete",
+                                       "specialization":  "Clay Pots, Steel Metalware, Toys, Return Gifts",
+                                       "total_mapped_stores":  4
+                                   },
+                                   {
+                                       "market":  "SP Road",
+                                       "specialization":  "Electronic Components, IT Spares, ICs, Testing Equipment",
+                                       "total_mapped_stores":  5
+                                   },
+                                   {
+                                       "market":  "SJP Road",
+                                       "specialization":  "Sanitaryware, Plumbing Fittings, Hardware, Machinery",
+                                       "total_mapped_stores":  3
+                                   },
+                                   {
+                                       "market":  "Huriopet",
+                                       "specialization":  "Cords, Ropes, Twines, Kite Thread, Wholesale Packaging Cords",
+                                       "total_mapped_stores":  85
+                                   },
+                                   {
+                                       "market":  "Basettyetpet",
+                                       "specialization":  "Wholesale Decorative Lighting, Chandelier Parts, Wires",
+                                       "total_mapped_stores":  23
+                                   },
+                                   {
+                                       "market":  "BVK Iyengar Road",
+                                       "specialization":  "Electrical Accessories, Wires, Switchgears, Lamps",
+                                       "total_mapped_stores":  29
+                                   },
+                                   {
+                                       "market":  "Akkipete",
+                                       "specialization":  "Pharmaceuticals, Medical Equipment, Rice Trading",
+                                       "total_mapped_stores":  13
+                                   },
+                                   {
+                                       "market":  "RT Street",
+                                       "specialization":  "Readymade Garments, Hosiery, Fancy Novelties",
+                                       "total_mapped_stores":  11
+                                   },
+                                   {
+                                       "market":  "Kilari Road",
+                                       "specialization":  "Printing Presses, Stationery, Gold/Silver Refining",
+                                       "total_mapped_stores":  2
+                                   },
+                                   {
+                                       "market":  "Santhusapet",
+                                       "specialization":  "Fancy Cosmetics, Salon Equipment, Beauty Supplies",
+                                       "total_mapped_stores":  48
+                                   },
+                                   {
+                                       "market":  "Cottonpet",
+                                       "specialization":  "Footwear, Readymade Garments, Traditional Sweets",
+                                       "total_mapped_stores":  23
+                                   },
+                                   {
+                                       "market":  "Sowrastra Pet",
+                                       "specialization":  "Saurashtrapet Silk Weaving, Zari Borders, Pure Silks",
+                                       "total_mapped_stores":  5
+                                   }
+                               ],
+    "interaction_mode_definitions":  {
+                                         "mode_a":  {
+                                                        "name":  "Mode A - Direct Purchase",
+                                                        "description":  "In-app cart & checkout with Razorpay payment gateway, order tracking, and delivery management.",
+                                                        "onboarding_default":  true
+                                                    },
+                                         "mode_b":  {
+                                                        "name":  "Mode B - WhatsApp Enquiry",
+                                                        "description":  "Trackable WhatsApp deep-link button for product enquiries, bulk quote requests, and price negotiation.",
+                                                        "onboarding_default":  true
+                                                    },
+                                         "mode_c":  {
+                                                        "name":  "Mode C - Visit Store",
+                                                        "description":  "Google Maps directions, store facade gallery, virtual window display, and physical footfall tracking.",
+                                                        "onboarding_default":  true
+                                                    }
+                                     },
+    "platform_monetization_schema":  {
+                                          "subscription_plans":  [
+                                                                     {
+                                                                         "plan_id":  "starter",
+                                                                         "name":  "Starter Plan",
+                                                                         "monthly_rate_inr":  499,
+                                                                         "annual_rate_inr":  4990,
+                                                                         "available_modes":  ["mode_a", "mode_b", "mode_c"],
+                                                                         "features":  [
+                                                                                          "Branded Virtual Store Microsite (petemart.in/shop-name)",
+                                                                                          "Product Catalogue (up to 50 items)",
+                                                                                          "Trackable WhatsApp Enquiry Button (Mode B)",
+                                                                                          "Direct In-App Cart & Checkout (Mode A)",
+                                                                                          "Physical Store Google Maps Navigation Integration (Mode C)",
+                                                                                          "Printable Store QR Code"
+                                                                                      ],
+                                                                         "target_audience":  "Pure Wholesale or High-Value shops preferring in-person / WhatsApp negotiations"
+                                                                     },
+                                                                     {
+                                                                         "plan_id":  "growth",
+                                                                         "name":  "Growth Plan",
+                                                                         "monthly_rate_inr":  999,
+                                                                         "annual_rate_inr":  9990,
+                                                                         "available_modes":  ["mode_a", "mode_b", "mode_c"],
+                                                                         "features":  [
+                                                                                          "All Starter features",
+                                                                                          "Product Catalogue (up to 500 items)",
+                                                                                          "Direct In-App Cart \u0026 Checkout Enablement (Mode A)",
+                                                                                          "Razorpay Payment Gateway Integration with Escrow Support",
+                                                                                          "Trackable WhatsApp Enquiry Button (Mode B)",
+                                                                                          "Google Maps Store Navigation (Mode C)",
+                                                                                          "AI-Powered Automatic Reels/Short Video Creation (1 per month)",
+                                                                                          "Full Sales \u0026 Customer Enquiry Analytics Dashboard",
+                                                                                          "WhatsApp Broadcast Marketing Campaign Tool (up to 1,000 customers/mo)"
+                                                                                      ],
+                                                                         "target_audience":  "Standard retail + wholesale shops looking to take orders online directly"
+                                                                     },
+                                                                     {
+                                                                         "plan_id":  "premium",
+                                                                         "name":  "Premium Concierge Plan",
+                                                                         "monthly_rate_inr":  2499,
+                                                                         "annual_rate_inr":  24990,
+                                                                         "available_modes":  ["mode_a", "mode_b", "mode_c"],
+                                                                         "features":  [
+                                                                                          "All Growth features",
+                                                                                          "Unlimited Product Catalogue size",
+                                                                                          "Professional In-Person Video/Reel Shoots by PeteMart Media team (4 per month)",
+                                                                                          "Featured Seller Badge \u0026 Boosted Search Rankings",
+                                                                                          "Sponsored Homepage Banner Placement Slot (2 days/month)",
+                                                                                          "Dedicated Account Manager Add-on Included",
+                                                                                          "Priority WhatsApp Broadcast Tool (Unlimited customers/mo)"
+                                                                                      ],
+                                                                         "target_audience":  "Elite silk merchants, premium jewellers, and large wholesale dealers seeking maximum digital reach"
+                                                                     }
+                                                                 ],
+                                          "transaction_fees":  {
+                                                                   "b2c_retail_commission_pct":  4.0,
+                                                                   "b2b_wholesale_commission_pct":  1.5,
+                                                                   "payment_gateway_processing_fee_pct":  2.0,
+                                                                   "platform_revenue_cap_per_wholesale_order_inr":  500
+                                                               },
+                                          "value_added_services":  {
+                                                                       "catalog_digitization_fee_per_product_inr":  10,
+                                                                       "reel_creation_fee_per_reel_inr":  999,
+                                                                       "sponsored_cpc_listing_starting_rate_inr_per_click":  2.0,
+                                                                       "homepage_banner_ads_slot_fee_inr_per_day":  499
+                                                                   },
+                                          "onboarding_mode_selection":  {
+                                                                             "description":  "Every merchant receives access to all three interaction modes upon signing up. During onboarding, the merchant selects which modes to activate. Modes can be enabled or disabled at any time through the merchant dashboard.",
+                                                                             "selection_rules":  {
+                                                                                                    "can_select_multiple":  true,
+                                                                                                    "minimum_modes_required":  1,
+                                                                                                    "default_selection":  ["mode_a", "mode_b", "mode_c"]
+                                                                                                },
+                                                                             "mode_activation":  {
+                                                                                                     "mode_a_requires":  ["razorpay_account", "digital_catalogue"],
+                                                                                                     "mode_b_requires":  ["whatsapp_business_number"],
+                                                                                                     "mode_c_requires":  ["google_maps_pin", "store_address"]
+                                                                                                 }
+                                                                         }
+                                      },
+    "cost_of_delivery_schema":  {
+                                    "base_courier_delivery_rates":  [
+                                                                        {
+                                                                            "distance_slab":  "Zone 1 (0-3 km)",
+                                                                            "retail_rate_inr":  40,
+                                                                            "wholesale_bulk_rate_inr":  60,
+                                                                            "courier_partner_share_pct":  85,
+                                                                            "platform_share_pct":  15
+                                                                        },
+                                                                        {
+                                                                            "distance_slab":  "Zone 2 (3-7 km)",
+                                                                            "retail_rate_inr":  70,
+                                                                            "wholesale_bulk_rate_inr":  110,
+                                                                            "courier_partner_share_pct":  85,
+                                                                            "platform_share_pct":  15
+                                                                        },
+                                                                        {
+                                                                            "distance_slab":  "Zone 3 (7+ km)",
+                                                                            "retail_rate_inr":  110,
+                                                                            "wholesale_bulk_rate_inr":  180,
+                                                                            "courier_partner_share_pct":  85,
+                                                                            "platform_share_pct":  15
+                                                                        }
+                                                                    ],
+                                    "weight_surcharges":  {
+                                                              "retail_per_additional_kg_above_5kg_inr":  10,
+                                                              "wholesale_per_additional_10kg_above_20kg_inr":  30
+                                                          },
+                                    "multi_store_consolidation_rules":  {
+                                                                            "description":  "Mechanics of delivery fee pooling and routing when a buyer purchases from multiple Pete shops in a single order.",
+                                                                            "consolidation_base_surcharge_inr":  25,
+                                                                            "logistics_flow":  [
+                                                                                                   "1. Courier picks up items sequentially from all designated Pete stores in the order.",
+                                                                                                   "2. Items are brought to the nearby PeteMart Micro-Hub (Chickpet central) for single bag consolidation.",
+                                                                                                   "3. Courier makes a unified single-drop delivery to the customer.",
+                                                                                                   "4. Delivery Fee = (Max Zone Base Rate among shops) + (Consolidation Surcharge * (Number of Shops - 1)) + Weight Surcharges."
+                                                                                               ]
+                                                                        },
+                                    "surge_pricing":  {
+                                                          "night_surge_9pm_to_6am_pct":  25,
+                                                          "festival_rush_surge_pct":  15
+                                                      }
+                                },
+    "_note_store_data":  "Full merchant inventory dataset (392 merchants across 21 markets) is maintained in estimated_merchants.json"
+}

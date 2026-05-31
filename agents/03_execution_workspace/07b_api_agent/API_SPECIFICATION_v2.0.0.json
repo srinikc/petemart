@@ -1,0 +1,628 @@
+{
+  "specification": {
+    "title": "PeteMart RESTful API Specification",
+    "version": "2.0.0",
+    "baseUrl": "https://petemart-poc.vercel.app/api/v1",
+    "protocol": "HTTPS",
+    "format": "JSON",
+    "authentication": "Bearer Mock-JWT (POC) / Supabase Auth (Production)",
+    "lastUpdated": "2026-05-31",
+    "dataCoverage": {
+      "totalMarkets": 21,
+      "totalMerchants": 406,
+      "totalProducts": 2042,
+      "pocAuthModes": ["email+password", "phone_otp", "demo_users"]
+    }
+  },
+  "auth": {
+    "flow": "Dual Auth: Email+Password OR Phone OTP (POC: Mock-JWT tokens)",
+    "methods": [
+      { "method": "email_password", "usage": "Email + password signup/login", "format": "mock-jwt-{role}-{userId}-{timestamp}" },
+      { "method": "phone_otp", "usage": "Phone OTP send + verify", "otpFormat": "6-digit numeric", "pocOtp": "123456" },
+      { "method": "bearer", "usage": "Web / Mobile / Programmatic", "header": "Authorization: Bearer <mock-jwt-token>" }
+    ],
+    "demoUsers": [
+      { "phone": "9999999999", "email": "priya@example.com", "password": "password123", "name": "Priya Sharma", "role": "customer" },
+      { "phone": "8888888888", "email": "ramesh@example.com", "password": "password123", "name": "Ramesh Kumar", "role": "merchant" },
+      { "phone": "7777777777", "email": "ananya@petemart.com", "password": "admin123", "name": "Ananya Gupta", "role": "admin" }
+    ],
+    "roles": [
+      { "role": "customer", "permissions": ["view_products", "manage_cart", "place_orders", "view_own_orders"] },
+      { "role": "merchant", "permissions": ["customer_permissions", "manage_products", "view_incoming_orders", "update_order_status", "view_dashboard"] },
+      { "role": "admin", "permissions": ["view_all_merchants", "approve_merchants", "view_platform_dashboard", "view_analytics", "manage_system"] },
+      { "role": "delivery_partner", "permissions": ["view_assigned_deliveries", "update_delivery_status", "broadcast_gps"] }
+    ]
+  },
+  "rateLimiting": {
+    "algorithm": "Token Bucket",
+    "edgeAlgorithm": "Sliding Window (In-Memory)",
+    "productionUpgrade": "Upstash Redis",
+    "configs": {
+      "public": { "maxRequests": 100, "windowMs": 60000, "scope": "per_ip" },
+      "auth": { "maxRequests": 20, "windowMs": 60000, "scope": "per_ip" },
+      "otp": { "maxRequests": 5, "windowMs": 60000, "scope": "per_phone" },
+      "checkout": { "maxRequests": 10, "windowMs": 60000, "scope": "per_user" },
+      "merchant": { "maxRequests": 60, "windowMs": 60000, "scope": "per_merchant" },
+      "admin": { "maxRequests": 60, "windowMs": 60000, "scope": "per_admin" },
+      "default": { "maxRequests": 100, "windowMs": 60000, "scope": "per_ip" }
+    }
+  },
+  "responseEnvelope": {
+    "success": {
+      "shape": { "success": true, "data": "T", "meta": "PaginationMeta (optional)" }
+    },
+    "error": {
+      "shape": { "success": false, "error": { "code": "string", "message": "string", "details": "Record<string, string[]> (optional)" } }
+    }
+  },
+  "endpoints": {
+    "auth": {
+      "base": "/api/v1/auth",
+      "description": "User authentication and profile management",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/api/v1/auth/signup",
+          "auth": "public",
+          "rateLimitGroup": "auth",
+          "description": "Create a new user account. Supports email+password OR phone-only signup.",
+          "requestBody": {
+            "oneOf": ["email", "phone"],
+            "fields": {
+              "email": { "type": "string", "format": "email", "description": "Email address (for email+password mode)" },
+              "phone": { "type": "string", "pattern": "^\\d{10}$", "description": "10-digit Indian phone number (for phone mode)" },
+              "password": { "type": "string", "minLength": 6, "description": "Required if email provided" },
+              "name": { "type": "string", "maxLength": 100, "description": "User's full name" },
+              "role": { "type": "string", "enum": ["customer", "merchant", "admin"], "default": "customer" }
+            }
+          },
+          "requestExamples": [
+            { "label": "Email Signup", "body": { "email": "user@example.com", "password": "securePass123", "name": "John Doe", "role": "merchant" } },
+            { "label": "Phone Signup", "body": { "phone": "9999999999", "name": "John Doe", "role": "customer" } }
+          ],
+          "responses": {
+            "201": { "description": "Account created successfully", "body": { "success": true, "data": { "id": "user-xxx", "email": "user@example.com", "phone": null, "name": "John Doe", "role": "customer", "message": "Account created successfully" } } },
+            "400": { "description": "Validation error" },
+            "409": { "description": "Duplicate account (email or phone already exists)" }
+          }
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/auth/login",
+          "auth": "public",
+          "rateLimitGroup": "auth",
+          "description": "Authenticate with email+password (returns token) OR phone (sends OTP).",
+          "requestBody": {
+            "oneOf": ["email+password", "phone"],
+            "fields": {
+              "email": { "type": "string", "format": "email", "description": "Email address" },
+              "password": { "type": "string", "minLength": 1, "description": "Required if email provided" },
+              "phone": { "type": "string", "pattern": "^\\d{10}$", "description": "10-digit Indian phone (triggers OTP flow)" }
+            }
+          },
+          "requestExamples": [
+            { "label": "Email Login", "body": { "email": "priya@example.com", "password": "password123" } },
+            { "label": "Phone OTP", "body": { "phone": "9999999999" } }
+          ],
+          "responses": {
+            "200": { "description": "Login successful (email) or OTP sent (phone)" },
+            "400": { "description": "Validation error" },
+            "401": { "description": "Invalid credentials" }
+          }
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/auth/verify-otp",
+          "auth": "public",
+          "rateLimitGroup": "otp",
+          "description": "Verify phone OTP and receive session token + user profile",
+          "requestBody": {
+            "required": ["phone", "otp"],
+            "fields": {
+              "phone": { "type": "string", "pattern": "^\\d{10}$", "description": "10-digit Indian phone" },
+              "otp": { "type": "string", "pattern": "^\\d{6}$", "description": "6-digit OTP. POC accepts any with 123456" }
+            }
+          },
+          "requestExample": { "body": { "phone": "9999999999", "otp": "123456" } },
+          "responses": {
+            "200": { "description": "OTP verified, returns token + user + redirect URL" },
+            "400": { "description": "Validation error" },
+            "401": { "description": "Invalid or expired OTP" }
+          }
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/auth/logout",
+          "auth": "required",
+          "rateLimitGroup": "auth",
+          "description": "Sign out current user",
+          "responses": { "200": { "description": "Logged out successfully" } }
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/auth/me",
+          "auth": "required",
+          "rateLimitGroup": "auth",
+          "description": "Get current user profile with merchant info if applicable",
+          "responses": { "200": { "description": "User profile returned" }, "401": { "description": "Not authenticated" } }
+        }
+      ]
+    },
+    "markets": {
+      "base": "/api/v1/markets",
+      "description": "Market and locality browsing",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/v1/markets",
+          "auth": "public",
+          "rateLimitGroup": "public",
+          "description": "List all markets grouped by city with merchant counts",
+          "queryParameters": {},
+          "responses": { "200": { "description": "Array of markets with localities" } }
+        }
+      ]
+    },
+    "merchants": {
+      "base": "/api/v1/merchants",
+      "description": "Public merchant browsing and search",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/v1/merchants",
+          "auth": "public",
+          "rateLimitGroup": "public",
+          "description": "List/filter/search active merchants",
+          "queryParameters": {
+            "q": { "type": "string", "description": "Search query" },
+            "market": { "type": "string", "description": "City filter" },
+            "locality": { "type": "string", "description": "Locality filter" },
+            "isOpen": { "type": "boolean", "description": "Currently open filter" },
+            "page": { "type": "integer", "default": 1 },
+            "limit": { "type": "integer", "default": 20, "maximum": 100 },
+            "sort": { "type": "string", "default": "created_at" },
+            "order": { "type": "string", "enum": ["asc", "desc"], "default": "desc" }
+          },
+          "responses": { "200": { "description": "Paginated merchant list" } }
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/merchants/:slug",
+          "auth": "public",
+          "rateLimitGroup": "public",
+          "description": "Get single merchant with their products",
+          "pathParameters": {
+            "slug": { "type": "string", "description": "Merchant slug or ID" }
+          },
+          "queryParameters": {
+            "page": { "type": "integer", "default": 1 },
+            "limit": { "type": "integer", "default": 20 }
+          },
+          "responses": { "200": { "description": "Merchant with products" }, "404": { "description": "Merchant not found" } }
+        }
+      ]
+    },
+    "products": {
+      "base": "/api/v1/products",
+      "description": "Product catalog browsing and search",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/v1/products",
+          "auth": "public",
+          "rateLimitGroup": "public",
+          "description": "List/search/filter available products with full-text search",
+          "queryParameters": {
+            "q": { "type": "string", "description": "Full-text search query" },
+            "category": { "type": "string", "format": "uuid", "description": "Category ID" },
+            "merchant": { "type": "string", "format": "uuid", "description": "Merchant ID" },
+            "market": { "type": "string", "description": "Market/city" },
+            "minPrice": { "type": "number", "description": "Minimum price" },
+            "maxPrice": { "type": "number", "description": "Maximum price" },
+            "isAvailable": { "type": "boolean", "default": true },
+            "page": { "type": "integer", "default": 1 },
+            "limit": { "type": "integer", "default": 20, "maximum": 100 },
+            "sort": { "type": "string", "default": "created_at" },
+            "order": { "type": "string", "enum": ["asc", "desc"], "default": "desc" }
+          },
+          "responses": { "200": { "description": "Paginated product list with merchant + category data" } }
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/products/:id",
+          "auth": "public",
+          "rateLimitGroup": "public",
+          "description": "Get single product with reviews and rating stats",
+          "pathParameters": {
+            "id": { "type": "string", "format": "uuid", "description": "Product ID" }
+          },
+          "responses": { "200": { "description": "Product with reviews + rating stats" }, "404": { "description": "Product not found" } }
+        }
+      ]
+    },
+    "checkout": {
+      "base": "/api/v1/cart/checkout",
+      "description": "Order placement with multi-merchant support",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/api/v1/cart/checkout",
+          "auth": "required",
+          "rateLimitGroup": "checkout",
+          "description": "Place order with items from multiple merchants",
+          "requestBody": {
+            "required": ["items", "deliveryAddress", "contactPhone"],
+            "fields": {
+              "items": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 50,
+                "items": {
+                  "type": "object",
+                  "required": ["productId", "merchantId", "quantity"],
+                  "fields": {
+                    "productId": { "type": "string", "format": "uuid" },
+                    "merchantId": { "type": "string", "format": "uuid" },
+                    "quantity": { "type": "integer", "minimum": 1 },
+                    "notes": { "type": "string", "maxLength": 500 }
+                  }
+                }
+              },
+              "deliveryAddress": {
+                "type": "object",
+                "required": ["line1", "city", "state", "pincode"],
+                "fields": {
+                  "line1": { "type": "string" },
+                  "line2": { "type": "string" },
+                  "city": { "type": "string" },
+                  "state": { "type": "string" },
+                  "pincode": { "type": "string", "pattern": "^\\d{6}$" },
+                  "latitude": { "type": "number" },
+                  "longitude": { "type": "number" }
+                }
+              },
+              "deliveryNotes": { "type": "string", "maxLength": 500 },
+              "contactPhone": { "type": "string", "pattern": "^\\\\+?[1-9]\\\\d{9,14}$" },
+              "paymentMethod": { "type": "string", "enum": ["card", "upi", "cod", "wallet"], "default": "upi" }
+            }
+          },
+          "responses": {
+            "201": { "description": "Order created successfully" },
+            "400": { "description": "Validation error" },
+            "401": { "description": "Authentication required" },
+            "409": { "description": "Insufficient stock" }
+          }
+        }
+      ]
+    },
+    "orders": {
+      "base": "/api/v1/orders",
+      "description": "Customer order management",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/v1/orders",
+          "auth": "required",
+          "rateLimitGroup": "default",
+          "description": "Get customer's order history",
+          "queryParameters": {
+            "status": { "type": "string", "description": "Filter by status" },
+            "page": { "type": "integer", "default": 1 },
+            "limit": { "type": "integer", "default": 20 }
+          },
+          "responses": { "200": { "description": "Paginated order list" } }
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/orders/:id",
+          "auth": "required",
+          "rateLimitGroup": "default",
+          "description": "Get single order with full item details",
+          "pathParameters": {
+            "id": { "type": "string", "format": "uuid", "description": "Order ID" }
+          },
+          "accessControl": {
+            "customer": "own orders only",
+            "merchant": "orders containing their products",
+            "admin": "all orders"
+          },
+          "responses": { "200": { "description": "Order with items" }, "403": { "description": "Access denied" }, "404": { "description": "Order not found" } }
+        }
+      ]
+    },
+    "cart": {
+      "base": "/api/v1/cart",
+      "description": "Shopping cart management (authenticated)",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/v1/cart",
+          "auth": "required",
+          "rateLimitGroup": "default",
+          "description": "Get current cart items for authenticated user"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/cart",
+          "auth": "required",
+          "rateLimitGroup": "default",
+          "description": "Add item to cart",
+          "requestBody": {
+            "required": ["product_id"],
+            "fields": {
+              "product_id": { "type": "string" },
+              "quantity": { "type": "integer", "default": 1 },
+              "mode": { "type": "string", "default": "A" }
+            }
+          }
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/cart",
+          "auth": "required",
+          "rateLimitGroup": "default",
+          "description": "Clear entire cart"
+        }
+      ]
+    },
+    "merchantDashboard": {
+      "base": "/api/v1/merchant",
+      "description": "Merchant-specific operations",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/v1/merchant/dashboard",
+          "auth": "required",
+          "roles": ["merchant", "admin"],
+          "rateLimitGroup": "merchant",
+          "description": "Get KPI data for the authenticated merchant",
+          "responses": { "200": { "description": "Dashboard KPIs" } }
+        }
+      ]
+    },
+    "merchantProducts": {
+      "base": "/api/v1/merchant/products",
+      "description": "Merchant product catalog management",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/v1/merchant/products",
+          "auth": "required",
+          "roles": ["merchant"],
+          "rateLimitGroup": "merchant",
+          "description": "List all products for the authenticated merchant",
+          "queryParameters": {
+            "page": { "type": "integer", "default": 1 },
+            "limit": { "type": "integer", "default": 20 },
+            "sort": { "type": "string", "default": "created_at" },
+            "order": { "type": "string", "enum": ["asc", "desc"], "default": "desc" }
+          },
+          "responses": { "200": { "description": "Paginated product list" } }
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/merchant/products",
+          "auth": "required",
+          "roles": ["merchant"],
+          "rateLimitGroup": "merchant",
+          "description": "Create a new product",
+          "requestBody": {
+            "required": ["name", "price"],
+            "fields": {
+              "name": { "type": "string", "maxLength": 200 },
+              "description": { "type": "string", "maxLength": 2000 },
+              "price": { "type": "number", "minimum": 0.01 },
+              "compareAtPrice": { "type": "number" },
+              "unit": { "type": "string", "default": "piece" },
+              "stockQuantity": { "type": "integer", "default": 0 },
+              "categoryId": { "type": "string", "format": "uuid" },
+              "images": { "type": "array", "items": { "type": "string", "format": "uri" }, "maxItems": 10 },
+              "tags": { "type": "array", "items": { "type": "string" }, "maxItems": 20 },
+              "isFeatured": { "type": "boolean", "default": false },
+              "preparationTimeMinutes": { "type": "integer" }
+            }
+          },
+          "responses": { "201": { "description": "Product created" }, "400": { "description": "Validation error" } }
+        },
+        {
+          "method": "PUT",
+          "path": "/api/v1/merchant/products/:id",
+          "auth": "required",
+          "roles": ["merchant"],
+          "rateLimitGroup": "merchant",
+          "description": "Update an existing product",
+          "pathParameters": { "id": { "type": "string", "format": "uuid" } },
+          "requestBody": { "fields": "Same as POST, all optional" },
+          "responses": { "200": { "description": "Product updated" }, "404": { "description": "Product not found" } }
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/v1/merchant/products/:id",
+          "auth": "required",
+          "roles": ["merchant"],
+          "rateLimitGroup": "merchant",
+          "description": "Soft-delete a product (sets is_available=false)",
+          "pathParameters": { "id": { "type": "string", "format": "uuid" } },
+          "responses": { "204": { "description": "Product deleted" } }
+        }
+      ]
+    },
+    "merchantOrders": {
+      "base": "/api/v1/merchant/orders",
+      "description": "Merchant order management",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/v1/merchant/orders",
+          "auth": "required",
+          "roles": ["merchant"],
+          "rateLimitGroup": "merchant",
+          "description": "Get incoming orders containing merchant's products",
+          "queryParameters": {
+            "status": { "type": "string" },
+            "page": { "type": "integer", "default": 1 },
+            "limit": { "type": "integer", "default": 20 }
+          },
+          "responses": { "200": { "description": "Paginated order list" } }
+        },
+        {
+          "method": "PUT",
+          "path": "/api/v1/merchant/orders/:id/status",
+          "auth": "required",
+          "roles": ["merchant"],
+          "rateLimitGroup": "merchant",
+          "description": "Update order status with state machine validation",
+          "pathParameters": { "id": { "type": "string", "format": "uuid" } },
+          "requestBody": {
+            "required": ["status"],
+            "fields": {
+              "status": { "type": "string", "enum": ["confirmed", "preparing", "ready_for_pickup", "out_for_delivery", "delivered", "cancelled"] },
+              "reason": { "type": "string", "maxLength": 500, "description": "Required for cancellations" }
+            }
+          },
+          "validTransitions": {
+            "pending": ["confirmed", "cancelled"],
+            "confirmed": ["preparing", "cancelled"],
+            "preparing": ["ready_for_pickup", "cancelled"],
+            "ready_for_pickup": ["out_for_delivery"],
+            "out_for_delivery": ["delivered"]
+          },
+          "responses": { "200": { "description": "Status updated" }, "400": { "description": "Invalid transition" } }
+        }
+      ]
+    },
+    "adminMerchants": {
+      "base": "/api/v1/admin/merchants",
+      "dataCoverage": "Now supports 406 merchants across 21 markets",
+      "paginationAdded": true,
+      "description": "Admin merchant management",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/v1/admin/merchants",
+          "auth": "required",
+          "roles": ["admin"],
+          "rateLimitGroup": "admin",
+          "description": "List all merchants with owner details",
+          "queryParameters": {
+            "status": { "type": "string", "enum": ["pending", "active", "suspended", "inactive"] },
+            "q": { "type": "string" },
+            "city": { "type": "string" },
+            "page": { "type": "integer", "default": 1 },
+            "limit": { "type": "integer", "default": 20 }
+          },
+          "responses": { "200": { "description": "Paginated merchant list with owners" } }
+        },
+        {
+          "method": "PUT",
+          "path": "/api/v1/admin/merchants/:id/approve",
+          "auth": "required",
+          "roles": ["admin"],
+          "rateLimitGroup": "admin",
+          "description": "Approve or reject a merchant application",
+          "pathParameters": { "id": { "type": "string", "format": "uuid" } },
+          "requestBody": {
+            "required": ["status"],
+            "fields": {
+              "status": { "type": "string", "enum": ["active", "suspended"] },
+              "commissionRate": { "type": "number", "minimum": 0, "maximum": 100 },
+              "notes": { "type": "string", "maxLength": 500 }
+            }
+          },
+          "responses": { "200": { "description": "Merchant status updated" }, "404": { "description": "Merchant not found" } }
+        }
+      ]
+    },
+    "adminDashboard": {
+      "base": "/api/v1/admin",
+      "description": "Admin platform monitoring",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/v1/admin/dashboard",
+          "auth": "required",
+          "roles": ["admin"],
+          "rateLimitGroup": "admin",
+          "description": "Platform-wide KPIs",
+          "responses": { "200": { "description": "Dashboard KPIs" } }
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/admin/analytics",
+          "auth": "required",
+          "roles": ["admin"],
+          "rateLimitGroup": "admin",
+          "description": "Detailed platform analytics",
+          "queryParameters": {
+            "days": { "type": "integer", "default": 30, "description": "Lookback period" }
+          },
+          "responses": {
+            "200": {
+              "description": "Analytics data",
+              "dataShape": {
+                "ordersByDay": [{ "date": "string", "count": "number", "revenue": "number" }],
+                "topMerchants": [{ "merchantId": "string", "businessName": "string", "orderCount": "number", "revenue": "number" }],
+                "revenueByMarket": [{ "market": "string", "revenue": "number" }],
+                "userGrowth": [{ "date": "string", "signups": "number" }]
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "orderStateMachine": {
+    "states": ["pending", "confirmed", "preparing", "ready_for_pickup", "out_for_delivery", "delivered", "cancelled", "refunded"],
+    "transitions": [
+      { "from": "pending", "to": "confirmed", "trigger": "Payment confirmed / Merchant accepts" },
+      { "from": "pending", "to": "cancelled", "trigger": "Payment timeout / Customer cancels" },
+      { "from": "confirmed", "to": "preparing", "trigger": "Merchant begins preparing" },
+      { "from": "confirmed", "to": "cancelled", "trigger": "Merchant cancels" },
+      { "from": "preparing", "to": "ready_for_pickup", "trigger": "Order ready" },
+      { "from": "preparing", "to": "cancelled", "trigger": "Merchant cancels (reason required)" },
+      { "from": "ready_for_pickup", "to": "out_for_delivery", "trigger": "Courier picks up" },
+      { "from": "out_for_delivery", "to": "delivered", "trigger": "Delivery confirmed" }
+    ]
+  },
+  "errorCodes": [
+    { "code": "BAD_REQUEST", "httpStatus": 400, "description": "Invalid request format or parameters" },
+    { "code": "VALIDATION_ERROR", "httpStatus": 400, "description": "Request body failed Zod validation" },
+    { "code": "UNAUTHORIZED", "httpStatus": 401, "description": "Missing or invalid authentication" },
+    { "code": "FORBIDDEN", "httpStatus": 403, "description": "Insufficient role permissions" },
+    { "code": "NOT_FOUND", "httpStatus": 404, "description": "Requested resource does not exist" },
+    { "code": "CONFLICT", "httpStatus": 409, "description": "Resource state conflict (e.g., duplicate)" },
+    { "code": "RATE_LIMIT_EXCEEDED", "httpStatus": 429, "description": "Too many requests" },
+    { "code": "DATABASE_ERROR", "httpStatus": 500, "description": "Database operation failed" },
+    { "code": "INTERNAL_SERVER_ERROR", "httpStatus": 500, "description": "Unexpected server error" },
+    { "code": "PRODUCT_CREATE_FAILED", "httpStatus": 500, "description": "Failed to create product" },
+    { "code": "PRODUCT_UPDATE_FAILED", "httpStatus": 500, "description": "Failed to update product" },
+    { "code": "PRODUCT_DELETE_FAILED", "httpStatus": 500, "description": "Failed to delete product" },
+    { "code": "ORDER_CREATION_FAILED", "httpStatus": 500, "description": "Failed to create order" },
+    { "code": "ORDER_ITEMS_FAILED", "httpStatus": 500, "description": "Failed to create order items" },
+    { "code": "ORDER_UPDATE_FAILED", "httpStatus": 500, "description": "Failed to update order" },
+    { "code": "MERCHANT_UPDATE_FAILED", "httpStatus": 500, "description": "Failed to update merchant" }
+  ],
+  "validationSchemas": {
+    "zodSchemas": {
+      "signupSchema": "z.object({ email: z.string().email().optional(), phone: z.string().regex(/^\\+?[1-9]\\d{9,14}$/).optional(), password: z.string().min(6), fullName: z.string().min(1).max(100), role: z.enum(['customer', 'merchant']).default('customer') }).refine(data => data.email || data.phone)",
+      "loginSchema": "z.object({ email: z.string().email().optional(), phone: z.string().regex(/^\\+?[1-9]\\d{9,14}$/).optional(), password: z.string().min(1) }).refine(data => data.email || data.phone)",
+      "verifyOtpSchema": "z.object({ phone: z.string().regex(/^\\+?[1-9]\\d{9,14}$/), token: z.string().length(6), type: z.enum(['signup', 'login']) })",
+      "createProductSchema": "z.object({ name: z.string().min(1).max(200), description: z.string().max(2000).optional(), price: z.number().positive(), compareAtPrice: z.number().positive().optional(), unit: z.string().default('piece'), stockQuantity: z.number().int().min(0).default(0), categoryId: z.string().uuid().optional(), images: z.array(z.string().url()).max(10).default([]), tags: z.array(z.string()).max(20).default([]), attributes: z.record(z.unknown()).default({}), isFeatured: z.boolean().default(false), preparationTimeMinutes: z.number().int().positive().optional() })",
+      "updateProductSchema": "createProductSchema.partial()",
+      "createMerchantSchema": "z.object({ businessName: z.string().min(1).max(200), city: z.string().min(1).max(100), ... })",
+      "checkoutSchema": "z.object({ items: z.array(checkoutItemSchema).min(1).max(50), deliveryAddress: z.object({ line1: z.string().min(1), city: z.string().min(1), state: z.string().min(1), pincode: z.string().regex(/^\\d{6}$/) }), deliveryNotes: z.string().max(500).optional(), contactPhone: z.string().regex(/^\\+?[1-9]\\d{9,14}$/), paymentMethod: z.enum(['card', 'upi', 'cod', 'wallet']).default('upi') })",
+      "updateOrderStatusSchema": "z.object({ status: z.enum(['confirmed', 'preparing', 'ready_for_pickup', 'out_for_delivery', 'delivered', 'cancelled']), reason: z.string().max(500).optional() })",
+      "approveMerchantSchema": "z.object({ status: z.enum(['active', 'suspended']), commissionRate: z.number().min(0).max(100).optional(), notes: z.string().max(500).optional() })"
+    }
+  },
+  "securityFramework": {
+    "network": ["HTTPS/TLS 1.3", "CORS whitelist"],
+    "authentication": ["OTP login", "JWT + refresh tokens", "RBAC (4 roles)"],
+    "database": ["Row Level Security (RLS)", "Encrypted columns via Supabase"],
+    "api": ["Rate limiting (token bucket)", "Input validation (Zod)", "Payload size limits (2MB)"],
+    "storage": ["RLS on buckets", "Signed URLs (expiring)"],
+    "secrets": ["Environment variables only", "No plain-text in code"],
+    "payment": ["PCI DSS SAQ A", "No card data stored", "Razorpay redirect model"],
+    "dependencies": ["Dependabot", "Snyk scanning"]
+  }
+}

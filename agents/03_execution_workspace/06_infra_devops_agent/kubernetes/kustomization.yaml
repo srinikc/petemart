@@ -1,0 +1,19 @@
+# =============================================================================
+# PeteMart — Kustomize Root Configuration
+# =============================================================================
+# Use kustomize to manage environment-specific overlays:
+#
+#   kubectl kustomize kubernetes/development
+#   kubectl kustomize kubernetes/staging
+#   kubectl kustomize kubernetes/production
+# =============================================================================
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - namespace.yaml
+
+commonLabels:
+  app: petemart
+  managed-by: kustomize

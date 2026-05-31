@@ -1,0 +1,1828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PeteMart · Web Wireframes (Blueprint)</title>
+<style>
+  /* ===== RESET & BASE ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0d1b5e;
+    font-family: 'Courier New', Courier, monospace;
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    /* Blueprint grid background */
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 20px 20px;
+    background-position: -1px -1px;
+    min-height: 100vh;
+  }
+
+  /* ===== TITLE BANNER ===== */
+  .blueprint-header {
+    width: 100%;
+    max-width: 1400px;
+    text-align: center;
+    padding: 16px 0 8px;
+    border-bottom: 2px solid rgba(255,255,255,0.2);
+    margin-bottom: 8px;
+  }
+  .blueprint-header h1 {
+    color: #90caf9;
+    font-size: 26px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    font-weight: 400;
+  }
+  .blueprint-header .sub {
+    color: rgba(144,202,249,0.6);
+    font-size: 12px;
+    letter-spacing: 2px;
+    margin-top: 4px;
+  }
+
+  /* ===== SCREEN WRAPPER ===== */
+  .screen {
+    width: 100%;
+    max-width: 1300px;
+    background: #1a237e;
+    border: 2px solid #5c6bc0;
+    border-radius: 12px;
+    padding: 0;
+    position: relative;
+    box-shadow:
+      0 0 0 1px rgba(92,107,192,0.3),
+      inset 0 0 60px rgba(92,107,192,0.08);
+    /* blueprint grid inside screen */
+    background-image:
+      linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 16px 16px;
+    background-position: -1px -1px;
+  }
+
+  /* ===== BROWSER MOCK TITLE BAR ===== */
+  .browser-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(13,27,94,0.8);
+    padding: 8px 14px;
+    border-bottom: 1px solid #5c6bc0;
+    border-radius: 10px 10px 0 0;
+  }
+  .browser-dots {
+    display: flex;
+    gap: 6px;
+  }
+  .browser-dots span {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.3);
+  }
+  .browser-dots .dot-red   { background: #ef5350; border-color: #ef5350; }
+  .browser-dots .dot-yellow{ background: #ffca28; border-color: #ffca28; }
+  .browser-dots .dot-green { background: #66bb6a; border-color: #66bb6a; }
+  .browser-url {
+    flex: 1;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(92,107,192,0.4);
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.55);
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.5px;
+  }
+  .screen-label {
+    position: absolute;
+    top: -14px;
+    left: 20px;
+    background: #1a237e;
+    color: #90caf9;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 0 10px;
+    font-weight: bold;
+    border: 1px solid #5c6bc0;
+    border-radius: 3px;
+    z-index: 2;
+    line-height: 24px;
+  }
+
+  /* ===== SCREEN CONTENT ===== */
+  .screen-content {
+    padding: 20px 24px 28px;
+  }
+
+  /* ===== TYPOGRAPHY ===== */
+  .wf-title {
+    color: #e8eaf6;
+    font-size: 14px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border-bottom: 1px dashed rgba(92,107,192,0.4);
+    padding-bottom: 6px;
+    margin-bottom: 14px;
+    font-weight: 400;
+  }
+  .wf-section-title {
+    color: #90caf9;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    font-weight: 400;
+  }
+  .wf-text {
+    color: rgba(255,255,255,0.7);
+    font-size: 11px;
+    letter-spacing: 0.5px;
+  }
+  .wf-text-sm {
+    color: rgba(255,255,255,0.5);
+    font-size: 10px;
+  }
+
+  /* ===== PLACEHOLDER BOX ===== */
+  .placeholder-box {
+    background: rgba(255,255,255,0.06);
+    border: 1px dashed rgba(144,202,249,0.35);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.3);
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    min-height: 50px;
+  }
+  .placeholder-box.img {
+    min-height: 90px;
+    background: rgba(0,0,0,0.15);
+  }
+
+  /* ===== LAYOUT HELPERS ===== */
+  .flex { display: flex; }
+  .flex-wrap { flex-wrap: wrap; }
+  .flex-grow { flex: 1; }
+  .gap-4  { gap: 4px; }
+  .gap-6  { gap: 6px; }
+  .gap-8  { gap: 8px; }
+  .gap-10 { gap: 10px; }
+  .gap-12 { gap: 12px; }
+  .gap-16 { gap: 16px; }
+  .gap-20 { gap: 20px; }
+  .items-center { align-items: center; }
+  .items-start { align-items: flex-start; }
+  .justify-between { justify-content: space-between; }
+  .justify-center { justify-content: center; }
+  .flex-col { flex-direction: column; }
+  .w-full { width: 100%; }
+  .mt-8  { margin-top: 8px; }
+  .mt-12 { margin-top: 12px; }
+  .mt-16 { margin-top: 16px; }
+  .mt-20 { margin-top: 20px; }
+  .mb-8  { margin-bottom: 8px; }
+  .mb-12 { margin-bottom: 12px; }
+  .mb-16 { margin-bottom: 16px; }
+  .pt-8  { padding-top: 8px; }
+  .pb-8  { padding-bottom: 8px; }
+  .px-8  { padding-left: 8px; padding-right: 8px; }
+  .py-6  { padding-top: 6px; padding-bottom: 6px; }
+  .border-b-dash { border-bottom: 1px dashed rgba(92,107,192,0.3); }
+
+  /* ===== HEADER COMPONENT ===== */
+  .wf-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 0 14px;
+    border-bottom: 1px solid rgba(92,107,192,0.25);
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .wf-logo {
+    font-size: 18px;
+    font-weight: bold;
+    color: #e8eaf6;
+    letter-spacing: 3px;
+    border: 1px solid rgba(144,202,249,0.3);
+    padding: 4px 12px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .wf-search {
+    flex: 1;
+    min-width: 140px;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid rgba(92,107,192,0.4);
+    border-radius: 4px;
+    padding: 7px 12px;
+    color: rgba(255,255,255,0.5);
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+  }
+  .wf-icon {
+    width: 32px; height: 32px;
+    border: 1px solid rgba(144,202,249,0.3);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.5);
+    font-size: 10px;
+    position: relative;
+  }
+  .wf-icon .badge {
+    position: absolute;
+    top: -6px; right: -6px;
+    background: #5c6bc0;
+    color: #fff;
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 8px;
+    line-height: 14px;
+  }
+  .wf-btn {
+    border: 1px solid rgba(144,202,249,0.4);
+    color: #90caf9;
+    padding: 6px 14px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background: rgba(144,202,249,0.08);
+    cursor: default;
+    white-space: nowrap;
+  }
+
+  /* ===== HERO CAROUSEL ===== */
+  .hero-carousel {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 8px 0 12px;
+    scrollbar-color: rgba(92,107,192,0.3) transparent;
+  }
+  .hero-carousel::-webkit-scrollbar { height: 4px; }
+  .hero-carousel::-webkit-scrollbar-thumb { background: rgba(92,107,192,0.3); border-radius: 4px; }
+
+  .market-card {
+    min-width: 160px;
+    max-width: 180px;
+    flex-shrink: 0;
+    border: 1px solid rgba(92,107,192,0.35);
+    border-radius: 6px;
+    padding: 10px;
+    background: rgba(0,0,0,0.1);
+  }
+  .market-card .placeholder-box.img {
+    min-height: 70px;
+    margin-bottom: 6px;
+  }
+  .market-card .market-name {
+    color: #e8eaf6;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .market-card .merchant-count {
+    color: rgba(255,255,255,0.45);
+    font-size: 10px;
+  }
+
+  /* ===== STORE CARDS (Featured) ===== */
+  .store-card {
+    flex: 1;
+    min-width: 180px;
+    border: 1px solid rgba(92,107,192,0.35);
+    border-radius: 6px;
+    padding: 12px;
+    background: rgba(0,0,0,0.08);
+  }
+  .store-card .placeholder-box.img {
+    min-height: 70px;
+    margin-bottom: 8px;
+  }
+  .store-card .store-name {
+    color: #e8eaf6;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+  }
+  .mode-badge {
+    display: inline-block;
+    border: 1px solid rgba(144,202,249,0.3);
+    color: rgba(144,202,249,0.7);
+    font-size: 9px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  /* ===== CATEGORY CIRCLES ===== */
+  .category-circle {
+    width: 72px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .category-circle .circle {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    border: 1px dashed rgba(144,202,249,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.35);
+    font-size: 8px;
+    text-transform: uppercase;
+    background: rgba(0,0,0,0.1);
+  }
+  .category-circle .cat-label {
+    color: rgba(255,255,255,0.55);
+    font-size: 9px;
+    letter-spacing: 0.5px;
+    text-align: center;
+  }
+
+  /* ===== BREADCRUMB ===== */
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    color: rgba(255,255,255,0.45);
+    letter-spacing: 0.5px;
+    padding: 8px 0 10px;
+  }
+  .breadcrumb span { color: rgba(255,255,255,0.3); }
+  .breadcrumb .active { color: #90caf9; }
+
+  /* ===== SIDEBAR / FILTERS ===== */
+  .filter-sidebar {
+    width: 200px;
+    min-width: 180px;
+    border: 1px solid rgba(92,107,192,0.25);
+    border-radius: 6px;
+    padding: 14px;
+    background: rgba(0,0,0,0.06);
+  }
+  .filter-group { margin-bottom: 14px; }
+  .filter-group .filter-label {
+    color: #90caf9;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+  .price-slider {
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+    position: relative;
+  }
+  .price-slider .fill {
+    position: absolute;
+    height: 100%;
+    width: 55%;
+    background: rgba(144,202,249,0.3);
+    border-radius: 3px;
+  }
+  .price-slider .handle {
+    position: absolute;
+    top: -5px;
+    width: 14px; height: 16px;
+    border: 1px solid #90caf9;
+    border-radius: 3px;
+    background: rgba(144,202,249,0.15);
+  }
+  .price-slider .handle.l { left: 20%; }
+  .price-slider .handle.r { left: 70%; }
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(255,255,255,0.55);
+    font-size: 10px;
+    padding: 3px 0;
+  }
+  .checkbox-row .cb {
+    width: 14px; height: 14px;
+    border: 1px solid rgba(144,202,249,0.3);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .checkbox-row .cb.checked::after {
+    content: "✓";
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #90caf9;
+    font-size: 11px;
+    line-height: 14px;
+  }
+  .toggle-group {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .toggle-pill {
+    border: 1px solid rgba(144,202,249,0.25);
+    padding: 3px 10px;
+    border-radius: 3px;
+    color: rgba(255,255,255,0.45);
+    font-size: 10px;
+    letter-spacing: 0.5px;
+  }
+  .toggle-pill.active {
+    border-color: #90caf9;
+    color: #90caf9;
+    background: rgba(144,202,249,0.08);
+  }
+
+  /* ===== PRODUCT CARDS GRID ===== */
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+  }
+  .product-card {
+    border: 1px solid rgba(92,107,192,0.3);
+    border-radius: 6px;
+    padding: 10px;
+    background: rgba(0,0,0,0.06);
+  }
+  .product-card .placeholder-box.img {
+    min-height: 80px;
+    margin-bottom: 6px;
+  }
+  .product-card .p-name {
+    color: #e8eaf6;
+    font-size: 11px;
+    margin-bottom: 2px;
+  }
+  .product-card .p-merchant {
+    color: rgba(255,255,255,0.4);
+    font-size: 9px;
+  }
+  .product-card .p-price {
+    color: #90caf9;
+    font-size: 12px;
+    font-weight: bold;
+  }
+  .product-card .p-moq {
+    color: rgba(255,255,255,0.35);
+    font-size: 9px;
+  }
+  .product-card .p-modes {
+    display: flex;
+    gap: 3px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+
+  /* ===== PAGINATION ===== */
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(92,107,192,0.2);
+  }
+  .page-num {
+    width: 28px; height: 28px;
+    border: 1px solid rgba(144,202,249,0.2);
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.5);
+    font-size: 10px;
+  }
+  .page-num.active {
+    border-color: #90caf9;
+    color: #90caf9;
+    background: rgba(144,202,249,0.08);
+  }
+
+  /* ===== PRODUCT DETAIL PAGE ===== */
+  .detail-left {
+    width: 45%;
+    min-width: 240px;
+  }
+  .detail-right {
+    flex: 1;
+    min-width: 220px;
+  }
+  .main-image {
+    border: 1px solid rgba(92,107,192,0.3);
+    border-radius: 6px;
+    min-height: 240px;
+    background: rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.2);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .thumb-strip {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .thumb-strip .thumb {
+    width: 54px; height: 54px;
+    border: 1px solid rgba(92,107,192,0.25);
+    border-radius: 3px;
+    background: rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.15);
+    font-size: 8px;
+  }
+  .thumb-strip .thumb.active {
+    border-color: #90caf9;
+  }
+
+  .detail-name {
+    color: #e8eaf6;
+    font-size: 16px;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .detail-merchant {
+    color: rgba(255,255,255,0.5);
+    font-size: 11px;
+    margin-bottom: 8px;
+  }
+  .detail-price {
+    color: #90caf9;
+    font-size: 22px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 2px;
+  }
+  .detail-moq {
+    color: rgba(255,255,255,0.4);
+    font-size: 10px;
+    margin-bottom: 12px;
+  }
+
+  .mode-selector {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 12px 0;
+  }
+  .mode-btn {
+    flex: 1;
+    min-width: 130px;
+    border: 1px solid rgba(92,107,192,0.3);
+    border-radius: 4px;
+    padding: 10px 8px;
+    background: rgba(0,0,0,0.08);
+    text-align: center;
+  }
+  .mode-btn .mode-title {
+    color: #e8eaf6;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+  }
+  .mode-btn .mode-sub {
+    color: rgba(255,255,255,0.4);
+    font-size: 9px;
+    margin-top: 2px;
+  }
+  .mode-btn.highlight {
+    border-color: #90caf9;
+    background: rgba(144,202,249,0.06);
+  }
+
+  .tab-bar {
+    display: flex;
+    gap: 2px;
+    border-bottom: 1px solid rgba(92,107,192,0.2);
+    margin-bottom: 10px;
+  }
+  .tab-item {
+    padding: 6px 16px;
+    color: rgba(255,255,255,0.45);
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+    border-bottom: none;
+    border-radius: 3px 3px 0 0;
+  }
+  .tab-item.active {
+    color: #90caf9;
+    border-color: rgba(92,107,192,0.2);
+    background: rgba(0,0,0,0.08);
+  }
+
+  .delivery-info {
+    border: 1px dashed rgba(92,107,192,0.25);
+    border-radius: 4px;
+    padding: 10px;
+    margin-top: 12px;
+    color: rgba(255,255,255,0.5);
+    font-size: 10px;
+    line-height: 1.6;
+  }
+  .delivery-info strong { color: rgba(144,202,249,0.7); }
+
+  /* ===== CART ===== */
+  .cart-layout {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .cart-items-area {
+    flex: 2;
+    min-width: 300px;
+  }
+  .cart-summary-area {
+    flex: 1;
+    min-width: 220px;
+    border: 1px solid rgba(92,107,192,0.25);
+    border-radius: 6px;
+    padding: 16px;
+    background: rgba(0,0,0,0.06);
+    height: fit-content;
+  }
+
+  .merchant-group {
+    border: 1px solid rgba(92,107,192,0.2);
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 12px;
+    background: rgba(0,0,0,0.04);
+  }
+  .merchant-group .mg-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px dashed rgba(92,107,192,0.15);
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+  }
+  .mg-name {
+    color: #e8eaf6;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+  }
+  .mg-market {
+    color: rgba(255,255,255,0.35);
+    font-size: 9px;
+  }
+  .cart-item-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+  }
+  .cart-item-row .ci-img {
+    width: 40px; height: 40px;
+    border: 1px solid rgba(92,107,192,0.2);
+    border-radius: 3px;
+    background: rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.15);
+    font-size: 8px;
+    flex-shrink: 0;
+  }
+  .cart-item-row .ci-info {
+    flex: 1;
+  }
+  .cart-item-row .ci-name {
+    color: rgba(255,255,255,0.7);
+    font-size: 11px;
+  }
+  .cart-item-row .ci-qty {
+    color: rgba(255,255,255,0.4);
+    font-size: 10px;
+  }
+  .cart-item-row .ci-price {
+    color: #90caf9;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+  .delivery-fee-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
+    padding: 4px 0 4px 50px;
+    border-top: 1px dashed rgba(92,107,192,0.1);
+    margin-top: 4px;
+  }
+  .consolidation-badge {
+    border: 1px solid rgba(144,202,249,0.25);
+    border-radius: 4px;
+    padding: 8px 12px;
+    background: rgba(144,202,249,0.04);
+    color: rgba(144,202,249,0.6);
+    font-size: 10px;
+    margin-bottom: 12px;
+  }
+
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: rgba(255,255,255,0.6);
+    padding: 5px 0;
+    border-bottom: 1px dashed rgba(92,107,192,0.1);
+  }
+  .summary-row.total {
+    font-size: 14px;
+    color: #e8eaf6;
+    border-bottom: none;
+    padding-top: 8px;
+    border-top: 1px solid rgba(92,107,192,0.2);
+    margin-top: 4px;
+  }
+  .summary-row.total .val { color: #90caf9; font-weight: bold; }
+
+  .checkout-btn {
+    display: block;
+    width: 100%;
+    margin-top: 14px;
+    padding: 10px;
+    border: 1px solid #90caf9;
+    border-radius: 4px;
+    background: rgba(144,202,249,0.1);
+    color: #90caf9;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-align: center;
+    cursor: default;
+  }
+
+  /* ===== CHECKOUT ===== */
+  .stepper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .step-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .step-item .step-circle {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+  }
+  .step-item.active .step-circle {
+    border-color: #90caf9;
+    color: #90caf9;
+    background: rgba(144,202,249,0.08);
+  }
+  .step-item.active { color: #90caf9; }
+  .step-item.done .step-circle {
+    border-color: rgba(144,202,249,0.4);
+    color: #90caf9;
+    background: rgba(144,202,249,0.05);
+  }
+  .step-item.done { color: rgba(144,202,249,0.5); }
+  .step-arrow {
+    color: rgba(255,255,255,0.15);
+    font-size: 12px;
+  }
+
+  .checkout-section {
+    border: 1px solid rgba(92,107,192,0.2);
+    border-border: 6px;
+    padding: 14px;
+    margin-bottom: 12px;
+    background: rgba(0,0,0,0.04);
+    border-radius: 6px;
+  }
+  .checkout-section .cs-title {
+    color: #90caf9;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .address-card {
+    border: 1px solid rgba(92,107,192,0.2);
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    background: rgba(0,0,0,0.04);
+  }
+  .address-card .radio {
+    width: 16px; height: 16px;
+    border: 1px solid rgba(144,202,249,0.3);
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .address-card .radio.selected::after {
+    content: "";
+    display: block;
+    width: 8px; height: 8px;
+    background: #90caf9;
+    border-radius: 50%;
+    margin: 3px;
+  }
+  .address-card .addr-text {
+    color: rgba(255,255,255,0.6);
+    font-size: 10px;
+    line-height: 1.5;
+  }
+  .address-card .addr-label {
+    color: #e8eaf6;
+    font-size: 11px;
+  }
+  .add-addr-btn {
+    border: 1px dashed rgba(92,107,192,0.25);
+    border-radius: 4px;
+    padding: 8px;
+    text-align: center;
+    color: rgba(255,255,255,0.35);
+    font-size: 10px;
+    cursor: default;
+    margin-top: 6px;
+  }
+
+  .delivery-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border: 1px solid rgba(92,107,192,0.2);
+    border-radius: 4px;
+    margin-bottom: 6px;
+  }
+  .delivery-option .radio {
+    width: 16px; height: 16px;
+    border: 1px solid rgba(144,202,249,0.3);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .delivery-option .radio.selected::after {
+    content: "";
+    display: block;
+    width: 8px; height: 8px;
+    background: #90caf9;
+    border-radius: 50%;
+    margin: 3px;
+  }
+  .delivery-option .dopt-info { flex: 1; }
+  .delivery-option .dopt-title {
+    color: rgba(255,255,255,0.7);
+    font-size: 11px;
+  }
+  .delivery-option .dopt-sub {
+    color: rgba(255,255,255,0.35);
+    font-size: 9px;
+  }
+  .delivery-option .dopt-price {
+    color: #90caf9;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  .payment-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border: 1px solid rgba(92,107,192,0.2);
+    border-radius: 4px;
+    margin-bottom: 6px;
+  }
+  .payment-option .radio {
+    width: 16px; height: 16px;
+    border: 1px solid rgba(144,202,249,0.3);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .payment-option .radio.selected::after {
+    content: "";
+    display: block;
+    width: 8px; height: 8px;
+    background: #90caf9;
+    border-radius: 50%;
+    margin: 3px;
+  }
+  .payment-option .pay-name {
+    color: rgba(255,255,255,0.6);
+    font-size: 11px;
+    flex: 1;
+  }
+  .payment-option .pay-desc {
+    color: rgba(255,255,255,0.3);
+    font-size: 9px;
+  }
+
+  .place-order-btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #90caf9;
+    border-radius: 4px;
+    background: rgba(144,202,249,0.12);
+    color: #90caf9;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-align: center;
+    cursor: default;
+    margin-top: 14px;
+  }
+
+  /* ===== FOOTER ===== */
+  .wf-footer {
+    border-top: 1px solid rgba(92,107,192,0.2);
+    padding-top: 14px;
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    justify-content: space-between;
+  }
+  .wf-footer .col .fhead {
+    color: #90caf9;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .wf-footer .col .flink {
+    color: rgba(255,255,255,0.4);
+    font-size: 9px;
+    padding: 2px 0;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 900px) {
+    body { padding: 12px 8px; gap: 24px; }
+    .screen-content { padding: 14px; }
+    .wf-header { gap: 10px; }
+    .filter-sidebar { width: 100%; }
+    .detail-left { width: 100%; }
+    .detail-right { width: 100%; }
+    .cart-items-area { min-width: unset; width: 100%; }
+    .cart-summary-area { width: 100%; }
+    .hero-carousel .market-card { min-width: 140px; }
+    .results-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+    .stepper { font-size: 9px; }
+    .step-arrow { display: none; }
+  }
+  @media (max-width: 600px) {
+    .wf-logo { font-size: 14px; }
+    .wf-search { min-width: 100px; font-size: 10px; }
+    .market-card { min-width: 120px; }
+    .store-card { min-width: 140px; }
+    .results-grid { grid-template-columns: repeat(2, 1fr); }
+    .mode-btn { min-width: 100px; }
+    .browser-url { font-size: 9px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== PAGE HEADER ===== -->
+<div class="blueprint-header">
+  <h1>⛏ PeteMart · Web Wireframes</h1>
+  <div class="sub">Blueprint Specification — Requirement Agent v1.0</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN 1 — LANDING PAGE                                      -->
+<!-- ============================================================ -->
+<div class="screen" id="screen-landing">
+  <div class="screen-label">Screen 1 · Landing Page</div>
+  <div class="browser-bar">
+    <div class="browser-dots">
+      <span class="dot-red"></span>
+      <span class="dot-yellow"></span>
+      <span class="dot-green"></span>
+    </div>
+    <div class="browser-url">https://petemart.com</div>
+  </div>
+  <div class="screen-content">
+
+    <!-- HEADER -->
+    <div class="wf-header">
+      <div class="wf-logo">PeteMart</div>
+      <div class="wf-search">🔍  Search products, stores, markets…</div>
+      <div class="wf-icon">🛒</div>
+      <div class="wf-btn">Login →</div>
+    </div>
+
+    <!-- HERO: Pete Tapestry -->
+    <div class="wf-section-title">▸ Pete Tapestry — Explore Pete Markets</div>
+    <div class="hero-carousel">
+      <div class="market-card">
+        <div class="placeholder-box img">[Map]</div>
+        <div class="market-name">Chickpet</div>
+        <div class="merchant-count">~340 merchants</div>
+      </div>
+      <div class="market-card">
+        <div class="placeholder-box img">[Map]</div>
+        <div class="market-name">Balepet</div>
+        <div class="merchant-count">~280 merchants</div>
+      </div>
+      <div class="market-card">
+        <div class="placeholder-box img">[Map]</div>
+        <div class="market-name">Mamulpet</div>
+        <div class="merchant-count">~190 merchants</div>
+      </div>
+      <div class="market-card">
+        <div class="placeholder-box img">[Map]</div>
+        <div class="market-name">Tharagpet</div>
+        <div class="merchant-count">~150 merchants</div>
+      </div>
+      <div class="market-card">
+        <div class="placeholder-box img">[Map]</div>
+        <div class="market-name">Cubbonpet</div>
+        <div class="merchant-count">~210 merchants</div>
+      </div>
+      <div class="market-card">
+        <div class="placeholder-box img">[Map]</div>
+        <div class="market-name">Avenue Road</div>
+        <div class="merchant-count">~170 merchants</div>
+      </div>
+    </div>
+
+    <!-- FEATURED STORES -->
+    <div class="wf-section-title mt-16">▸ Featured Stores</div>
+    <div class="flex flex-wrap gap-12">
+      <div class="store-card">
+        <div class="placeholder-box img">[Storefront]</div>
+        <div class="store-name">Kuberan Silks</div>
+        <div class="flex gap-4 mt-8">
+          <span class="mode-badge">Buy Online</span>
+          <span class="mode-badge">WhatsApp</span>
+          <span class="mode-badge">In-Store</span>
+        </div>
+      </div>
+      <div class="store-card">
+        <div class="placeholder-box img">[Storefront]</div>
+        <div class="store-name">Balaji Electronics</div>
+        <div class="flex gap-4 mt-8">
+          <span class="mode-badge">Buy Online</span>
+          <span class="mode-badge">WhatsApp</span>
+        </div>
+      </div>
+      <div class="store-card">
+        <div class="placeholder-box img">[Storefront]</div>
+        <div class="store-name">Ratan Jewellers</div>
+        <div class="flex gap-4 mt-8">
+          <span class="mode-badge">Buy Online</span>
+          <span class="mode-badge">In-Store</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SHOP BY CATEGORY -->
+    <div class="wf-section-title mt-16">▸ Shop by Category</div>
+    <div class="flex flex-wrap gap-16 justify-center">
+      <div class="category-circle">
+        <div class="circle">🧵</div>
+        <span class="cat-label">Textiles</span>
+      </div>
+      <div class="category-circle">
+        <div class="circle">💎</div>
+        <span class="cat-label">Jewellery</span>
+      </div>
+      <div class="category-circle">
+        <div class="circle">⚡</div>
+        <span class="cat-label">Electronics</span>
+      </div>
+      <div class="category-circle">
+        <div class="circle">🛒</div>
+        <span class="cat-label">Grocery</span>
+      </div>
+      <div class="category-circle">
+        <div class="circle">🏠</div>
+        <span class="cat-label">Home</span>
+      </div>
+      <div class="category-circle">
+        <div class="circle">🎁</div>
+        <span class="cat-label">Gifts</span>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="wf-footer">
+      <div class="col">
+        <div class="fhead">Company</div>
+        <div class="flink">About Us</div>
+        <div class="flink">Careers</div>
+        <div class="flink">Press</div>
+      </div>
+      <div class="col">
+        <div class="fhead">Support</div>
+        <div class="flink">Help Center</div>
+        <div class="flink">Returns</div>
+        <div class="flink">Contact</div>
+      </div>
+      <div class="col">
+        <div class="fhead">Connect</div>
+        <div class="flink">Instagram</div>
+        <div class="flink">Facebook</div>
+        <div class="flink">WhatsApp</div>
+      </div>
+      <div class="col">
+        <div class="fhead">Contact</div>
+        <div class="flink">info@petemart.com</div>
+        <div class="flink">+91-80-4231-5678</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN 2 — MARKET / SEARCH RESULTS                           -->
+<!-- ============================================================ -->
+<div class="screen" id="screen-search">
+  <div class="screen-label">Screen 2 · Market / Search Results</div>
+  <div class="browser-bar">
+    <div class="browser-dots">
+      <span class="dot-red"></span>
+      <span class="dot-yellow"></span>
+      <span class="dot-green"></span>
+    </div>
+    <div class="browser-url">https://petemart.com/market/chickpet</div>
+  </div>
+  <div class="screen-content">
+
+    <!-- HEADER -->
+    <div class="wf-header">
+      <div class="wf-logo">PeteMart</div>
+      <div class="wf-search">🔍  Silk sarees in Chickpet…</div>
+      <div class="wf-icon">🛒 <span class="badge">3</span></div>
+      <div class="wf-btn">Login →</div>
+    </div>
+
+    <!-- BREADCRUMB -->
+    <div class="breadcrumb">
+      Home <span>›</span> Markets <span>›</span> <span class="active">Chickpet</span>
+    </div>
+
+    <div class="flex flex-wrap gap-16" style="align-items:flex-start;">
+
+      <!-- SIDEBAR FILTERS -->
+      <div class="filter-sidebar">
+        <div class="filter-group">
+          <div class="filter-label">Price Range</div>
+          <div class="price-slider mt-8">
+            <div class="fill"></div>
+            <div class="handle l"></div>
+            <div class="handle r"></div>
+          </div>
+          <div class="flex justify-between mt-8">
+            <span class="wf-text-sm">₹50</span>
+            <span class="wf-text-sm">₹5,000</span>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-label">Category</div>
+          <div class="checkbox-row"><div class="cb checked"></div> Textiles</div>
+          <div class="checkbox-row"><div class="cb"></div> Jewellery</div>
+          <div class="checkbox-row"><div class="cb checked"></div> Electronics</div>
+          <div class="checkbox-row"><div class="cb"></div> Home</div>
+          <div class="checkbox-row"><div class="cb"></div> Grocery</div>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-label">Purchase Mode</div>
+          <div class="toggle-group">
+            <span class="toggle-pill active">Online</span>
+            <span class="toggle-pill">WhatsApp</span>
+            <span class="toggle-pill">In-Store</span>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-label">Merchant Rating</div>
+          <div class="checkbox-row"><div class="cb checked"></div> 4★ & above</div>
+          <div class="checkbox-row"><div class="cb"></div> 3★ & above</div>
+          <div class="checkbox-row"><div class="cb"></div> 2★ & above</div>
+        </div>
+      </div>
+
+      <!-- RESULTS GRID -->
+      <div style="flex:1; min-width:260px;">
+        <div class="flex justify-between items-center mb-12">
+          <span class="wf-text">Showing 12 of 156 results in Chickpet</span>
+          <span class="wf-text-sm">Sort: Relevance ▾</span>
+        </div>
+
+        <div class="results-grid">
+          <div class="product-card">
+            <div class="placeholder-box img">[Product]</div>
+            <div class="p-name">Mysore Silk Saree</div>
+            <div class="p-merchant">Kuberan Silks</div>
+            <div class="flex justify-between items-center mt-4">
+              <span class="p-price">₹499</span>
+              <span class="p-moq">MoQ: 2</span>
+            </div>
+            <div class="p-modes">
+              <span class="mode-badge">Buy Online</span>
+              <span class="mode-badge">WhatsApp</span>
+              <span class="mode-badge">In-Store</span>
+            </div>
+          </div>
+          <div class="product-card">
+            <div class="placeholder-box img">[Product]</div>
+            <div class="p-name">Kanchipuram Cotton</div>
+            <div class="p-merchant">Sri Devi Silks</div>
+            <div class="flex justify-between items-center mt-4">
+              <span class="p-price">₹799</span>
+              <span class="p-moq">MoQ: 1</span>
+            </div>
+            <div class="p-modes">
+              <span class="mode-badge">Buy Online</span>
+              <span class="mode-badge">WhatsApp</span>
+            </div>
+          </div>
+          <div class="product-card">
+            <div class="placeholder-box img">[Product]</div>
+            <div class="p-name">LED Desk Lamp</div>
+            <div class="p-merchant">Balaji Electronics</div>
+            <div class="flex justify-between items-center mt-4">
+              <span class="p-price">₹1,299</span>
+              <span class="p-moq">MoQ: 3</span>
+            </div>
+            <div class="p-modes">
+              <span class="mode-badge">Buy Online</span>
+              <span class="mode-badge">In-Store</span>
+            </div>
+          </div>
+          <div class="product-card">
+            <div class="placeholder-box img">[Product]</div>
+            <div class="p-name">Silver Earrings</div>
+            <div class="p-merchant">Ratan Jewellers</div>
+            <div class="flex justify-between items-center mt-4">
+              <span class="p-price">₹2,499</span>
+              <span class="p-moq">MoQ: 1</span>
+            </div>
+            <div class="p-modes">
+              <span class="mode-badge">WhatsApp</span>
+              <span class="mode-badge">In-Store</span>
+            </div>
+          </div>
+          <div class="product-card">
+            <div class="placeholder-box img">[Product]</div>
+            <div class="p-name">Cotton Bedsheets</div>
+            <div class="p-merchant">Textile House</div>
+            <div class="flex justify-between items-center mt-4">
+              <span class="p-price">₹899</span>
+              <span class="p-moq">MoQ: 2</span>
+            </div>
+            <div class="p-modes">
+              <span class="mode-badge">Buy Online</span>
+            </div>
+          </div>
+          <div class="product-card">
+            <div class="placeholder-box img">[Product]</div>
+            <div class="p-name">Brass Decor Set</div>
+            <div class="p-merchant">Pete Handicrafts</div>
+            <div class="flex justify-between items-center mt-4">
+              <span class="p-price">₹1,899</span>
+              <span class="p-moq">MoQ: 1</span>
+            </div>
+            <div class="p-modes">
+              <span class="mode-badge">WhatsApp</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- PAGINATION -->
+        <div class="pagination">
+          <span class="page-num">‹</span>
+          <span class="page-num active">1</span>
+          <span class="page-num">2</span>
+          <span class="page-num">3</span>
+          <span class="page-num">4</span>
+          <span class="page-num">…</span>
+          <span class="page-num">13</span>
+          <span class="page-num">›</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="wf-footer">
+      <div class="col">
+        <div class="fhead">Company</div>
+        <div class="flink">About Us</div>
+        <div class="flink">Careers</div>
+      </div>
+      <div class="col">
+        <div class="fhead">Support</div>
+        <div class="flink">Help Center</div>
+        <div class="flink">Contact</div>
+      </div>
+      <div class="col">
+        <div class="fhead">Connect</div>
+        <div class="flink">Instagram</div>
+        <div class="flink">WhatsApp</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN 3 — PRODUCT DETAIL                                    -->
+<!-- ============================================================ -->
+<div class="screen" id="screen-pdp">
+  <div class="screen-label">Screen 3 · Product Detail</div>
+  <div class="browser-bar">
+    <div class="browser-dots">
+      <span class="dot-red"></span>
+      <span class="dot-yellow"></span>
+      <span class="dot-green"></span>
+    </div>
+    <div class="browser-url">https://petemart.com/product/kuberan-silks-mysore-silk</div>
+  </div>
+  <div class="screen-content">
+
+    <!-- HEADER -->
+    <div class="wf-header">
+      <div class="wf-logo">PeteMart</div>
+      <div class="wf-search">🔍  Search in Chickpet…</div>
+      <div class="wf-icon">🛒 <span class="badge">3</span></div>
+      <div class="wf-btn">Login →</div>
+    </div>
+
+    <!-- BREADCRUMB -->
+    <div class="breadcrumb">
+      Home <span>›</span> Chickpet <span>›</span> <span class="active">Kuberan Silks</span>
+    </div>
+
+    <div class="flex flex-wrap gap-20" style="align-items:flex-start;">
+
+      <!-- LEFT: Images -->
+      <div class="detail-left">
+        <div class="main-image">[Product Image — Mysore Silk Saree]</div>
+        <div class="thumb-strip">
+          <div class="thumb active">[1]</div>
+          <div class="thumb">[2]</div>
+          <div class="thumb">[3]</div>
+          <div class="thumb">[4]</div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Details -->
+      <div class="detail-right">
+        <div class="detail-name">Mysore Silk Saree · Traditional Gold Zari</div>
+        <div class="detail-merchant">by <strong>Kuberan Silks</strong> — Chickpet ⭐ 4.5</div>
+        <div class="detail-price">₹499</div>
+        <div class="detail-moq">Price per piece (MoQ: 2 pieces)</div>
+
+        <!-- Mode Selector -->
+        <div class="mode-selector">
+          <div class="mode-btn highlight">
+            <div class="mode-title">🛍️ Buy Now — ₹499</div>
+            <div class="mode-sub">Pay online · ₹499/pc</div>
+          </div>
+          <div class="mode-btn">
+            <div class="mode-title">💬 Enquire on WhatsApp</div>
+            <div class="mode-sub">Chat with merchant</div>
+          </div>
+          <div class="mode-btn">
+            <div class="mode-title">🏪 Visit Store</div>
+            <div class="mode-sub">Chickpet · 3 km</div>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tab-bar">
+          <div class="tab-item active">Description</div>
+          <div class="tab-item">Reviews (24)</div>
+          <div class="tab-item">Merchant Info</div>
+        </div>
+
+        <div class="wf-text-sm" style="line-height:1.7;">
+          Authentic Mysore silk saree with traditional gold zari border. Available in 12 colors. Handwoven in Karnataka.<br>
+          <span style="color:rgba(255,255,255,0.3);">▶ Read more</span>
+        </div>
+
+        <!-- Delivery Info -->
+        <div class="delivery-info">
+          <strong>📍</strong> Delivers within <strong>3 km</strong> of Chickpet market<br>
+          <strong>🚚</strong> Free delivery on orders above ₹500<br>
+          <strong>⏱️</strong> Estimated delivery: 2-3 business days
+        </div>
+      </div>
+    </div>
+
+    <div class="wf-footer">
+      <div class="col">
+        <div class="fhead">Company</div>
+        <div class="flink">About Us</div>
+        <div class="flink">Careers</div>
+      </div>
+      <div class="col">
+        <div class="fhead">Support</div>
+        <div class="flink">Help Center</div>
+        <div class="flink">Returns</div>
+      </div>
+      <div class="col">
+        <div class="fhead">Connect</div>
+        <div class="flink">Instagram</div>
+        <div class="flink">Facebook</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN 4 — MULTI-STORE CART                                  -->
+<!-- ============================================================ -->
+<div class="screen" id="screen-cart">
+  <div class="screen-label">Screen 4 · Multi-Store Cart</div>
+  <div class="browser-bar">
+    <div class="browser-dots">
+      <span class="dot-red"></span>
+      <span class="dot-yellow"></span>
+      <span class="dot-green"></span>
+    </div>
+    <div class="browser-url">https://petemart.com/cart</div>
+  </div>
+  <div class="screen-content">
+
+    <!-- HEADER -->
+    <div class="wf-header">
+      <div class="wf-logo">PeteMart</div>
+      <div class="wf-search">🔍  Search…</div>
+      <div class="wf-icon">🛒 <span class="badge">3</span></div>
+      <div class="wf-btn">Login →</div>
+    </div>
+
+    <div class="wf-title">Your Cart · Multi-Market Basket</div>
+
+    <!-- Consolidation Badge -->
+    <div class="consolidation-badge">
+      📦 <strong>3 items</strong> from <strong>2 merchants</strong> · Consolidated delivery ₹30
+    </div>
+
+    <div class="cart-layout">
+
+      <!-- LEFT: Cart Items -->
+      <div class="cart-items-area">
+
+        <!-- Merchant Group 1 -->
+        <div class="merchant-group">
+          <div class="mg-header">
+            <div>
+              <span class="mg-name">Kuberan Silks</span>
+              <span class="mg-market"> · Chickpet</span>
+            </div>
+            <span class="mode-badge">Online Purchase</span>
+          </div>
+
+          <div class="cart-item-row">
+            <div class="ci-img">[Img]</div>
+            <div class="ci-info">
+              <div class="ci-name">Mysore Silk Saree · Gold Zari</div>
+              <div class="ci-qty">Qty: 2 × ₹499</div>
+            </div>
+            <div class="ci-price">₹998</div>
+          </div>
+          <div class="cart-item-row">
+            <div class="ci-img">[Img]</div>
+            <div class="ci-info">
+              <div class="ci-name">Cotton Handkerchief Set (6 pcs)</div>
+              <div class="ci-qty">Qty: 1 × ₹299</div>
+            </div>
+            <div class="ci-price">₹299</div>
+          </div>
+          <div class="delivery-fee-row">
+            <span>🚚 Delivery fee (Kuberan Silks)</span>
+            <span>₹15</span>
+          </div>
+        </div>
+
+        <!-- Merchant Group 2 -->
+        <div class="merchant-group">
+          <div class="mg-header">
+            <div>
+              <span class="mg-name">Balaji Electronics</span>
+              <span class="mg-market"> · Balepet</span>
+            </div>
+            <span class="mode-badge">Online + In-Store</span>
+          </div>
+
+          <div class="cart-item-row">
+            <div class="ci-img">[Img]</div>
+            <div class="ci-info">
+              <div class="ci-name">LED Desk Lamp · 12W Warm White</div>
+              <div class="ci-qty">Qty: 1 × ₹1,299</div>
+            </div>
+            <div class="ci-price">₹1,299</div>
+          </div>
+          <div class="delivery-fee-row">
+            <span>🚚 Delivery fee (Balaji Electronics)</span>
+            <span>₹15</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: Summary -->
+      <div class="cart-summary-area">
+        <div class="wf-section-title">Order Summary</div>
+
+        <div class="summary-row">
+          <span>Subtotal (3 items)</span>
+          <span>₹2,596</span>
+        </div>
+        <div class="summary-row">
+          <span>Delivery (2 merchants)</span>
+          <span>₹30</span>
+        </div>
+        <div class="summary-row">
+          <span>Consolidation discount</span>
+          <span style="color:#66bb6a;">−₹30</span>
+        </div>
+        <div class="summary-row total">
+          <span>Total</span>
+          <span class="val">₹2,596</span>
+        </div>
+
+        <div class="checkout-btn">Proceed to Checkout →</div>
+
+        <div class="wf-text-sm mt-12" style="text-align:center; color:rgba(255,255,255,0.25);">
+          Free delivery above ₹500 per merchant
+        </div>
+      </div>
+    </div>
+
+    <div class="wf-footer">
+      <div class="col">
+        <div class="fhead">Company</div>
+        <div class="flink">About Us</div>
+      </div>
+      <div class="col">
+        <div class="fhead">Support</div>
+        <div class="flink">Help Center</div>
+      </div>
+      <div class="col">
+        <div class="fhead">Connect</div>
+        <div class="flink">Instagram</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN 5 — CHECKOUT FLOW                                     -->
+<!-- ============================================================ -->
+<div class="screen" id="screen-checkout">
+  <div class="screen-label">Screen 5 · Checkout Flow</div>
+  <div class="browser-bar">
+    <div class="browser-dots">
+      <span class="dot-red"></span>
+      <span class="dot-yellow"></span>
+      <span class="dot-green"></span>
+    </div>
+    <div class="browser-url">https://petemart.com/checkout</div>
+  </div>
+  <div class="screen-content">
+
+    <!-- HEADER -->
+    <div class="wf-header">
+      <div class="wf-logo">PeteMart</div>
+      <div class="wf-icon">🛒 <span class="badge">3</span></div>
+      <div class="wf-btn">Login →</div>
+    </div>
+
+    <!-- STEPPER -->
+    <div class="stepper">
+      <div class="step-item done">
+        <span class="step-circle">✓</span> Cart
+      </div>
+      <span class="step-arrow">▸</span>
+      <div class="step-item active">
+        <span class="step-circle">2</span> Address
+      </div>
+      <span class="step-arrow">▸</span>
+      <div class="step-item">
+        <span class="step-circle">3</span> Payment
+      </div>
+      <span class="step-arrow">▸</span>
+      <div class="step-item">
+        <span class="step-circle">4</span> Confirmation
+      </div>
+    </div>
+
+    <div class="flex flex-wrap gap-20" style="align-items:flex-start;">
+
+      <!-- LEFT: Checkout Steps -->
+      <div style="flex:2; min-width:300px;">
+
+        <!-- Step: Address -->
+        <div class="checkout-section">
+          <div class="cs-title">📍 Step 2 · Delivery Address</div>
+
+          <div class="address-card">
+            <div class="radio selected"></div>
+            <div>
+              <div class="addr-label">🏠 Home — Rajesh Kumar</div>
+              <div class="addr-text">
+                #42, 5th Main Road, Chickpet,<br>
+                Bengaluru · Karnataka 560053<br>
+                📞 +91 98765 43210
+              </div>
+            </div>
+          </div>
+
+          <div class="address-card">
+            <div class="radio"></div>
+            <div>
+              <div class="addr-label">🏢 Work — Rajesh Kumar</div>
+              <div class="addr-text">
+                #12, MG Road, Ashok Nagar,<br>
+                Bengaluru · Karnataka 560001<br>
+                📞 +91 98765 43210
+              </div>
+            </div>
+          </div>
+
+          <div class="add-addr-btn">+ Add New Address</div>
+        </div>
+
+        <!-- Step: Delivery Options -->
+        <div class="checkout-section">
+          <div class="cs-title">🚚 Step 3 · Delivery Options</div>
+
+          <div class="delivery-option">
+            <div class="radio selected"></div>
+            <div class="dopt-info">
+              <div class="dopt-title">Standard Delivery</div>
+              <div class="dopt-sub">3-5 business days</div>
+            </div>
+            <div class="dopt-price">Free</div>
+          </div>
+
+          <div class="delivery-option">
+            <div class="radio"></div>
+            <div class="dopt-info">
+              <div class="dopt-title">Express Delivery</div>
+              <div class="dopt-sub">Next day · within Chickpet zone</div>
+            </div>
+            <div class="dopt-price">₹20</div>
+          </div>
+        </div>
+
+        <!-- Step: Payment -->
+        <div class="checkout-section">
+          <div class="cs-title">💳 Step 4 · Payment Method</div>
+
+          <div class="payment-option">
+            <div class="radio selected"></div>
+            <span class="pay-name">💳 Credit / Debit Card (Razorpay)</span>
+            <span class="pay-desc">Visa · MC · RuPay</span>
+          </div>
+
+          <div class="payment-option">
+            <div class="radio"></div>
+            <span class="pay-name">📱 UPI</span>
+            <span class="pay-desc">GPay · PhonePe · Paytm</span>
+          </div>
+
+          <div class="payment-option">
+            <div class="radio"></div>
+            <span class="pay-name">💵 Cash on Delivery (COD)</span>
+            <span class="pay-desc">Online items only</span>
+          </div>
+
+          <div class="wf-text-sm mt-8" style="color:rgba(255,255,255,0.25);">
+            🔒 Secured by Razorpay · 128-bit SSL encryption
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: Summary Card -->
+      <div style="flex:1; min-width:220px;">
+        <div class="cart-summary-area">
+          <div class="wf-section-title">Final Summary</div>
+
+          <div class="summary-row">
+            <span>Mysore Silk Saree ×2</span>
+            <span>₹998</span>
+          </div>
+          <div class="summary-row">
+            <span>Handkerchief Set ×1</span>
+            <span>₹299</span>
+          </div>
+          <div class="summary-row">
+            <span>LED Desk Lamp ×1</span>
+            <span>₹1,299</span>
+          </div>
+          <div class="summary-row" style="border:none;">
+            <span>Subtotal</span>
+            <span>₹2,596</span>
+          </div>
+          <div class="summary-row">
+            <span>Delivery</span>
+            <span>₹30</span>
+          </div>
+          <div class="summary-row">
+            <span>Discount</span>
+            <span style="color:#66bb6a;">−₹30</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total</span>
+            <span class="val">₹2,596</span>
+          </div>
+
+          <div class="place-order-btn">Place Order · ₹2,596</div>
+
+          <div class="wf-text-sm mt-8" style="text-align:center; color:rgba(255,255,255,0.2);">
+            By placing this order you agree to the<br>
+            Terms of Service &amp; Return Policy
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wf-footer">
+      <div class="col">
+        <div class="fhead">Company</div>
+        <div class="flink">About Us</div>
+      </div>
+      <div class="col">
+        <div class="fhead">Support</div>
+        <div class="flink">Help Center</div>
+      </div>
+      <div class="col">
+        <div class="fhead">Connect</div>
+        <div class="flink">Instagram</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== INTERNAL NOTE ===== -->
+<div style="width:100%;max-width:1300px;text-align:center;padding:12px 0 4px;">
+  <span style="color:rgba(255,255,255,0.2);font-size:9px;letter-spacing:0.8px;display:block;max-width:600px;margin:0 auto;line-height:1.6;">
+    Note: Purchase modes (Buy Now / WhatsApp / Visit Store) are internal platform features — customers always see natural language options.
+  </span>
+</div>
+
+<!-- ===== FOOTER CREDIT ===== -->
+<div style="width:100%;max-width:1300px;text-align:center;padding:16px 0 8px;border-top:1px solid rgba(92,107,192,0.15);">
+  <span style="color:rgba(255,255,255,0.15);font-size:10px;letter-spacing:1px;">
+    PeteMart Wireframes · Agent 2 — Requirement Agent · Blueprint v1.0
+  </span>
+</div>
+
+</body>
+</html>

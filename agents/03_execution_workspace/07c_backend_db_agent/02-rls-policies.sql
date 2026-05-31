@@ -1,0 +1,208 @@
+-- =============================================================================
+-- PeteMart RLS Policies — Reference Document
+-- Agent 07c: Backend Database Engineer
+-- =============================================================================
+-- This file documents all Row Level Security policies applied to PeteMart.
+-- Policies are already applied in 01-complete-schema.sql. This file serves
+-- as a reference for auditing and modification.
+-- =============================================================================
+
+-- =============================================================================
+-- RLS PHILOSOPHY
+-- =============================================================================
+-- Principle of Least Privilege — each role sees only data it needs:
+--
+--   Role       | Profiles  | Stores     | Products   | Orders     | Order_Items | Delivery   | Reviews
+--   -----------|-----------|------------|------------|------------|-------------|------------|---------
+--   Customer   | Own only  | Active     | Active     | Own only   | Own only    | Own only   | All active
+--   Merchant   | Own only  | Own+Active | Own+Active | Involved   | Involved    | Involved   | All active
+--   Admin      | All       | All        | All        | All        | All         | All        | All
+--
+-- "Involved" = the merchant's store appears in the order/items.
+-- =============================================================================
+
+-- =============================================================================
+-- 1. PROFILES RLS
+-- =============================================================================
+-- Only the owning user or an admin may read a profile.
+-- Users may update their own profile but cannot change their role
+-- (prevents privilege escalation).
+-- Admin override is allowed for role changes.
+
+-- Policy: profiles_select_own_or_admin
+--   USING: auth.uid() = id OR current_user_role() = 'admin'
+--
+-- Policy: profiles_update_own
+--   USING: auth.uid() = id
+--   CHECK: auth.uid() = id AND (role unchanged OR admin)
+--
+-- Policy: profiles_admin_insert
+--   CHECK: current_user_role() = 'admin'
+--
+-- Policy: profiles_admin_delete
+--   USING: current_user_role() = 'admin'
+
+-- =============================================================================
+-- 2. STORES RLS
+-- =============================================================================
+-- Active stores are visible to everyone (read-only for customers).
+-- Store owners and admins have full CRUD.
+
+-- Policy: stores_select
+--   USING: is_active = TRUE OR owner_id = auth.uid() OR current_user_role() = 'admin'
+--
+-- Policy: stores_update
+--   USING: owner_id = auth.uid() OR current_user_role() = 'admin'
+--   CHECK: owner_id = auth.uid() OR current_user_role() = 'admin'
+--
+-- Policy: stores_admin_insert
+--   CHECK: current_user_role() = 'admin'
+--
+-- Policy: stores_admin_delete
+--   USING: current_user_role() = 'admin'
+
+-- =============================================================================
+-- 3. PRODUCTS RLS
+-- =============================================================================
+-- Products follow the store's visibility rules.
+-- Inactive products are hidden from customers but visible to owners and admins.
+
+-- Policy: products_select
+--   USING: is_active = TRUE
+--          OR store_id IN (stores WHERE owner_id = auth.uid())
+--          OR current_user_role() = 'admin'
+--
+-- Policy: products_insert
+--   CHECK: store_id IN (stores WHERE owner_id = auth.uid())
+--          OR current_user_role() = 'admin'
+--
+-- Policy: products_update
+--   USING: store_id IN (stores WHERE owner_id = auth.uid())
+--          OR current_user_role() = 'admin'
+--   CHECK: store_id IN (stores WHERE owner_id = auth.uid())
+--          OR current_user_role() = 'admin'
+--
+-- Policy: products_delete
+--   USING: store_id IN (stores WHERE owner_id = auth.uid())
+--          OR current_user_role() = 'admin'
+
+-- =============================================================================
+-- 4. ORDERS RLS
+-- =============================================================================
+-- Customers see only their own orders.
+-- Merchants see orders containing items from their stores.
+-- Admins see everything.
+
+-- Policy: orders_select
+--   USING: customer_id = auth.uid()
+--          OR id IN (order_items WHERE store owned by merchant)
+--          OR current_user_role() = 'admin'
+--
+-- Policy: orders_insert
+--   CHECK: customer_id = auth.uid() OR current_user_role() = 'admin'
+--
+-- Policy: orders_update
+--   USING: customer_id = auth.uid() OR current_user_role() = 'admin'
+--   CHECK: customer_id = auth.uid() OR current_user_role() = 'admin'
+--
+-- Policy: orders_admin_delete
+--   USING: current_user_role() = 'admin'
+
+-- =============================================================================
+-- 5. ORDER_ITEMS RLS
+-- =============================================================================
+-- Customers see items in their orders.
+-- Merchants see items from their stores.
+-- Admins see all.
+
+-- Policy: order_items_select
+--   USING: order_id IN (customer's orders)
+--          OR store_id IN (stores owned by merchant)
+--          OR current_user_role() = 'admin'
+--
+-- Policy: order_items_insert
+--   CHECK: order_id IN (customer's orders) OR current_user_role() = 'admin'
+--
+-- Policy: order_items_update
+--   USING: store_id IN (stores owned by merchant) OR current_user_role() = 'admin'
+--   CHECK: store_id IN (stores owned by merchant) OR current_user_role() = 'admin'
+
+-- =============================================================================
+-- 6. DELIVERY_TRACKING RLS
+-- =============================================================================
+-- Customers see tracking for their orders.
+-- Merchants see tracking for orders containing their items.
+-- Only admins can create/update tracking entries.
+
+-- Policy: delivery_tracking_select
+--   USING: order_id IN (customer's orders)
+--          OR order_id IN (orders with merchant's items)
+--          OR current_user_role() = 'admin'
+--
+-- Policy: delivery_tracking_admin_all (INSERT)
+--   CHECK: current_user_role() = 'admin'
+--
+-- Policy: delivery_tracking_admin_update
+--   USING: current_user_role() = 'admin'
+--   CHECK: current_user_role() = 'admin'
+
+-- =============================================================================
+-- 7. REVIEWS RLS
+-- =============================================================================
+-- Active reviews are public.
+-- Users can CRUD their own reviews.
+-- Admins can manage all.
+
+-- Policy: reviews_select
+--   USING: is_active = TRUE OR customer_id = auth.uid() OR current_user_role() = 'admin'
+--
+-- Policy: reviews_insert
+--   CHECK: customer_id = auth.uid() (only on their own orders)
+--
+-- Policy: reviews_update
+--   USING: customer_id = auth.uid() OR current_user_role() = 'admin'
+--   CHECK: customer_id = auth.uid() OR current_user_role() = 'admin'
+
+-- =============================================================================
+-- HELPER FUNCTION
+-- =============================================================================
+-- Function: public.current_user_role()
+-- Returns the role of the currently authenticated user.
+-- Used extensively in RLS policies to avoid subquery repetition.
+-- Defined as SECURITY DEFINER so it can always read the profiles table.
+--
+-- CREATE OR REPLACE FUNCTION public.current_user_role()
+-- RETURNS user_role AS $$
+-- DECLARE
+--     user_role_val user_role;
+-- BEGIN
+--     SELECT role INTO user_role_val FROM public.profiles WHERE id = auth.uid();
+--     RETURN user_role_val;
+-- END;
+-- $$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
+
+-- =============================================================================
+-- TESTING RLS POLICIES
+-- =============================================================================
+-- To verify a policy works:
+--
+-- 1. Authenticate as a specific role:
+--    SET LOCAL ROLE authenticated;
+--    SELECT set_config('request.jwt.claim.sub', '<user_uuid>', true);
+--
+-- 2. Test a query:
+--    SELECT * FROM orders;  -- Should only return rows the user can see
+--
+-- 3. Verify insert restriction:
+--    INSERT INTO orders (customer_id, total_amount)
+--    VALUES ('<other_user_uuid>', 1000);
+--    -- Should fail with "new row violates row-level security policy"
+--
+-- To disable RLS temporarily (admin only):
+--    ALTER TABLE orders DISABLE ROW LEVEL SECURITY;
+--    -- Re-enable:
+--    ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
+
+-- =============================================================================
+-- END OF RLS REFERENCE
+-- =============================================================================

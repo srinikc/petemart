@@ -1,0 +1,19 @@
+{
+  "$schema": "https://opencode.ai",
+  "provider": {
+    "google": {
+      "api_key": "AIzaSyBmU37ZDm2saXGWc_6AUgaGygLQeRDhdic"
+    }
+  },
+  "model": "google/gemini-2.5-pro",
+  "instructions": [
+    "00_state_ledger/STATE_MATRIX.json",
+    "00_state_ledger/CHANGE_REQUEST.json",
+    "00_state_ledger/AGENT_REGISTRY.json"
+  ],
+  "permission": {
+    "read": "allow",
+    "write": "allow",
+    "bash": "ask"
+  }
+}

@@ -141,3 +141,16 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Python / pycache
+__pycache__/
+*.pyc
+*.pyo
+
+# Project-specific
+conversations/
+regenerativemodel/
+scratch/
+agent_token_usage_log.csv
+opencode_conversation_*.md
+opencode_pricing_reference.*

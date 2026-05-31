@@ -1,0 +1,34 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: petemart
+  labels:
+    app: petemart
+    environment: multi
+---
+# ── Resource Quotas (Zero-Cost Aware) ──
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: petemart-quota
+  namespace: petemart
+spec:
+  hard:
+    requests.cpu: "4"
+    requests.memory: "8Gi"
+    limits.cpu: "8"
+    limits.memory: "16Gi"
+    persistentvolumeclaims: "5"
+    pods: "20"
+---
+# ── Network Policy: deny-all-by-default ──
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: petemart-default-deny
+  namespace: petemart
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress

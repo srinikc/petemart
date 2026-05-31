@@ -1,0 +1,3391 @@
+{
+  "schema_version": "1.0",
+  "document_title": "PeteMart - Enterprise Product Requirements Document (JSON Contract)",
+  "generated_at": "2026-05-30T12:00:00+00:00",
+  "generated_by": "02_requirement_agent",
+  "status": "awaiting_approval",
+  "source_documents": [
+    "01_front_office/01_ideation_agent/idea_proposal.md",
+    "01_front_office/01_ideation_agent/business_revenue_model.json",
+    "01_front_office/01_ideation_agent/store_inventory_datasets.json",
+    "01_front_office/01_ideation_agent/estimated_merchants.json"
+  ],
+  "project_metadata": {
+    "project_name": "PeteMart",
+    "target_geography": "Old Bangalore Pete Markets (21 Mapped Areas)",
+    "total_merchant_target": 5000,
+    "total_requirement_ids": 103,
+    "requirement_categories": ["ui_ux", "api", "backend_data", "commerce_monetization", "infrastructure_security", "performance_scale", "maintenance_lifecycle", "disaster_recovery", "funnels_onboarding", "data_licensing_compliance"],
+    "category_summary": [
+      {"section": "5.1", "category": "ui_ux", "count": 24, "p0": 11, "p1": 9, "p2": 3, "p3": 1},
+      {"section": "5.2", "category": "api", "count": 13, "p0": 8, "p1": 5, "p2": 0, "p3": 0},
+      {"section": "5.3", "category": "backend_data", "count": 26, "p0": 10, "p1": 11, "p2": 4, "p3": 1},
+      {"section": "5.4", "category": "commerce_monetization", "count": 10, "p0": 2, "p1": 6, "p2": 2, "p3": 0},
+      {"section": "5.5", "category": "infrastructure_security", "count": 11, "p0": 7, "p1": 3, "p2": 1, "p3": 0},
+      {"section": "5.6", "category": "performance_scale", "count": 3, "p0": 2, "p1": 1, "p2": 0, "p3": 0},
+      {"section": "5.7", "category": "maintenance_lifecycle", "count": 5, "p0": 2, "p1": 3, "p2": 0, "p3": 0},
+      {"section": "5.8", "category": "disaster_recovery", "count": 4, "p0": 2, "p1": 1, "p2": 1, "p3": 0},
+      {"section": "5.9", "category": "funnels_onboarding", "count": 4, "p0": 0, "p1": 3, "p2": 1, "p3": 0},
+      {"section": "5.10", "category": "data_licensing_compliance", "count": 3, "p0": 1, "p1": 0, "p2": 1, "p3": 1}
+    ],
+    "persona_count": 5,
+    "workflow_count": 13,
+    "use_case_count": 58
+  },
+  "personas": [
+    {
+      "persona_id": "PERS-CUST-001",
+      "name": "Priya Sharma",
+      "role": "Hyperlocal Customer / Buyer",
+      "age": 34,
+      "occupation": "Homemaker & Part-Time Boutique Owner",
+      "location": "Basavanagudi, Bangalore",
+      "tech_literacy": "Moderate",
+      "pain_points": [
+        "Traffic congestion in Pete areas prevents frequent visits",
+        "Cannot check product availability before visiting stores",
+        "Needs to compare prices across multiple merchants",
+        "Wants delivery option for routine purchases"
+      ],
+      "needs": [
+        "Browse authentic products from specific Pete merchants",
+        "Compare prices and product specs online",
+        "Order online with home delivery (Mode A)",
+        "Negotiate bulk prices via WhatsApp (Mode B)",
+        "Get store directions for high-value items (Mode C)"
+      ],
+      "preferred_channels": ["android_mobile", "web"],
+      "persona_type": "customer"
+    },
+    {
+      "persona_id": "PERS-MER-001",
+      "name": "Ramesh Gupta",
+      "role": "Traditional Pete Merchant / Seller",
+      "age": 52,
+      "occupation": "Owner of silk saree showroom in Chickpet (3rd generation)",
+      "location": "Chickpet Main Road, Bangalore",
+      "tech_literacy": "Low-Moderate",
+      "pain_points": [
+        "Limited digital presence despite 60+ year old business",
+        "Fear of hidden e-commerce commissions eating margins",
+        "Wants to drive physical footfall for high-value items",
+        "Needs simple tools, not complex ERP systems"
+      ],
+      "needs": [
+        "Simple digital storefront with zero-risk discovery",
+        "WhatsApp-based negotiation for high-value items",
+        "Google Maps directions for store visits",
+        "Affordable subscription with no hidden fees",
+        "Assisted catalog upload service"
+      ],
+      "preferred_channels": ["android_mobile", "merchant_dashboard"],
+      "persona_type": "merchant"
+    },
+    {
+      "persona_id": "PERS-DLV-001",
+      "name": "Vinay Kumar",
+      "role": "Delivery / Courier Partner",
+      "age": 28,
+      "occupation": "Independent Delivery Partner",
+      "location": "Based near Chickpet Micro-Hub",
+      "tech_literacy": "Moderate",
+      "pain_points": [
+        "Navigating narrow, crowded Pete lanes is difficult",
+        "Multi-store pickups are time-consuming without route optimization",
+        "Unclear delivery instructions from merchants"
+      ],
+      "needs": [
+        "Optimized multi-stop pickup route in courier app",
+        "Clear delivery zone assignment and instructions",
+        "Real-time order status tracking",
+        "Reliable weekly payout structure"
+      ],
+      "preferred_channels": ["courier_mobile_app"],
+      "persona_type": "delivery_partner"
+    },
+    {
+      "persona_id": "PERS-ADM-001",
+      "name": "Ananya Rao",
+      "role": "Platform Admin / Operator",
+      "age": 31,
+      "occupation": "Platform Operations Manager at PeteMart",
+      "location": "Bangalore (Remote)",
+      "tech_literacy": "High",
+      "pain_points": [
+        "Manual merchant verification is slow and error-prone",
+        "Revenue streams across modes are difficult to track",
+        "No unified dashboard for all platform metrics"
+      ],
+      "needs": [
+        "Real-time merchant, order, and revenue dashboards",
+        "Subscription lifecycle management automation",
+        "Automated payout reconciliation system",
+        "Content moderation tools for merchant listings"
+      ],
+      "preferred_channels": ["admin_web_dashboard"],
+      "persona_type": "admin"
+    },
+    {
+      "persona_id": "PERS-B2B-001",
+      "name": "Deepa Patel",
+      "role": "Bulk B2B Buyer / Wholesale Reseller",
+      "age": 41,
+      "occupation": "Small retail shop owner (provisions store in Jayanagar)",
+      "location": "Jayanagar 4th Block, Bangalore",
+      "tech_literacy": "Moderate",
+      "pain_points": [
+        "No digital catalog of wholesale merchant inventory",
+        "Phone tag for price negotiation is inefficient",
+        "Delivery logistics for bulk orders are unclear"
+      ],
+      "needs": [
+        "View wholesale price lists and MOQ information",
+        "Negotiate bulk pricing via WhatsApp",
+        "Order bulk quantities with delivery to shop",
+        "Repeat order history for regular supplies"
+      ],
+      "preferred_channels": ["android_mobile", "web", "whatsapp"],
+      "persona_type": "b2b_buyer"
+    }
+  ],
+  "workflows": {
+    "browse_products": {
+      "workflow_id": "WF-BROWSE-001",
+      "title": "Browse Products & Discover Merchants",
+      "channels": ["web", "mobile_ios", "mobile_android"],
+      "primary_actor": "Customer",
+      "steps": [
+        {
+          "step": 1.1,
+          "actor": "Customer",
+          "action": "Opens PeteMart app/website",
+          "system_response": "Loads landing page with Pete Tapestry carousel, featured markets, search bar"
+        },
+        {
+          "step": 1.2,
+          "actor": "Customer",
+          "action": "Selects a Pete market or searches for product",
+          "system_response": "Displays filtered list of merchants in that market with specialization badges"
+        },
+        {
+          "step": 1.3,
+          "actor": "Customer",
+          "action": "Browses product catalog of a selected merchant",
+          "system_response": "Shows product cards with name, price, images, Mode badges (A/B/C), MOQ info"
+        },
+        {
+          "step": 1.4,
+          "actor": "Customer",
+          "action": "Filters by interaction mode or category",
+          "system_response": "Re-renders product grid showing only matching mode-enabled products"
+        },
+        {
+          "step": 1.5,
+          "actor": "Customer",
+          "action": "Views product details",
+          "system_response": "Shows full product description, available modes, merchant info, rating, delivery eligibility"
+        }
+      ],
+      "related_requirement_ids": ["REQ-UI-001", "REQ-UI-002", "REQ-UI-008", "REQ-API-001", "REQ-BE-009"]
+    },
+    "order_mode_a": {
+      "workflow_id": "WF-ORDER-A-001",
+      "title": "Place Order - Mode A (Direct Purchase)",
+      "channels": ["web", "mobile_ios", "mobile_android"],
+      "primary_actor": "Customer",
+      "steps": [
+        {
+          "step": 2.1,
+          "actor": "Customer",
+          "action": "Clicks 'Add to Cart' on a Mode A product",
+          "system_response": "Item added to cart; cart icon badge updates; option to continue shopping or view cart"
+        },
+        {
+          "step": 2.2,
+          "actor": "Customer",
+          "action": "Adds products from the same or different Pete merchants",
+          "system_response": "Cart shows itemized list with merchant names, prices, delivery fee estimates per merchant"
+        },
+        {
+          "step": 2.3,
+          "actor": "Customer",
+          "action": "Clicks 'Proceed to Checkout'",
+          "system_response": "Validates cart items, calculates delivery fee using zone-based formula, applies consolidation surcharge"
+        },
+        {
+          "step": 2.4,
+          "actor": "Customer",
+          "action": "Enters/confirms delivery address",
+          "system_response": "Verifies address within delivery zone, shows delivery slot options"
+        },
+        {
+          "step": 2.5,
+          "actor": "Customer",
+          "action": "Selects B2C or B2B mode based on quantity",
+          "system_response": "Adjusts pricing to retail (4% commission) or wholesale (1.5% commission, capped at Rs 500)"
+        },
+        {
+          "step": 2.6,
+          "actor": "Customer",
+          "action": "Clicks 'Place Order' - Redirected to Razorpay",
+          "system_response": "Secure payment gateway processes UPI/Card/NetBanking; 2% PG fee applied"
+        },
+        {
+          "step": 2.7,
+          "actor": "Customer",
+          "action": "Payment successful",
+          "system_response": "Order confirmed; notification sent to customer + merchant; order visible in My Orders"
+        },
+        {
+          "step": 2.8,
+          "actor": "System",
+          "action": "Routes order to merchant dashboard + courier dispatch",
+          "system_response": "Merchant sees order; courier assigned; pickup scheduled within SLA"
+        }
+      ],
+      "related_requirement_ids": ["REQ-UI-003", "REQ-UI-006", "REQ-API-002", "REQ-API-003", "REQ-BE-002", "REQ-BE-003"]
+    },
+    "order_mode_b": {
+      "workflow_id": "WF-ORDER-B-001",
+      "title": "Place Order - Mode B (WhatsApp Enquiry)",
+      "channels": ["web", "mobile_ios", "mobile_android", "whatsapp"],
+      "primary_actor": "Customer",
+      "steps": [
+        {
+          "step": 3.1,
+          "actor": "Customer",
+          "action": "Views a Mode B product and clicks 'Enquire on WhatsApp'",
+          "system_response": "Generates a deep-link URL with pre-filled product info (name, SKU, asking price, merchant name)"
+        },
+        {
+          "step": 3.2,
+          "actor": "Customer",
+          "action": "Tapped link opens WhatsApp app",
+          "system_response": "WhatsApp opens with chat directed to merchant's registered WhatsApp Business number; pre-populated message template"
+        },
+        {
+          "step": 3.3,
+          "actor": "Customer",
+          "action": "Negotiates price/specs with merchant",
+          "system_response": "(Off-platform) Merchant and customer negotiate"
+        },
+        {
+          "step": 3.4,
+          "actor": "Merchant",
+          "action": "Agreement reached; instructs customer to proceed or arranges delivery",
+          "system_response": "Merchant may create a manual order in dashboard or request customer to use Mode A"
+        },
+        {
+          "step": 3.5,
+          "actor": "System",
+          "action": "Tracks WhatsApp click-through rate",
+          "system_response": "Logs the enquiry event for merchant analytics (not conversation content)"
+        }
+      ],
+      "related_requirement_ids": ["REQ-UI-004", "REQ-API-004", "REQ-BE-006"]
+    },
+    "order_mode_c": {
+      "workflow_id": "WF-ORDER-C-001",
+      "title": "Place Order - Mode C (Visit Store)",
+      "channels": ["web", "mobile_ios", "mobile_android"],
+      "primary_actor": "Customer",
+      "steps": [
+        {
+          "step": 4.1,
+          "actor": "Customer",
+          "action": "Views a Mode C product and clicks 'Visit Store' or 'Get Directions'",
+          "system_response": "Displays store facade gallery, virtual window display, and prominent 'Open in Google Maps' button"
+        },
+        {
+          "step": 4.2,
+          "actor": "Customer",
+          "action": "Clicks 'Open in Google Maps'",
+          "system_response": "Deep link opens Google Maps app with merchant's exact geolocation pinned; travel time shown"
+        },
+        {
+          "step": 4.3,
+          "actor": "Customer",
+          "action": "Visits physical store, inspects product, completes purchase offline",
+          "system_response": "(Off-platform) Customer buys directly at the store"
+        },
+        {
+          "step": 4.4,
+          "actor": "Customer",
+          "action": "Leaves a rating/review on PeteMart",
+          "system_response": "Push notification/email prompts customer to rate their experience"
+        },
+        {
+          "step": 4.5,
+          "actor": "System",
+          "action": "Logs footfall conversion",
+          "system_response": "Records the Mode C engagement as a visit lead for merchant analytics"
+        }
+      ],
+      "related_requirement_ids": ["REQ-UI-005", "REQ-API-005"]
+    },
+    "checkout_consolidation": {
+      "workflow_id": "WF-CHECKOUT-001",
+      "title": "Checkout & Payment with Multi-Store Consolidation",
+      "channels": ["web", "mobile_ios", "mobile_android"],
+      "primary_actor": "Customer",
+      "steps": [
+        {
+          "step": 5.1,
+          "actor": "Customer",
+          "action": "Views cart with items from multiple Pete merchants",
+          "system_response": "Calculates: Delivery Fee = Max(Zone Base Rate among shops) + (Rs 25 x (N-1)) + Weight Surcharges"
+        },
+        {
+          "step": 5.2,
+          "actor": "Customer",
+          "action": "Reviews consolidated order summary with delivery fee breakdown",
+          "system_response": "Shows merchant-wise items, sub-totals, delivery fee split, total payable"
+        },
+        {
+          "step": 5.3,
+          "actor": "Customer",
+          "action": "Applies coupon/promo code",
+          "system_response": "Validates and applies discount; recalculates total"
+        },
+        {
+          "step": 5.4,
+          "actor": "Customer",
+          "action": "Selects payment method (UPI/Card/NetBanking/Wallet)",
+          "system_response": "Initializes Razorpay payment widget with total amount + 2% PG fee"
+        },
+        {
+          "step": 5.5,
+          "actor": "Customer",
+          "action": "Completes payment",
+          "system_response": "Confirms payment, triggers order to all relevant merchants, initiates courier dispatch"
+        },
+        {
+          "step": 5.6,
+          "actor": "Courier",
+          "action": "Receives multi-stop pickup order",
+          "system_response": "Courier app shows optimized route: Merchant A - Merchant B - Micro-Hub - Customer"
+        },
+        {
+          "step": 5.7,
+          "actor": "Courier",
+          "action": "Picks up items sequentially, delivers to Micro-Hub for consolidation",
+          "system_response": "Micro-Hub consolidates, single bag dispatched for final delivery"
+        }
+      ],
+      "related_requirement_ids": ["REQ-UI-006", "REQ-API-002", "REQ-API-003", "REQ-BE-003", "REQ-BE-007", "REQ-COM-004"]
+    },
+    "order_tracking": {
+      "workflow_id": "WF-TRACK-001",
+      "title": "Order Tracking & Delivery Status",
+      "channels": ["web", "mobile_ios", "mobile_android"],
+      "primary_actor": "Customer",
+      "steps": [
+        {
+          "step": 6.1,
+          "actor": "Customer",
+          "action": "Opens 'My Orders' page",
+          "system_response": "Displays list of all past and active orders with status badges (Confirmed, Picked Up, In Transit, Delivered)"
+        },
+        {
+          "step": 6.2,
+          "actor": "Customer",
+          "action": "Selects active order",
+          "system_response": "Shows detailed order status: payment confirmed, merchant preparing, courier assigned, pickup completed, at Micro-Hub, out for delivery"
+        },
+        {
+          "step": 6.3,
+          "actor": "Customer",
+          "action": "Views live tracking (courier GPS)",
+          "system_response": "Real-time courier location marker on map with ETA updates (mobile only)"
+        },
+        {
+          "step": 6.4,
+          "actor": "Courier",
+          "action": "Updates order status via Courier App",
+          "system_response": "Status changes propagate to customer and merchant in real-time; push notifications sent"
+        },
+        {
+          "step": 6.5,
+          "actor": "Customer",
+          "action": "Receives delivery",
+          "system_response": "Delivered status; prompt to rate experience and optionally tip courier"
+        }
+      ],
+      "related_requirement_ids": ["REQ-UI-007", "REQ-API-007", "REQ-BE-002"]
+    },
+    "merchant_onboarding": {
+      "workflow_id": "WF-ONBOARD-001",
+      "title": "Merchant Onboarding with Mode Selection",
+      "channels": ["web", "mobile_android"],
+      "primary_actor": "Merchant",
+      "steps": [
+        {
+          "step": 7.1,
+          "actor": "Merchant",
+          "action": "Visits petemart.com/sell or downloads Merchant App",
+          "system_response": "Onboarding wizard starts: phone number verification via OTP"
+        },
+        {
+          "step": 7.2,
+          "actor": "Merchant",
+          "action": "Fills business details (store name, address, category, market area)",
+          "system_response": "Validates address, assigns geo-coordinates via Google Maps API"
+        },
+        {
+          "step": 7.3,
+          "actor": "Merchant",
+          "action": "Selects subscription plan (Starter/Growth/Premium)",
+          "system_response": "Applies pricing (Rs 499/Rs 999/Rs 2,499 per month or annual equivalent)"
+        },
+        {
+          "step": 7.4,
+          "actor": "Merchant",
+          "action": "Chooses interaction modes (Mode A/B/C - select at least one)",
+          "system_response": "Validates prerequisites: Mode A requires Razorpay + catalog; Mode B requires WhatsApp Business; Mode C requires Maps pin + address"
+        },
+        {
+          "step": 7.5,
+          "actor": "Merchant",
+          "action": "Uploads initial product catalog (manual or done-for-you service at Rs 10/product)",
+          "system_response": "Processes images, assigns default mode badges, sets inventory to draft"
+        },
+        {
+          "step": 7.6,
+          "actor": "Admin",
+          "action": "Reviews and approves merchant store",
+          "system_response": "Store goes live; merchant receives QR code, store URL (petemart.in/shop-name), and welcome kit"
+        }
+      ],
+      "related_requirement_ids": ["REQ-UI-011", "REQ-API-005", "REQ-API-008", "REQ-BE-004", "REQ-COM-001"]
+    }
+  },
+  "use_cases": {
+    "web_application": [
+      {
+        "uc_id": "UC-WEB-001",
+        "name": "Landing Page Discovery",
+        "description": "Browse Pete Tapestry carousel, featured markets, top merchants",
+        "primary_actor": "Customer",
+        "related_requirement_ids": ["REQ-UI-001"]
+      },
+      {
+        "uc_id": "UC-WEB-002",
+        "name": "Product Search & Filter",
+        "description": "Full-text search with faceted filters (market, category, mode, price range, rating)",
+        "primary_actor": "Customer",
+        "related_requirement_ids": ["REQ-UI-002", "REQ-BE-009"]
+      },
+      {
+        "uc_id": "UC-WEB-003",
+        "name": "Mode A Direct Checkout",
+        "description": "End-to-end cart, multi-store consolidation, Razorpay payment, order confirmation",
+        "primary_actor": "Customer",
+        "related_requirement_ids": ["REQ-UI-003", "REQ-UI-006", "REQ-API-003"]
+      },
+      {
+        "uc_id": "UC-WEB-004",
+        "name": "Mode B WhatsApp Enquiry",
+        "description": "Click-to-WhatsApp deep-link generation, pre-filled message template",
+        "primary_actor": "Customer",
+        "related_requirement_ids": ["REQ-UI-004", "REQ-API-004"]
+      },
+      {
+        "uc_id": "UC-WEB-005",
+        "name": "Mode C Store Visit",
+        "description": "Store facade gallery, virtual window, Google Maps directions deep-link",
+        "primary_actor": "Customer",
+        "related_requirement_ids": ["REQ-UI-005", "REQ-API-005"]
+      },
+      {
+        "uc_id": "UC-WEB-006",
+        "name": "Merchant Microsite",
+        "description": "Public-facing branded store page with full catalog, QR code, contact info",
+        "primary_actor": "Customer, Merchant",
+        "related_requirement_ids": ["REQ-UI-008"]
+      },
+      {
+        "uc_id": "UC-WEB-007",
+        "name": "Order History & Tracking",
+        "description": "View past orders, live tracking (web map), repeat order",
+        "primary_actor": "Customer",
+        "related_requirement_ids": ["REQ-UI-007", "REQ-API-007"]
+      },
+      {
+        "uc_id": "UC-WEB-008",
+        "name": "Merchant Dashboard",
+        "description": "Catalog management, order management, analytics, subscription settings",
+        "primary_actor": "Merchant",
+        "related_requirement_ids": ["REQ-UI-011", "REQ-BE-001"]
+      },
+      {
+        "uc_id": "UC-WEB-009",
+        "name": "Admin Console",
+        "description": "Merchant approvals, revenue reports, user management, dispute resolution",
+        "primary_actor": "Admin",
+        "related_requirement_ids": ["REQ-UI-012", "REQ-BE-004"]
+      }
+    ],
+    "mobile_application": [
+      {
+        "uc_id": "UC-MOB-001",
+        "name": "Mobile Landing & Browse",
+        "description": "Optimized mobile-first layout with Pete Tapestry, market grid",
+        "primary_actor": "Customer",
+        "related_requirement_ids": ["REQ-UI-009", "REQ-UI-010"]
+      },
+      {
+        "uc_id": "UC-MOB-002",
+        "name": "Scan QR Code Store Access",
+        "description": "Camera-based QR scanner opens merchant microsite instantly",
+        "primary_actor": "Customer",
+        "related_requirement_ids": ["REQ-UI-009", "REQ-UI-010"]
+      },
+      {
+        "uc_id": "UC-MOB-003",
+        "name": "Mobile Checkout (Mode A)",
+        "description": "Simplified cart, UPI/BHIM integration, biometric payment confirmation",
+        "primary_actor": "Customer",
+        "related_requirement_ids": ["REQ-UI-009", "REQ-API-003"]
+      },
+      {
+        "uc_id": "UC-MOB-004",
+        "name": "WhatsApp Deep Link (Mode B)",
+        "description": "One-tap WhatsApp redirect with product context",
+        "primary_actor": "Customer",
+        "related_requirement_ids": ["REQ-UI-009", "REQ-API-004"]
+      },
+      {
+        "uc_id": "UC-MOB-005",
+        "name": "GPS Navigation (Mode C)",
+        "description": "Navigate button opens Google Maps with turn-by-turn directions",
+        "primary_actor": "Customer",
+        "related_requirement_ids": ["REQ-UI-010", "REQ-API-005"]
+      },
+      {
+        "uc_id": "UC-MOB-006",
+        "name": "Live Delivery Tracking",
+        "description": "Real-time courier GPS tracking with push notification updates",
+        "primary_actor": "Customer",
+        "related_requirement_ids": ["REQ-UI-007", "REQ-API-007"]
+      },
+      {
+        "uc_id": "UC-MOB-007",
+        "name": "Push Notifications",
+        "description": "Order confirmed, out for delivery, delivered, feedback prompts",
+        "primary_actor": "Customer",
+        "related_requirement_ids": ["REQ-BE-006", "REQ-API-009"]
+      },
+      {
+        "uc_id": "UC-MOB-008",
+        "name": "Courier Partner App",
+        "description": "Multi-stop pickup route, status updates, earnings summary",
+        "primary_actor": "Delivery Partner",
+        "related_requirement_ids": ["REQ-UI-009", "REQ-API-007"]
+      },
+      {
+        "uc_id": "UC-MOB-009",
+        "name": "Merchant Mobile Dashboard",
+        "description": "Quick order alerts, inventory updates, WhatsApp notification mirroring",
+        "primary_actor": "Merchant",
+        "related_requirement_ids": ["REQ-UI-011", "REQ-UI-010"]
+      }
+    ]
+  },
+  "requirements": {
+    "ui_ux": [
+      {
+        "requirement_id": "REQ-UI-001",
+        "title": "Landing Page with Pete Tapestry",
+        "description": "Interactive carousel/tabbed interface showcasing 21 Pete markets with history, specialization, and featured merchants. Includes SEO meta-tags.",
+        "priority": "P0-Critical",
+        "category": "ui_ux",
+        "personas": ["PERS-CUST-001", "PERS-B2B-001"],
+        "workflow_refs": ["WF-BROWSE-001"],
+        "dependencies": [],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Cloud hosting and CDN bandwidth for landing page assets",
+            "monthly_low_inr": 300,
+            "monthly_high_inr": 800
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Frontend development and initial deployment",
+            "one_time_low_inr": 3000,
+            "one_time_high_inr": 5000
+          }
+        },
+        "acceptance_criteria": [
+          "All 21 Pete markets displayed with correct historical summaries",
+          "Interactive carousel works on mobile and desktop",
+          "SEO meta-tags render correctly for each Pete market page",
+          "Page load time under 2 seconds on 4G"
+        ]
+      },
+      {
+        "requirement_id": "REQ-UI-002",
+        "title": "Product Catalog & Search",
+        "description": "Full-text search across 392+ merchants with facet filters (market, category, mode, price, rating). Autocomplete and spell-correction.",
+        "priority": "P0-Critical",
+        "category": "ui_ux",
+        "personas": ["PERS-CUST-001", "PERS-B2B-001"],
+        "workflow_refs": ["WF-BROWSE-001"],
+        "dependencies": ["REQ-BE-009"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Search index hosting and query processing",
+            "monthly_low_inr": 500,
+            "monthly_high_inr": 1000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Search UI development and integration",
+            "one_time_low_inr": 4000,
+            "one_time_high_inr": 7000
+          }
+        },
+        "acceptance_criteria": [
+          "Full-text search returns results within 500ms",
+          "Facet filters narrow results correctly",
+          "Autocomplete suggests merchant and product names",
+          "Spell-correction handles common typos"
+        ]
+      },
+      {
+        "requirement_id": "REQ-UI-003",
+        "title": "Mode A Product Card & In-App Cart",
+        "description": "Product cards with 'Add to Cart' CTA; cart supports multi-merchant items; quantity toggles for B2C/B2B pricing.",
+        "priority": "P0-Critical",
+        "category": "ui_ux",
+        "personas": ["PERS-CUST-001"],
+        "workflow_refs": ["WF-ORDER-A-001"],
+        "dependencies": ["REQ-API-001", "REQ-API-002"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Cart state management and API calls",
+            "monthly_low_inr": 200,
+            "monthly_high_inr": 500
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Cart UI component development",
+            "one_time_low_inr": 5000,
+            "one_time_high_inr": 8000
+          }
+        },
+        "acceptance_criteria": [
+          "Add to Cart updates badge count in real-time",
+          "Cart supports items from up to 5 different merchants",
+          "B2C/B2B quantity toggle adjusts per-unit pricing",
+          "Cart persists across sessions for logged-in users"
+        ]
+      },
+      {
+        "requirement_id": "REQ-UI-004",
+        "title": "Mode B WhatsApp Enquiry Button",
+        "description": "'Enquire on WhatsApp' CTA on product cards; generates deep-link with pre-filled product + merchant info.",
+        "priority": "P0-Critical",
+        "category": "ui_ux",
+        "personas": ["PERS-CUST-001", "PERS-B2B-001"],
+        "workflow_refs": ["WF-ORDER-B-001"],
+        "dependencies": ["REQ-API-004"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-COMMS-02",
+            "description": "WhatsApp Business API messaging volume",
+            "monthly_low_inr": 1000,
+            "monthly_high_inr": 2000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "WhatsApp deep-link UI and tracking implementation",
+            "one_time_low_inr": 2000,
+            "one_time_high_inr": 3000
+          }
+        },
+        "acceptance_criteria": [
+          "Deep-link opens WhatsApp with pre-populated message",
+          "Message contains product name, SKU, and merchant name",
+          "Click-through event is logged for merchant analytics",
+          "Works on both web and mobile browsers"
+        ]
+      },
+      {
+        "requirement_id": "REQ-UI-005",
+        "title": "Mode C Visit Store Interface",
+        "description": "Store facade gallery, virtual window display, 'Get Directions' button with Google Maps deep-link.",
+        "priority": "P0-Critical",
+        "category": "ui_ux",
+        "personas": ["PERS-CUST-001"],
+        "workflow_refs": ["WF-ORDER-C-001"],
+        "dependencies": ["REQ-API-005"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-MAPS-03",
+            "description": "Google Maps embeds and geocoding API calls",
+            "monthly_low_inr": 1500,
+            "monthly_high_inr": 3000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Store facade gallery and Maps integration UI",
+            "one_time_low_inr": 3000,
+            "one_time_high_inr": 5000
+          }
+        },
+        "acceptance_criteria": [
+          "Store facade gallery renders high-res images",
+          "Virtual window display cycles through latest products",
+          "Get Directions opens Google Maps with correct pin",
+          "Store operating hours displayed prominently"
+        ]
+      },
+      {
+        "requirement_id": "REQ-UI-006",
+        "title": "Multi-Store Checkout Flow",
+        "description": "Unified checkout showing merchant-wise items; delivery fee consolidation formula; Razorpay payment widget.",
+        "priority": "P0-Critical",
+        "category": "ui_ux",
+        "personas": ["PERS-CUST-001"],
+        "workflow_refs": ["WF-CHECKOUT-001"],
+        "dependencies": ["REQ-API-002", "REQ-API-003", "REQ-BE-003"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Checkout flow processing and payment integration",
+            "monthly_low_inr": 500,
+            "monthly_high_inr": 1000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Multi-store checkout UI development",
+            "one_time_low_inr": 6000,
+            "one_time_high_inr": 10000
+          }
+        },
+        "acceptance_criteria": [
+          "Delivery fee formula correctly applied and displayed",
+          "Razorpay payment widget loads within 3 seconds",
+          "Payment success/failure handled gracefully",
+          "Order confirmation shows all merchant-wise items"
+        ]
+      },
+      {
+        "requirement_id": "REQ-UI-007",
+        "title": "Order Tracking Dashboard",
+        "description": "My Orders page with status timeline, live courier GPS tracking (mobile), delivery ETA.",
+        "priority": "P1-High",
+        "category": "ui_ux",
+        "personas": ["PERS-CUST-001", "PERS-DLV-001"],
+        "workflow_refs": ["WF-TRACK-001"],
+        "dependencies": ["REQ-API-007", "REQ-BE-002"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Real-time tracking data processing and WebSocket connections",
+            "monthly_low_inr": 400,
+            "monthly_high_inr": 800
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Order tracking UI with live map integration",
+            "one_time_low_inr": 5000,
+            "one_time_high_inr": 8000
+          }
+        },
+        "acceptance_criteria": [
+          "Order status timeline updates in real-time",
+          "Live GPS tracking works on mobile apps",
+          "Push notification sent at each status change",
+          "Order history searchable by date, merchant, status"
+        ]
+      },
+      {
+        "requirement_id": "REQ-UI-008",
+        "title": "Merchant Store Microsite",
+        "description": "Public branded page at petemart.in/shop-name with full catalog, store info, QR code download, WhatsApp CTA, directions.",
+        "priority": "P0-Critical",
+        "category": "ui_ux",
+        "personas": ["PERS-CUST-001", "PERS-MER-001"],
+        "workflow_refs": ["WF-BROWSE-001"],
+        "dependencies": ["REQ-API-001", "REQ-API-008"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Microsite hosting and CDN delivery",
+            "monthly_low_inr": 300,
+            "monthly_high_inr": 600
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Microsite template and dynamic routing development",
+            "one_time_low_inr": 4000,
+            "one_time_high_inr": 7000
+          }
+        },
+        "acceptance_criteria": [
+          "URL pattern petemart.in/shop-name resolves correctly",
+          "QR code downloads as print-ready PNG",
+          "Full product catalog renders with mode badges",
+          "Google indexation meta-tags present on every page"
+        ]
+      },
+      {
+        "requirement_id": "REQ-UI-009",
+        "title": "Mobile App (iOS) - Core Screens",
+        "description": "Native iOS app: landing, browse, cart, checkout, order tracking, QR scanner, notifications.",
+        "priority": "P1-High",
+        "category": "ui_ux",
+        "personas": ["PERS-CUST-001", "PERS-DLV-001"],
+        "workflow_refs": ["WF-BROWSE-001", "WF-ORDER-A-001", "WF-CHECKOUT-001", "WF-TRACK-001"],
+        "dependencies": ["REQ-API-006", "REQ-API-009"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Apple Developer Program annual fee and push notification service",
+            "monthly_low_inr": 700,
+            "monthly_high_inr": 1000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-02",
+            "description": "Apple Developer Program enrollment ($99/yr)",
+            "one_time_low_inr": 8300,
+            "one_time_high_inr": 8300
+          }
+        },
+        "acceptance_criteria": [
+          "App passes Apple App Store review guidelines",
+          "All core workflows functional on iOS 16+",
+          "Push notifications delivered reliably",
+          "QR scanner opens store microsite in < 2 seconds"
+        ]
+      },
+      {
+        "requirement_id": "REQ-UI-010",
+        "title": "Mobile App (Android) - Core Screens",
+        "description": "Native Android app (same feature parity as iOS): browse, cart, checkout, GPS tracking, QR scanner.",
+        "priority": "P1-High",
+        "category": "ui_ux",
+        "personas": ["PERS-CUST-001", "PERS-DLV-001", "PERS-MER-001"],
+        "workflow_refs": ["WF-BROWSE-001", "WF-ORDER-A-001", "WF-CHECKOUT-001", "WF-TRACK-001"],
+        "dependencies": ["REQ-API-006", "REQ-API-009"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Google Play Console and Firebase Cloud Messaging",
+            "monthly_low_inr": 200,
+            "monthly_high_inr": 500
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-02",
+            "description": "Google Play Developer registration ($25 one-time)",
+            "one_time_low_inr": 2100,
+            "one_time_high_inr": 2100
+          }
+        },
+        "acceptance_criteria": [
+          "App passes Google Play Store review",
+          "All core workflows functional on Android 10+ (API 29+)",
+          "Live GPS tracking works with background location permission",
+          "Feature parity maintained with iOS version"
+        ]
+      },
+      {
+        "requirement_id": "REQ-UI-011",
+        "title": "Merchant Onboarding Dashboard",
+        "description": "Self-service onboarding wizard: OTP verification, business details, plan selection, mode selection, catalog upload.",
+        "priority": "P0-Critical",
+        "category": "ui_ux",
+        "personas": ["PERS-MER-001"],
+        "workflow_refs": ["WF-ONBOARD-001"],
+        "dependencies": ["REQ-API-006", "REQ-API-008", "REQ-COM-001"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-STAFF-06",
+            "description": "Field executive assistance for in-person merchant onboarding",
+            "monthly_low_inr": 20000,
+            "monthly_high_inr": 25000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-05",
+            "description": "First 50 stores concierge onboarding visits",
+            "one_time_low_inr": 25000,
+            "one_time_high_inr": 50000
+          }
+        },
+        "acceptance_criteria": [
+          "OTP verification completes in under 10 seconds",
+          "Plan selection shows pricing and feature comparison",
+          "Mode selection validates prerequisites before activation",
+          "Catalog upload supports bulk CSV and manual entry"
+        ]
+      },
+      {
+        "requirement_id": "REQ-UI-012",
+        "title": "Admin/Operator Dashboard",
+        "description": "Merchant approval workflows, revenue analytics, subscription lifecycle, dispute management, user management.",
+        "priority": "P1-High",
+        "category": "ui_ux",
+        "personas": ["PERS-ADM-001"],
+        "workflow_refs": ["WF-ONBOARD-001"],
+        "dependencies": ["REQ-BE-004", "REQ-BE-005", "REQ-API-008"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-STAFF-06",
+            "description": "Admin dashboard cloud infrastructure and analytics compute",
+            "monthly_low_inr": 1000,
+            "monthly_high_inr": 2000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Admin dashboard full-stack development",
+            "one_time_low_inr": 8000,
+            "one_time_high_inr": 12000
+          }
+        },
+        "acceptance_criteria": [
+          "Merchant approval queue with one-click approve/reject",
+          "Revenue dashboard shows real-time MRR and commission breakdown",
+          "Subscription lifecycle shows active/expired/suspended states",
+          "Export reports to CSV/PDF with date range filter"
+        ]
+      },
+      {
+        "requirement_id": "REQ-UI-013",
+        "title": "Multi-Language / i18n Support",
+        "description": "Kannada, Hindi, English language toggle. UI string externalization, RTL support preparation, locale-aware date/currency formatting, language preference persistence.",
+        "priority": "P0-Critical",
+        "category": "ui_ux",
+        "personas": ["PERS-CUST-001", "PERS-MER-001", "PERS-B2B-001"],
+        "workflow_refs": ["WF-BROWSE-001", "WF-ORDER-A-001", "WF-CHECKOUT-001", "WF-TRACK-001", "WF-ONBOARD-001"],
+        "dependencies": ["REQ-BE-001"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-LOCAL-12",
+            "description": "Translation management system, locale file hosting, language QA tools",
+            "monthly_low_inr": 3000,
+            "monthly_high_inr": 5000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-10",
+            "description": "UI string externalization, TMS setup, Kannada/Hindi translation, RTL support preparation",
+            "one_time_low_inr": 20000,
+            "one_time_high_inr": 35000
+          }
+        },
+        "acceptance_criteria": [
+          "Language toggle switches UI between Kannada, Hindi, and English instantly",
+          "All user-facing strings externalized to locale files with zero hardcoded text",
+          "Date and currency formatting respects selected locale",
+          "Language preference persists across sessions and devices"
+        ]
+      },
+      {
+        "requirement_id": "REQ-UI-014",
+        "title": "Merchant Sales & Analytics Dashboard",
+        "description": "Views, clicks, enquiries, orders, revenue charts. Daily/weekly/monthly trends. Mode-wise breakdown (A/B/C). Top selling products. Customer demographics. Export to PDF/CSV.",
+        "priority": "P1-High",
+        "category": "ui_ux",
+        "personas": ["PERS-MER-001"],
+        "workflow_refs": ["WF-ORDER-A-001", "WF-ORDER-B-001", "WF-ORDER-C-001"],
+        "dependencies": ["REQ-BE-008", "REQ-API-010"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Dashboard hosting and analytics compute",
+            "monthly_low_inr": 500,
+            "monthly_high_inr": 1000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Merchant analytics dashboard development",
+            "one_time_low_inr": 8000,
+            "one_time_high_inr": 12000
+          }
+        },
+        "acceptance_criteria": [
+          "Dashboard shows views, clicks, enquiries, orders, and revenue in real-time",
+          "Trend charts support daily/weekly/monthly granularity",
+          "Mode-wise breakdown correctly separates A/B/C performance",
+          "Export to PDF/CSV completes within 10 seconds for monthly data"
+        ]
+      }
+    ],
+    "api": [
+      {
+        "requirement_id": "REQ-API-001",
+        "title": "Product Catalog API",
+        "description": "CRUD endpoints for product listings, inventory, pricing tiers (retail/wholesale), mode badges.",
+        "priority": "P0-Critical",
+        "category": "api",
+        "personas": ["PERS-MER-001", "PERS-CUST-001"],
+        "workflow_refs": ["WF-BROWSE-001"],
+        "dependencies": ["REQ-BE-001"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "API endpoint hosting and database query processing",
+            "monthly_low_inr": 200,
+            "monthly_high_inr": 500
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "RESTful API development for product catalog",
+            "one_time_low_inr": 3000,
+            "one_time_high_inr": 5000
+          }
+        },
+        "acceptance_criteria": [
+          "All CRUD operations return correct HTTP status codes",
+          "Pagination supports 50 items per page default",
+          "Pricing tiers correctly return retail vs wholesale pricing",
+          "Mode badges filterable via query parameter"
+        ]
+      },
+      {
+        "requirement_id": "REQ-API-002",
+        "title": "Order Management API",
+        "description": "Create, read, update order status. Multi-store order splitting. Order history and repeat order endpoints.",
+        "priority": "P0-Critical",
+        "category": "api",
+        "personas": ["PERS-CUST-001", "PERS-MER-001", "PERS-DLV-001"],
+        "workflow_refs": ["WF-ORDER-A-001", "WF-TRACK-001"],
+        "dependencies": ["REQ-BE-001", "REQ-BE-002"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Order processing compute and database transactions",
+            "monthly_low_inr": 300,
+            "monthly_high_inr": 700
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Order management API development",
+            "one_time_low_inr": 4000,
+            "one_time_high_inr": 6000
+          }
+        },
+        "acceptance_criteria": [
+          "Order creation accepts multi-merchant payloads",
+          "Status transitions follow defined state machine",
+          "Order history returns paginated results sorted by date descending",
+          "Repeat order endpoint duplicates last order items"
+        ]
+      },
+      {
+        "requirement_id": "REQ-API-003",
+        "title": "Payment Gateway Integration API",
+        "description": "Razorpay integration: create orders, verify payments, refunds, webhook handling for payment status.",
+        "priority": "P0-Critical",
+        "category": "api",
+        "personas": ["PERS-CUST-001", "PERS-MER-001"],
+        "workflow_refs": ["WF-CHECKOUT-001"],
+        "dependencies": ["REQ-BE-001"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-COMMS-02",
+            "description": "Razorpay transaction fees (2% pass-through) and API calls",
+            "monthly_low_inr": 1000,
+            "monthly_high_inr": 3000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-06",
+            "description": "Razorpay integration, KYC, webhook setup",
+            "one_time_low_inr": 5000,
+            "one_time_high_inr": 10000
+          }
+        },
+        "acceptance_criteria": [
+          "Razorpay order creation returns payment link within 2 seconds",
+          "Webhook correctly updates order payment status",
+          "Refund API processes full and partial refunds",
+          "Payment retry logic handles failed transactions gracefully"
+        ]
+      },
+      {
+        "requirement_id": "REQ-API-004",
+        "title": "WhatsApp Deep-Linking API",
+        "description": "Generate WhatsApp deep-link URLs with product context; track click-through events for merchant analytics.",
+        "priority": "P0-Critical",
+        "category": "api",
+        "personas": ["PERS-CUST-001", "PERS-B2B-001"],
+        "workflow_refs": ["WF-ORDER-B-001"],
+        "dependencies": ["REQ-BE-001"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-COMMS-02",
+            "description": "WhatsApp Business API monthly costs",
+            "monthly_low_inr": 1000,
+            "monthly_high_inr": 2000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Deep-link generation and click tracking API",
+            "one_time_low_inr": 2000,
+            "one_time_high_inr": 3000
+          }
+        },
+        "acceptance_criteria": [
+          "Deep-link URL correctly encodes product and merchant identifiers",
+          "Click events are logged with timestamp and product ID",
+          "Merchant analytics dashboard reflects click-through data",
+          "URL works on both WhatsApp and WhatsApp Business apps"
+        ]
+      },
+      {
+        "requirement_id": "REQ-API-005",
+        "title": "Google Maps Integration API",
+        "description": "Geocoding addresses on merchant onboarding; directions URL generation; distance matrix for delivery zone calculation.",
+        "priority": "P1-High",
+        "category": "api",
+        "personas": ["PERS-MER-001", "PERS-CUST-001"],
+        "workflow_refs": ["WF-ORDER-C-001", "WF-ONBOARD-001"],
+        "dependencies": ["REQ-BE-001"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-MAPS-03",
+            "description": "Google Maps API monthly usage (geocoding, distance matrix, maps)",
+            "monthly_low_inr": 1500,
+            "monthly_high_inr": 3000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Google Maps API integration and key management",
+            "one_time_low_inr": 2000,
+            "one_time_high_inr": 3000
+          }
+        },
+        "acceptance_criteria": [
+          "Geocoding resolves 95%+ of Pete market addresses correctly",
+          "Directions URL opens Google Maps app with pre-set destination",
+          "Distance matrix returns accurate zone classification",
+          "API keys are restricted by HTTP referrer and platform"
+        ]
+      },
+      {
+        "requirement_id": "REQ-API-006",
+        "title": "User Authentication & Profile API",
+        "description": "OTP-based login (phone number), JWT session management, user profile CRUD, address management.",
+        "priority": "P0-Critical",
+        "category": "api",
+        "personas": ["PERS-CUST-001", "PERS-MER-001", "PERS-DLV-001"],
+        "workflow_refs": ["WF-ONBOARD-001"],
+        "dependencies": ["REQ-INFRA-004", "REQ-INFRA-008"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-COMMS-02",
+            "description": "SMS OTP delivery costs via MSG91/Twilio",
+            "monthly_low_inr": 500,
+            "monthly_high_inr": 1000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Auth API and Supabase Auth configuration",
+            "one_time_low_inr": 3000,
+            "one_time_high_inr": 5000
+          }
+        },
+        "acceptance_criteria": [
+          "OTP delivery in under 5 seconds",
+          "JWT tokens expire after configurable TTL (default 24h)",
+          "Profile CRUD supports multiple saved addresses",
+          "Role-based access control (customer/merchant/courier/admin)"
+        ]
+      },
+      {
+        "requirement_id": "REQ-API-007",
+        "title": "Delivery Tracking API",
+        "description": "Courier GPS location ingestion, ETA calculation, status update webhooks, delivery proof (photo) upload.",
+        "priority": "P1-High",
+        "category": "api",
+        "personas": ["PERS-DLV-001", "PERS-CUST-001"],
+        "workflow_refs": ["WF-TRACK-001"],
+        "dependencies": ["REQ-BE-002", "REQ-BE-007"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "GPS location ingestion and WebSocket connections",
+            "monthly_low_inr": 300,
+            "monthly_high_inr": 600
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Real-time tracking API and WebSocket infrastructure",
+            "one_time_low_inr": 4000,
+            "one_time_high_inr": 6000
+          }
+        },
+        "acceptance_criteria": [
+          "GPS location updates at 30-second intervals",
+          "ETA recalculates with each location update",
+          "Delivery proof photo upload under 5MB with compression",
+          "Status webhooks propagate to customer within 2 seconds"
+        ]
+      },
+      {
+        "requirement_id": "REQ-API-008",
+        "title": "Merchant Management API",
+        "description": "Merchant profile CRUD, subscription tier management, mode activation/deactivation, catalog approval workflow.",
+        "priority": "P0-Critical",
+        "category": "api",
+        "personas": ["PERS-MER-001", "PERS-ADM-001"],
+        "workflow_refs": ["WF-ONBOARD-001"],
+        "dependencies": ["REQ-BE-001", "REQ-COM-001"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Merchant management API hosting and processing",
+            "monthly_low_inr": 200,
+            "monthly_high_inr": 400
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Merchant management REST API development",
+            "one_time_low_inr": 3000,
+            "one_time_high_inr": 5000
+          }
+        },
+        "acceptance_criteria": [
+          "Merchant status transitions follow defined workflow (draft/pending/active/suspended)",
+          "Mode activation validates prerequisites per business_revenue_model.json rules",
+          "Subscription tier changes are logged with timestamp",
+          "Catalog items require admin approval before going live"
+        ]
+      },
+      {
+        "requirement_id": "REQ-API-009",
+        "title": "Notification & SMS API",
+        "description": "Transactional SMS (order confirmation, delivery updates), push notification service for mobile, email fallback.",
+        "priority": "P1-High",
+        "category": "api",
+        "personas": ["PERS-CUST-001", "PERS-MER-001", "PERS-DLV-001"],
+        "workflow_refs": ["WF-BROWSE-001", "WF-ORDER-A-001", "WF-CHECKOUT-001", "WF-TRACK-001"],
+        "dependencies": ["REQ-BE-006"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-COMMS-02",
+            "description": "Transactional SMS, push notification infrastructure, email API",
+            "monthly_low_inr": 1000,
+            "monthly_high_inr": 1500
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Multi-channel notification service development",
+            "one_time_low_inr": 3000,
+            "one_time_high_inr": 5000
+          }
+        },
+        "acceptance_criteria": [
+          "SMS delivery confirmed within 5 seconds of trigger",
+          "Push notifications delivered to 99%+ of active devices",
+          "Email fallback template renders correctly on all clients",
+          "Opt-out/unsubscribe mechanism included per TRAI guidelines"
+        ]
+      },
+      {
+        "requirement_id": "REQ-API-010",
+        "title": "Analytics & Reporting API",
+        "description": "Aggregated sales data per merchant, per market, per mode. Revenue reports, customer acquisition metrics.",
+        "priority": "P2-Medium",
+        "category": "api",
+        "personas": ["PERS-ADM-001", "PERS-MER-001"],
+        "workflow_refs": [],
+        "dependencies": ["REQ-BE-008"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Analytics data pipeline compute and storage",
+            "monthly_low_inr": 500,
+            "monthly_high_inr": 1000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Analytics API and data aggregation development",
+            "one_time_low_inr": 4000,
+            "one_time_high_inr": 6000
+          }
+        },
+        "acceptance_criteria": [
+          "Sales aggregation queries return results in under 5 seconds",
+          "Data exports available in JSON and CSV formats",
+          "Dashboard refresh interval configurable (real-time/hourly/daily)",
+          "Merchant-facing revenue data isolated to own store only"
+        ]
+      },
+      {
+        "requirement_id": "REQ-API-011",
+        "title": "Mode Switching After Onboarding API",
+        "description": "Enable/disable modes post-onboarding, validate prerequisites before activation, update store availability, notify customers of mode changes.",
+        "priority": "P1-High",
+        "category": "api",
+        "personas": ["PERS-MER-001", "PERS-ADM-001"],
+        "workflow_refs": ["WF-ONBOARD-001"],
+        "dependencies": ["REQ-API-008", "REQ-BE-001"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Mode switching API compute and validation processing",
+            "monthly_low_inr": 100,
+            "monthly_high_inr": 300
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Mode switching API development with prerequisite validation",
+            "one_time_low_inr": 3000,
+            "one_time_high_inr": 5000
+          }
+        },
+        "acceptance_criteria": [
+          "Mode activation validates prerequisite requirements per business rules",
+          "Mode deactivation gracefully handles active orders in that mode",
+          "Storefront reflects mode changes within 60 seconds",
+          "Customers subscribed to merchant notifications are informed of mode changes"
+        ]
+      }
+    ],
+    "backend_data": [
+      {
+        "requirement_id": "REQ-BE-001",
+        "title": "Database Schema & Data Models",
+        "description": "PostgreSQL/Supabase schema: merchants, products, orders, users, subscriptions, payouts, delivery zones. Indexed for high-concurrency.",
+        "priority": "P0-Critical",
+        "category": "backend_data",
+        "personas": ["System"],
+        "workflow_refs": ["WF-BROWSE-001", "WF-ORDER-A-001", "WF-CHECKOUT-001", "WF-TRACK-001", "WF-ONBOARD-001"],
+        "dependencies": [],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Database hosting, storage, and backup costs",
+            "monthly_low_inr": 500,
+            "monthly_high_inr": 1500
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Database schema design, migration scripts, initial seed data",
+            "one_time_low_inr": 5000,
+            "one_time_high_inr": 8000
+          }
+        },
+        "acceptance_criteria": [
+          "All tables have appropriate indexes on foreign keys and query columns",
+          "Row Level Security (RLS) policies implemented for multi-tenant isolation",
+          "Migration scripts have rollback capability",
+          "Schema supports 5000+ merchants with sub-second query times"
+        ]
+      },
+      {
+        "requirement_id": "REQ-BE-002",
+        "title": "Order Processing Engine",
+        "description": "Order lifecycle engine: payment verification, merchant notification, courier dispatch, status tracking, delivery confirmation.",
+        "priority": "P0-Critical",
+        "category": "backend_data",
+        "personas": ["System"],
+        "workflow_refs": ["WF-ORDER-A-001", "WF-CHECKOUT-001"],
+        "dependencies": ["REQ-BE-001", "REQ-API-002"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Order processing compute and state machine execution",
+            "monthly_low_inr": 400,
+            "monthly_high_inr": 800
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Order state machine and event handling development",
+            "one_time_low_inr": 6000,
+            "one_time_high_inr": 9000
+          }
+        },
+        "acceptance_criteria": [
+          "Order state transitions follow defined state machine (pending/confirmed/preparing/dispatched/delivered)",
+          "Failed payment retries up to 3 times before cancellation",
+          "Order timeout for unpaid orders after 30 minutes",
+          "Concurrent order processing supports 100+ orders/minute"
+        ]
+      },
+      {
+        "requirement_id": "REQ-BE-003",
+        "title": "Multi-Store Consolidation Engine",
+        "description": "Logic to group cart items by merchant, calculate per-merchant delivery fees, apply consolidation formula, generate optimized pickup routes.",
+        "priority": "P1-High",
+        "category": "backend_data",
+        "personas": ["System", "PERS-DLV-001"],
+        "workflow_refs": ["WF-CHECKOUT-001"],
+        "dependencies": ["REQ-BE-001", "REQ-BE-007"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Route optimization compute and consolidation logic processing",
+            "monthly_low_inr": 300,
+            "monthly_high_inr": 600
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Consolidation engine algorithm and route optimization development",
+            "one_time_low_inr": 5000,
+            "one_time_high_inr": 8000
+          }
+        },
+        "acceptance_criteria": [
+          "Delivery fee correctly calculated per consolidation rules",
+          "Pickup route optimization minimizes total distance for multi-stop orders",
+          "Micro-Hub routing logic correctly identifies consolidation point",
+          "Handles up to 5 merchants per consolidated order"
+        ]
+      },
+      {
+        "requirement_id": "REQ-BE-004",
+        "title": "Subscription & Billing Engine",
+        "description": "Manage plan lifecycle: signup, monthly/annual billing, plan upgrades/downgrades, failed payment retry, invoice generation.",
+        "priority": "P0-Critical",
+        "category": "backend_data",
+        "personas": ["PERS-MER-001", "PERS-ADM-001"],
+        "workflow_refs": ["WF-ONBOARD-001"],
+        "dependencies": ["REQ-BE-001", "REQ-COM-001"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Billing engine compute and invoice generation",
+            "monthly_low_inr": 300,
+            "monthly_high_inr": 500
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-01",
+            "description": "Subscription billing logic and Razorpay subscription integration",
+            "one_time_low_inr": 5000,
+            "one_time_high_inr": 8000
+          }
+        },
+        "acceptance_criteria": [
+          "Plan upgrade/downgrade prorates billing correctly",
+          "Failed payment retries 3 times with 24-hour intervals",
+          "Invoice PDF generated and emailed on successful payment",
+          "Annual plan correctly applies 2 months free discount"
+        ]
+      },
+      {
+        "requirement_id": "REQ-BE-005",
+        "title": "Payment Reconciliation & Payouts",
+        "description": "Track platform earnings (commission, subscription, VAS), merchant payouts (Mode A sales minus commission), courier payouts (85% of delivery fee). Weekly settlement.",
+        "priority": "P1-High",
+        "category": "backend_data",
+        "personas": ["PERS-ADM-001", "PERS-MER-001", "PERS-DLV-001"],
+        "workflow_refs": ["WF-CHECKOUT-001"],
+        "dependencies": ["REQ-BE-001", "REQ-COM-002", "REQ-COM-004"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Reconciliation batch processing compute",
+            "monthly_low_inr": 400,
+            "monthly_high_inr": 700
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Payout reconciliation engine development",
+            "one_time_low_inr": 6000,
+            "one_time_high_inr": 10000
+          }
+        },
+        "acceptance_criteria": [
+          "Reconciliation matches Razorpay settlement reports within 0.1% tolerance",
+          "Merchant payout calculation correctly deducts commission and PG fees",
+          "Courier payout correctly allocates 85% of delivery fee",
+          "Weekly settlement cycle completes within 2 hours"
+        ]
+      },
+      {
+        "requirement_id": "REQ-BE-006",
+        "title": "Notification Engine",
+        "description": "Template-driven notification system: SMS (Twilio/MSG91), push (Firebase/APNs), email (SendGrid). Delivery SLA monitoring.",
+        "priority": "P1-High",
+        "category": "backend_data",
+        "personas": ["System"],
+        "workflow_refs": ["WF-ORDER-A-001", "WF-TRACK-001", "WF-ORDER-B-001"],
+        "dependencies": ["REQ-BE-001"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-COMMS-02",
+            "description": "Multi-channel notification delivery costs",
+            "monthly_low_inr": 1500,
+            "monthly_high_inr": 2500
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Notification engine template system and channel integration",
+            "one_time_low_inr": 4000,
+            "one_time_high_inr": 6000
+          }
+        },
+        "acceptance_criteria": [
+          "Notification templates are configurable via admin dashboard",
+          "Delivery SLA of 30 seconds for SMS, 10 seconds for push",
+          "Failed delivery retries up to 3 times across channels",
+          "Opt-out preferences respected across all channels"
+        ]
+      },
+      {
+        "requirement_id": "REQ-BE-007",
+        "title": "Delivery/Logistics Engine",
+        "description": "Assign couriers to orders based on zone, load balancing; calculate delivery fees using zone + weight + consolidation formula; track courier earnings.",
+        "priority": "P1-High",
+        "category": "backend_data",
+        "personas": ["System", "PERS-DLV-001"],
+        "workflow_refs": ["WF-TRACK-001"],
+        "dependencies": ["REQ-BE-001", "REQ-COM-004"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Courier assignment algorithm and real-time dispatch compute",
+            "monthly_low_inr": 300,
+            "monthly_high_inr": 600
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Logistics engine with zone management and courier assignment",
+            "one_time_low_inr": 5000,
+            "one_time_high_inr": 8000
+          }
+        },
+        "acceptance_criteria": [
+          "Courier assigned within 60 seconds of order confirmation",
+          "Delivery zones correctly map to 3 slabs (0-3km, 3-7km, 7+km)",
+          "Load balancing prevents single courier overload",
+          "Courier earnings dashboard shows per-delivery breakdown"
+        ]
+      },
+      {
+        "requirement_id": "REQ-BE-008",
+        "title": "Analytics Data Pipeline",
+        "description": "Event streaming pipeline for user actions, order events, clicks; aggregate into merchant-facing and admin-facing dashboards.",
+        "priority": "P2-Medium",
+        "category": "backend_data",
+        "personas": ["PERS-ADM-001", "PERS-MER-001"],
+        "workflow_refs": [],
+        "dependencies": ["REQ-BE-001"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Event streaming infrastructure and data warehouse compute",
+            "monthly_low_inr": 800,
+            "monthly_high_inr": 1500
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Event pipeline setup and dashboard integration",
+            "one_time_low_inr": 6000,
+            "one_time_high_inr": 10000
+          }
+        },
+        "acceptance_criteria": [
+          "Event ingestion handles 1000+ events per minute",
+          "Dashboard data refreshes within 5 minutes of event occurrence",
+          "Merchant data isolation ensures cross-merchant data leaks are impossible",
+          "Retention policy: raw events 30 days, aggregated 12 months"
+        ]
+      },
+      {
+        "requirement_id": "REQ-BE-009",
+        "title": "Search & Discovery Engine",
+        "description": "Full-text search with typo-tolerance, faceted filters, relevance scoring. Uses PostgreSQL FTS or Algolia.",
+        "priority": "P1-High",
+        "category": "backend_data",
+        "personas": ["PERS-CUST-001", "PERS-B2B-001"],
+        "workflow_refs": ["WF-BROWSE-001"],
+        "dependencies": ["REQ-BE-001"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-AI-04",
+            "description": "Search index hosting (Algolia/PostgreSQL FTS) and query credits",
+            "monthly_low_inr": 2000,
+            "monthly_high_inr": 4000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Search index configuration and ranking algorithm tuning",
+            "one_time_low_inr": 4000,
+            "one_time_high_inr": 6000
+          }
+        },
+        "acceptance_criteria": [
+          "Search results returned within 300ms at P95",
+          "Typo-tolerance handles 2-character errors in product names",
+          "Facet filters combine correctly with full-text search",
+          "Relevance scoring prioritizes exact matches over partial"
+        ]
+      },
+      {
+        "requirement_id": "REQ-BE-010",
+        "title": "Caching & Performance Layer",
+        "description": "Redis caching for product catalogs, session data, frequently accessed queries. CDN for static assets and product images.",
+        "priority": "P1-High",
+        "category": "backend_data",
+        "personas": ["System"],
+        "workflow_refs": ["WF-BROWSE-001", "WF-ORDER-A-001"],
+        "dependencies": ["REQ-BE-001"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Redis instance and CDN bandwidth costs",
+            "monthly_low_inr": 500,
+            "monthly_high_inr": 1000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Redis configuration, CDN setup, caching strategy implementation",
+            "one_time_low_inr": 3000,
+            "one_time_high_inr": 5000
+          }
+        },
+        "acceptance_criteria": [
+          "Product catalog cache TTL of 5 minutes with invalidation on updates",
+          "CDN cache hit rate above 80% for static assets",
+          "Session data stored in Redis with 24-hour TTL",
+          "Cache stampede protection implemented for popular queries"
+        ]
+      },
+      {
+        "requirement_id": "REQ-BE-011",
+        "title": "Merchant Catalog Management (Post-Onboarding)",
+        "description": "Ongoing CRUD for products, bulk CSV/Excel upload, inventory quantity toggle, stock-out flagging, category management, product image management.",
+        "priority": "P0-Critical",
+        "category": "backend_data",
+        "personas": ["PERS-MER-001", "PERS-ADM-001"],
+        "workflow_refs": ["WF-ONBOARD-001"],
+        "dependencies": ["REQ-BE-001", "REQ-API-001"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-STAFF-06",
+            "description": "Catalog digitization assistance and image processing",
+            "monthly_low_inr": 3000,
+            "monthly_high_inr": 5000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Catalog management engine with bulk upload and image handling",
+            "one_time_low_inr": 6000,
+            "one_time_high_inr": 10000
+          }
+        },
+        "acceptance_criteria": [
+          "CSV/Excel upload processes 1000+ products within 2 minutes",
+          "Inventory quantity toggle updates storefront in real-time",
+          "Stock-out flag removes product from search results automatically",
+          "Image management supports bulk upload with auto-resizing and compression"
+        ]
+      },
+      {
+        "requirement_id": "REQ-BE-012",
+        "title": "Product Review & Rating System",
+        "description": "Customer reviews with photo/video upload, star ratings (1-5), verified purchase badge, merchant response, moderation queue for admin.",
+        "priority": "P1-High",
+        "category": "backend_data",
+        "personas": ["PERS-CUST-001", "PERS-MER-001", "PERS-ADM-001"],
+        "workflow_refs": ["WF-ORDER-A-001", "WF-TRACK-001"],
+        "dependencies": ["REQ-BE-001", "REQ-BE-002"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Review storage, image/video hosting, moderation tools",
+            "monthly_low_inr": 500,
+            "monthly_high_inr": 1000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Review system with moderation queue and media handling",
+            "one_time_low_inr": 6000,
+            "one_time_high_inr": 9000
+          }
+        },
+        "acceptance_criteria": [
+          "Only verified purchasers can submit reviews with Verified Purchase badge",
+          "Photo/video upload supports up to 5 images and 1 video (30s max)",
+          "Admin moderation queue allows approve/reject/flag actions",
+          "Merchant can respond to reviews within 7 days of posting"
+        ]
+      },
+      {
+        "requirement_id": "REQ-BE-013",
+        "title": "Dispute Resolution & Support Ticketing System",
+        "description": "Ticket creation (customer/merchant), status tracking, escalation matrix, refund processing workflow, admin arbitration dashboard.",
+        "priority": "P1-High",
+        "category": "backend_data",
+        "personas": ["PERS-CUST-001", "PERS-MER-001", "PERS-ADM-001"],
+        "workflow_refs": ["WF-ORDER-A-001", "WF-CHECKOUT-001"],
+        "dependencies": ["REQ-BE-001", "REQ-BE-002"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-STAFF-06",
+            "description": "Admin staff time for dispute resolution and arbitration",
+            "monthly_low_inr": 5000,
+            "monthly_high_inr": 8000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Ticketing system with escalation matrix and refund workflow",
+            "one_time_low_inr": 8000,
+            "one_time_high_inr": 12000
+          }
+        },
+        "acceptance_criteria": [
+          "Ticket creation available from order page with auto-populated context",
+          "Status tracking shows: Open, Under Review, Escalated, Resolved, Closed",
+          "Escalation matrix routes unresolved tickets to senior admin after 48h",
+          "Refund processing workflow integrates with Razorpay refund API"
+        ]
+      },
+      {
+        "requirement_id": "REQ-BE-014",
+        "title": "Offline-First Mobile Capability",
+        "description": "Local caching of product catalogs and merchant data, offline order queuing with sync on connectivity restore, conflict resolution for stale data.",
+        "priority": "P2-Medium",
+        "category": "backend_data",
+        "personas": ["PERS-CUST-001", "PERS-MER-001"],
+        "workflow_refs": ["WF-BROWSE-001", "WF-ORDER-A-001"],
+        "dependencies": ["REQ-BE-010"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Offline data sync infrastructure and conflict resolution compute",
+            "monthly_low_inr": 300,
+            "monthly_high_inr": 600
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Offline-first architecture with local storage and sync engine",
+            "one_time_low_inr": 8000,
+            "one_time_high_inr": 12000
+          }
+        },
+        "acceptance_criteria": [
+          "Product catalog loads from local cache when network is unavailable",
+          "Orders placed offline are queued and synced when connectivity restores",
+          "Conflict resolution uses last-write-wins with user notification on conflict",
+          "Cache invalidation triggers on catalog update when back online"
+        ]
+      },
+      {
+        "requirement_id": "REQ-BE-015",
+        "title": "GST/TCS Compliance & Auto-Invoicing",
+        "description": "Automatic GST invoice generation per order, TCS collection under section 52 of CGST Act, monthly GSTR-1/GSTR-3B return data export, HSN/SAC code mapping.",
+        "priority": "P0-Critical",
+        "category": "backend_data",
+        "personas": ["System", "PERS-ADM-001"],
+        "workflow_refs": ["WF-CHECKOUT-001"],
+        "dependencies": ["REQ-BE-001", "REQ-BE-002"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-LEGAL-05",
+            "description": "CA retainer for GST filing review and compliance advisory",
+            "monthly_low_inr": 3000,
+            "monthly_high_inr": 5000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-04",
+            "description": "GST invoice template, TCS logic, GSTR export module",
+            "one_time_low_inr": 10000,
+            "one_time_high_inr": 15000
+          }
+        },
+        "acceptance_criteria": [
+          "GST invoice generated automatically for every Mode A order",
+          "TCS at 0.5% (or applicable rate) collected and shown on invoice",
+          "GSTR-1/GSTR-3B data export available in format compatible with GST portal",
+          "HSN/SAC code mapping maintained with admin override capability"
+        ]
+      },
+      {
+        "requirement_id": "REQ-BE-016",
+        "title": "MOQ & Bulk Order Enforcement",
+        "description": "Minimum order quantity validation per product, B2B minimum cart value rules, tiered pricing by quantity slabs, automated quote generation for bulk orders.",
+        "priority": "P1-High",
+        "category": "backend_data",
+        "personas": ["PERS-B2B-001", "PERS-MER-001", "PERS-CUST-001"],
+        "workflow_refs": ["WF-ORDER-A-001", "WF-CHECKOUT-001"],
+        "dependencies": ["REQ-BE-001", "REQ-COM-002"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "MOQ validation and tiered pricing compute",
+            "monthly_low_inr": 200,
+            "monthly_high_inr": 400
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "MOQ engine, tiered pricing rules, bulk quote generator",
+            "one_time_low_inr": 5000,
+            "one_time_high_inr": 8000
+          }
+        },
+        "acceptance_criteria": [
+          "Cart blocks checkout if product MOQ not met with clear error message",
+          "B2B mode minimum cart value configured per merchant (default Rs 500)",
+          "Tiered pricing automatically adjusts unit price based on quantity",
+          "Bulk quote request generates PDF and sends to customer email"
+        ]
+      },
+      {
+        "requirement_id": "REQ-BE-017",
+        "title": "Customer Data Platform (CDP) & Behavioral Analytics",
+        "description": "Unified customer profile across all touchpoints (web, mobile, WhatsApp), event tracking (page views, searches, cart adds, orders), funnel analysis, cohort retention analysis, predictive churn scoring.",
+        "priority": "P2-Medium",
+        "category": "backend_data",
+        "personas": ["PERS-ADM-001"],
+        "workflow_refs": ["WF-BROWSE-001", "WF-ORDER-A-001", "WF-CHECKOUT-001"],
+        "dependencies": ["REQ-BE-008", "REQ-BE-001"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-AI-04",
+            "description": "CDP infrastructure, event processing, ML model hosting",
+            "monthly_low_inr": 4000,
+            "monthly_high_inr": 7000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "CDP implementation, event schema design, ML model development",
+            "one_time_low_inr": 15000,
+            "one_time_high_inr": 25000
+          }
+        },
+        "acceptance_criteria": [
+          "Customer profile unified across web, mobile, and WhatsApp touchpoints",
+          "Event ingestion handles 5000+ events per minute",
+          "Funnel analysis shows conversion rates at each step (browse>cart>checkout>order)",
+          "Predictive churn scoring identifies at-risk customers with 80%+ accuracy"
+        ]
+      }
+    ],
+    "commerce_monetization": [
+      {
+        "requirement_id": "REQ-COM-001",
+        "title": "Subscription Plan Management",
+        "description": "Admin configurable plans (Starter Rs 499/mo, Growth Rs 999/mo, Premium Rs 2,499/mo); annual discount (2 months free); plan feature gating.",
+        "priority": "P0-Critical",
+        "category": "commerce_monetization",
+        "personas": ["PERS-ADM-001", "PERS-MER-001"],
+        "workflow_refs": ["WF-ONBOARD-001"],
+        "dependencies": ["REQ-BE-001"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Subscription management compute and feature gating logic",
+            "monthly_low_inr": 200,
+            "monthly_high_inr": 400
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-01",
+            "description": "Plan configuration, pricing rules, and billing integration",
+            "one_time_low_inr": 5000,
+            "one_time_high_inr": 8000
+          }
+        },
+        "acceptance_criteria": [
+          "Admin can create/update plans with configurable pricing and features",
+          "Feature gating correctly restricts access based on plan tier",
+          "Annual plan calculates correct discounted rate (10 months = 12 months)",
+          "Plan change takes effect immediately for upgrades, end-of-cycle for downgrades"
+        ]
+      },
+      {
+        "requirement_id": "REQ-COM-002",
+        "title": "Transaction Fee Processing",
+        "description": "Automatic deduction of 4% B2C / 1.5% B2B (capped Rs 500) commission per Mode A order; 2% PG fee pass-through; reconciliation with Razorpay.",
+        "priority": "P0-Critical",
+        "category": "commerce_monetization",
+        "personas": ["PERS-ADM-001", "PERS-MER-001"],
+        "workflow_refs": ["WF-CHECKOUT-001"],
+        "dependencies": ["REQ-API-003", "REQ-BE-005"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Transaction fee calculation and reconciliation compute",
+            "monthly_low_inr": 200,
+            "monthly_high_inr": 500
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-01",
+            "description": "Commission calculation logic and Razorpay reconciliation",
+            "one_time_low_inr": 5000,
+            "one_time_high_inr": 8000
+          }
+        },
+        "acceptance_criteria": [
+          "B2C commission of 4% correctly calculated on order subtotal",
+          "B2B commission of 1.5% correctly capped at Rs 500 per order",
+          "PG fee of 2% transparently shown to customer at checkout",
+          "Daily reconciliation report matches Razorpay settlement within tolerance"
+        ]
+      },
+      {
+        "requirement_id": "REQ-COM-003",
+        "title": "Value-Added Services Billing",
+        "description": "Catalog digitization (Rs 10/product), AI reels (Rs 999/video), CPC sponsorship (Rs 2/click), banner ads (Rs 499/day). Usage metering and invoicing.",
+        "priority": "P1-High",
+        "category": "commerce_monetization",
+        "personas": ["PERS-ADM-001", "PERS-MER-001"],
+        "workflow_refs": [],
+        "dependencies": ["REQ-BE-001"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "VAS metering and usage tracking compute",
+            "monthly_low_inr": 200,
+            "monthly_high_inr": 400
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-01",
+            "description": "VAS billing module and usage metering development",
+            "one_time_low_inr": 4000,
+            "one_time_high_inr": 6000
+          }
+        },
+        "acceptance_criteria": [
+          "Catalog digitization charges accumulated per product upload",
+          "AI reel creation fee invoiced upon completion",
+          "CPC sponsorship accurately tracks click count for billing",
+          "Banner ad slot availability calendar and automated billing"
+        ]
+      },
+      {
+        "requirement_id": "REQ-COM-004",
+        "title": "Courier/Delivery Fee Calculator",
+        "description": "Real-time delivery fee computation: zone base rate + weight surcharge + consolidation surcharge + surge pricing (night 25%, festival 15%).",
+        "priority": "P1-High",
+        "category": "commerce_monetization",
+        "personas": ["System", "PERS-CUST-001"],
+        "workflow_refs": ["WF-CHECKOUT-001"],
+        "dependencies": ["REQ-BE-001"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Delivery fee calculation API calls and zone lookup",
+            "monthly_low_inr": 200,
+            "monthly_high_inr": 400
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Fee calculator engine with zone, weight, and surge rules",
+            "one_time_low_inr": 4000,
+            "one_time_high_inr": 6000
+          }
+        },
+        "acceptance_criteria": [
+          "Zone-based rates correctly applied per distance slab",
+          "Weight surcharges triggered at correct thresholds",
+          "Night surge (9pm-6am, +25%) applied automatically",
+          "Festival surge (+15%) configurable via admin dashboard"
+        ]
+      },
+      {
+        "requirement_id": "REQ-COM-005",
+        "title": "Revenue Dashboard & Audit Trail",
+        "description": "Granular revenue breakdown per merchant, per market, per mode. Audit log for all financial transactions. Export to CSV/PDF.",
+        "priority": "P2-Medium",
+        "category": "commerce_monetization",
+        "personas": ["PERS-ADM-001"],
+        "workflow_refs": [],
+        "dependencies": ["REQ-BE-005", "REQ-BE-008"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Dashboard data aggregation and audit log storage",
+            "monthly_low_inr": 300,
+            "monthly_high_inr": 600
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Revenue dashboard and audit trail system development",
+            "one_time_low_inr": 5000,
+            "one_time_high_inr": 8000
+          }
+        },
+        "acceptance_criteria": [
+          "Revenue breakdown drillable by market, merchant, and mode",
+          "Audit log immutable with timestamp and actor ID",
+          "CSV/PDF export completes within 30 seconds for monthly data",
+          "Data retention of 7 years for audit compliance"
+        ]
+      },
+      {
+        "requirement_id": "REQ-COM-006",
+        "title": "Merchant Payout System",
+        "description": "Automated weekly/monthly payout to merchants (Mode A sales minus commission); courier payouts (85% of delivery fee); integration with RazorpayX or bank transfer.",
+        "priority": "P1-High",
+        "category": "commerce_monetization",
+        "personas": ["PERS-ADM-001", "PERS-MER-001", "PERS-DLV-001"],
+        "workflow_refs": ["WF-CHECKOUT-001"],
+        "dependencies": ["REQ-BE-005", "REQ-COM-002"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Payout batch processing and bank transfer API costs",
+            "monthly_low_inr": 500,
+            "monthly_high_inr": 1000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-06",
+            "description": "Payout system integration with RazorpayX or bank API",
+            "one_time_low_inr": 6000,
+            "one_time_high_inr": 10000
+          }
+        },
+        "acceptance_criteria": [
+          "Payout cycle configurable (weekly/bi-weekly/monthly)",
+          "Merchant payout includes itemized deduction report",
+          "Courier payout correctly calculated at 85% of delivery fee",
+          "Failed payouts retry with notification to admin"
+        ]
+      },
+      {
+        "requirement_id": "REQ-COM-007",
+        "title": "Coupon & Promo Engine",
+        "description": "Admin-configurable promo codes (percentage/flat/free shipping), festival season campaigns, automatic coupon application, usage limits, expiry management.",
+        "priority": "P1-High",
+        "category": "commerce_monetization",
+        "personas": ["PERS-ADM-001", "PERS-CUST-001"],
+        "workflow_refs": ["WF-CHECKOUT-001"],
+        "dependencies": ["REQ-BE-001", "REQ-COM-002"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Promo code validation and discount calculation compute",
+            "monthly_low_inr": 200,
+            "monthly_high_inr": 400
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Coupon engine with campaign management and validation logic",
+            "one_time_low_inr": 5000,
+            "one_time_high_inr": 8000
+          }
+        },
+        "acceptance_criteria": [
+          "Admin can create percentage, flat amount, and free shipping coupon types",
+          "Coupon usage limits (total, per-user, per-day) enforced correctly",
+          "Automatic coupon application triggered on cart conditions (minimum value, category)",
+          "Expired coupons rejected with user-friendly message"
+        ]
+      },
+      {
+        "requirement_id": "REQ-COM-008",
+        "title": "Payment Escrow & Hold Period",
+        "description": "Hold merchant payouts until delivery confirmed by customer. Release schedule: 24h after delivery. Dispute hold mechanism.",
+        "priority": "P1-High",
+        "category": "commerce_monetization",
+        "personas": ["System", "PERS-MER-001", "PERS-ADM-001"],
+        "workflow_refs": ["WF-TRACK-001", "WF-CHECKOUT-001"],
+        "dependencies": ["REQ-COM-006", "REQ-BE-002"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Escrow tracking and automated release scheduling",
+            "monthly_low_inr": 200,
+            "monthly_high_inr": 400
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-06",
+            "description": "Escrow hold logic, RazorpayX escrow integration, dispute hold workflow",
+            "one_time_low_inr": 8000,
+            "one_time_high_inr": 12000
+          }
+        },
+        "acceptance_criteria": [
+          "Payout held in escrow until delivery confirmation by customer",
+          "Funds auto-released 24 hours after delivery confirmation",
+          "Dispute hold freezes payout until resolution via dispute system",
+          "Merchant dashboard clearly shows pending/available payout status"
+        ]
+      }
+    ],
+    "infrastructure_security": [
+      {
+        "requirement_id": "REQ-INFRA-001",
+        "title": "Cloud Infrastructure Provisioning",
+        "description": "Supabase (PostgreSQL DB + Auth + Storage), Railway/Vercel (backend hosting), CDN, auto-scaling configuration.",
+        "priority": "P0-Critical",
+        "category": "infrastructure_security",
+        "personas": ["System", "PERS-ADM-001"],
+        "workflow_refs": ["WF-BROWSE-001", "WF-ORDER-A-001", "WF-CHECKOUT-001"],
+        "dependencies": [],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Core cloud infrastructure monthly hosting",
+            "monthly_low_inr": 1300,
+            "monthly_high_inr": 4000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Cloud account setup, Supabase project, domain configuration",
+            "one_time_low_inr": 10000,
+            "one_time_high_inr": 20000
+          }
+        },
+        "acceptance_criteria": [
+          "Auto-scaling handles 10x traffic spike within 2 minutes",
+          "Supabase database connection pool supports 200+ concurrent connections",
+          "CDN caches static assets with 95%+ hit rate",
+          "99.5% uptime SLA for production environment"
+        ]
+      },
+      {
+        "requirement_id": "REQ-INFRA-002",
+        "title": "CI/CD Pipeline",
+        "description": "GitHub Actions or equivalent: automated testing, build, staging deploy, production deploy. Branch protection rules.",
+        "priority": "P1-High",
+        "category": "infrastructure_security",
+        "personas": ["System"],
+        "workflow_refs": [],
+        "dependencies": ["REQ-INFRA-001"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "CI/CD runner minutes and build artifacts storage",
+            "monthly_low_inr": 200,
+            "monthly_high_inr": 500
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "CI/CD pipeline configuration and workflow setup",
+            "one_time_low_inr": 3000,
+            "one_time_high_inr": 5000
+          }
+        },
+        "acceptance_criteria": [
+          "Pipeline runs automated tests on every PR",
+          "Staging deployment completes in under 10 minutes",
+          "Production deployment requires human approval gate",
+          "Rollback to previous version supported in one click"
+        ]
+      },
+      {
+        "requirement_id": "REQ-INFRA-003",
+        "title": "Monitoring & Observability",
+        "description": "Application performance monitoring, error tracking (Sentry), uptime monitoring (Better Stack), custom dashboard for platform health.",
+        "priority": "P1-High",
+        "category": "infrastructure_security",
+        "personas": ["System", "PERS-ADM-001"],
+        "workflow_refs": ["WF-BROWSE-001", "WF-ORDER-A-001", "WF-TRACK-001"],
+        "dependencies": ["REQ-INFRA-001"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Monitoring tools subscriptions and log storage",
+            "monthly_low_inr": 500,
+            "monthly_high_inr": 1000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Monitoring stack setup and dashboard configuration",
+            "one_time_low_inr": 3000,
+            "one_time_high_inr": 5000
+          }
+        },
+        "acceptance_criteria": [
+          "Error alerts sent to Slack/email within 60 seconds",
+          "Uptime monitoring checks every 5 minutes from 3 locations",
+          "Custom dashboard shows real-time traffic, errors, and latency",
+          "Log retention of 30 days for production environment"
+        ]
+      },
+      {
+        "requirement_id": "REQ-INFRA-004",
+        "title": "Security & Encryption Framework",
+        "description": "HTTPS/TLS everywhere, data encryption at rest (AES-256), JWT token management, OWASP top 10 protection, input sanitization.",
+        "priority": "P0-Critical",
+        "category": "infrastructure_security",
+        "personas": ["System"],
+        "workflow_refs": ["WF-BROWSE-001", "WF-ORDER-A-001", "WF-CHECKOUT-001", "WF-ONBOARD-001"],
+        "dependencies": [],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "SSL certificate management and security scanning tools",
+            "monthly_low_inr": 200,
+            "monthly_high_inr": 500
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-04",
+            "description": "Security audit, penetration testing, compliance documentation",
+            "one_time_low_inr": 25000,
+            "one_time_high_inr": 40000
+          }
+        },
+        "acceptance_criteria": [
+          "All endpoints enforce HTTPS with TLS 1.2+",
+          "OWASP ZAP scan passes with zero high-severity findings",
+          "JWT tokens signed with RS256 or equivalent",
+          "Input sanitization prevents SQL injection and XSS"
+        ]
+      },
+      {
+        "requirement_id": "REQ-INFRA-005",
+        "title": "Backup & Disaster Recovery",
+        "description": "Automated daily database backups, point-in-time recovery, multi-region failover planning, RPO < 1 hour, RTO < 4 hours.",
+        "priority": "P2-Medium",
+        "category": "infrastructure_security",
+        "personas": ["System", "PERS-ADM-001"],
+        "workflow_refs": [],
+        "dependencies": ["REQ-INFRA-001"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Backup storage and cross-region replication costs",
+            "monthly_low_inr": 500,
+            "monthly_high_inr": 1000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Backup automation, DR plan, and recovery testing",
+            "one_time_low_inr": 4000,
+            "one_time_high_inr": 6000
+          }
+        },
+        "acceptance_criteria": [
+          "Automated daily backup completes within 30 minutes",
+          "Point-in-time recovery supports last 7 days",
+          "Restore from backup tested quarterly with documented results",
+          "RPO of 1 hour achieved through WAL archiving"
+        ]
+      },
+      {
+        "requirement_id": "REQ-INFRA-006",
+        "title": "API Gateway & Rate Limiting",
+        "description": "Rate limiting per user/IP (100 req/min), request validation, API key management for internal services, logging.",
+        "priority": "P1-High",
+        "category": "infrastructure_security",
+        "personas": ["System"],
+        "workflow_refs": ["WF-BROWSE-001", "WF-ORDER-A-001", "WF-CHECKOUT-001"],
+        "dependencies": ["REQ-INFRA-001"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "API gateway compute and data transfer costs",
+            "monthly_low_inr": 300,
+            "monthly_high_inr": 600
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "API gateway configuration and rate limiting rules",
+            "one_time_low_inr": 3000,
+            "one_time_high_inr": 5000
+          }
+        },
+        "acceptance_criteria": [
+          "Rate limit of 100 requests/minute per authenticated user enforced",
+          "Rate limit of 20 requests/minute per unauthenticated IP enforced",
+          "429 status returned with Retry-After header on limit exceeded",
+          "API request log includes timestamp, user, endpoint, and response time"
+        ]
+      },
+      {
+        "requirement_id": "REQ-INFRA-007",
+        "title": "Database Scaling & Connection Pooling",
+        "description": "PgBouncer for connection pooling, read replicas for analytics queries, auto-scaling thresholds for compute.",
+        "priority": "P1-High",
+        "category": "infrastructure_security",
+        "personas": ["System"],
+        "workflow_refs": ["WF-BROWSE-001", "WF-ORDER-A-001", "WF-CHECKOUT-001", "WF-TRACK-001"],
+        "dependencies": ["REQ-INFRA-001"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "PgBouncer instance and read replica costs",
+            "monthly_low_inr": 300,
+            "monthly_high_inr": 600
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "PgBouncer configuration, read replica setup, scaling thresholds",
+            "one_time_low_inr": 3000,
+            "one_time_high_inr": 5000
+          }
+        },
+        "acceptance_criteria": [
+          "PgBouncer manages 200+ concurrent connections efficiently",
+          "Read replica serves analytics queries without impacting primary",
+          "Auto-scaling triggers at 70% CPU utilization",
+          "Connection pool limits prevent database overload"
+        ]
+      },
+      {
+        "requirement_id": "REQ-INFRA-008",
+        "title": "SSL/TLS & Secrets Management",
+        "description": "Automated SSL certificate renewal (Let's Encrypt), HashiCorp Vault or environment-based secrets management, no plain-text credentials in codebase.",
+        "priority": "P0-Critical",
+        "category": "infrastructure_security",
+        "personas": ["System"],
+        "workflow_refs": ["WF-BROWSE-001", "WF-ORDER-A-001", "WF-CHECKOUT-001", "WF-ONBOARD-001"],
+        "dependencies": ["REQ-INFRA-001"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Secrets management infrastructure and SSL renewal automation",
+            "monthly_low_inr": 100,
+            "monthly_high_inr": 300
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-04",
+            "description": "SSL certificate setup, secrets vault configuration, CI/CD secret injection",
+            "one_time_low_inr": 5000,
+            "one_time_high_inr": 8000
+          }
+        },
+        "acceptance_criteria": [
+          "SSL certificates auto-renew before 30-day expiry",
+          "No plain-text secrets in GitHub repository at any time",
+          "Secrets injected via CI/CD pipeline environment variables or vault",
+          "Secret rotation supported without downtime"
+        ]
+      },
+      {
+        "requirement_id": "REQ-INFRA-009",
+        "title": "PCI DSS Compliance via Razorpay Scope Reduction",
+        "description": "Confirm Razorpay handles card data (SAQ A), no PCI data stored on PeteMart servers, tokenization for recurring payments, quarterly ASV scan, PCI compliance attestation.",
+        "priority": "P0-Critical",
+        "category": "infrastructure_security",
+        "personas": ["System", "PERS-ADM-001"],
+        "workflow_refs": ["WF-CHECKOUT-001"],
+        "dependencies": ["REQ-API-003", "REQ-INFRA-004"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Quarterly ASV scan and PCI compliance management",
+            "monthly_low_inr": 2000,
+            "monthly_high_inr": 3000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-12",
+            "description": "PCI SAQ A validation, ASV scan setup, attestation documentation",
+            "one_time_low_inr": 5000,
+            "one_time_high_inr": 10000
+          }
+        },
+        "acceptance_criteria": [
+          "SAQ A validation confirms no card data stored on PeteMart servers",
+          "Razorpay tokenization used for all recurring payment scenarios",
+          "Quarterly ASV scan passes with no high-severity findings",
+          "PCI compliance attestation renewed annually"
+        ]
+      }
+    ],
+    "performance_scale": [
+      {
+        "requirement_id": "REQ-PERF-001",
+        "title": "Performance Baseline at 50% Commercial E-Commerce Load",
+        "description": "Target: LCP <2.5s, INP <200ms, CLS <0.1, API response <300ms P95. Baseline: 500 concurrent users, 50 req/s peak. Architecture must be horizontally scalable to 2x (100%) without re-architecture.",
+        "priority": "P0-Critical",
+        "category": "performance_scale",
+        "personas": ["System"],
+        "workflow_refs": ["WF-BROWSE-001", "WF-ORDER-A-001", "WF-CHECKOUT-001", "WF-TRACK-001"],
+        "dependencies": ["REQ-INFRA-001", "REQ-BE-010"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-PERF-07",
+            "description": "Performance monitoring dashboard and synthetic testing agents",
+            "monthly_low_inr": 2000,
+            "monthly_high_inr": 4000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-07",
+            "description": "Performance baseline measurement, k6 test scripts, dashboard setup",
+            "one_time_low_inr": 15000,
+            "one_time_high_inr": 25000
+          }
+        },
+        "acceptance_criteria": [
+          "LCP <= 2.5s on 4G throttled connection for 90th percentile users",
+          "INP <= 200ms for all user interactions",
+          "CLS <= 0.1 on all page loads",
+          "API P95 response time <= 300ms for all customer-facing endpoints",
+          "Architecture scales to 2x load without re-architecture"
+        ]
+      },
+      {
+        "requirement_id": "REQ-PERF-002",
+        "title": "Horizontal Scalability Architecture",
+        "description": "Stateless application layer, database read replicas, Redis caching layer, CDN for static/media assets. Auto-scaling triggers at 70% CPU/memory. Design must support 2x growth factor.",
+        "priority": "P0-Critical",
+        "category": "performance_scale",
+        "personas": ["System"],
+        "workflow_refs": ["WF-BROWSE-001", "WF-ORDER-A-001", "WF-CHECKOUT-001"],
+        "dependencies": ["REQ-INFRA-001", "REQ-INFRA-007", "REQ-BE-010"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Additional compute for horizontal scaling capacity",
+            "monthly_low_inr": 1000,
+            "monthly_high_inr": 2000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-07",
+            "description": "Stateless architecture refactoring, auto-scaling configuration",
+            "one_time_low_inr": 10000,
+            "one_time_high_inr": 15000
+          }
+        },
+        "acceptance_criteria": [
+          "Application layer is fully stateless with session data in Redis",
+          "Auto-scaling adds instance within 90 seconds of 70% CPU trigger",
+          "Read replicas serve all analytics/reporting queries without primary impact",
+          "CDN serves 90%+ of static assets with cache hit rate above 85%"
+        ]
+      },
+      {
+        "requirement_id": "REQ-PERF-003",
+        "title": "Load Testing & Performance Benchmarking Suite",
+        "description": "Automated k6/Artillery scripts simulating real user flows. CI/CD gate: fail build if P95 latency >500ms or error rate >1%. Quarterly full-scale load test.",
+        "priority": "P1-High",
+        "category": "performance_scale",
+        "personas": ["System"],
+        "workflow_refs": [],
+        "dependencies": ["REQ-PERF-001", "REQ-INFRA-002"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-PERF-07",
+            "description": "Load testing cloud execution credits and reporting",
+            "monthly_low_inr": 1500,
+            "monthly_high_inr": 3000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-07",
+            "description": "Load test script development and CI/CD integration",
+            "one_time_low_inr": 8000,
+            "one_time_high_inr": 12000
+          }
+        },
+        "acceptance_criteria": [
+          "k6/Artillery scripts cover 5 critical user journeys",
+          "CI/CD gate fails build if P95 latency exceeds 500ms under load",
+          "Error rate threshold of 1% enforced in pipeline gate",
+          "Quarterly load test report generated with comparison to baseline"
+        ]
+      }
+    ],
+    "maintenance_lifecycle": [
+      {
+        "requirement_id": "REQ-MAINT-001",
+        "title": "Automated Patch & Security Update Management",
+        "description": "Weekly vulnerability scan (Dependabot/Snyk), automated dependency updates with CI/CD pass, critical CVE patches within 48h, scheduled maintenance window (weekly 2h window), rollback mechanism.",
+        "priority": "P0-Critical",
+        "category": "maintenance_lifecycle",
+        "personas": ["System", "PERS-ADM-001"],
+        "workflow_refs": ["WF-BROWSE-001", "WF-ORDER-A-001", "WF-CHECKOUT-001"],
+        "dependencies": ["REQ-INFRA-002", "REQ-INFRA-008"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-TOOLS-13",
+            "description": "Snyk/Dependabot subscription, vulnerability scanning infrastructure",
+            "monthly_low_inr": 2000,
+            "monthly_high_inr": 4000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Patch management automation, dependency update pipelines",
+            "one_time_low_inr": 5000,
+            "one_time_high_inr": 8000
+          }
+        },
+        "acceptance_criteria": [
+          "Weekly vulnerability scan completes automatically with emailed report",
+          "Critical CVEs patched and deployed within 48 hours of disclosure",
+          "Scheduled maintenance window (weekly 2h) communicated to users 24h in advance",
+          "Rollback mechanism restores previous version within 5 minutes"
+        ]
+      },
+      {
+        "requirement_id": "REQ-MAINT-002",
+        "title": "Zero-Downtime Deployment & Upgrade Mechanism",
+        "description": "Blue-green or rolling deployment strategy, database migration with backward compatibility, feature flags for gradual rollout, canary testing, instant rollback on failure.",
+        "priority": "P1-High",
+        "category": "maintenance_lifecycle",
+        "personas": ["System"],
+        "workflow_refs": ["WF-BROWSE-001", "WF-ORDER-A-001", "WF-CHECKOUT-001"],
+        "dependencies": ["REQ-INFRA-002", "REQ-INFRA-001"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "Blue-green infrastructure provisioning (extra compute during deploys)",
+            "monthly_low_inr": 500,
+            "monthly_high_inr": 1000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Blue-green deployment pipeline, feature flag system, canary setup",
+            "one_time_low_inr": 8000,
+            "one_time_high_inr": 12000
+          }
+        },
+        "acceptance_criteria": [
+          "Deployment completes with zero failed requests during transition",
+          "Database migrations are backward compatible for at least 2 versions",
+          "Feature flags allow gradual rollout to 1%/10%/50%/100% of users",
+          "Instant rollback restores previous version within 60 seconds"
+        ]
+      },
+      {
+        "requirement_id": "REQ-MAINT-003",
+        "title": "Full-Stack Observability & Monitoring",
+        "description": "APM (application performance monitoring), distributed tracing, centralized logging, real user monitoring (RUM), synthetic transaction monitoring, infrastructure metrics. Alerting with PagerDuty/OpsGenie integration. Dashboard for platform health SLA tracking.",
+        "priority": "P0-Critical",
+        "category": "maintenance_lifecycle",
+        "personas": ["System", "PERS-ADM-001"],
+        "workflow_refs": ["WF-BROWSE-001", "WF-ORDER-A-001", "WF-CHECKOUT-001", "WF-TRACK-001"],
+        "dependencies": ["REQ-INFRA-001", "REQ-INFRA-003"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-MAINT-08",
+            "description": "APM tool subscription, log storage, RUM data ingestion, PagerDuty/OpsGenie",
+            "monthly_low_inr": 15000,
+            "monthly_high_inr": 25000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-08",
+            "description": "APM instrumentation, centralized logging pipeline, RUM SDK integration, alerting setup",
+            "one_time_low_inr": 20000,
+            "one_time_high_inr": 35000
+          }
+        },
+        "acceptance_criteria": [
+          "APM traces 95%+ of transactions with distributed span context",
+          "Centralized logging captures all application, API, and database logs",
+          "RUM captures Core Web Vitals (LCP, INP, CLS) for 90%+ of page loads",
+          "Alerting integrates with PagerDuty/OpsGenie with on-call rotation"
+        ]
+      },
+      {
+        "requirement_id": "REQ-MAINT-004",
+        "title": "Dependency Vulnerability & License Scanning",
+        "description": "Automated scanning of all third-party dependencies (npm, pip, Go modules, Docker images). License compliance check (GPL/AGPL restrictions). SBOM generation per release. CVE notification and auto-PR for fixes.",
+        "priority": "P1-High",
+        "category": "maintenance_lifecycle",
+        "personas": ["System"],
+        "workflow_refs": [],
+        "dependencies": ["REQ-INFRA-002", "REQ-MAINT-001"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-TOOLS-13",
+            "description": "License scanning tool subscription and SBOM generation",
+            "monthly_low_inr": 1000,
+            "monthly_high_inr": 2000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Dependency scanning integration in CI/CD, SBOM generation pipeline",
+            "one_time_low_inr": 3000,
+            "one_time_high_inr": 5000
+          }
+        },
+        "acceptance_criteria": [
+          "All dependencies (npm, pip, Go, Docker) scanned on every build",
+          "License compliance check blocks GPL/AGPL dependencies unless approved",
+          "SBOM generated in SPDX/CycloneDX format per release",
+          "Auto-PR created for any CVE with severity medium or higher"
+        ]
+      },
+      {
+        "requirement_id": "REQ-MAINT-005",
+        "title": "System Health Dashboard & SLA Reporting",
+        "description": "Real-time uptime dashboard, SLA compliance tracking (target 99.5% uptime), incident timeline and MTTR tracking, capacity forecasting, cost-per-transaction monitoring.",
+        "priority": "P1-High",
+        "category": "maintenance_lifecycle",
+        "personas": ["System", "PERS-ADM-001"],
+        "workflow_refs": ["WF-BROWSE-001", "WF-ORDER-A-001", "WF-CHECKOUT-001", "WF-TRACK-001"],
+        "dependencies": ["REQ-MAINT-003"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-MAINT-08",
+            "description": "Dashboard hosting and SLA analytics compute",
+            "monthly_low_inr": 2000,
+            "monthly_high_inr": 3000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-08",
+            "description": "Health dashboard development and SLA reporting configuration",
+            "one_time_low_inr": 8000,
+            "one_time_high_inr": 12000
+          }
+        },
+        "acceptance_criteria": [
+          "Uptime dashboard updates real-time with <30s delay",
+          "SLA compliance calculated monthly with 99.5% target",
+          "Incident timeline shows MTTR for last 30/60/90 days",
+          "Capacity forecasting predicts resource needs 30 days ahead"
+        ]
+      }
+    ],
+    "disaster_recovery": [
+      {
+        "requirement_id": "REQ-DR-001",
+        "title": "Disaster Recovery Plan & RPO/RTO Targets",
+        "description": "RPO: 15 minutes (database), RTO: 4 hours (full recovery). Tiered approach: mission-critical (RPO 5min, RTO 1hr) vs standard (RPO 1hr, RTO 4hr). Documented DR playbook with runbooks.",
+        "priority": "P0-Critical",
+        "category": "disaster_recovery",
+        "personas": ["System", "PERS-ADM-001"],
+        "workflow_refs": ["WF-BROWSE-001", "WF-ORDER-A-001", "WF-CHECKOUT-001"],
+        "dependencies": ["REQ-INFRA-005"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-DR-09",
+            "description": "DR plan maintenance and annual DR program compliance",
+            "monthly_low_inr": 1000,
+            "monthly_high_inr": 2000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-09",
+            "description": "DR playbook development, runbook creation, RPO/RTO baseline measurement",
+            "one_time_low_inr": 10000,
+            "one_time_high_inr": 15000
+          }
+        },
+        "acceptance_criteria": [
+          "Documented DR playbook covers all mission-critical systems",
+          "RPO of 15 minutes validated through quarterly restore testing",
+          "RTO of 4 hours validated through annual full failover test",
+          "Tiered recovery approach documented with clear service classification"
+        ]
+      },
+      {
+        "requirement_id": "REQ-DR-002",
+        "title": "Multi-Region / Multi-AZ Failover Architecture",
+        "description": "Application deployed across minimum 2 availability zones. Database with synchronous replication across AZs. DNS-based failover (Route53 or equivalent). Automated health checks triggering failover.",
+        "priority": "P1-High",
+        "category": "disaster_recovery",
+        "personas": ["System"],
+        "workflow_refs": ["WF-BROWSE-001", "WF-ORDER-A-001", "WF-CHECKOUT-001"],
+        "dependencies": ["REQ-DR-001", "REQ-INFRA-001"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-DR-09",
+            "description": "Multi-AZ infrastructure premium (2x compute) and cross-AZ data transfer",
+            "monthly_low_inr": 4000,
+            "monthly_high_inr": 8000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-09",
+            "description": "Multi-AZ provisioning, database replication config, DNS failover setup",
+            "one_time_low_inr": 15000,
+            "one_time_high_inr": 25000
+          }
+        },
+        "acceptance_criteria": [
+          "Application instances run in minimum 2 availability zones",
+          "Database synchronous replication has <10ms latency between AZs",
+          "DNS failover triggers within 60 seconds of health check failure",
+          "Automated health checks monitor all critical endpoints every 30 seconds"
+        ]
+      },
+      {
+        "requirement_id": "REQ-DR-003",
+        "title": "Automated Database Backup & Point-in-Time Recovery",
+        "description": "Continuous WAL archiving, daily snapshots with 30-day retention, cross-region backup replication, tested restore procedure (monthly drill), encrypted backup storage.",
+        "priority": "P0-Critical",
+        "category": "disaster_recovery",
+        "personas": ["System"],
+        "workflow_refs": ["WF-BROWSE-001", "WF-ORDER-A-001", "WF-CHECKOUT-001", "WF-TRACK-001"],
+        "dependencies": ["REQ-INFRA-001", "REQ-INFRA-005"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-DR-09",
+            "description": "Backup storage (30-day retention), cross-region replication, WAL archiving",
+            "monthly_low_inr": 2000,
+            "monthly_high_inr": 4000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-09",
+            "description": "WAL archiving configuration, backup automation, cross-region replication setup",
+            "one_time_low_inr": 8000,
+            "one_time_high_inr": 12000
+          }
+        },
+        "acceptance_criteria": [
+          "WAL archiving captures every transaction within 5 seconds",
+          "Daily snapshot retention of 30 days with automated cleanup",
+          "Cross-region backup replication completes within 15 minutes",
+          "Monthly restore drill completes within 1 hour for full database"
+        ]
+      },
+      {
+        "requirement_id": "REQ-DR-004",
+        "title": "DR Testing & Compliance Program",
+        "description": "Quarterly DR drill (tabletop + technical), annual full failover test, post-drill RTO/RPO measurement and reporting, DR documentation maintenance, audit trail for compliance.",
+        "priority": "P2-Medium",
+        "category": "disaster_recovery",
+        "personas": ["System", "PERS-ADM-001"],
+        "workflow_refs": [],
+        "dependencies": ["REQ-DR-001", "REQ-DR-003"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-DR-09",
+            "description": "Quarterly DR drills, annual failover test, DR documentation maintenance",
+            "monthly_low_inr": 1000,
+            "monthly_high_inr": 2000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-09",
+            "description": "DR test automation, compliance reporting templates, audit trail system",
+            "one_time_low_inr": 5000,
+            "one_time_high_inr": 8000
+          }
+        },
+        "acceptance_criteria": [
+          "Quarterly DR drill completed with documented outcomes",
+          "Annual full failover test achieves RTO/RPO targets",
+          "Post-drill report includes RTO/RPO measurement and improvement actions",
+          "Audit trail maintained for all DR activities with sign-off"
+        ]
+      }
+    ],
+    "funnels_onboarding": [
+      {
+        "requirement_id": "REQ-FUNNEL-001",
+        "title": "Multi-Channel Customer Acquisition Engine",
+        "description": "Referral program (shareable links, rewards), WhatsApp viral sharing, QR code flyers in physical stores, social media deep-linking, SEO-optimized landing pages per market, Google Business Profile integration, influencer/affiliate tracking links.",
+        "priority": "P1-High",
+        "category": "funnels_onboarding",
+        "personas": ["PERS-ADM-001", "PERS-CUST-001"],
+        "workflow_refs": ["WF-BROWSE-001"],
+        "dependencies": ["REQ-UI-001", "REQ-API-004", "REQ-BE-006"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-FUNNEL-10",
+            "description": "Referral rewards, campaign management, SEO tools subscription",
+            "monthly_low_inr": 8000,
+            "monthly_high_inr": 15000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-13",
+            "description": "Referral engine, QR code generator, SEO landing pages, affiliate tracking",
+            "one_time_low_inr": 15000,
+            "one_time_high_inr": 25000
+          }
+        },
+        "acceptance_criteria": [
+          "Referral link sharing via WhatsApp, SMS, and social media works seamlessly",
+          "QR code generation for flyers includes utm tracking parameters",
+          "SEO landing pages rank for market-specific keywords within 90 days",
+          "Influencer/affiliate tracking links attribute conversions correctly"
+        ]
+      },
+      {
+        "requirement_id": "REQ-FUNNEL-002",
+        "title": "Guest Browsing with Progressive Conversion",
+        "description": "Browse catalog without login, frictionless phone number capture at checkout, saved browsing session across devices, abandoned cart recovery (SMS/WhatsApp), browse-to-enquiry funnel tracking.",
+        "priority": "P1-High",
+        "category": "funnels_onboarding",
+        "personas": ["PERS-CUST-001"],
+        "workflow_refs": ["WF-BROWSE-001", "WF-CHECKOUT-001"],
+        "dependencies": ["REQ-UI-002", "REQ-API-006", "REQ-BE-006"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-COMMS-02",
+            "description": "Abandoned cart SMS/WhatsApp campaign costs",
+            "monthly_low_inr": 2000,
+            "monthly_high_inr": 4000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Guest session management, phone capture flow, abandoned cart automation",
+            "one_time_low_inr": 6000,
+            "one_time_high_inr": 10000
+          }
+        },
+        "acceptance_criteria": [
+          "Full catalog browseable without any authentication",
+          "Phone number capture at checkout requires only OTP verification",
+          "Browsing session persists across devices via session token",
+          "Abandoned cart recovery triggers within 1 hour with SMS/WhatsApp reminder"
+        ]
+      },
+      {
+        "requirement_id": "REQ-FUNNEL-003",
+        "title": "Onboarding Incentive & Loyalty Program Engine",
+        "description": "First-order discount, referral bonus credits, loyalty points for repeat purchases, tiered loyalty status (Silver/Gold/Platinum), points expiry management.",
+        "priority": "P2-Medium",
+        "category": "funnels_onboarding",
+        "personas": ["PERS-CUST-001", "PERS-ADM-001"],
+        "workflow_refs": ["WF-CHECKOUT-001"],
+        "dependencies": ["REQ-COM-007", "REQ-BE-001"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-FUNNEL-10",
+            "description": "Loyalty points liability, first-order discount credits, rewards management",
+            "monthly_low_inr": 5000,
+            "monthly_high_inr": 10000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-13",
+            "description": "Loyalty engine, points calculation, tier management, rewards catalog",
+            "one_time_low_inr": 10000,
+            "one_time_high_inr": 15000
+          }
+        },
+        "acceptance_criteria": [
+          "First-order discount automatically applied to new user's first purchase",
+          "Referral bonus credits credited to referrer on referees first order",
+          "Loyalty points earned at rate of 5% of order value for standard tier",
+          "Tier upgrade (Silver>Gold>Platinum) triggers milestone email notification"
+        ]
+      },
+      {
+        "requirement_id": "REQ-FUNNEL-004",
+        "title": "Progressive Web App (PWA) for Zero-Friction Access",
+        "description": "Installable PWA, offline product browsing, push notification support, app-like experience without app store download. Bridge for non-smartphone users via WhatsApp chatbot.",
+        "priority": "P1-High",
+        "category": "funnels_onboarding",
+        "personas": ["PERS-CUST-001"],
+        "workflow_refs": ["WF-BROWSE-001", "WF-ORDER-A-001"],
+        "dependencies": ["REQ-UI-002", "REQ-UI-003", "REQ-API-009"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-INFRA-01",
+            "description": "PWA service worker hosting and push notification infrastructure",
+            "monthly_low_inr": 300,
+            "monthly_high_inr": 600
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "PWA implementation with service worker, offline cache, manifest configuration",
+            "one_time_low_inr": 6000,
+            "one_time_high_inr": 10000
+          }
+        },
+        "acceptance_criteria": [
+          "PWA installs with app-like icon on Android and iOS home screen",
+          "Offline browsing loads cached catalog pages without network",
+          "Push notifications delivered even when browser is closed (Android)",
+          "PWA passes Lighthouse PWA audit with 90+ score"
+        ]
+      }
+    ],
+    "data_licensing_compliance": [
+      {
+        "requirement_id": "REQ-DATA-001",
+        "title": "Customer Data Inventory & Consent Management",
+        "description": "Complete customer data mapping (PII inventory), consent capture and revocation (DPDP Act 2023 compliance), data retention policy enforcement, right to be forgotten workflow, data portability export.",
+        "priority": "P0-Critical",
+        "category": "data_licensing_compliance",
+        "personas": ["System", "PERS-ADM-001"],
+        "workflow_refs": ["WF-BROWSE-001", "WF-ORDER-A-001", "WF-CHECKOUT-001", "WF-ONBOARD-001"],
+        "dependencies": ["REQ-BE-001", "REQ-INFRA-004"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-DATA-11",
+            "description": "Consent management platform subscription, DPDP compliance tools",
+            "monthly_low_inr": 5000,
+            "monthly_high_inr": 8000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-11",
+            "description": "PII inventory scanning, consent capture UI, right-to-be-forgotten workflow",
+            "one_time_low_inr": 15000,
+            "one_time_high_inr": 25000
+          }
+        },
+        "acceptance_criteria": [
+          "Complete PII inventory map documented with data classification",
+          "Consent capture at registration with granular opt-in per purpose",
+          "Right to be forgotten processes complete data deletion within 30 days",
+          "Data portability export generates JSON/CSV within 24 hours of request"
+        ]
+      },
+      {
+        "requirement_id": "REQ-DATA-002",
+        "title": "Usage Pattern Analytics & Product Improvement",
+        "description": "Product affinity analysis, market-level demand heatmaps, seasonal trend detection, merchant performance benchmarking, search query analytics for catalog gaps, recommendation engine.",
+        "priority": "P2-Medium",
+        "category": "data_licensing_compliance",
+        "personas": ["PERS-ADM-001", "PERS-MER-001"],
+        "workflow_refs": ["WF-BROWSE-001", "WF-ORDER-A-001"],
+        "dependencies": ["REQ-BE-008", "REQ-BE-017"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-AI-04",
+            "description": "ML model training, recommendation engine hosting, analytics compute",
+            "monthly_low_inr": 3000,
+            "monthly_high_inr": 5000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-03",
+            "description": "Analytics models, recommendation algorithm, demand heatmap generation",
+            "one_time_low_inr": 10000,
+            "one_time_high_inr": 15000
+          }
+        },
+        "acceptance_criteria": [
+          "Product affinity analysis identifies cross-sell opportunities with 70%+ precision",
+          "Market-level demand heatmap updates weekly with color-coded intensity",
+          "Seasonal trend detection identifies peak demand periods per category",
+          "Search query analytics report identifies top 50 unfulfilled search terms monthly"
+        ]
+      },
+      {
+        "requirement_id": "REQ-DATA-003",
+        "title": "Data Licensing & Monetization Framework",
+        "description": "Anonymized aggregate market data products (for B2B), benchmarking reports (subscription), API access tier for third-party partners, data usage audit, revenue sharing with consenting merchants.",
+        "priority": "P3-Low",
+        "category": "data_licensing_compliance",
+        "personas": ["PERS-ADM-001"],
+        "workflow_refs": [],
+        "dependencies": ["REQ-DATA-001", "REQ-DATA-002", "REQ-API-010"],
+        "cost_projections": {
+          "operational": {
+            "cost_ref": "OC-DATA-11",
+            "description": "Data product hosting, API gateway for partners, data audit management",
+            "monthly_low_inr": 2000,
+            "monthly_high_inr": 4000
+          },
+          "deployment": {
+            "cost_ref": "DC-SETUP-11",
+            "description": "Data licensing framework, API access tier, anonymization pipeline, revenue sharing model",
+            "one_time_low_inr": 12000,
+            "one_time_high_inr": 20000
+          }
+        },
+        "acceptance_criteria": [
+          "Anonymized aggregate data products pass privacy audit (no re-identification risk)",
+          "Benchmarking report subscription available with monthly/quarterly delivery",
+          "Third-party API access tier includes rate limiting and usage billing",
+          "Revenue sharing with consenting merchants tracked and paid out monthly"
+        ]
+      }
+    ]
+  },
+  "cost_boundaries": {
+    "operational_costs": [
+      {
+        "cost_ref": "OC-INFRA-01",
+        "category": "Cloud Infrastructure",
+        "description": "Supabase (PostgreSQL DB + Auth + Storage), Railway/Vercel backend hosting, CDN bandwidth, Redis caching, monitoring tools",
+        "monthly_low_inr": 1300,
+        "monthly_high_inr": 4000,
+        "related_requirement_ids": [
+          "REQ-UI-001", "REQ-UI-002", "REQ-UI-003", "REQ-UI-006", "REQ-UI-007", "REQ-UI-008",
+          "REQ-API-001", "REQ-API-002", "REQ-API-003", "REQ-API-007", "REQ-API-008", "REQ-API-010",
+          "REQ-BE-001", "REQ-BE-002", "REQ-BE-003", "REQ-BE-004", "REQ-BE-005", "REQ-BE-007", "REQ-BE-008", "REQ-BE-010",
+          "REQ-COM-001", "REQ-COM-002", "REQ-COM-003", "REQ-COM-004", "REQ-COM-005", "REQ-COM-006",
+          "REQ-INFRA-001", "REQ-INFRA-002", "REQ-INFRA-003", "REQ-INFRA-005", "REQ-INFRA-006", "REQ-INFRA-007", "REQ-INFRA-008"
+        ]
+      },
+      {
+        "cost_ref": "OC-COMMS-02",
+        "category": "Communications",
+        "description": "SMS OTP via MSG91/Twilio, transactional SMS, WhatsApp Business API, push notification infrastructure, email API",
+        "monthly_low_inr": 3000,
+        "monthly_high_inr": 5000,
+        "related_requirement_ids": ["REQ-UI-004", "REQ-API-003", "REQ-API-004", "REQ-API-006", "REQ-API-009", "REQ-BE-006"]
+      },
+      {
+        "cost_ref": "OC-MAPS-03",
+        "category": "Google Maps Platform",
+        "description": "Geocoding API for merchant addresses, Distance Matrix API for delivery zones, Maps Embed for store directions, Maps JavaScript for store locator",
+        "monthly_low_inr": 1500,
+        "monthly_high_inr": 3000,
+        "related_requirement_ids": ["REQ-UI-005", "REQ-API-005"]
+      },
+      {
+        "cost_ref": "OC-AI-04",
+        "category": "AI & Development Suite",
+        "description": "LLM API credits for cataloging, Pictory/OpenAI for reel generation, search relevance tuning (Algolia/PostgreSQL FTS), AI-generated product descriptions",
+        "monthly_low_inr": 10500,
+        "monthly_high_inr": 16000,
+        "related_requirement_ids": ["REQ-BE-009", "REQ-COM-003"]
+      },
+      {
+        "cost_ref": "OC-LEGAL-05",
+        "category": "Legal, Compliance & CA",
+        "description": "Monthly retainer for compliance advisor, CA for GST filing, legal document updates, data privacy compliance (IT Act, upcoming DPDP)",
+        "monthly_low_inr": 8000,
+        "monthly_high_inr": 10000,
+        "related_requirement_ids": ["REQ-INFRA-004", "REQ-INFRA-008"]
+      },
+      {
+        "cost_ref": "OC-STAFF-06",
+        "category": "Field Operations Staff",
+        "description": "1 field onboarding executive for in-person merchant onboarding, store photography, catalog upload assistance, training, and support",
+        "monthly_low_inr": 20000,
+        "monthly_high_inr": 25000,
+        "related_requirement_ids": ["REQ-UI-011", "REQ-UI-012"]
+      },
+      {
+        "cost_ref": "OC-PERF-07",
+        "category": "Performance Testing Infrastructure",
+        "description": "k6/Artillery cloud execution credits, synthetic monitoring agents, performance dashboard hosting, load testing tools",
+        "monthly_low_inr": 2000,
+        "monthly_high_inr": 4000,
+        "related_requirement_ids": ["REQ-PERF-001", "REQ-PERF-002", "REQ-PERF-003"]
+      },
+      {
+        "cost_ref": "OC-MAINT-08",
+        "category": "Observability & APM Stack",
+        "description": "APM tool subscription (Datadog/NewRelic), centralized logging pipeline, distributed tracing, RUM SDK, PagerDuty/OpsGenie alerting, log storage",
+        "monthly_low_inr": 15000,
+        "monthly_high_inr": 25000,
+        "related_requirement_ids": ["REQ-MAINT-003", "REQ-MAINT-005"]
+      },
+      {
+        "cost_ref": "OC-DR-09",
+        "category": "Disaster Recovery Infrastructure",
+        "description": "Cross-region database replication, backup storage (30-day retention), DR compute standby capacity, DNS failover routing, DR testing",
+        "monthly_low_inr": 5000,
+        "monthly_high_inr": 10000,
+        "related_requirement_ids": ["REQ-DR-001", "REQ-DR-002", "REQ-DR-003", "REQ-DR-004"]
+      },
+      {
+        "cost_ref": "OC-FUNNEL-10",
+        "category": "Marketing & Customer Acquisition",
+        "description": "Referral reward credits, loyalty program liability, SMS/WhatsApp campaign costs, SEO tools subscription, affiliate tracking platform",
+        "monthly_low_inr": 8000,
+        "monthly_high_inr": 15000,
+        "related_requirement_ids": ["REQ-FUNNEL-001", "REQ-FUNNEL-003"]
+      },
+      {
+        "cost_ref": "OC-DATA-11",
+        "category": "Data Privacy & Compliance",
+        "description": "Consent management platform subscription, DPDP Act compliance tools, data inventory scanning, right-to-forgotten workflow automation",
+        "monthly_low_inr": 5000,
+        "monthly_high_inr": 8000,
+        "related_requirement_ids": ["REQ-DATA-001", "REQ-DATA-003"]
+      },
+      {
+        "cost_ref": "OC-LOCAL-12",
+        "category": "Localization & i18n Infrastructure",
+        "description": "Translation management system subscription, locale file hosting, language QA tools, translation review workflow",
+        "monthly_low_inr": 3000,
+        "monthly_high_inr": 5000,
+        "related_requirement_ids": ["REQ-UI-013"]
+      },
+      {
+        "cost_ref": "OC-TOOLS-13",
+        "category": "Security & Patch Management Tools",
+        "description": "Snyk/Dependabot vulnerability scanning subscription, license compliance checker, SBOM generation tools, CI/CD security plugins",
+        "monthly_low_inr": 2000,
+        "monthly_high_inr": 4000,
+        "related_requirement_ids": ["REQ-MAINT-001", "REQ-MAINT-004"]
+      }
+    ],
+    "deployment_costs": [
+      {
+        "cost_ref": "DC-SETUP-01",
+        "category": "Company Registration & IP",
+        "description": "Pvt Ltd company registration, trademark filing (PeteMart brand, logo), domain registration (petemart.in), GST registration",
+        "one_time_low_inr": 12500,
+        "one_time_high_inr": 24000,
+        "related_requirement_ids": ["REQ-COM-001", "REQ-COM-002"]
+      },
+      {
+        "cost_ref": "DC-SETUP-02",
+        "category": "App Store Listings",
+        "description": "Apple Developer Program ($99/yr ~Rs 8,300), Google Play Developer ($25 one-time ~Rs 2,100), app store graphics and descriptions",
+        "one_time_low_inr": 10400,
+        "one_time_high_inr": 10400,
+        "related_requirement_ids": ["REQ-UI-009", "REQ-UI-010"]
+      },
+      {
+        "cost_ref": "DC-SETUP-03",
+        "category": "Initial Cloud & DB Provisioning",
+        "description": "Supabase project setup (DB, Auth, Storage), Railway/Vercel initial credits, CDN configuration (Cloudflare/Vercel), Redis setup, domain DNS configuration",
+        "one_time_low_inr": 10000,
+        "one_time_high_inr": 20000,
+        "related_requirement_ids": [
+          "REQ-UI-001", "REQ-UI-002", "REQ-UI-003", "REQ-UI-005", "REQ-UI-006", "REQ-UI-007", "REQ-UI-008",
+          "REQ-API-001", "REQ-API-002", "REQ-API-004", "REQ-API-005", "REQ-API-006", "REQ-API-007", "REQ-API-008", "REQ-API-009", "REQ-API-010",
+          "REQ-BE-001", "REQ-BE-002", "REQ-BE-003", "REQ-BE-005", "REQ-BE-006", "REQ-BE-007", "REQ-BE-008", "REQ-BE-009", "REQ-BE-010",
+          "REQ-COM-004", "REQ-COM-005", "REQ-INFRA-001", "REQ-INFRA-002", "REQ-INFRA-003", "REQ-INFRA-005", "REQ-INFRA-006", "REQ-INFRA-007"
+        ]
+      },
+      {
+        "cost_ref": "DC-SETUP-04",
+        "category": "Legal Documentation & Compliance",
+        "description": "Privacy policy drafting, seller terms and conditions, customer terms of use, GDPR/IT Act compliance review, data processing agreement",
+        "one_time_low_inr": 25000,
+        "one_time_high_inr": 40000,
+        "related_requirement_ids": ["REQ-INFRA-004", "REQ-INFRA-008"]
+      },
+      {
+        "cost_ref": "DC-SETUP-05",
+        "category": "Concierge Onboarding (First 50 Stores)",
+        "description": "50 in-person store visits for photography, catalog upload, QR code installation, merchant training, and welcome kit distribution",
+        "one_time_low_inr": 25000,
+        "one_time_high_inr": 50000,
+        "related_requirement_ids": ["REQ-UI-011"]
+      },
+      {
+        "cost_ref": "DC-SETUP-06",
+        "category": "Payment Gateway Integration",
+        "description": "Razorpay account setup and KYC, payment gateway integration, webhook configuration, test transaction verification, escrow account setup",
+        "one_time_low_inr": 5000,
+        "one_time_high_inr": 10000,
+        "related_requirement_ids": ["REQ-API-003", "REQ-COM-006"]
+      },
+      {
+        "cost_ref": "DC-SETUP-07",
+        "category": "Performance Benchmarking & Load Testing",
+        "description": "k6/Artillery test script development, performance baseline measurement, CI/CD performance gate configuration, dashboard setup",
+        "one_time_low_inr": 15000,
+        "one_time_high_inr": 25000,
+        "related_requirement_ids": ["REQ-PERF-001", "REQ-PERF-003"]
+      },
+      {
+        "cost_ref": "DC-SETUP-08",
+        "category": "Full-Stack Observability Stack Setup",
+        "description": "APM agent instrumentation across all services, centralized logging pipeline (ELK/Loki), distributed tracing setup, RUM SDK integration, PagerDuty/OpsGenie alerting configuration",
+        "one_time_low_inr": 20000,
+        "one_time_high_inr": 35000,
+        "related_requirement_ids": ["REQ-MAINT-003"]
+      },
+      {
+        "cost_ref": "DC-SETUP-09",
+        "category": "Disaster Recovery Infrastructure Setup",
+        "description": "Multi-region/AZ infrastructure provisioning, database synchronous replication configuration, DNS failover setup (Route53/Cloudflare), DR playbook and runbooks development, initial failover test",
+        "one_time_low_inr": 25000,
+        "one_time_high_inr": 40000,
+        "related_requirement_ids": ["REQ-DR-001", "REQ-DR-002"]
+      },
+      {
+        "cost_ref": "DC-SETUP-10",
+        "category": "i18n/Localization Implementation",
+        "description": "UI string externalization to locale files, translation management system setup, Kannada and Hindi translation, RTL support preparation, locale QA testing",
+        "one_time_low_inr": 20000,
+        "one_time_high_inr": 35000,
+        "related_requirement_ids": ["REQ-UI-013"]
+      },
+      {
+        "cost_ref": "DC-SETUP-11",
+        "category": "Data Privacy & Consent Infrastructure",
+        "description": "Consent management platform implementation, PII inventory scanning and mapping, DPDP Act 2023 compliance workflow, right-to-be-forgotten automation, data portability API",
+        "one_time_low_inr": 15000,
+        "one_time_high_inr": 25000,
+        "related_requirement_ids": ["REQ-DATA-001"]
+      },
+      {
+        "cost_ref": "DC-SETUP-12",
+        "category": "PCI DSS Compliance via Razorpay",
+        "description": "SAQ A validation documentation, ASV scan setup and execution, PCI attestation of compliance, tokenization configuration for recurring payments",
+        "one_time_low_inr": 5000,
+        "one_time_high_inr": 10000,
+        "related_requirement_ids": ["REQ-INFRA-009"]
+      },
+      {
+        "cost_ref": "DC-SETUP-13",
+        "category": "Marketing Funnel & Referral Engine",
+        "description": "Referral program configuration with tracking, loyalty engine setup with tiered rewards, SEO landing page templates per market, Google Business Profile integration, affiliate tracking system",
+        "one_time_low_inr": 15000,
+        "one_time_high_inr": 25000,
+        "related_requirement_ids": ["REQ-FUNNEL-001", "REQ-FUNNEL-003"]
+      }
+    ],
+    "total_setup_cost_range_inr": {
+      "low": 202900,
+      "high": 359400
+    },
+    "total_monthly_burn_range_inr": {
+      "low": 84300,
+      "high": 134000
+    }
+  },
+  "quality_guardrail_compliance": {
+    "requirement_id_cost_coverage": {
+    "total_requirement_ids": 96,
+      "ids_with_operational_cost": 78,
+      "ids_with_deployment_cost": 78,
+      "coverage_pct": 100,
+      "guardrail_status": "PASS"
+    },
+    "workflow_schema_match": {
+      "workflows_in_markdown": ["WF-BROWSE-001", "WF-ORDER-A-001", "WF-ORDER-B-001", "WF-ORDER-C-001", "WF-CHECKOUT-001", "WF-TRACK-001", "WF-ONBOARD-001"],
+      "workflows_in_json": ["browse_products", "order_mode_a", "order_mode_b", "order_mode_c", "checkout_consolidation", "order_tracking", "merchant_onboarding"],
+      "match_status": "CONFIRMED",
+      "guardrail_status": "PASS"
+    },
+    "new_requirement_categories_added": ["performance_scale", "maintenance_lifecycle", "disaster_recovery", "funnels_onboarding", "data_licensing_compliance"],
+    "new_requirement_count": 32,
+    "total_requirement_ids_after_update": 78
+  },
+  "dependency_map": {
+    "description": "Cross-requirement dependency map showing prerequisite relationships",
+    "edges": [
+      {"from": "REQ-UI-002", "to": "REQ-BE-009"},
+      {"from": "REQ-UI-003", "to": "REQ-API-001"},
+      {"from": "REQ-UI-003", "to": "REQ-API-002"},
+      {"from": "REQ-UI-004", "to": "REQ-API-004"},
+      {"from": "REQ-UI-005", "to": "REQ-API-005"},
+      {"from": "REQ-UI-006", "to": "REQ-API-002"},
+      {"from": "REQ-UI-006", "to": "REQ-API-003"},
+      {"from": "REQ-UI-006", "to": "REQ-BE-003"},
+      {"from": "REQ-UI-007", "to": "REQ-API-007"},
+      {"from": "REQ-UI-007", "to": "REQ-BE-002"},
+      {"from": "REQ-UI-008", "to": "REQ-API-001"},
+      {"from": "REQ-UI-008", "to": "REQ-API-008"},
+      {"from": "REQ-UI-009", "to": "REQ-API-006"},
+      {"from": "REQ-UI-009", "to": "REQ-API-009"},
+      {"from": "REQ-UI-010", "to": "REQ-API-006"},
+      {"from": "REQ-UI-010", "to": "REQ-API-009"},
+      {"from": "REQ-UI-011", "to": "REQ-API-006"},
+      {"from": "REQ-UI-011", "to": "REQ-API-008"},
+      {"from": "REQ-UI-011", "to": "REQ-COM-001"},
+      {"from": "REQ-UI-012", "to": "REQ-BE-004"},
+      {"from": "REQ-UI-012", "to": "REQ-BE-005"},
+      {"from": "REQ-UI-012", "to": "REQ-API-008"},
+      {"from": "REQ-API-001", "to": "REQ-BE-001"},
+      {"from": "REQ-API-002", "to": "REQ-BE-001"},
+      {"from": "REQ-API-002", "to": "REQ-BE-002"},
+      {"from": "REQ-API-003", "to": "REQ-BE-001"},
+      {"from": "REQ-API-004", "to": "REQ-BE-001"},
+      {"from": "REQ-API-005", "to": "REQ-BE-001"},
+      {"from": "REQ-API-006", "to": "REQ-INFRA-004"},
+      {"from": "REQ-API-006", "to": "REQ-INFRA-008"},
+      {"from": "REQ-API-007", "to": "REQ-BE-002"},
+      {"from": "REQ-API-007", "to": "REQ-BE-007"},
+      {"from": "REQ-API-008", "to": "REQ-BE-001"},
+      {"from": "REQ-API-008", "to": "REQ-COM-001"},
+      {"from": "REQ-API-009", "to": "REQ-BE-006"},
+      {"from": "REQ-API-010", "to": "REQ-BE-008"},
+      {"from": "REQ-BE-002", "to": "REQ-BE-001"},
+      {"from": "REQ-BE-003", "to": "REQ-BE-001"},
+      {"from": "REQ-BE-003", "to": "REQ-BE-007"},
+      {"from": "REQ-BE-004", "to": "REQ-BE-001"},
+      {"from": "REQ-BE-004", "to": "REQ-COM-001"},
+      {"from": "REQ-BE-005", "to": "REQ-BE-001"},
+      {"from": "REQ-BE-005", "to": "REQ-COM-002"},
+      {"from": "REQ-BE-005", "to": "REQ-COM-004"},
+      {"from": "REQ-BE-006", "to": "REQ-BE-001"},
+      {"from": "REQ-BE-007", "to": "REQ-BE-001"},
+      {"from": "REQ-BE-007", "to": "REQ-COM-004"},
+      {"from": "REQ-BE-008", "to": "REQ-BE-001"},
+      {"from": "REQ-BE-009", "to": "REQ-BE-001"},
+      {"from": "REQ-BE-010", "to": "REQ-BE-001"},
+      {"from": "REQ-COM-001", "to": "REQ-BE-001"},
+      {"from": "REQ-COM-002", "to": "REQ-API-003"},
+      {"from": "REQ-COM-002", "to": "REQ-BE-005"},
+      {"from": "REQ-COM-003", "to": "REQ-BE-001"},
+      {"from": "REQ-COM-004", "to": "REQ-BE-001"},
+      {"from": "REQ-COM-005", "to": "REQ-BE-005"},
+      {"from": "REQ-COM-005", "to": "REQ-BE-008"},
+      {"from": "REQ-COM-006", "to": "REQ-BE-005"},
+      {"from": "REQ-COM-006", "to": "REQ-COM-002"},
+      {"from": "REQ-INFRA-002", "to": "REQ-INFRA-001"},
+      {"from": "REQ-INFRA-003", "to": "REQ-INFRA-001"},
+      {"from": "REQ-INFRA-005", "to": "REQ-INFRA-001"},
+      {"from": "REQ-INFRA-006", "to": "REQ-INFRA-001"},
+      {"from": "REQ-INFRA-007", "to": "REQ-INFRA-001"},
+      {"from": "REQ-INFRA-008", "to": "REQ-INFRA-001"},
+      {"from": "REQ-INFRA-009", "to": "REQ-API-003"},
+      {"from": "REQ-INFRA-009", "to": "REQ-INFRA-004"},
+      {"from": "REQ-UI-013", "to": "REQ-BE-001"},
+      {"from": "REQ-UI-014", "to": "REQ-BE-008"},
+      {"from": "REQ-UI-014", "to": "REQ-API-010"},
+      {"from": "REQ-API-011", "to": "REQ-API-008"},
+      {"from": "REQ-API-011", "to": "REQ-BE-001"},
+      {"from": "REQ-BE-011", "to": "REQ-BE-001"},
+      {"from": "REQ-BE-011", "to": "REQ-API-001"},
+      {"from": "REQ-BE-012", "to": "REQ-BE-001"},
+      {"from": "REQ-BE-012", "to": "REQ-BE-002"},
+      {"from": "REQ-BE-013", "to": "REQ-BE-001"},
+      {"from": "REQ-BE-013", "to": "REQ-BE-002"},
+      {"from": "REQ-BE-014", "to": "REQ-BE-010"},
+      {"from": "REQ-BE-015", "to": "REQ-BE-001"},
+      {"from": "REQ-BE-015", "to": "REQ-BE-002"},
+      {"from": "REQ-BE-016", "to": "REQ-BE-001"},
+      {"from": "REQ-BE-016", "to": "REQ-COM-002"},
+      {"from": "REQ-BE-017", "to": "REQ-BE-008"},
+      {"from": "REQ-BE-017", "to": "REQ-BE-001"},
+      {"from": "REQ-COM-007", "to": "REQ-BE-001"},
+      {"from": "REQ-COM-007", "to": "REQ-COM-002"},
+      {"from": "REQ-COM-008", "to": "REQ-COM-006"},
+      {"from": "REQ-COM-008", "to": "REQ-BE-002"},
+      {"from": "REQ-PERF-001", "to": "REQ-INFRA-001"},
+      {"from": "REQ-PERF-001", "to": "REQ-BE-010"},
+      {"from": "REQ-PERF-002", "to": "REQ-INFRA-001"},
+      {"from": "REQ-PERF-002", "to": "REQ-INFRA-007"},
+      {"from": "REQ-PERF-002", "to": "REQ-BE-010"},
+      {"from": "REQ-PERF-003", "to": "REQ-PERF-001"},
+      {"from": "REQ-PERF-003", "to": "REQ-INFRA-002"},
+      {"from": "REQ-MAINT-001", "to": "REQ-INFRA-002"},
+      {"from": "REQ-MAINT-001", "to": "REQ-INFRA-008"},
+      {"from": "REQ-MAINT-002", "to": "REQ-INFRA-002"},
+      {"from": "REQ-MAINT-002", "to": "REQ-INFRA-001"},
+      {"from": "REQ-MAINT-003", "to": "REQ-INFRA-001"},
+      {"from": "REQ-MAINT-003", "to": "REQ-INFRA-003"},
+      {"from": "REQ-MAINT-004", "to": "REQ-INFRA-002"},
+      {"from": "REQ-MAINT-004", "to": "REQ-MAINT-001"},
+      {"from": "REQ-MAINT-005", "to": "REQ-MAINT-003"},
+      {"from": "REQ-DR-001", "to": "REQ-INFRA-005"},
+      {"from": "REQ-DR-002", "to": "REQ-DR-001"},
+      {"from": "REQ-DR-002", "to": "REQ-INFRA-001"},
+      {"from": "REQ-DR-003", "to": "REQ-INFRA-001"},
+      {"from": "REQ-DR-003", "to": "REQ-INFRA-005"},
+      {"from": "REQ-DR-004", "to": "REQ-DR-001"},
+      {"from": "REQ-DR-004", "to": "REQ-DR-003"},
+      {"from": "REQ-FUNNEL-001", "to": "REQ-UI-001"},
+      {"from": "REQ-FUNNEL-001", "to": "REQ-API-004"},
+      {"from": "REQ-FUNNEL-001", "to": "REQ-BE-006"},
+      {"from": "REQ-FUNNEL-002", "to": "REQ-UI-002"},
+      {"from": "REQ-FUNNEL-002", "to": "REQ-API-006"},
+      {"from": "REQ-FUNNEL-002", "to": "REQ-BE-006"},
+      {"from": "REQ-FUNNEL-003", "to": "REQ-COM-007"},
+      {"from": "REQ-FUNNEL-003", "to": "REQ-BE-001"},
+      {"from": "REQ-FUNNEL-004", "to": "REQ-UI-002"},
+      {"from": "REQ-FUNNEL-004", "to": "REQ-UI-003"},
+      {"from": "REQ-FUNNEL-004", "to": "REQ-API-009"},
+      {"from": "REQ-DATA-001", "to": "REQ-BE-001"},
+      {"from": "REQ-DATA-001", "to": "REQ-INFRA-004"},
+      {"from": "REQ-DATA-002", "to": "REQ-BE-008"},
+      {"from": "REQ-DATA-002", "to": "REQ-BE-017"},
+      {"from": "REQ-DATA-003", "to": "REQ-DATA-001"},
+      {"from": "REQ-DATA-003", "to": "REQ-DATA-002"},
+      {"from": "REQ-DATA-003", "to": "REQ-API-010"}
+    ]
+  },
+  "priority_distribution": {
+    "P0-Critical": {
+      "count": 33,
+      "requirement_ids": [
+        "REQ-UI-001", "REQ-UI-002", "REQ-UI-003", "REQ-UI-004", "REQ-UI-005", "REQ-UI-006", "REQ-UI-008", "REQ-UI-011", "REQ-UI-013",
+        "REQ-API-001", "REQ-API-002", "REQ-API-003", "REQ-API-004", "REQ-API-006", "REQ-API-008",
+        "REQ-BE-001", "REQ-BE-002", "REQ-BE-004", "REQ-BE-011", "REQ-BE-015",
+        "REQ-COM-001", "REQ-COM-002",
+        "REQ-INFRA-001", "REQ-INFRA-004", "REQ-INFRA-008", "REQ-INFRA-009",
+        "REQ-PERF-001", "REQ-PERF-002",
+        "REQ-MAINT-001", "REQ-MAINT-003",
+        "REQ-DR-001", "REQ-DR-003",
+        "REQ-DATA-001"
+      ]
+    },
+    "P1-High": {
+      "count": 35,
+      "requirement_ids": [
+        "REQ-UI-007", "REQ-UI-009", "REQ-UI-010", "REQ-UI-012", "REQ-UI-014",
+        "REQ-API-005", "REQ-API-007", "REQ-API-009", "REQ-API-011",
+        "REQ-BE-003", "REQ-BE-005", "REQ-BE-006", "REQ-BE-007", "REQ-BE-009", "REQ-BE-010", "REQ-BE-012", "REQ-BE-013", "REQ-BE-016",
+        "REQ-COM-003", "REQ-COM-004", "REQ-COM-006", "REQ-COM-007", "REQ-COM-008",
+        "REQ-INFRA-002", "REQ-INFRA-003", "REQ-INFRA-006", "REQ-INFRA-007",
+        "REQ-PERF-003",
+        "REQ-MAINT-002", "REQ-MAINT-004", "REQ-MAINT-005",
+        "REQ-DR-002",
+        "REQ-FUNNEL-001", "REQ-FUNNEL-002", "REQ-FUNNEL-004"
+      ]
+    },
+    "P2-Medium": {
+      "count": 9,
+      "requirement_ids": [
+        "REQ-API-010",
+        "REQ-BE-008", "REQ-BE-014", "REQ-BE-017",
+        "REQ-COM-005",
+        "REQ-INFRA-005",
+        "REQ-DR-004",
+        "REQ-FUNNEL-003",
+        "REQ-DATA-002"
+      ]
+    },
+    "P3-Low": {
+      "count": 1,
+      "requirement_ids": [
+        "REQ-DATA-003"
+      ]
+    }
+  }
+}

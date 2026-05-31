@@ -1,0 +1,280 @@
+name: CD — Deploy to Environment
+
+on:
+  push:
+    branches: [develop, qa, staging]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - development
+          - qa
+          - staging
+          - production
+      version:
+        description: 'Semantic version override (e.g. 1.2.3)'
+        required: false
+        type: string
+
+env:
+  NODE_VERSION: '20.x'
+  PNPM_VERSION: '9'
+
+jobs:
+  # ──────────────────────────────────────────────────────────────
+  # Determine deployment target from branch + inputs
+  # ──────────────────────────────────────────────────────────────
+  resolve-environment:
+    name: 🎯 Resolve Environment
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.resolve.outputs.environment }}
+      vercel_alias: ${{ steps.resolve.outputs.vercel_alias }}
+      supabase_ref: ${{ steps.resolve.outputs.supabase_ref }}
+      is_production: ${{ steps.resolve.outputs.is_production }}
+    steps:
+      - id: resolve
+        shell: bash
+        run: |
+          BRANCH="${GITHUB_REF_NAME}"
+          ENV="${{ github.event.inputs.environment }}"
+
+          # Map branch → environment if not manually specified
+          if [ -z "$ENV" ]; then
+            case "$BRANCH" in
+              develop)  ENV="development" ;;
+              qa)       ENV="qa" ;;
+              staging)  ENV="staging" ;;
+              main)     ENV="production" ;;
+              *)        ENV="development" ;;
+            esac
+          fi
+
+          case "$ENV" in
+            development)
+              echo "environment=development" >> "$GITHUB_OUTPUT"
+              echo "vercel_alias=dev.petemart.vercel.app" >> "$GITHUB_OUTPUT"
+              echo "supabase_ref=dev" >> "$GITHUB_OUTPUT"
+              echo "is_production=false" >> "$GITHUB_OUTPUT"
+              ;;
+            qa)
+              echo "environment=qa" >> "$GITHUB_OUTPUT"
+              echo "vercel_alias=qa.petemart.vercel.app" >> "$GITHUB_OUTPUT"
+              echo "supabase_ref=qa" >> "$GITHUB_OUTPUT"
+              echo "is_production=false" >> "$GITHUB_OUTPUT"
+              ;;
+            staging)
+              echo "environment=staging" >> "$GITHUB_OUTPUT"
+              echo "vercel_alias=staging.petemart.vercel.app" >> "$GITHUB_OUTPUT"
+              echo "supabase_ref=staging" >> "$GITHUB_OUTPUT"
+              echo "is_production=false" >> "$GITHUB_OUTPUT"
+              ;;
+            production)
+              echo "environment=production" >> "$GITHUB_OUTPUT"
+              echo "vercel_alias=petemart.vercel.app" >> "$GITHUB_OUTPUT"
+              echo "supabase_ref=prod" >> "$GITHUB_OUTPUT"
+              echo "is_production=true" >> "$GITHUB_OUTPUT"
+              ;;
+          esac
+          echo "✅ Resolved: $ENV"
+
+  # ──────────────────────────────────────────────────────────────
+  # Build and deploy to Vercel
+  # ──────────────────────────────────────────────────────────────
+  vercel-deploy:
+    name: 🚀 Vercel Deploy (${{ needs.resolve-environment.outputs.environment }})
+    needs: [resolve-environment]
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ needs.resolve-environment.outputs.environment }}
+      url: ${{ needs.resolve-environment.outputs.vercel_alias }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 📦 Setup pnpm ${{ env.PNPM_VERSION }}
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: ⚡ Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: 📥 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🏗️ Build
+        run: pnpm build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets[format('NEXT_PUBLIC_SUPABASE_URL_{0}', needs.resolve-environment.outputs.environment)] || secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets[format('NEXT_PUBLIC_SUPABASE_ANON_KEY_{0}', needs.resolve-environment.outputs.environment)] || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+
+      - name: 🚀 Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod --prebuilt'
+          scope: ${{ secrets.VERCEL_ORG_ID }}
+          alias-domains: |
+            ${{ needs.resolve-environment.outputs.vercel_alias }}
+
+  # ──────────────────────────────────────────────────────────────
+  # Run Supabase migrations
+  # ──────────────────────────────────────────────────────────────
+  supabase-migrate:
+    name: 🗄️ Supabase Migration (${{ needs.resolve-environment.outputs.environment }})
+    needs: [resolve-environment, vercel-deploy]
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ needs.resolve-environment.outputs.environment }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 🗄️ Run Supabase migrations
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: 🔐 Link to Supabase project
+        run: |
+          supabase link --project-ref "${{ secrets[format('SUPABASE_PROJECT_REF_{0}', needs.resolve-environment.outputs.environment)] }}"
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets[format('SUPABASE_DB_PASSWORD_{0}', needs.resolve-environment.outputs.environment)] }}
+
+      - name: 📦 Push migrations
+        run: supabase db push
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets[format('SUPABASE_DB_PASSWORD_{0}', needs.resolve-environment.outputs.environment)] }}
+
+      - name: ✅ Verify migration status
+        run: supabase db status
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets[format('SUPABASE_DB_PASSWORD_{0}', needs.resolve-environment.outputs.environment)] }}
+
+  # ──────────────────────────────────────────────────────────────
+  # Tag version (production only)
+  # ──────────────────────────────────────────────────────────────
+  tag-version:
+    name: 🏷️ Tag Release Version
+    needs: [resolve-environment, supabase-migrate]
+    if: needs.resolve-environment.outputs.environment == 'production'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-tags: true
+          fetch-depth: 0
+
+      - name: 🔖 Determine next version
+        id: semver
+        shell: bash
+        run: |
+          # Get latest tag, default to v0.0.0
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "Latest tag: $LATEST_TAG"
+
+          # Strip 'v' prefix
+          LATEST="${LATEST_TAG#v}"
+
+          # Parse major.minor.patch
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$LATEST"
+
+          VERSION_OVERRIDE="${{ github.event.inputs.version }}"
+
+          if [ -n "$VERSION_OVERRIDE" ]; then
+            NEW_VERSION="$VERSION_OVERRIDE"
+          else
+            # Check commit messages for bump indicators
+            COMMIT_MSG=$(git log -1 --pretty=%B)
+            if echo "$COMMIT_MSG" | grep -qiE 'breaking( change)?!?|major'; then
+              MAJOR=$((MAJOR + 1))
+              MINOR=0
+              PATCH=0
+            elif echo "$COMMIT_MSG" | grep -qiE 'feat(\(.+\))?!?:|feature|minor'; then
+              MINOR=$((MINOR + 1))
+              PATCH=0
+            else
+              PATCH=$((PATCH + 1))
+            fi
+            NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
+          fi
+
+          echo "version=v${NEW_VERSION}" >> "$GITHUB_OUTPUT"
+          echo "version_raw=${NEW_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: 🏷️ Create Git Tag
+        run: |
+          git config user.name "petemart-bot"
+          git config user.email "bot@petemart.vercel.app"
+          git tag -a "${{ steps.semver.outputs.version }}" -m "Release ${{ steps.semver.outputs.version }}"
+          git push origin "${{ steps.semver.outputs.version }}"
+
+      - name: 📝 Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.semver.outputs.version }}
+          name: Release ${{ steps.semver.outputs.version }}
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+
+  # ──────────────────────────────────────────────────────────────
+  # Post-deployment smoke test
+  # ──────────────────────────────────────────────────────────────
+  smoke-test:
+    name: 🔥 Smoke Test
+    needs: [resolve-environment, vercel-deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🌐 Check deployment health
+        shell: bash
+        run: |
+          URL="https://${{ needs.resolve-environment.outputs.vercel_alias }}"
+          echo "🔍 Testing: $URL"
+
+          # Check HTTP 200
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
+          if [ "$STATUS" != "200" ]; then
+            echo "❌ Homepage returned $STATUS (expected 200)"
+            exit 1
+          fi
+          echo "✅ Homepage: $STATUS"
+
+          # Check API health endpoint
+          API_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$URL/api/health" 2>/dev/null || echo "000")
+          if [ "$API_STATUS" = "200" ]; then
+            echo "✅ API Health: $API_STATUS"
+          else
+            echo "⚠️  API Health endpoint: $API_STATUS (non-critical)"
+          fi
+
+          # Check page contains expected content
+          CONTENT=$(curl -s "$URL")
+          if echo "$CONTENT" | grep -qi "petemart"; then
+            echo "✅ Content check: petemart branding found"
+          else
+            echo "⚠️  Content check: petemart branding not found"
+          fi
+
+      - name: 📊 Log deployment result
+        shell: bash
+        run: |
+          echo "## 📋 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| Environment | ${{ needs.resolve-environment.outputs.environment }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| URL | https://${{ needs.resolve-environment.outputs.vercel_alias }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Commit | ${{ github.sha }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Branch | ${{ github.ref_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Timestamp | $(date -u '+%Y-%m-%dT%H:%M:%SZ') |" >> $GITHUB_STEP_SUMMARY

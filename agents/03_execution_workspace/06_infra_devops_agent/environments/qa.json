@@ -1,0 +1,36 @@
+{
+  "environment": "qa",
+  "branch": "qa",
+  "domain": "qa.petemart.vercel.app",
+  "vercelProjectName": "petemart-qa",
+  "supabaseProjectRef": "qa",
+  "isProduction": false,
+  "features": {
+    "enableDebugLogging": true,
+    "enableHotReload": false,
+    "enableMockAuth": false,
+    "bypassPaymentGateway": true,
+    "enableSeedData": true
+  },
+  "resources": {
+    "compute": "free",
+    "vercelTier": "hobby",
+    "supabaseTier": "free",
+    "kubernetesReplicas": 1
+  },
+  "monitoring": {
+    "enabled": true,
+    "logLevel": "info",
+    "errorReporting": true
+  },
+  "deployment": {
+    "strategy": "rolling",
+    "autoDeployOnPush": true,
+    "requireApproval": false,
+    "previewDeployments": false
+  },
+  "secrets": {
+    "NEXT_PUBLIC_SUPABASE_URL": "https://qa-xxxxx.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJ...qa-anon-key"
+  }
+}

@@ -1,0 +1,787 @@
+{
+  "program_metadata": {
+    "project_name": "PeteMart",
+    "document_version": "2.0 (Agent-Optimized)",
+    "author": "Agent 05 — Senior Agile Program Manager & Scrum Master",
+    "date": "2026-05-30",
+    "total_duration_days": 22,
+    "total_sprints": 12,
+    "sprint_cadence_days": 2,
+    "execution_model": "3 AI agents parallel (UI + API + Backend)",
+    "estimated_human_equivalent_weeks": 24,
+    "agent_velocity_multiplier": "6x",
+    "total_epics": 26,
+    "total_features": 72,
+    "total_user_stories": 113,
+    "source_prd_requirements": 111,
+    "traceability_coverage_pct": 100
+  },
+  "quality_guardrails": {
+    "fail_state_stories_missing_requirement_id": "BLOCKED — all stories pass",
+    "validation_timeline_deadlocks": "PASS — no deadlocks detected",
+    "validation_unmapped_dependencies": "PASS — all dependencies resolved",
+    "ci_cd_gate_unit_tests_80_pct": "MANDATORY",
+    "qa_gate_e2e_tests_pass": "MANDATORY",
+    "security_scan_gate_no_critical": "MANDATORY",
+    "human_in_the_loop_gates": ["GATE-TECH-STACK-01", "GATE-MVP-01", "GATE-COSTING-01", "GATE-PRODUCTION-01"]
+  },
+  "phases": [
+    {
+      "phase_id": "PHASE-01",
+      "phase_name": "Foundation",
+      "sprints": ["S1", "S2"],
+      "days": "1-4",
+      "theme": "Auth, Browse, Discovery, Core Infra",
+      "tiers_delivered": ["Tier 0 (Launch MVP)"],
+      "total_stories": 20,
+      "total_points": 80
+    },
+    {
+      "phase_id": "PHASE-02",
+      "phase_name": "Commerce",
+      "sprints": ["S3", "S4"],
+      "days": "5-8",
+      "theme": "Cart, Checkout, Payment, Merchant Dashboard",
+      "tiers_delivered": ["Tier 0 (Launch MVP)"],
+      "total_stories": 21,
+      "total_points": 79
+    },
+    {
+      "phase_id": "PHASE-03",
+      "phase_name": "Operations",
+      "sprints": ["S5", "S6"],
+      "days": "9-12",
+      "theme": "Admin, Tracking, i18n, PWA, Delivery",
+      "tiers_delivered": ["Tier 0 (Launch MVP)", "Tier 1"],
+      "total_stories": 27,
+      "total_points": 105
+    },
+    {
+      "phase_id": "PHASE-04",
+      "phase_name": "Growth",
+      "sprints": ["S7", "S8"],
+      "days": "13-15",
+      "theme": "Reviews, Mobile, Promo, Subscriptions",
+      "tiers_delivered": ["Tier 1", "Tier 2"],
+      "total_stories": 25,
+      "total_points": 88
+    },
+    {
+      "phase_id": "PHASE-05",
+      "phase_name": "Scale",
+      "sprints": ["S9", "S10"],
+      "days": "16-18",
+      "theme": "AI Try-On, Jewellery, Analytics, City Expansion",
+      "tiers_delivered": ["Tier 3"],
+      "total_stories": 12,
+      "total_points": 67
+    },
+    {
+      "phase_id": "PHASE-06",
+      "phase_name": "Vision",
+      "sprints": ["S11", "S12"],
+      "days": "19-22",
+      "theme": "Virtual Walk, Live Bazaar, Co-Shopping",
+      "tiers_delivered": ["Tier 4"],
+      "total_stories": 6,
+      "total_points": 55
+    }
+  ],
+  "sprints": [
+    {
+      "sprint_id": "S1",
+      "days": "1-2",
+      "theme": "Foundation — Auth & Discovery",
+      "story_count": 10,
+      "points": 36,
+      "agent_capacity": 120,
+      "milestones": ["M-T0-01 (partial)"],
+      "stories": ["US-001", "US-002", "US-007", "US-008", "US-009", "US-010", "US-012", "US-088", "US-089", "US-090"]
+    },
+    {
+      "sprint_id": "S2",
+      "days": "3-4",
+      "theme": "Merchant Foundation & Discovery",
+      "story_count": 10,
+      "points": 44,
+      "agent_capacity": 120,
+      "milestones": ["M-T0-01 (complete)"],
+      "stories": ["US-004", "US-005", "US-013", "US-014", "US-015", "US-016", "US-017", "US-018", "US-027", "US-028"]
+    },
+    {
+      "sprint_id": "S3",
+      "days": "5-6",
+      "theme": "Cart, Checkout & Orders",
+      "story_count": 10,
+      "points": 37,
+      "agent_capacity": 120,
+      "milestones": ["M-T0-02 (partial)"],
+      "stories": ["US-006", "US-019", "US-020", "US-021", "US-022", "US-023", "US-024", "US-025", "US-026", "US-052"]
+    },
+    {
+      "sprint_id": "S4",
+      "days": "7-8",
+      "theme": "Merchant Operations & Delivery",
+      "story_count": 11,
+      "points": 42,
+      "agent_capacity": 120,
+      "milestones": ["M-T0-03 (complete)"],
+      "stories": ["US-031", "US-032", "US-033", "US-035", "US-036", "US-037", "US-038", "US-040", "US-041", "US-060", "US-061"]
+    },
+    {
+      "sprint_id": "S5",
+      "days": "9-10",
+      "theme": "Admin Console & Tracking",
+      "story_count": 11,
+      "points": 43,
+      "agent_capacity": 120,
+      "milestones": ["M-T0-02 (complete)", "M-T1-02 (partial)"],
+      "stories": ["US-039", "US-046", "US-047", "US-053", "US-054", "US-055", "US-056", "US-057", "US-058", "US-062", "US-109"]
+    },
+    {
+      "sprint_id": "S6",
+      "days": "11-12",
+      "theme": "i18n, Reviews & Platform Config",
+      "story_count": 16,
+      "points": 62,
+      "agent_capacity": 120,
+      "milestones": ["M-T1-01 (partial)", "M-T1-02 (complete)"],
+      "stories": ["US-042", "US-043", "US-048", "US-049", "US-059", "US-063", "US-064", "US-065", "US-066", "US-067", "US-080", "US-081", "US-082", "US-083", "US-094", "US-110"]
+    },
+    {
+      "sprint_id": "S7",
+      "days": "13-14",
+      "theme": "Mobile & Reviews",
+      "story_count": 16,
+      "points": 55,
+      "agent_capacity": 120,
+      "milestones": ["M-T2-01 (partial)"],
+      "stories": ["US-044", "US-045", "US-050", "US-051", "US-068", "US-069", "US-070", "US-071", "US-072", "US-073", "US-074", "US-075", "US-084", "US-085", "US-086", "US-087"]
+    },
+    {
+      "sprint_id": "S8",
+      "days": "15-16",
+      "theme": "Promo Engine & National Shipping",
+      "story_count": 9,
+      "points": 33,
+      "agent_capacity": 120,
+      "milestones": ["M-T2-02 (complete)", "M-T2-03 (complete)"],
+      "stories": ["US-076", "US-077", "US-078", "US-079", "US-091", "US-092", "US-093", "US-095", "US-096"]
+    },
+    {
+      "sprint_id": "S9",
+      "days": "17-18",
+      "theme": "AI Try-On & Jewellery",
+      "story_count": 8,
+      "points": 46,
+      "agent_capacity": 120,
+      "milestones": ["M-T3-01 (complete)"],
+      "stories": ["US-097", "US-098", "US-099", "US-100", "US-101", "US-102", "US-107", "US-108"]
+    },
+    {
+      "sprint_id": "S10",
+      "days": "19-20",
+      "theme": "Trust Features & City Expansion",
+      "story_count": 4,
+      "points": 21,
+      "agent_capacity": 120,
+      "milestones": ["M-T3-02 (complete)"],
+      "stories": ["US-103", "US-104", "US-105", "US-106"]
+    },
+    {
+      "sprint_id": "S11",
+      "days": "21-22",
+      "theme": "Virtual Walk & Live Bazaar",
+      "story_count": 2,
+      "points": 21,
+      "agent_capacity": 120,
+      "milestones": ["M-T4-01 (complete)"],
+      "stories": ["US-111", "US-112"]
+    },
+    {
+      "sprint_id": "S12",
+      "days": "23-24",
+      "theme": "Co-Shopping & Final Polish",
+      "story_count": 4,
+      "points": 34,
+      "agent_capacity": 120,
+      "milestones": ["M-T4-02 (complete)"],
+      "stories": ["US-113"]
+    }
+  ],
+  "milestones": [
+    {
+      "milestone_id": "M-T0-01",
+      "name": "Market Explorer",
+      "tier": "T0 — Launch MVP",
+      "sprint": "S1-S2",
+      "day": "4",
+      "primary_stakeholder": "Customer",
+      "build_time_days": 4,
+      "requirement_ids": ["REQ-UI-001", "REQ-UI-002", "REQ-UI-008", "REQ-BE-001", "REQ-BE-009", "REQ-INFRA-001"],
+      "gate": "sprint_review"
+    },
+    {
+      "milestone_id": "M-T0-02",
+      "name": "Direct Purchase Flow (Mode A)",
+      "tier": "T0 — Launch MVP",
+      "sprint": "S3-S5",
+      "day": "10",
+      "primary_stakeholder": "Customer",
+      "build_time_days": 6,
+      "requirement_ids": ["REQ-UI-003", "REQ-UI-006", "REQ-API-003", "REQ-BE-002", "REQ-BE-003", "REQ-COM-002", "REQ-INFRA-004"],
+      "gate": "sprint_review"
+    },
+    {
+      "milestone_id": "M-T0-03",
+      "name": "Merchant Onboarding & Go-Live",
+      "tier": "T0 — Launch MVP",
+      "sprint": "S4",
+      "day": "8",
+      "primary_stakeholder": "Merchant",
+      "build_time_days": 5,
+      "requirement_ids": ["REQ-UI-011", "REQ-UI-012", "REQ-API-008", "REQ-BE-004", "REQ-COM-001", "REQ-MICRO-001", "REQ-MICRO-002", "REQ-MICRO-007", "REQ-MICRO-008"],
+      "gate": "GATE-MVP-01"
+    },
+    {
+      "milestone_id": "M-T1-01",
+      "name": "Multi-Channel Access",
+      "tier": "T1",
+      "sprint": "S6",
+      "day": "12",
+      "primary_stakeholder": "Customer",
+      "build_time_days": 3,
+      "requirement_ids": ["REQ-UI-009", "REQ-UI-010", "REQ-UI-013", "REQ-API-004", "REQ-API-005"],
+      "gate": "sprint_review"
+    },
+    {
+      "milestone_id": "M-T1-02",
+      "name": "Admin Command Center",
+      "tier": "T1",
+      "sprint": "S5-S6",
+      "day": "12",
+      "primary_stakeholder": "Admin",
+      "build_time_days": 3,
+      "requirement_ids": ["REQ-UI-012", "REQ-API-010", "REQ-BE-005", "REQ-BE-008", "REQ-COM-005"],
+      "gate": "sprint_review"
+    },
+    {
+      "milestone_id": "M-T2-01",
+      "name": "Trust & Engagement",
+      "tier": "T2",
+      "sprint": "S7",
+      "day": "14",
+      "primary_stakeholder": "Customer",
+      "build_time_days": 2,
+      "requirement_ids": ["REQ-BE-012", "REQ-BE-025", "REQ-UI-021", "REQ-API-009"],
+      "gate": "sprint_review"
+    },
+    {
+      "milestone_id": "M-T2-02",
+      "name": "Pan-India Shipping",
+      "tier": "T2",
+      "sprint": "S8",
+      "day": "16",
+      "primary_stakeholder": "Customer",
+      "build_time_days": 2,
+      "requirement_ids": ["REQ-COM-010", "REQ-API-013", "REQ-BE-024", "REQ-UI-007"],
+      "gate": "sprint_review"
+    },
+    {
+      "milestone_id": "M-T2-03",
+      "name": "Festival Sale Campaign",
+      "tier": "T2",
+      "sprint": "S8",
+      "day": "16",
+      "primary_stakeholder": "Admin",
+      "build_time_days": 2,
+      "requirement_ids": ["REQ-COM-007", "REQ-COM-005", "REQ-UI-012", "REQ-BE-008"],
+      "gate": "sprint_review"
+    },
+    {
+      "milestone_id": "M-T3-01",
+      "name": "Virtual Try-On & Jewellery",
+      "tier": "T3",
+      "sprint": "S9",
+      "day": "18",
+      "primary_stakeholder": "Customer",
+      "build_time_days": 3,
+      "requirement_ids": ["REQ-UI-016", "REQ-UI-017", "REQ-API-012", "REQ-BE-018", "REQ-BE-019"],
+      "gate": "sprint_review"
+    },
+    {
+      "milestone_id": "M-T3-02",
+      "name": "City Expansion",
+      "tier": "T3",
+      "sprint": "S10",
+      "day": "20",
+      "primary_stakeholder": "Admin",
+      "build_time_days": 3,
+      "requirement_ids": ["REQ-UI-019", "REQ-BE-022", "REQ-BE-023", "REQ-UI-020", "REQ-BE-021"],
+      "gate": "GATE-COSTING-01"
+    },
+    {
+      "milestone_id": "M-T4-01",
+      "name": "Pete Street Virtual Walk",
+      "tier": "T4 — Visionary",
+      "sprint": "S11",
+      "day": "22",
+      "primary_stakeholder": "Customer",
+      "build_time_days": 4,
+      "requirement_ids": ["REQ-UI-022", "REQ-BE-026"],
+      "gate": "sprint_review"
+    },
+    {
+      "milestone_id": "M-T4-02",
+      "name": "Live Bazaar",
+      "tier": "T4 — Visionary",
+      "sprint": "S12",
+      "day": "24",
+      "primary_stakeholder": "Merchant",
+      "build_time_days": 4,
+      "requirement_ids": ["REQ-UI-023", "REQ-API-009", "REQ-BE-008"],
+      "gate": "GATE-PRODUCTION-01"
+    }
+  ],
+  "epics": [
+    {
+      "epic_id": "EPIC-01",
+      "epic_name": "Customer Auth & Persona Management",
+      "feature_count": 3,
+      "story_count": 12,
+      "requirement_ids": ["REQ-API-006", "REQ-BE-001", "REQ-UI-001"],
+      "sprint_range": "S1-S2",
+      "total_points": 38
+    },
+    {
+      "epic_id": "EPIC-02",
+      "epic_name": "Browse & Discovery (Guest + Registered)",
+      "feature_count": 4,
+      "story_count": 18,
+      "requirement_ids": ["REQ-UI-001", "REQ-UI-002", "REQ-UI-008", "REQ-BE-009", "REQ-BE-022"],
+      "sprint_range": "S1-S3",
+      "total_points": 44
+    },
+    {
+      "epic_id": "EPIC-03",
+      "epic_name": "Shopping Cart & Checkout (Mode A)",
+      "feature_count": 4,
+      "story_count": 16,
+      "requirement_ids": ["REQ-UI-003", "REQ-UI-006", "REQ-API-003", "REQ-BE-002", "REQ-BE-003"],
+      "sprint_range": "S2-S4",
+      "total_points": 42
+    },
+    {
+      "epic_id": "EPIC-04",
+      "epic_name": "WhatsApp Enquiry (Mode B)",
+      "feature_count": 2,
+      "story_count": 8,
+      "requirement_ids": ["REQ-UI-004", "REQ-API-004", "REQ-BE-006"],
+      "sprint_range": "S2-S3",
+      "total_points": 10
+    },
+    {
+      "epic_id": "EPIC-05",
+      "epic_name": "Store Visit (Mode C)",
+      "feature_count": 2,
+      "story_count": 8,
+      "requirement_ids": ["REQ-UI-005", "REQ-API-005"],
+      "sprint_range": "S2-S3",
+      "total_points": 9
+    },
+    {
+      "epic_id": "EPIC-06",
+      "epic_name": "Merchant Dashboard & Microsite",
+      "feature_count": 5,
+      "story_count": 22,
+      "requirement_ids": ["REQ-UI-008", "REQ-UI-011", "REQ-UI-014", "REQ-MICRO-001", "REQ-MICRO-002", "REQ-MICRO-003", "REQ-MICRO-004", "REQ-MICRO-005", "REQ-MICRO-006", "REQ-MICRO-007", "REQ-MICRO-008"],
+      "sprint_range": "S2-S5",
+      "total_points": 60
+    },
+    {
+      "epic_id": "EPIC-07",
+      "epic_name": "Admin Console & Operations",
+      "feature_count": 4,
+      "story_count": 16,
+      "requirement_ids": ["REQ-UI-012", "REQ-UI-020", "REQ-INFRA-011", "REQ-BE-004"],
+      "sprint_range": "S3-S6",
+      "total_points": 48
+    },
+    {
+      "epic_id": "EPIC-08",
+      "epic_name": "Order Management & Tracking",
+      "feature_count": 3,
+      "story_count": 14,
+      "requirement_ids": ["REQ-UI-007", "REQ-API-007", "REQ-BE-007"],
+      "sprint_range": "S3-S5",
+      "total_points": 24
+    },
+    {
+      "epic_id": "EPIC-09",
+      "epic_name": "Payment Processing & Settlement",
+      "feature_count": 3,
+      "story_count": 12,
+      "requirement_ids": ["REQ-API-003", "REQ-COM-002", "REQ-COM-006", "REQ-COM-008", "REQ-MICRO-007", "REQ-MICRO-008"],
+      "sprint_range": "S3-S5",
+      "total_points": 24
+    },
+    {
+      "epic_id": "EPIC-10",
+      "epic_name": "Multi-Store Consolidation & Delivery",
+      "feature_count": 3,
+      "story_count": 10,
+      "requirement_ids": ["REQ-BE-003", "REQ-COM-004", "REQ-BE-024"],
+      "sprint_range": "S4-S6",
+      "total_points": 26
+    },
+    {
+      "epic_id": "EPIC-11",
+      "epic_name": "Persona-Based Navigation & UX",
+      "feature_count": 3,
+      "story_count": 12,
+      "requirement_ids": ["REQ-UI-013", "REQ-UI-018", "REQ-UI-019"],
+      "sprint_range": "S4-S6",
+      "total_points": 34
+    },
+    {
+      "epic_id": "EPIC-12",
+      "epic_name": "Mobile App (Expo)",
+      "feature_count": 4,
+      "story_count": 16,
+      "requirement_ids": ["REQ-UI-009", "REQ-UI-010", "REQ-FUNNEL-004"],
+      "sprint_range": "S5-S7",
+      "total_points": 28
+    },
+    {
+      "epic_id": "EPIC-13",
+      "epic_name": "Reviews, Ratings & Trust",
+      "feature_count": 3,
+      "story_count": 12,
+      "requirement_ids": ["REQ-BE-012", "REQ-BE-025", "REQ-UI-021"],
+      "sprint_range": "S5-S7",
+      "total_points": 30
+    },
+    {
+      "epic_id": "EPIC-14",
+      "epic_name": "Promo Engine & Loyalty",
+      "feature_count": 2,
+      "story_count": 10,
+      "requirement_ids": ["REQ-COM-007", "REQ-FUNNEL-003"],
+      "sprint_range": "S6-S7",
+      "total_points": 24
+    },
+    {
+      "epic_id": "EPIC-15",
+      "epic_name": "Merchant Catalog & Inventory Management",
+      "feature_count": 3,
+      "story_count": 12,
+      "requirement_ids": ["REQ-BE-011", "REQ-MICRO-002", "REQ-MICRO-004"],
+      "sprint_range": "S4-S6",
+      "total_points": 20
+    },
+    {
+      "epic_id": "EPIC-16",
+      "epic_name": "Subscriptions & Billing",
+      "feature_count": 2,
+      "story_count": 8,
+      "requirement_ids": ["REQ-COM-001", "REQ-BE-004"],
+      "sprint_range": "S5-S7",
+      "total_points": 22
+    },
+    {
+      "epic_id": "EPIC-17",
+      "epic_name": "Infrastructure, Security & Compliance",
+      "feature_count": 5,
+      "story_count": 18,
+      "requirement_ids": ["REQ-INFRA-001", "REQ-INFRA-002", "REQ-INFRA-003", "REQ-INFRA-004", "REQ-INFRA-006", "REQ-INFRA-008", "REQ-INFRA-009", "REQ-INFRA-010", "REQ-INFRA-011", "REQ-DATA-001"],
+      "sprint_range": "S1-S8",
+      "total_points": 55
+    },
+    {
+      "epic_id": "EPIC-18",
+      "epic_name": "National Shipping (ShipRocket)",
+      "feature_count": 2,
+      "story_count": 8,
+      "requirement_ids": ["REQ-COM-010", "REQ-API-013"],
+      "sprint_range": "S6-S8",
+      "total_points": 16
+    },
+    {
+      "epic_id": "EPIC-19",
+      "epic_name": "AI Virtual Try-On",
+      "feature_count": 3,
+      "story_count": 12,
+      "requirement_ids": ["REQ-UI-015", "REQ-UI-016", "REQ-BE-018"],
+      "sprint_range": "S7-S9",
+      "total_points": 34
+    },
+    {
+      "epic_id": "EPIC-20",
+      "epic_name": "Jewellery & Bullion Integration",
+      "feature_count": 3,
+      "story_count": 10,
+      "requirement_ids": ["REQ-UI-017", "REQ-API-012", "REQ-BE-019"],
+      "sprint_range": "S7-S9",
+      "total_points": 25
+    },
+    {
+      "epic_id": "EPIC-21",
+      "epic_name": "Video Call & Trust Features",
+      "feature_count": 2,
+      "story_count": 8,
+      "requirement_ids": ["REQ-COM-009"],
+      "sprint_range": "S8-S9",
+      "total_points": 18
+    },
+    {
+      "epic_id": "EPIC-22",
+      "epic_name": "City Expansion & Multi-Geo",
+      "feature_count": 2,
+      "story_count": 8,
+      "requirement_ids": ["REQ-UI-019", "REQ-BE-022", "REQ-BE-023"],
+      "sprint_range": "S8-S10",
+      "total_points": 16
+    },
+    {
+      "epic_id": "EPIC-23",
+      "epic_name": "Analytics & CDP",
+      "feature_count": 2,
+      "story_count": 8,
+      "requirement_ids": ["REQ-BE-008", "REQ-BE-017", "REQ-API-010"],
+      "sprint_range": "S7-S9",
+      "total_points": 20
+    },
+    {
+      "epic_id": "EPIC-24",
+      "epic_name": "PWA & Offline-First",
+      "feature_count": 2,
+      "story_count": 6,
+      "requirement_ids": ["REQ-BE-014", "REQ-FUNNEL-004"],
+      "sprint_range": "S5-S6",
+      "total_points": 13
+    },
+    {
+      "epic_id": "EPIC-25",
+      "epic_name": "Visionary: Virtual Walk & Live Bazaar",
+      "feature_count": 3,
+      "story_count": 10,
+      "requirement_ids": ["REQ-UI-022", "REQ-UI-023", "REQ-BE-026"],
+      "sprint_range": "S10-S12",
+      "total_points": 34
+    },
+    {
+      "epic_id": "EPIC-26",
+      "epic_name": "Visionary: Co-Shopping & Community",
+      "feature_count": 2,
+      "story_count": 6,
+      "requirement_ids": ["REQ-UI-024"],
+      "sprint_range": "S11-S12",
+      "total_points": 16
+    }
+  ],
+  "gates": [
+    {
+      "gate_id": "GATE-TECH-STACK-01",
+      "gate_name": "Tech Stack & Architecture",
+      "triggered_by": "Architect Agent (03)",
+      "sprint": "End of S2",
+      "approval_required_from": "Sr. Solution Architect",
+      "verification_items": [
+        "Supabase project with PostgreSQL schema (15 core tables)",
+        "Supabase Auth with phone OTP for all personas",
+        "Vercel deployment with environment variables",
+        "Row-Level Security policies on all tables",
+        "Persona-based route guards",
+        "CI/CD pipeline (GitHub Actions)",
+        "API rate limiting middleware",
+        "Google Stitch integration demo"
+      ]
+    },
+    {
+      "gate_id": "GATE-MVP-01",
+      "gate_name": "MVP Scope & Milestone",
+      "triggered_by": "Program Mgmt Agent (05)",
+      "sprint": "End of S4",
+      "approval_required_from": "Sr. Product Manager",
+      "verification_items": [
+        "Market Explorer demo (M-T0-01)",
+        "Direct Purchase Flow demo (M-T0-02)",
+        "Merchant Onboarding demo (M-T0-03)",
+        "Mode B WhatsApp deep link working",
+        "Mode C Google Maps directions working",
+        "All UX labels customer-friendly (no Mode A/B/C in UI)",
+        "No 'Sell' in nav (use 'Merchant Dashboard')",
+        "All navigation items lead to real pages",
+        "Auth flow with persona-aware nav working"
+      ]
+    },
+    {
+      "gate_id": "GATE-COSTING-01",
+      "gate_name": "Infrastructure Costing",
+      "triggered_by": "Architect Agent (03)",
+      "sprint": "End of S10",
+      "approval_required_from": "Finance / HITL",
+      "verification_items": [
+        "Monthly infra cost still ₹0 (MVP)",
+        "Cost monitoring dashboard active",
+        "Budget alerting configured",
+        "Scaling cost model validated"
+      ]
+    },
+    {
+      "gate_id": "GATE-PRODUCTION-01",
+      "gate_name": "Production Go/No-Go",
+      "triggered_by": "Production Agent (09)",
+      "sprint": "End of S12",
+      "approval_required_from": "HITL / Sr. Leadership",
+      "verification_items": [
+        "All P0/P1 requirements implemented",
+        "Zero P0/P1 open defects",
+        "Unit test coverage ≥ 80%",
+        "E2E tests passing on critical journeys",
+        "API P95 < 300ms, LCP < 2.5s",
+        "Security scan: no critical vulnerabilities",
+        "Secrets scan: no hardcoded credentials",
+        "Database backups configured",
+        "Monitoring and alerting active",
+        "Rollback procedure documented",
+        "Legal documents in place",
+        "User documentation published"
+      ]
+    }
+  ],
+  "mvp_boundaries": {
+    "in_scope": {
+      "customer_features": [
+        "Phone OTP registration and login",
+        "Landing page with Pete Tapestry (21 markets)",
+        "Product search with autocomplete and filters",
+        "Product detail page with images, price, mode badges",
+        "Multi-merchant shopping cart",
+        "Consolidated checkout with delivery fee calculation",
+        "Razorpay payment (UPI, Card, NetBanking)",
+        "Order confirmation and basic tracking (status timeline)",
+        "Order history page",
+        "WhatsApp deep link (Mode B) for product enquiry",
+        "Store visit interface (Mode C) with Google Maps directions",
+        "Guest browsing (register at checkout)"
+      ],
+      "merchant_features": [
+        "Registration wizard (phone → business → plan → modes)",
+        "Bank details entry + cancelled cheque upload",
+        "Razorpay subaccount creation",
+        "Store microsite at petemart.in/{shop-slug}",
+        "Product CRUD (add/edit/delete)",
+        "Bulk CSV product upload",
+        "Order management (view, mark status)",
+        "GST invoice generation per order",
+        "Dashboard overview (orders, revenue, products count)",
+        "Real-time order alerts",
+        "Basic inventory management (stock tracking)"
+      ],
+      "admin_features": [
+        "Email+password + OTP login",
+        "Merchant approval queue (one-click approve/reject)",
+        "Platform dashboard (merchants, orders, revenue)",
+        "Feature flag management with kill switch",
+        "Admin configuration dashboard (delivery zones, rates)",
+        "City selector (Bangalore only at MVP)"
+      ],
+      "infrastructure": [
+        "Supabase Free (PostgreSQL, Auth, Storage, Realtime)",
+        "Vercel Hobby (Next.js hosting)",
+        "CI/CD via GitHub Actions",
+        "HTTPS/TLS everywhere",
+        "Row-Level Security (RLS) for data isolation",
+        "Role-based access control (Customer, Merchant, Admin)",
+        "Persona-aware navigation (different nav bars)"
+      ]
+    },
+    "out_of_scope": {
+      "tier_1_post_mvp": [
+        "Native mobile apps (iOS/Android) — PWA sufficient",
+        "Multi-language (i18n) — English-only at MVP",
+        "Admin revenue reports — basic counters only",
+        "Push notifications — email/SMS at MVP",
+        "Zero-downtime deployments — manual deploy at MVP",
+        "Point-in-time recovery — Supabase backups suffice"
+      ],
+      "tier_2_growth": [
+        "Product reviews and ratings",
+        "Review moderation queue",
+        "Promo/coupon engine",
+        "Loyalty points program",
+        "Offline-first mobile",
+        "National shipping (ShipRocket)",
+        "Payment escrow (T+3 hold)"
+      ],
+      "tier_3_mature": [
+        "AI Virtual Try-On (apparel & jewellery)",
+        "Live bullion rates",
+        "Jewellery dynamic pricing calculator",
+        "Multi-city expansion (Bangalore only)",
+        "White-label branding engine",
+        "Analytics data pipeline",
+        "Video call appointments",
+        "360° product rotation"
+      ],
+      "tier_4_visionary": [
+        "Pete Street Virtual Walk",
+        "Live Bazaar streaming",
+        "Shop Together co-shopping",
+        "Data licensing framework"
+      ]
+    }
+  },
+  "persona_workflows": {
+    "customer_workflow": "Guest → Landing → Market → Merchant → Product → Cart → Checkout → Payment → Order → Track → Review",
+    "merchant_workflow": "Register → Onboard → Manage Products → Receive Orders → Fulfill → Analytics → Payouts",
+    "admin_workflow": "Login → Dashboard → Approve Merchants → Configure Platform → Monitor Orders → Reports",
+    "courier_workflow": "Login → Today's Route → Pickups → Consolidated → Deliver → Earnings"
+  },
+  "performance_kpis": {
+    "velocity_points_per_sprint": 120,
+    "sprint_completion_rate_target_pct": 95,
+    "defect_leakage_max_pct": 5,
+    "code_coverage_min_pct": 80,
+    "api_p95_latency_ms": 300,
+    "lcp_seconds": 2.5,
+    "uptime_pct": 99,
+    "story_lead_time_hours": 4,
+    "time_to_mvp_days": 12,
+    "time_to_full_product_days": 22
+  },
+  "qa_gates": {
+    "dev_to_qa": {
+      "condition": "All unit tests pass (80%+ coverage)",
+      "verifier": "CI Pipeline",
+      "blocking": true
+    },
+    "qa_to_staging": {
+      "condition": "E2E tests pass (Playwright), API tests pass, No P0/P1 defects",
+      "verifier": "QA Agent (08)",
+      "blocking": true
+    },
+    "staging_to_production": {
+      "condition": "All QA criteria met, Performance < thresholds, Security scan clean, HITL sign-off",
+      "verifier": "QA Agent (08) + Prod Agent (09)",
+      "blocking": true
+    }
+  },
+  "mvp_pilot_merchants": [
+    {"name": "Tarun Enterprises", "market": "Chickpet", "category": "Textiles Wholesale", "modes": ["B", "C"], "digital_readiness": "Low"},
+    {"name": "Sri Vari Traders", "market": "Balepet", "category": "Outdoor Equipment", "modes": ["A", "B"], "digital_readiness": "Low"},
+    {"name": "Samskruti Silks (Store 1)", "market": "Chickpet", "category": "Silk Sarees", "modes": ["A", "B", "C"], "digital_readiness": "Medium"},
+    {"name": "Samskruti Silks (Branch)", "market": "Chickpet", "category": "Silk Sarees", "modes": ["A", "B", "C"], "digital_readiness": "Medium"},
+    {"name": "flowers2u", "market": "Balepet", "category": "Florist", "modes": ["A", "B"], "digital_readiness": "Low"},
+    {"name": "The Pastry Cafe", "market": "Balepet", "category": "Bakery & Cafe", "modes": ["A", "C"], "digital_readiness": "Medium"},
+    {"name": "Sri Vinayaka Textorium", "market": "Balepet", "category": "Textiles", "modes": ["B", "C"], "digital_readiness": "Low"},
+    {"name": "Sanjana Apparels", "market": "Balepet", "category": "Apparel", "modes": ["A", "B", "C"], "digital_readiness": "Medium"},
+    {"name": "Madhumathi All-men's Ethnic", "market": "Balepet", "category": "Men's Ethnic Wear", "modes": ["A", "B", "C"], "digital_readiness": "Low"}
+  ],
+  "dependency_graph": {
+    "critical_path": "S1→S2→S3→S4→S5→S6→S7→S8→S9→S10→S11→S12",
+    "parallel_tracks": ["UI (Frontend)", "API (Backend)", "Infrastructure/DevOps"],
+    "deadlock_status": "NONE"
+  }
+}

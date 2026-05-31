@@ -1,0 +1,38 @@
+{
+  "environment": "staging",
+  "branch": "staging",
+  "domain": "staging.petemart.vercel.app",
+  "vercelProjectName": "petemart-staging",
+  "supabaseProjectRef": "staging",
+  "isProduction": false,
+  "features": {
+    "enableDebugLogging": false,
+    "enableHotReload": false,
+    "enableMockAuth": false,
+    "bypassPaymentGateway": false,
+    "enableSeedData": true
+  },
+  "resources": {
+    "compute": "free",
+    "vercelTier": "hobby",
+    "supabaseTier": "free",
+    "kubernetesReplicas": 2
+  },
+  "monitoring": {
+    "enabled": true,
+    "logLevel": "warn",
+    "errorReporting": true,
+    "uptimeMonitoring": true
+  },
+  "deployment": {
+    "strategy": "blue-green",
+    "autoDeployOnPush": true,
+    "requireApproval": true,
+    "previewDeployments": false,
+    "requiredApprovers": ["qa-lead", "tech-lead"]
+  },
+  "secrets": {
+    "NEXT_PUBLIC_SUPABASE_URL": "https://staging-xxxxx.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJ...staging-anon-key"
+  }
+}

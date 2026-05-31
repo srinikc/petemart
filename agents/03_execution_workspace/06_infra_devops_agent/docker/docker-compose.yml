@@ -1,0 +1,133 @@
+# =============================================================================
+# PeteMart — Local Development Docker Compose
+# =============================================================================
+# Usage:
+#   docker compose -f docker/docker-compose.yml up -d
+#   docker compose -f docker/docker-compose.yml down
+#
+# Services:
+#   web         — Next.js app with hot-reload (port 3000)
+#   supabase-db — Local Supabase PostgreSQL (port 5432)
+#   supabase-kong — Supabase API Gateway (port 8000)
+#   studio      — Supabase Studio UI (port 54323)
+# =============================================================================
+
+version: '3.9'
+
+x-shared-env: &shared-env
+  NEXT_PUBLIC_SUPABASE_URL: http://localhost:8000
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
+
+services:
+  # ── Web Application (Next.js) ──────────────────────────────────────────
+  web:
+    build:
+      context: ..
+      dockerfile: docker/development.Dockerfile
+      target: development
+    container_name: petemart-web
+    ports:
+      - "3000:3000"
+    environment:
+      <<: *shared-env
+      NODE_ENV: development
+      NEXT_TELEMETRY_DISABLED: 1
+      WATCHPACK_POLLING: "true"  # Enable file watching on Docker
+    volumes:
+      # Mount source code for hot-reload
+      - ../apps/web/src:/app/apps/web/src
+      - ../apps/web/public:/app/apps/web/public
+      - ../packages:/app/packages
+      # Persist node_modules (don't override with host)
+      - /app/node_modules
+      - /app/apps/web/node_modules
+    depends_on:
+      supabase-kong:
+        condition: service_healthy
+    networks:
+      - petemart-network
+    restart: unless-stopped
+
+  # ── Supabase PostgreSQL ───────────────────────────────────────────────
+  supabase-db:
+    image: supabase/postgres:16.3.1
+    container_name: petemart-supabase-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: petemart
+      JWT_SECRET: super-secret-jwt-token-with-at-least-32-characters-long
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ../supabase/migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - petemart-network
+    restart: unless-stopped
+
+  # ── Supabase API Gateway (Kong) ───────────────────────────────────────
+  supabase-kong:
+    image: kong:3.8
+    container_name: petemart-supabase-kong
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /etc/kong/kong.yml
+      KONG_DNS_ORDER: LAST, AAAA, A
+      KONG_PLUGINS: request-transformer,cors,key-auth,rate-limiting
+      KONG_NGINX_WORKER_PROCESSES: 1
+    volumes:
+      - ./supabase/kong.yml:/etc/kong/kong.yml:ro
+    healthcheck:
+      test: ["CMD", "kong", "health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      - supabase-db
+    networks:
+      - petemart-network
+    restart: unless-stopped
+
+  # ── Supabase Studio ───────────────────────────────────────────────────
+  studio:
+    image: supabase/studio:latest
+    container_name: petemart-supabase-studio
+    ports:
+      - "54323:3000"
+    environment:
+      SUPABASE_URL: http://localhost:8000
+      STUDIO_PG_META_URL: http://localhost:8080
+      SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
+      SUPABASE_SERVICE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
+    depends_on:
+      - supabase-kong
+    networks:
+      - petemart-network
+    restart: unless-stopped
+
+  # ── Inbucket (Email testing for local auth) ───────────────────────────
+  inbucket:
+    image: inbucket/inbucket:latest
+    container_name: petemart-inbucket
+    ports:
+      - "54324:9000"  # Web UI
+      - "2500:2500"   # SMTP
+    networks:
+      - petemart-network
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+    driver: local
+
+networks:
+  petemart-network:
+    driver: bridge

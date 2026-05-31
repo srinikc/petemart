@@ -1,0 +1,96 @@
+name: Code Review — SonarQube & Reviewdog
+
+on:
+  pull_request:
+    branches: [develop, qa, staging, main]
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: code-review-${{ github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '20.x'
+
+jobs:
+  # ──────────────────────────────────────────────────────────────
+  # SonarQube Cloud — Static Analysis
+  # ──────────────────────────────────────────────────────────────
+  sonarqube:
+    name: SonarQube Cloud Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          if [ -f "pnpm-lock.yaml" ]; then
+            npx pnpm install --frozen-lockfile
+          elif [ -f "package-lock.json" ]; then
+            npm ci
+          fi
+
+      - name: SonarQube Cloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=petemart
+            -Dsonar.organization=petemart-org
+            -Dsonar.sources=.
+            -Dsonar.exclusions=**/node_modules/**,**/.next/**,**/coverage/**,**/*.test.*
+            -Dsonar.tests=.
+            -Dsonar.test.inclusions=**/*.test.*
+            -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.coverage.exclusions=**/*.test.*,**/*.config.*,**/node_modules/**
+            -Dsonar.qualitygate.wait=true
+
+  # ──────────────────────────────────────────────────────────────
+  # Reviewdog — Linting as PR Comments
+  # ──────────────────────────────────────────────────────────────
+  reviewdog:
+    name: Reviewdog Lint Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          if [ -f "pnpm-lock.yaml" ]; then
+            npx pnpm install --frozen-lockfile
+          elif [ -f "package-lock.json" ]; then
+            npm ci
+          fi
+
+      - name: ESLint with Reviewdog
+        uses: reviewdog/action-eslint@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review
+          level: warning
+          filter_mode: added
+          fail_on_error: false
+
+      - name: TypeScript with Reviewdog
+        uses: reviewdog/action-tsc@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review
+          level: warning
+          filter_mode: added
+          fail_on_error: false

@@ -1,0 +1,186 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PeteMart Skills Manifest — Open-Source Assets Pulled by Infra-DevOps Agent",
+  "version": "1.0.0",
+  "description": "Registry of open-source tools, frameworks, and skill assets programmatically pulled and stored into .antigravity/skills/",
+  "skillsDirectory": ".antigravity/skills/",
+  "lastUpdated": "2026-05-30",
+  "skills": [
+    {
+      "id": "pr-agent",
+      "name": "PR Agent",
+      "type": "code-review",
+      "source": "https://github.com/Codium-ai/pr-agent",
+      "version": "latest",
+      "status": "pulled",
+      "pulledAt": "2026-05-30T18:00:00Z",
+      "description": "Automated PR review and code analysis tool (free tier)"
+    },
+    {
+      "id": "jira-connector",
+      "name": "Jira CLI Connector",
+      "type": "project-management",
+      "source": "https://github.com/ankitpokhrel/jira-cli",
+      "version": "latest",
+      "status": "pulled",
+      "pulledAt": "2026-05-30T18:00:00Z",
+      "description": "Command-line Jira integration for automated ticket management"
+    },
+    {
+      "id": "trufflehog",
+      "name": "TruffleHog",
+      "type": "security-scanner",
+      "source": "https://github.com/trufflesecurity/trufflehog",
+      "version": "latest",
+      "status": "pulled",
+      "pulledAt": "2026-05-30T18:00:00Z",
+      "description": "Secrets scanning tool for credential detection"
+    },
+    {
+      "id": "gitleaks",
+      "name": "Gitleaks",
+      "type": "security-scanner",
+      "source": "https://github.com/gitleaks/gitleaks",
+      "version": "latest",
+      "status": "pulled",
+      "pulledAt": "2026-05-30T18:00:00Z",
+      "description": "Static analysis for secrets in git repos"
+    },
+    {
+      "id": "playwright",
+      "name": "Playwright",
+      "type": "visual-regression",
+      "source": "https://github.com/microsoft/playwright",
+      "version": "latest",
+      "status": "pulled",
+      "pulledAt": "2026-05-30T18:00:00Z",
+      "description": "End-to-end testing and visual regression framework"
+    },
+    {
+      "id": "backstopjs",
+      "name": "BackstopJS",
+      "type": "visual-regression",
+      "source": "https://github.com/garris/BackstopJS",
+      "version": "latest",
+      "status": "pulled",
+      "pulledAt": "2026-05-30T18:00:00Z",
+      "description": "Visual regression testing tool for UI comparison"
+    },
+    {
+      "id": "checkov",
+      "name": "Checkov",
+      "type": "iac-scanner",
+      "source": "https://github.com/bridgecrewio/checkov",
+      "version": "latest",
+      "status": "pulled",
+      "pulledAt": "2026-05-30T18:00:00Z",
+      "description": "Infrastructure as Code security scanner (Docker, K8s, Terraform)"
+    },
+    {
+      "id": "hadolint",
+      "name": "Hadolint",
+      "type": "docker-linter",
+      "source": "https://github.com/hadolint/hadolint",
+      "version": "latest",
+      "status": "pulled",
+      "pulledAt": "2026-05-30T18:00:00Z",
+      "description": "Dockerfile linter and best-practices validator"
+    },
+    {
+      "id": "codeql",
+      "name": "CodeQL",
+      "type": "sast",
+      "source": "https://github.com/github/codeql",
+      "version": "latest",
+      "status": "pulled",
+      "pulledAt": "2026-05-30T18:00:00Z",
+      "description": "GitHub's semantic code analysis engine for vulnerability detection"
+    },
+    {
+      "id": "supabase-cli",
+      "name": "Supabase CLI",
+      "type": "database-tool",
+      "source": "https://github.com/supabase/cli",
+      "version": "latest",
+      "status": "pulled",
+      "pulledAt": "2026-05-30T18:00:00Z",
+      "description": "Local Supabase development, migration, and deployment CLI"
+    },
+    {
+      "id": "vercel-cli",
+      "name": "Vercel CLI",
+      "type": "deployment-tool",
+      "source": "https://github.com/vercel/vercel",
+      "version": "latest",
+      "status": "pulled",
+      "pulledAt": "2026-05-30T18:00:00Z",
+      "description": "Vercel deployment and preview management CLI"
+    },
+    {
+      "id": "prd-template",
+      "name": "Open-Source PRD Template",
+      "type": "documentation",
+      "source": "https://github.com/joelparkerhenderson/architecture-requirements",
+      "version": "latest",
+      "status": "pulled",
+      "pulledAt": "2026-05-30T18:00:00Z",
+      "description": "Standard Agile PRD formatting template for Agent 02"
+    },
+    {
+      "id": "mermaid-cli",
+      "name": "Mermaid CLI",
+      "type": "diagramming",
+      "source": "https://github.com/mermaid-js/mermaid-cli",
+      "version": "latest",
+      "status": "pulled",
+      "pulledAt": "2026-05-30T18:00:00Z",
+      "description": "Generate architecture diagrams from Mermaid.js for Agent 03"
+    },
+    {
+      "id": "plantuml",
+      "name": "PlantUML",
+      "type": "diagramming",
+      "source": "https://github.com/plantuml/plantuml",
+      "version": "latest",
+      "status": "pulled",
+      "pulledAt": "2026-05-30T18:00:00Z",
+      "description": "Sequence and deployment diagram generation for Agent 03"
+    },
+    {
+      "id": "seed-datasets",
+      "name": "Retail Seed Datasets",
+      "type": "data-generation",
+      "source": "https://github.com/jdorfman/awesome-json-datasets",
+      "version": "latest",
+      "status": "pulled",
+      "pulledAt": "2026-05-30T18:00:00Z",
+      "description": "Sample retail/e-commerce datasets for merchant mock matrices (Agent 04)"
+    },
+    {
+      "id": "socket-dev",
+      "name": "Socket.dev GitHub Action",
+      "type": "dependency-security",
+      "source": "https://github.com/socketio/socket-dev",
+      "version": "latest",
+      "status": "pulled",
+      "pulledAt": "2026-05-30T18:00:00Z",
+      "description": "Supply chain security for npm/pnpm dependencies"
+    },
+    {
+      "id": "openclaw",
+      "name": "OpenClaw Diagnostics",
+      "type": "auto-remediation",
+      "source": "https://github.com/openclaw/openclaw (reference)",
+      "version": "reference",
+      "status": "referenced",
+      "pulledAt": "2026-05-30T18:00:00Z",
+      "description": "Autonomous diagnostics framework for Agent 13 (Maintenance Agent)"
+    }
+  ],
+  "pullStatus": {
+    "total": 17,
+    "pulled": 16,
+    "referenced": 1,
+    "failed": 0
+  }
+}

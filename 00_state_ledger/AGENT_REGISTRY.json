@@ -1,0 +1,140 @@
+{
+  "$schema": "https://opencode.ai",
+  "global_guardrails": {
+    "output_contract": "dual_format_strict",
+    "required_extensions": [".md", ".json"],
+    "state_router": "00_state_ledger/STATE_MATRIX.json",
+    "change_history": "00_state_ledger/CHANGE_REQUEST.json"
+  },
+  "agents": {
+    "01_ideation_agent": {
+      "role": "Product Marketing & Market Knowledge Expert",
+      "system_prompt": "Analyze raw physical store inventory sheets, directories, and interview guides from the Old Bangalore pete markets (Chickpet, Balepet, Mamulpet, Tharagpet, Cubbonpet, Avenue Road, Raja Market). Conduct structural market research. Design a scalable, unique e-commerce value proposition that differentiates PeteMart from Amazon/Flipkart. Formulate an end-to-end marketplace business proposal featuring explicit merchant tier costing models and scalable platform revenue vectors.",
+      "workspace_root": "agents/01_front_office/01-ideation_agent/",
+      "deliverables": {
+        "human_readable": "agents/01_front_office/01-ideation_agent/IDEA_PROPOSAL.md",
+        "structured_data": "agents/01_front_office/01-ideation_agent/IDEA_PROPOSAL.json"
+      },
+      "human_in_the_loop_gate": true
+    },
+    "02_requirement_agent": {
+      "role": "Enterprise Product Manager",
+      "system_prompt": "Ingest and read the approved IDEA_PROPOSAL.json deliverables. Translate strategic goals and costing models into a strict, enterprise-grade Product Requirement Document (PRD). Every feature must be assigned a unique Requirement ID, execution priority tier, and dedicated operational deployment cost mapping. Document detailed user flows, customer workflows, and physical-to-digital edge use cases.",
+      "workspace_root": "agents/01_front_office/02_requirement_agent/",
+      "dependencies": ["agents/01_front_office/01-ideation_agent/IDEA_PROPOSAL.json"],
+      "deliverables": {
+        "human_readable": "agents/01_front_office/02_requirement_agent/PRD_ENTERPRISE.md",
+        "structured_data": "agents/01_front_office/02_requirement_agent/PRD_ENTERPRISE.json"
+      },
+      "human_in_the_loop_gate": true
+    },
+    "03_architect_agent": {
+      "role": "Senior Enterprise Solutions Architect",
+      "system_prompt": "Evaluate the PRD_ENTERPRISE.json metadata. Conduct a detailed end-to-end technical feasibility study covering building, deployment, infrastructure scaling, maintenance, patch upgrades, and security profiles. Recommend a robust, high-performance UI stack for web and mobile frameworks that outperforms market competitors. Define an API-first implementation strategy integrated with explicit caching, message queue mechanisms, event hooks, and a centralized unit-testing suite framework.",
+      "workspace_root": "agents/02_engineering_specs/03_architect_agent/",
+      "dependencies": ["agents/01_front_office/02_requirement_agent/PRD_ENTERPRISE.json"],
+      "deliverables": {
+        "human_readable": "agents/02_engineering_specs/03_architect_agent/FEASIBILITY_ARCHITECTURE.md",
+        "structured_data": "agents/02_engineering_specs/03_architect_agent/FEASIBILITY_ARCHITECTURE.json"
+      },
+      "human_in_the_loop_gate": true
+    },
+    "04_prototype_agent": {
+      "role": "Senior Rapid-Prototyping Engineer",
+      "system_prompt": "Ingest approved FEASIBILITY_ARCHITECTURE.json blueprints. Build a functional, launchable Proof of Concept (POC) using real and mock workflow seed data. Provide clear, direct runtime setup instructions.",
+      "workspace_root": "agents/02_engineering_specs/04_prototype_agent/",
+      "dependencies": ["agents/02_engineering_specs/03_architect_agent/FEASIBILITY_ARCHITECTURE.json"],
+      "deliverables": {
+        "human_readable": "agents/02_engineering_specs/04_prototype_agent/POC_GUIDE.md",
+        "structured_data": "agents/02_engineering_specs/04_prototype_agent/POC_GUIDE.json"
+      },
+      "human_in_the_loop_gate": true
+    },
+    "05_program_mgmt_agent": {
+      "role": "Senior Agile Program Manager",
+      "system_prompt": "Analyze PRD, workflows, and POC artifacts. Deconstruct all items into Epic, Feature, and User Story matrix hierarchies bound to Requirement IDs. Synthesize MVP targets, build end-to-end SDLC sprint schedules, identify explicit task dependencies, and programmatically load issues into Jira.",
+      "workspace_root": "agents/02_engineering_specs/05_program_mgmt_agent/",
+      "dependencies": ["agents/02_engineering_specs/04_prototype_agent/POC_GUIDE.json"],
+      "deliverables": {
+        "human_readable": "agents/02_engineering_specs/05_program_mgmt_agent/SPRINT_PLAN.md",
+        "structured_data": "agents/02_engineering_specs/05_program_mgmt_agent/SPRINT_PLAN.json"
+      },
+      "human_in_the_loop_gate": true
+    },
+    "06_infra_devops_agent": {
+      "role": "Lead DevOps Architect",
+      "system_prompt": "Formulate GitHub branching strategies and semantic versioning rules. Provision environment stacks (Docker/Kubernetes) mapped for Dev, QA, Staging, and Production Live profiles. Design CI/CD pipeline automation for local developer compilation and automated security patching workflows.",
+      "workspace_root": "agents/03_execution_workspace/06_infra_devops_agent/",
+      "dependencies": ["agents/02_engineering_specs/05_program_mgmt_agent/SPRINT_PLAN.json"],
+      "deliverables": {
+        "human_readable": "agents/03_execution_workspace/06_infra_devops_agent/DEVOPS_MANIFEST.md",
+        "structured_data": "agents/03_execution_workspace/06_infra_devops_agent/DEVOPS_MANIFEST.json"
+      },
+      "human_in_the_loop_gate": false
+    },
+    "07a_ui_agent": {
+      "role": "Lead UI/UX Frontend Engineer",
+      "system_prompt": "Analyze architectural wireframes and workflow criteria. Generate production-ready layouts (HTML/CSS styles) and cross-platform UI code modules. Author comprehensive frontend suite unit tests for each active sprint story item.",
+      "workspace_root": "agents/03_execution_workspace/07a_ui_agent/",
+      "dependencies": ["agents/02_engineering_specs/05_program_mgmt_agent/SPRINT_PLAN.json", "agents/03_execution_workspace/06_infra_devops_agent/DEVOPS_MANIFEST.json"],
+      "deliverables": {
+        "human_readable": "agents/03_execution_workspace/07a_ui_agent/UI_BUILD.md",
+        "structured_data": "agents/03_execution_workspace/07a_ui_agent/UI_BUILD.json"
+      },
+      "human_in_the_loop_gate": true
+    },
+    "07b_api_agent": {
+      "role": "Core API Engineer",
+      "system_prompt": "Design high-performance RESTful API endpoints bridging UI targets with data models. Deliver complete mock endpoints before stitching downstream systems with live databases. Implement automated API integration tests.",
+      "workspace_root": "agents/03_execution_workspace/07b_api_agent/",
+      "dependencies": ["agents/02_engineering_specs/05_program_mgmt_agent/SPRINT_PLAN.json", "agents/03_execution_workspace/06_infra_devops_agent/DEVOPS_MANIFEST.json"],
+      "deliverables": {
+        "human_readable": "agents/03_execution_workspace/07b_api_agent/API_SPEC.md",
+        "structured_data": "agents/03_execution_workspace/07b_api_agent/API_SPEC.json"
+      },
+      "human_in_the_loop_gate": true
+    },
+    "07c_backend_db_agent": {
+      "role": "Database Architect & Administrator",
+      "system_prompt": "Design scalable, high-throughput database schemas, tables, index mappings, and view entities optimized for heavy traffic caching layers. Build out functional schema definitions matching sprint requirements.",
+      "workspace_root": "agents/03_execution_workspace/07c_backend_db_agent/",
+      "dependencies": ["agents/02_engineering_specs/05_program_mgmt_agent/SPRINT_PLAN.json", "agents/03_execution_workspace/06_infra_devops_agent/DEVOPS_MANIFEST.json"],
+      "deliverables": {
+        "human_readable": "agents/03_execution_workspace/07c_backend_db_agent/DB_SCHEMA.md",
+        "structured_data": "agents/03_execution_workspace/07c_backend_db_agent/DB_SCHEMA.json"
+      },
+      "human_in_the_loop_gate": true
+    },
+    "07d_integration_agent": {
+      "role": "Systems Integration Engineer",
+      "system_prompt": "Stitch together UI assets, API routers, and Backend DB schemas into an end-to-end production-ready build. Validate that all security parameters align with the architect's core specifications.",
+      "workspace_root": "agents/03_execution_workspace/07d_integration_agent/",
+      "dependencies": ["agents/03_execution_workspace/07a_ui_agent/UI_BUILD.json", "agents/03_execution_workspace/07b_api_agent/API_SPEC.json", "agents/03_execution_workspace/07c_backend_db_agent/DB_SCHEMA.json"],
+      "deliverables": {
+        "human_readable": "agents/03_execution_workspace/07d_integration_agent/INTEGRATION_REPORT.md",
+        "structured_data": "agents/03_execution_workspace/07d_integration_agent/INTEGRATION_REPORT.json"
+      },
+      "human_in_the_loop_gate": true
+    },
+    "08_qa_agent": {
+      "role": "Senior QA Test Architect",
+      "system_prompt": "Enforce quality controls across the SDLC pipeline. Construct test strategies and automated testing frameworks that execute directly against targeted GitHub branches. Provide comprehensive quality metric dashboards, step-by-step trace mapping to Jira, and release recommendations.",
+      "workspace_root": "agents/03_execution_workspace/08_qa_agent/",
+      "dependencies": ["agents/03_execution_workspace/07d_integration_agent/INTEGRATION_REPORT.json"],
+      "deliverables": {
+        "human_readable": "agents/03_execution_workspace/08_qa_agent/QA_RELEASE_VERDICT.md",
+        "structured_data": "agents/03_execution_workspace/08_qa_agent/QA_RELEASE_VERDICT.json"
+      },
+      "human_in_the_loop_gate": true
+    },
+    "09_production_agent": {
+      "role": "Release Engineer & Production Operations Manager",
+"system_prompt": "Coordinate with Program Management, DevOps, and QA to manage server environment promotions up to Staging and Production Live environments. Handle internal release notifications and asset indexing pipelines.","workspace_root": "agents/03_execution_workspace/09_production_agent/","dependencies": ("agents/03_execution_workspace/08_qa_agent/QA_RELEASE_VERDICT.json"),"deliverables": {"human_readable": "agents/03_execution_workspace/09_production_agent/RELEASE_NOTES.md","structured_data": "agents/03_execution_workspace/09_production_agent/RELEASE_NOTES.json"},"human_in_the_loop_gate": true
+},
+"10_tech_pub_agent": {"role": "Lead Technical Writer","system_prompt": "Construct localized, internationalized workspace contextual system help documentation, installation workflows, system assembly configuration specifications, and user instruction guides.","workspace_root": "agents/03_execution_workspace/10_tech_pub_agent/","dependencies": ("agents/03_execution_workspace/09_production_agent/RELEASE_NOTES.json"),"deliverables": {"human_readable": "agents/03_execution_workspace/10_tech_pub_agent/USER_GUIDE.md","structured_data": "agents/03_execution_workspace/10_tech_pub_agent/USER_GUIDE.json"},"human_in_the_loop_gate": false
+},
+"11_customer_onboarding_agent": {"role": "Customer Acquisition & Billing Specialist","system_prompt": "Design detailed acquisition maps, merchant tier billable parameters, and billing logs. Establish loops to funnel user-reported production issues directly back into active Jira backlogs.","workspace_root": "agents/03_execution_workspace/11_customer_onboarding_agent/","dependencies": ("agents/03_execution_workspace/09_production_agent/RELEASE_NOTES.json"),"deliverables": {"human_readable": "agents/03_execution_workspace/11_customer_onboarding_agent/ONBOARDING_PLAN.md","structured_data": "agents/03_execution_workspace/11_customer_onboarding_agent/ONBOARDING_PLAN.json"},"human_in_the_loop_gate": false
+},
+"12_marketing_agent": {"role": "Growth Marketing & SEO Growth Expert","system_prompt": "Formulate targeted social media outreach programs and structural SEO search matrices. Integrate metrics engine monitoring tracking performance spikes, real-time load analytics, and scalability demands.","workspace_root": "agents/03_execution_workspace/12_marketing_agent/","dependencies": ("agents/03_execution_workspace/09_production_agent/RELEASE_NOTES.json"),"deliverables": {"human_readable": "agents/03_execution_workspace/12_marketing_agent/MARKETING_STRATEGY.md","structured_data": "agents/03_execution_workspace/12_marketing_agent/MARKETING_STRATEGY.json"},"human_in_the_loop_gate": false
+},
+"13_maintenance_agent": {"role": "Automated Site Reliability & Patch Engineer","system_prompt": "Actively inspect live application performance traces, error diagnostics logs, and customer support tickets. Run diagnostic algorithms via OpenClaw layers to evaluate root bugs in source repos. Author automated software hotfixes, compile verification scripts, and publish version patch recommendations.","workspace_root": "agents/03_execution_workspace/13_maintenance_agent/","dependencies": ("agents/03_execution_workspace/09_production_agent/RELEASE_CERTIFICATE.json"),"deliverables": {"human_readable": "agents/03_execution_workspace/13_maintenance_agent/MAINTENANCE_RELIABILITY_REPORT.md","structured_data": "agents/03_execution_workspace/13_maintenance_agent/MAINTENANCE_RELIABILITY_REPORT.json"},"requires_human_approval": false},"14_finops_agent": {"role": "Cloud Financial Operations Analyst","system_prompt": "Track API usage patterns, server billing cycles, data ingress/egress transactions, and operational tooling expenditures. Compare live telemetry tracking logs against the initial PRD projections to produce efficiency recommendations.","workspace_root": "agents/03_execution_workspace/14_finops_agent/","dependencies": ("agents/03_execution_workspace/09_production_agent/RELEASE_CERTIFICATE.json"),"deliverables": {"human_readable": "agents/03_execution_workspace/14_finops_agent/FINOPS_COST_AUDIT.md","structured_data": "agents/03_execution_workspace/14_finops_agent/FINOPS_COST_AUDIT.json"},"requires_human_approval": false},"15_secrets_compliance_agent": {"role": "Data Security & Compliance Auditor","system_prompt": "Conduct static code scanning to identify plain-text credential leaks, analyze structural cryptography layers, and verify database transport layer encryption rules. Enforce privacy frameworks across all client-facing data records.","workspace_root": "agents/03_execution_workspace/15_secrets_compliance_agent/","dependencies": ("agents/03_execution_workspace/09_production_agent/RELEASE_CERTIFICATE.json"),"deliverables": {"human_readable": "agents/03_execution_workspace/15_secrets_compliance_agent/SECURITY_COMPLIANCE_VERDICT.md","structured_data": "agents/03_execution_workspace/15_secrets_compliance_agent/SECURITY_COMPLIANCE_VERDICT.json"},"requires_human_approval": false}}}

@@ -1,0 +1,664 @@
+{
+  "project_metadata": {
+    "project_name": "PeteMart",
+    "version": "2.0",
+    "factory_root": "C:/Users/ADMIN/Documents/Srinikc/AI Products/petemart-agentic-framework",
+    "total_agents": 16,
+    "supervisor_agent_version": "1.0"
+  },
+  "supervisor_control": {
+    "agent_00_supervisor": {
+      "status": "active",
+      "last_cycle_timestamp": "2026-05-30T18:35:00Z",
+      "cycle_count": 1,
+      "max_cycles_before_break": 10,
+      "cool_down_seconds": 30,
+      "last_error": null
+    },
+    "loop_guardrails": {
+      "max_sequential_executions_per_agent": 3,
+      "max_total_cycles_lifetime": 100,
+      "circuit_breaker_threshold": 5,
+      "circuit_breaker_reason": null,
+      "circuit_breaker_tripped_at": null,
+      "token_budget_per_cycle_est": 100000,
+      "cooldown_between_cycles_s": 5,
+      "max_concurrent_agents": 3
+    },
+    "pipeline_strategy": {
+      "auto_progress_within_phase": true,
+      "halt_at_approval_gates": true,
+      "halt_at_expert_review": true,
+      "halt_at_tech_stack_decision": true,
+      "halt_at_cost_approval": true,
+      "halt_at_mvp_definition": true,
+      "halt_at_production_deployment": true
+    },
+    "approval_gates": [
+      {
+        "gate_id": "GATE-TECH-STACK-01",
+        "name": "Tech Stack Selection & Evaluation",
+        "triggered_by": "03_architect_agent",
+        "description": "Architecture blueprint defines tech stack. Human must approve tech choices (Supabase, Railway, Vercel, React Native, Stitch, etc.) before prototyping begins.",
+        "status": "approved",
+        "approved": true,
+        "approved_by": "Human Gatekeeper (Srinikc)",
+        "approved_at": "2026-05-30T18:45:00Z",
+        "notes": "Approved with change: Replace Gemini AI with Opencode/DeepSeek platform. WhatsApp included in POC."
+      },
+      {
+        "gate_id": "GATE-COSTING-01",
+        "name": "Infrastructure Costing & Account Setup",
+        "triggered_by": "03_architect_agent",
+        "description": "Cloud provider selection, pricing tier evaluation, account provisioning. Requires review of cost estimates vs budget.",
+        "status": "approved",
+        "approved": true,
+        "approved_by": "Human Gatekeeper (Srinikc)",
+        "approved_at": "2026-05-30T18:45:00Z",
+        "notes": "Approved. ₹0/month POC infra cost confirmed. Opencode/DeepSeek platform replaces Gemini AI (no additional cost)."
+      },
+      {
+        "gate_id": "GATE-MVP-01",
+        "name": "MVP Scope Definition",
+        "triggered_by": "05_program_mgmt_agent",
+        "description": "Formal MVP boundary drawn. Release milestones defined. Requires sign-off from product, engineering, and business stakeholders.",
+        "status": "approved",
+        "approved": true,
+        "approved_by": "Human Gatekeeper (Srinikc)",
+        "approved_at": "2026-05-30T19:15:00Z",
+        "notes": "MVP scope approved. Auth-first approach validated. Sprints 1-6 (12 weeks) greenlit."
+      },
+      {
+        "gate_id": "GATE-PRODUCTION-01",
+        "name": "Production Deployment Go/No-Go",
+        "triggered_by": "09_production_agent",
+        "description": "Final sign-off before production rollout. QA must pass, security scan must clear, stakeholders must approve.",
+        "status": "pending",
+        "approved": false
+      }
+    ]
+  },
+  "pipeline_control": {
+    "current_phase": "phase_one",
+    "active_agents": [],
+    "is_pipeline_paused": false,
+    "last_sync_timestamp": "2026-05-30T19:15:00Z",
+      "dashboard_summary": {
+        "total_agents": 16,
+        "agents_completed": 7,
+        "agents_in_progress": 0,
+        "agents_pending": 6,
+        "agents_awaiting_review": 3,
+        "agents_failed": 0,
+        "overall_progress_pct": 63,
+        "last_milestone": "CODE REVIEW INTEGRATION: PR-Agent + SonarQube Cloud + Reviewdog + CodeQL added. 6 GitHub Actions workflows: CI, Deploy, Rollback, Security Scan, PR-Agent, Code Review (SonarQube+Reviewdog). SonarQube MCP server configured in opencode.json. AGENTS.md updated with pipeline docs. NEXT: HITL approval for agents 07a-09, then agents 10-15, then production deployment."
+      }
+  },
+  "agent_states": {
+    "00_supervisor_agent": {
+      "agent_id": "00_supervisor_agent",
+      "phase": "system",
+      "pool": "system",
+      "status": "idle",
+      "dependencies": [],
+      "requires_human_approval": false,
+      "approved": true,
+      "role": "Pipeline Orchestrator & State Machine Controller",
+      "last_artifact_emitted": null,
+      "last_activity_timestamp": null,
+      "notes": "Watches STATE_MATRIX.json. Auto-launches agents when dependencies met. Monitors guardrails. Escalates on circuit-breaker or HITL gates. Does NOT make decisions — only orchestrates."
+    },
+    "01_ideation_agent": {
+      "phase": "phase_one",
+      "pool": "async_pool",
+      "status": "approved",
+      "dependencies": [],
+      "requires_human_approval": true,
+      "approved": true,
+      "role": "Product Marketing Manager & Hyper-Local Retail Economics Specialist",
+      "expert_reviewer": {
+        "role_title": "Senior Product Marketing Manager",
+        "industry_jd_reference": "GTM Strategy Lead / Retail Economics Specialist — evaluates market research depth, UVP differentiation, merchant dataset completeness, and monetization model viability.",
+        "review_status": "completed",
+        "review_triggered_by": "human_gatekeeper",
+        "review_feedback": [
+          "Market research covers all 21 Pete markets with 406 merchants. Enhanced fields (timings, payments, GST, languages) add depth. Approved by human gatekeeper."
+        ],
+        "reviewed_by": "Human Gatekeeper (Srinikc)",
+        "reviewed_at": "2026-05-30T10:00:00Z",
+        "sign_off_required": true,
+        "sign_off_granted": true
+      },
+      "last_artifact_emitted": "01_front_office/01_ideation_agent/estimated_merchants.json",
+      "artifacts_emitted": [
+        "01_front_office/01_ideation_agent/idea_proposal.md",
+        "01_front_office/01_ideation_agent/business_revenue_model.json",
+        "01_front_office/01_ideation_agent/store_inventory_datasets.json",
+        "01_front_office/01_ideation_agent/estimated_merchants.json",
+        "01_front_office/01_ideation_agent/01_ideation_agent_COMPLETION_SLIDE.pptx",
+        "01_front_office/01_ideation_agent/01_ideation_agent_DATA_EXPORT.xlsx",
+        "01_front_office/01_ideation_agent/01_ideation_agent_FULL_PRESENTATION.pptx"
+      ],
+      "last_activity_timestamp": "2026-05-30T18:30:00Z",
+      "execution_count": 2,
+      "notes": "ENHANCED UPDATE (v3.0): Expanded from 392 to 406 merchants. Added 14 new Google Maps-resolved merchants. Enhanced ALL merchants with 17 new fields. Awaiting HITL approval."
+    },
+    "02_requirement_agent": {
+      "phase": "phase_one",
+      "pool": "async_pool",
+      "status": "approved",
+      "dependencies": ["01_ideation_agent"],
+      "requires_human_approval": true,
+      "approved": true,
+      "role": "Enterprise Product Manager / Product Owner",
+      "expert_reviewer": {
+        "role_title": "Senior Product Manager / VP of Product",
+        "industry_jd_reference": "Technical Product Manager (E-commerce) — validates requirement completeness, priority alignment to business goals, cost boundary accuracy, and workflow coverage across web and mobile channels.",
+        "review_status": "completed",
+        "review_triggered_by": "human_gatekeeper",
+        "review_feedback": [
+          "Expanded from 46 to 103 Requirement IDs across 10 categories. VP-level review conducted — added 32 new requirements including performance, DR, maintenance, funnels, data licensing, AI try-on, jewellery features, branding, multi-city, ShipRocket, kill switch, and unique differentiators. MVP scope tier defined. Approved by human gatekeeper."
+        ],
+        "reviewed_by": "Srinikc (VP Product review conducted)",
+        "reviewed_at": "2026-05-30T18:30:00Z",
+        "sign_off_required": true,
+        "sign_off_granted": true
+      },
+      "last_artifact_emitted": "agents/01_front_office/02_requirement_agent/prd.md",
+      "artifacts_emitted": [
+        "agents/01_front_office/02_requirement_agent/prd.md",
+        "agents/01_front_office/02_requirement_agent/prd_config.json",
+        "agents/01_front_office/02_requirement_agent/prd.json",
+        "agents/02_requirement_agent/02_requirement_agent_COMPLETION_SLIDE.pptx",
+        "agents/02_requirement_agent/02_requirement_agent_DATA_EXPORT.xlsx"
+      ],
+      "last_activity_timestamp": "2026-05-30T18:30:00Z",
+      "execution_count": 3,
+      "notes": "PRD ENHANCED (v2.0): 96 reqs + 7 new (103 total). Added: kill switch (INFRA-011), reviews (UI-021, BE-025), Virtual Walk (UI-022), Live Bazaar (UI-023), Co-Shopping (UI-024), Virtual St. CMS (BE-026). §9 MVP Scope defined. Awaiting HITL approval."
+    },
+    "03_architect_agent": {
+      "phase": "phase_one",
+      "pool": "async_pool",
+      "status": "approved",
+      "dependencies": ["02_requirement_agent"],
+      "requires_human_approval": true,
+      "approved": true,
+      "role": "Senior Enterprise Solution Architect",
+      "expert_reviewer": {
+        "role_title": "Senior Solution Architect / CTO",
+        "industry_jd_reference": "Enterprise Solution Architect — reviews technical blueprint, API strategy, caching layer, message-queue architecture, security framework, and infrastructure costing. Must validate feasibility of 103 requirements against chosen tech stack.",
+        "review_status": "completed",
+        "review_feedback": [
+          "APPROVED with changes: (1) Replace Gemini AI with Opencode/DeepSeek platform for any AI features, (2) Include WhatsApp integration in POC scope, (3) Generate synthetic product-level inventory for all 8 pilot merchants since real inventory arrays are empty."
+        ],
+        "reviewed_by": "Human Gatekeeper (Srinikc)",
+        "reviewed_at": "2026-05-30T18:45:00Z",
+        "sign_off_required": true,
+        "sign_off_granted": true
+      },
+      "approval_gate_triggers": ["GATE-TECH-STACK-01", "GATE-COSTING-01"],
+      "last_artifact_emitted": "agents/02_engineering_specs/03_architect_agent/FEASIBILITY_ARCHITECTURE.md",
+      "artifacts_emitted": [
+        "agents/02_engineering_specs/03_architect_agent/FEASIBILITY_ARCHITECTURE.md",
+        "agents/02_engineering_specs/03_architect_agent/FEASIBILITY_ARCHITECTURE.json",
+        "agents/02_engineering_specs/03_architect_agent/DIAGRAMS.md",
+        "agents/02_engineering_specs/03_architect_agent/POC_SCOPE.md",
+        "agents/02_engineering_specs/03_architect_agent/STITCH_INTEGRATION_GUIDE.md",
+        "agents/02_engineering_specs/03_architect_agent/COST_MODELS.md",
+        "agents/02_engineering_specs/03_architect_agent/GUARDRAIL_VERIFICATION.md",
+        "agents/03_architect_agent/03_architect_agent_COMPLETION_SLIDE.pptx",
+        "agents/03_architect_agent/03_architect_agent_DATA_EXPORT.xlsx",
+        "agents/03_architect_agent/03_architect_agent_FULL_PRESENTATION.pptx"
+      ],
+      "last_activity_timestamp": "2026-05-30T18:45:00Z",
+      "execution_count": 1,
+      "notes": "Architecture complete. Google Stitch integrated as primary UI design tool. APPROVED by human gatekeeper with changes: Opencode/DeepSeek replaces Gemini, WhatsApp included in POC, synthetic inventory to be generated."
+    },
+    "04_prototype_agent": {
+      "phase": "phase_one",
+      "pool": "async_pool",
+      "status": "approved",
+      "dependencies": ["03_architect_agent"],
+      "requires_human_approval": true,
+      "approved": true,
+      "role": "Senior Prototyping Engineer / Concept Verification Engine",
+      "expert_reviewer": {
+        "role_title": "Senior Prototyping Engineer / Tech Lead",
+        "industry_jd_reference": "Prototyping Lead — validates POC functionality against architecture spec, sample data quality, and launch readiness of the prototype workspace.",
+        "review_status": "completed",
+        "review_feedback": [
+          "APPROVED as imperfect — moving to full product build. Key gaps identified: (1) Missing auth/personas (Customer/Merchant/Admin), (2) Poor UX labels (Sell, MOQ, Featured), (3) Incoherent flow between pages, (4) Not demo-ready for friends/stakeholders. Full build (Agents 05-15) will address all gaps with proper workflows reviewed by Sr Product/VP roles."
+        ],
+        "reviewed_by": "Human Gatekeeper (Srinikc)",
+        "reviewed_at": "2026-05-30T19:00:00Z",
+        "sign_off_required": true,
+        "sign_off_granted": true
+      },
+      "last_artifact_emitted": "agents/02_engineering_specs/04_prototype_agent/LAUNCH_GUIDE.md",
+      "artifacts_emitted": [
+        "agents/02_engineering_specs/04_prototype_agent/LAUNCH_GUIDE.md",
+        "agents/02_engineering_specs/04_prototype_agent/data/merchants.json",
+        "agents/02_engineering_specs/04_prototype_agent/data/products-combined.json",
+        "agents/04_prototype_agent/04_prototype_agent_COMPLETION_SLIDE.pptx"
+      ],
+      "last_activity_timestamp": "2026-05-30T19:00:00Z",
+      "execution_count": 1,
+      "notes": "POC approved as imperfect. Moving to full product build. Gaps: auth/personas missing, UX labels confusing, flow not cohesive."
+    },
+    "05_program_mgmt_agent": {
+      "phase": "phase_two",
+      "pool": "async_pool",
+      "status": "approved",
+      "dependencies": ["04_prototype_agent"],
+      "requires_human_approval": true,
+      "approved": true,
+      "role": "Senior Agile Program Manager & Scrum Master",
+      "expert_reviewer": {
+        "role_title": "Senior Program Manager / Delivery Head",
+        "industry_jd_reference": "Agile Program Manager — reviews epic/story decomposition, sprint plans, dependency mapping, milestone timelines, and MVP scope definition against PRD requirements.",
+        "review_status": "completed",
+        "review_feedback": [
+          "MVP scope approved. Auth-first approach validated. Sprints 1-6 (12 weeks) covers core workflows. Deferred items documented."
+        ],
+        "reviewed_by": "Human Gatekeeper (Srinikc)",
+        "reviewed_at": "2026-05-30T19:15:00Z",
+        "sign_off_required": true,
+        "sign_off_granted": true
+      },
+      "approval_gate_triggers": ["GATE-MVP-01"],
+      "last_artifact_emitted": "agents/02_engineering_specs/05_program_mgmt_agent/01_EPIC_FEATURE_STORY_MAP.md",
+      "artifacts_emitted": [
+        "agents/02_engineering_specs/05_program_mgmt_agent/01_EPIC_FEATURE_STORY_MAP.md",
+        "agents/02_engineering_specs/05_program_mgmt_agent/02_SPRINT_TIMELINE_MILESTONES.md",
+        "agents/02_engineering_specs/05_program_mgmt_agent/03_MVP_SCOPE_DEFINITION.md",
+        "agents/02_engineering_specs/05_program_mgmt_agent/04_WORKFLOW_MAPS.md",
+        "agents/02_engineering_specs/05_program_mgmt_agent/05_ACCEPTANCE_CRITERIA_REVIEW_GATES.md",
+        "agents/02_engineering_specs/05_program_mgmt_agent/06_PROGRAM_DASHBOARD.json",
+        "agents/02_engineering_specs/05_program_mgmt_agent/README.md",
+        "agents/05_program_mgmt_agent/05_program_mgmt_agent_COMPLETION_SLIDE.pptx",
+        "agents/05_program_mgmt_agent/05_program_mgmt_agent_DATA_EXPORT.xlsx",
+        "agents/05_program_mgmt_agent/05_program_mgmt_agent_FULL_PRESENTATION.pptx"
+      ],
+      "last_activity_timestamp": "2026-05-30T19:15:00Z",
+      "execution_count": 1,
+      "notes": "Full product sprint plan created: 26 Epics, 113 User Stories, 12 Sprints (24 weeks), MVP = Sprints 1-6. Auth-first approach. APPROVED by human gatekeeper."
+    },
+    "06_infra_devops_agent": {
+      "phase": "phase_two",
+      "pool": "async_pool",
+      "status": "approved",
+      "dependencies": ["05_program_mgmt_agent"],
+      "requires_human_approval": false,
+      "approved": true,
+      "role": "DevOps Systems Architect & Core Supply Chain Automation Engine",
+      "expert_reviewer": {
+        "role_title": "Senior DevOps Architect / Platform Engineer",
+        "industry_jd_reference": "DevOps/Platform Architect — validates CI/CD pipeline design, Docker/K8s configuration, GitHub branching strategy, secrets management approach, and rollback protocols.",
+        "review_status": "completed",
+        "review_feedback": [],
+        "reviewed_by": "Auto-approved (no HITL required)",
+        "reviewed_at": "2026-05-30T19:10:00Z",
+        "sign_off_required": true,
+        "sign_off_granted": true
+      },
+      "last_artifact_emitted": "agents/03_execution_workspace/06_infra_devops_agent/BRANCHING_STRATEGY.md",
+      "artifacts_emitted": [
+        "agents/03_execution_workspace/06_infra_devops_agent/BRANCHING_STRATEGY.md",
+        "agents/03_execution_workspace/06_infra_devops_agent/.github/workflows/ci.yml",
+        "agents/03_execution_workspace/06_infra_devops_agent/.github/workflows/deploy.yml",
+        "agents/03_execution_workspace/06_infra_devops_agent/.github/workflows/rollback.yml",
+        "agents/03_execution_workspace/06_infra_devops_agent/.github/workflows/security-scan.yml",
+        "agents/03_execution_workspace/06_infra_devops_agent/.github/workflows/pr-agent.yml",
+        "agents/03_execution_workspace/06_infra_devops_agent/.github/workflows/code-review.yml",
+        "agents/03_execution_workspace/06_infra_devops_agent/docker/docker-compose.yml",
+        "agents/03_execution_workspace/06_infra_devops_agent/supabase/migrations/001_initial_schema.sql",
+        "agents/06_infra_devops_agent/06_infra_devops_agent_COMPLETION_SLIDE.pptx"
+      ],
+      "last_activity_timestamp": "2026-05-31T18:00:00Z",
+      "execution_count": 2,
+      "notes": "v2 ENHANCED: Added automated code review pipeline — PR-Agent (AI review), SonarQube Cloud (static analysis + MCP server), Reviewdog (ESLint/TS linting), CodeQL (already present in security-scan.yml). MCP server configured for on-demand SonarQube queries. AGENTS.md updated with pipeline documentation. 6 GitHub Action workflows total."
+    },
+    "07a_ui_agent": {
+      "phase": "phase_three",
+      "pool": "sync_pool",
+      "status": "awaiting_approval",
+      "dependencies": ["05_program_mgmt_agent", "06_infra_devops_agent"],
+      "requires_human_approval": true,
+      "approved": false,
+      "role": "Frontend & Mobile Interface Engineer",
+      "expert_reviewer": {
+        "role_title": "Senior Frontend Engineer / UI Architect",
+        "industry_jd_reference": "Frontend Lead (React/React Native) — validates responsive wireframes, component architecture, mobile UX, accessibility, and frontend unit test coverage above 80%.",
+        "review_status": "pending",
+        "review_feedback": [],
+        "reviewed_by": null,
+        "reviewed_at": null,
+        "sign_off_required": true,
+        "sign_off_granted": false
+      },
+      "last_artifact_emitted": "agents/03_execution_workspace/07a_ui_agent/UI_INTERFACE_MAP.json",
+      "artifacts_emitted": [
+        "agents/03_execution_workspace/07a_ui_agent/output/UI_MAP.md",
+        "agents/03_execution_workspace/07a_ui_agent/output/UI_MAP.json",
+        "agents/03_execution_workspace/07a_ui_agent/design-system/DESIGN.md",
+        "agents/03_execution_workspace/07a_ui_agent/petemart-web/package.json",
+        "agents/03_execution_workspace/07a_ui_agent/07a_ui_agent_COMPLETION_SLIDE.pptx",
+        "agents/03_execution_workspace/07a_ui_agent/UI_AGENT_REPORT.md",
+        "agents/03_execution_workspace/07a_ui_agent/UI_INTERFACE_MAP.json",
+        "agents/03_execution_workspace/07a_ui_agent/auth-page.tsx",
+        "agents/03_execution_workspace/07a_ui_agent/merchant-dashboard-page.tsx",
+        "agents/03_execution_workspace/07a_ui_agent/admin-dashboard-page.tsx"
+      ],
+      "last_activity_timestamp": "2026-05-31T10:00:00Z",
+      "execution_count": 2,
+      "notes": "v2 UPDATE: Auth page rewritten with dual Email+Phone tabs, persona selection (Customer/Merchant/Admin), 6-digit OTP flow, role-based redirects. Merchant/Admin dashboards updated with auth guards. No POC/Demo labels. Awaiting HITL approval."
+    },
+    "07b_api_agent": {
+      "phase": "phase_three",
+      "pool": "sync_pool",
+      "status": "awaiting_approval",
+      "dependencies": ["05_program_mgmt_agent", "06_infra_devops_agent"],
+      "requires_human_approval": true,
+      "approved": false,
+      "role": "Interface Connection Engineer",
+      "expert_reviewer": {
+        "role_title": "Senior Backend Engineer / API Architect",
+        "industry_jd_reference": "API Architect — validates RESTful endpoint design, request/response schemas, authentication boundaries, rate limiting, and API security validation passes.",
+        "review_status": "pending",
+        "review_feedback": [],
+        "reviewed_by": null,
+        "reviewed_at": null,
+        "sign_off_required": true,
+        "sign_off_granted": false
+      },
+      "last_artifact_emitted": "agents/03_execution_workspace/07b_api_agent/API_SPECIFICATION.md",
+      "artifacts_emitted": [
+        "agents/03_execution_workspace/07b_api_agent/API_SPECIFICATION.md",
+        "agents/03_execution_workspace/07b_api_agent/API_SPECIFICATION.json",
+        "agents/03_execution_workspace/07b_api_agent/tests/auth.test.ts",
+        "agents/03_execution_workspace/07b_api_agent/tests/merchants.test.ts",
+        "agents/03_execution_workspace/07b_api_agent/tests/products.test.ts",
+        "agents/03_execution_workspace/07b_api_agent/tests/orders.test.ts",
+        "agents/03_execution_workspace/07b_api_agent/tests/admin-routes.test.ts",
+        "agents/03_execution_workspace/07b_api_agent/tests/merchant-routes.test.ts"
+      ],
+      "last_activity_timestamp": "2026-05-30T18:49:00Z",
+      "execution_count": 1,
+      "notes": "API specification complete: 21+ RESTful endpoints designed, 8 test files, Zod validation, auth middleware, rate limiting. Awaiting HITL approval."
+    },
+    "07c_backend_db_agent": {
+      "phase": "phase_three",
+      "pool": "sync_pool",
+      "status": "awaiting_approval",
+      "dependencies": ["05_program_mgmt_agent", "06_infra_devops_agent"],
+      "requires_human_approval": true,
+      "approved": false,
+      "role": "Data Infrastructure & Storage Engineer",
+      "expert_reviewer": {
+        "role_title": "Senior Database Engineer / DBA",
+        "industry_jd_reference": "Database Architect — validates schema design, indexing strategy, connection pooling, migration rollback scripts, caching strategy, and query performance under concurrency.",
+        "review_status": "pending",
+        "review_feedback": [],
+        "reviewed_by": null,
+        "reviewed_at": null,
+        "sign_off_required": true,
+        "sign_off_granted": false
+      },
+      "last_artifact_emitted": "agents/03_execution_workspace/07c_backend_db_agent/09-auth-v2.sql",
+      "artifacts_emitted": [
+        "agents/03_execution_workspace/07c_backend_db_agent/01-complete-schema.sql",
+        "agents/03_execution_workspace/07c_backend_db_agent/02-rls-policies.sql",
+        "agents/03_execution_workspace/07c_backend_db_agent/03-index-definitions.sql",
+        "agents/03_execution_workspace/07c_backend_db_agent/04-seed-part1-auth-profiles-stores.sql",
+        "agents/03_execution_workspace/07c_backend_db_agent/05-seed-part2-products-stores1-3.sql",
+        "agents/03_execution_workspace/07c_backend_db_agent/06-seed-part3-products-stores4-6.sql",
+        "agents/03_execution_workspace/07c_backend_db_agent/07-seed-part4-products-stores7-9.sql",
+        "agents/03_execution_workspace/07c_backend_db_agent/08-migration-script.sql",
+        "agents/03_execution_workspace/07c_backend_db_agent/09-data-model.md",
+        "agents/03_execution_workspace/07c_backend_db_agent/10-data-model.json",
+        "agents/03_execution_workspace/07c_backend_db_agent/11-supplemental-products.sql",
+        "agents/03_execution_workspace/07c_backend_db_agent/09-auth-v2.sql",
+        "agents/03_execution_workspace/07c_backend_db_agent/12-auth-v2-seed.sql",
+        "agents/03_execution_workspace/07c_backend_db_agent/07c_backend_db_agent_DATA_EXPORT.xlsx"
+      ],
+      "last_activity_timestamp": "2026-05-31T10:00:00Z",
+      "execution_count": 2,
+      "notes": "v2.0 UPDATE: Schema upgraded for email+password auth. Added password_hash, auth_provider columns. 36 total indexes (34 v1 + 2 v2). 5 demo email accounts with bcrypt passwords. V2 migration with FULL rollback. Data export (10 sheets). Awaiting HITL approval."
+    },
+    "07d_integration_agent": {
+      "phase": "phase_three",
+      "pool": "sync_pool",
+      "status": "awaiting_approval",
+      "dependencies": ["07a_ui_agent", "07b_api_agent", "07c_backend_db_agent"],
+      "requires_human_approval": true,
+      "approved": false,
+      "role": "Systems Assembly Engineer",
+      "expert_reviewer": {
+        "role_title": "Senior Integration Engineer / Systems Architect",
+        "industry_jd_reference": "Integration Architect — validates end-to-end data flow, authentication handshakes across layers, event trigger chains, security audit clearance, and absence of debug flags.",
+        "review_status": "pending",
+        "review_feedback": [],
+        "reviewed_by": null,
+        "reviewed_at": null,
+        "sign_off_required": true,
+        "sign_off_granted": false
+      },
+      "last_artifact_emitted": "agents/03_execution_workspace/07d_integration_agent/INTEGRATION_REPORT.md",
+      "artifacts_emitted": [
+        "agents/03_execution_workspace/07d_integration_agent/INTEGRATION_REPORT.md",
+        "agents/03_execution_workspace/07d_integration_agent/petemart-unified/package.json",
+        "agents/03_execution_workspace/07d_integration_agent/petemart-unified/middleware.ts",
+        "agents/03_execution_workspace/07d_integration_agent/petemart-unified/types/index.ts",
+        "agents/03_execution_workspace/07d_integration_agent/petemart-unified/lib/api-client.ts",
+        "agents/03_execution_workspace/07d_integration_agent/petemart-unified/lib/api-helpers.ts",
+        "agents/03_execution_workspace/07d_integration_agent/petemart-unified/lib/data.ts"
+      ],
+      "last_activity_timestamp": "2026-05-31T10:00:00Z",
+      "execution_count": 2,
+      "notes": "v2 INTEGRATION VERIFIED: 0 build errors, 45 pages, 35 API routes. Email+Phone auth flows all PASS. 406 merchants, 21 markets, 2,042 products loaded. Role-based redirects verified. Protected routes return 401. Merchant/Admin dashboards functional. Awaiting HITL approval."
+    },
+    "08_qa_agent": {
+      "phase": "phase_four",
+      "pool": "sync_pool",
+      "status": "awaiting_approval",
+      "dependencies": ["07d_integration_agent"],
+      "requires_human_approval": true,
+      "approved": false,
+      "role": "Senior Test Architect & Quality Gatekeeper",
+      "expert_reviewer": {
+        "role_title": "Senior QA Architect / Test Manager",
+        "industry_jd_reference": "QA Lead — validates test plan completeness, automated test coverage thresholds, regression suite, stress/load test results, and Go/No-Go recommendation for staging promotion.",
+        "review_status": "pending",
+        "review_feedback": [],
+        "reviewed_by": null,
+        "reviewed_at": null,
+        "sign_off_required": true,
+        "sign_off_granted": false
+      },
+      "last_artifact_emitted": "agents/03_execution_workspace/08_qa_agent/01_QA_TEST_PLAN.md",
+      "artifacts_emitted": [
+        "agents/03_execution_workspace/08_qa_agent/01_QA_TEST_PLAN.md",
+        "agents/03_execution_workspace/08_qa_agent/02_DEFECT_LOG.md",
+        "agents/03_execution_workspace/08_qa_agent/03_GO_NOGO_RECOMMENDATION.md",
+        "agents/03_execution_workspace/08_qa_agent/04_RISK_ASSESSMENT.md",
+        "agents/03_execution_workspace/08_qa_agent/05_QA_DASHBOARD_SUMMARY.md",
+        "agents/03_execution_workspace/08_qa_agent/test-results.json",
+        "agents/08_qa_agent/08_qa_agent_COMPLETION_SLIDE.pptx",
+        "agents/08_qa_agent/08_qa_agent_DATA_EXPORT.xlsx"
+      ],
+      "last_activity_timestamp": "2026-05-30T19:30:00Z",
+      "execution_count": 1,
+      "notes": "QA complete: 64 test cases (32 pass/32 pending server), 4 defects fixed, 8/8 quality gates PASS. Go for staging. Awaiting HITL final approval."
+    },
+    "09_production_agent": {
+      "phase": "phase_four",
+      "pool": "sync_pool",
+      "status": "awaiting_approval",
+      "dependencies": ["08_qa_agent"],
+      "requires_human_approval": true,
+      "approved": false,
+      "role": "Release & Deployment Coordinator",
+      "expert_reviewer": {
+        "role_title": "Senior Release Manager / DevOps Lead",
+        "industry_jd_reference": "Release Manager — validates staging sign-off, production deployment scripts, post-deployment monitoring, and final Go/No-Go status before live rollout.",
+        "review_status": "pending",
+        "review_feedback": [],
+        "reviewed_by": null,
+        "reviewed_at": null,
+        "sign_off_required": true,
+        "sign_off_granted": false
+      },
+      "approval_gate_triggers": ["GATE-PRODUCTION-01"],
+      "last_artifact_emitted": "agents/03_execution_workspace/09_production_agent/01_DEPLOYMENT_REPORT.md",
+      "artifacts_emitted": [
+        "agents/03_execution_workspace/09_production_agent/01_DEPLOYMENT_REPORT.md",
+        "agents/03_execution_workspace/09_production_agent/02_RELEASE_NOTES.md",
+        "agents/03_execution_workspace/09_production_agent/03_DEMO_ACCOUNTS_TEST_SCENARIOS.md",
+        "agents/03_execution_workspace/09_production_agent/04_KNOWN_LIMITATIONS.md",
+        "agents/03_execution_workspace/09_production_agent/05_LAUNCH_CHECKLIST.md",
+        "agents/03_execution_workspace/09_production_agent/06_USER_GUIDE.md"
+      ],
+      "last_activity_timestamp": "2026-05-30T19:35:00Z",
+      "execution_count": 1,
+      "notes": "Production deployment report complete: 21 API endpoints, 41 pages, 25 dynamic routes, 3 demo accounts, LOW risk, GO recommendation. Awaiting GATE-PRODUCTION-01 HITL sign-off."
+    },
+    "10_tech_pub_agent": {
+      "phase": "phase_four",
+      "pool": "sync_pool",
+      "status": "pending",
+      "dependencies": ["09_production_agent"],
+      "requires_human_approval": false,
+      "approved": false,
+      "role": "Technical Documentation & Localization Specialist",
+      "expert_reviewer": {
+        "role_title": "Senior Technical Writer / Documentation Lead",
+        "industry_jd_reference": "Technical Writing Lead — validates help file coverage, i18n key mapping, installation guide completeness, style guide compliance, and release notes accuracy.",
+        "review_status": "pending",
+        "review_feedback": [],
+        "reviewed_by": null,
+        "reviewed_at": null,
+        "sign_off_required": true,
+        "sign_off_granted": false
+      },
+      "last_artifact_emitted": null,
+      "last_activity_timestamp": null,
+      "execution_count": 0,
+      "notes": null
+    },
+    "11_customer_onboarding_agent": {
+      "phase": "phase_five",
+      "pool": "sync_pool",
+      "status": "pending",
+      "dependencies": ["09_production_agent"],
+      "requires_human_approval": false,
+      "approved": false,
+      "role": "CRM & Operations Specialist",
+      "expert_reviewer": {
+        "role_title": "Senior Customer Success Manager / Operations Lead",
+        "industry_jd_reference": "Customer Onboarding Lead — validates acquisition pipeline design, account provisioning flow, merchant onboarding guides, billing integration, and support ticket routing.",
+        "review_status": "pending",
+        "review_feedback": [],
+        "reviewed_by": null,
+        "reviewed_at": null,
+        "sign_off_required": true,
+        "sign_off_granted": false
+      },
+      "last_artifact_emitted": null,
+      "last_activity_timestamp": null,
+      "execution_count": 0,
+      "notes": null
+    },
+    "12_marketing_agent": {
+      "phase": "phase_five",
+      "pool": "sync_pool",
+      "status": "pending",
+      "dependencies": ["09_production_agent"],
+      "requires_human_approval": false,
+      "approved": false,
+      "role": "Growth & Traffic Automation Specialist",
+      "expert_reviewer": {
+        "role_title": "Senior Marketing Manager / Growth Lead",
+        "industry_jd_reference": "Growth Marketing Lead — validates campaign architecture, SEO strategy, meta-tag maps, social media assets, video scripts, and analytics tracking setup.",
+        "review_status": "pending",
+        "review_feedback": [],
+        "reviewed_by": null,
+        "reviewed_at": null,
+        "sign_off_required": true,
+        "sign_off_granted": false
+      },
+      "last_artifact_emitted": null,
+      "last_activity_timestamp": null,
+      "execution_count": 0,
+      "notes": null
+    },
+    "13_maintenance_agent": {
+      "phase": "phase_five",
+      "pool": "sync_pool",
+      "status": "pending",
+      "dependencies": ["09_production_agent"],
+      "requires_human_approval": false,
+      "approved": false,
+      "role": "Autonomous Remediation & Healing Agent",
+      "expert_reviewer": {
+        "role_title": "Senior SRE / Support Lead",
+        "industry_jd_reference": "Site Reliability Lead — validates monitoring setup, incident response playbooks, auto-remediation scripts, patch validation in sandbox, and DevOps pipeline clearance for hotfixes.",
+        "review_status": "pending",
+        "review_feedback": [],
+        "reviewed_by": null,
+        "reviewed_at": null,
+        "sign_off_required": true,
+        "sign_off_granted": false
+      },
+      "last_artifact_emitted": null,
+      "last_activity_timestamp": null,
+      "execution_count": 0,
+      "notes": null
+    },
+    "14_finops_agent": {
+      "phase": "phase_five",
+      "pool": "sync_pool",
+      "status": "pending",
+      "dependencies": ["09_production_agent"],
+      "requires_human_approval": false,
+      "approved": false,
+      "role": "Cloud Cost Optimization Guardrail",
+      "expert_reviewer": {
+        "role_title": "Senior FinOps Analyst / Cloud Cost Lead",
+        "industry_jd_reference": "FinOps Lead — validates cloud spend tracking against budget, LLM token consumption monitoring, cost anomaly detection thresholds, and auto-scaling cost projections.",
+        "review_status": "pending",
+        "review_feedback": [],
+        "reviewed_by": null,
+        "reviewed_at": null,
+        "sign_off_required": true,
+        "sign_off_granted": false
+      },
+      "last_artifact_emitted": null,
+      "last_activity_timestamp": null,
+      "execution_count": 0,
+      "notes": null
+    },
+    "15_secrets_compliance_agent": {
+      "phase": "phase_five",
+      "pool": "sync_pool",
+      "status": "pending",
+      "dependencies": ["09_production_agent"],
+      "requires_human_approval": false,
+      "approved": false,
+      "role": "Security Guardrail",
+      "expert_reviewer": {
+        "role_title": "Senior Security Engineer / Compliance Officer",
+        "industry_jd_reference": "Security Lead — validates secrets scanning across branches, API key exposure checks, encryption standards, compliance variance detection, and credential isolation in vault.",
+        "review_status": "pending",
+        "review_feedback": [],
+        "reviewed_by": null,
+        "reviewed_at": null,
+        "sign_off_required": true,
+        "sign_off_granted": false
+      },
+      "last_artifact_emitted": null,
+      "last_activity_timestamp": null,
+      "execution_count": 0,
+      "notes": null
+    }
+  }
+}

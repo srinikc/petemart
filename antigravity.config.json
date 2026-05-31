@@ -1,0 +1,57 @@
+{
+  "$schema": "https://antigravity.google",
+  "project_metadata": {
+    "name": "PeteMart",
+    "version": "1.0",
+    "environment": "free-open-source-sandbox",
+    "factory_root": "C:/Users/ADMIN/Documents/Srinikc/AI Products/petemart-agentic-framework"
+  },
+   "runtime_orchestration": {
+    "primary_engine": "gpt-oss-120b",
+    "fallback_engine": "claude-sonnet-4-6",
+    "execution_mode": "planning_mode",
+    "isolated_terminal_sandboxing": true
+  },
+  "state_ledger_mapping": {
+    "matrix_ledger": "00_state_ledger/STATE_MATRIX.json",
+    "change_history": "00_state_ledger/CHANGE_REQUEST.json",
+    "engine_manifest": "antigravity.config.json"
+  },
+  "mcp_servers": {
+    "mcp-server-filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "C:/Users/ADMIN/Documents/Srinikc/AI Products/petemart-agentic-framework/"],
+      "enabled": true,
+      "scope": "C:/Users/ADMIN/Documents/Srinikc/AI Products/petemart-agentic-framework/"
+    },
+    "mcp-server-fetch": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-fetch"],
+      "enabled": true
+    }
+"mcp-server-playwright": {
+    "command": "npx",
+    "args": ["-y", "@modelcontextprotocol/server-playwright"],
+    "enabled": true
+  }
+  },
+    "tool_permission_rules": {
+    "passive_operations": {
+      "action": "implicitly_grant",
+      "allowed_methods": ["File:Read", "Schema:Scan", "Web:FetchText", "Diagram:RenderText"]
+    },
+    "active_operations": {
+      "action": "require_explicit_human_consent",
+      "allowed_methods": ["Git:Push"]
+    },
+    "permission_overrides": {
+      "allow": [
+        "command(python *)",
+        "command(python3 *)"
+      ],
+      "ask": [
+        "command(*)"
+      ]
+    }
+  }
+

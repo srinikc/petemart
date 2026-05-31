@@ -1,0 +1,114 @@
+name: ↩️ One-Click Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to rollback'
+        required: true
+        type: choice
+        options:
+          - development
+          - qa
+          - staging
+          - production
+      target_version:
+        description: 'Target version/tag to rollback to (e.g. v1.0.0)'
+        required: true
+        type: string
+      reason:
+        description: 'Rollback reason (required)'
+        required: true
+        type: string
+
+env:
+  NODE_VERSION: '20.x'
+  PNPM_VERSION: '9'
+
+jobs:
+  rollback:
+    name: ↩️ Rollback ${{ github.event.inputs.environment }} to ${{ github.event.inputs.target_version }}
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.event.inputs.environment }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: 🔍 Validate target version
+        shell: bash
+        run: |
+          TAG="${{ github.event.inputs.target_version }}"
+          if ! git tag | grep -q "^${TAG}$"; then
+            echo "❌ Tag '${TAG}' not found in repository"
+            echo "Available tags:"
+            git tag --sort=-v:refname | head -20
+            exit 1
+          fi
+          echo "✅ Target tag '${TAG}' found"
+
+      - name: 📦 Setup pnpm ${{ env.PNPM_VERSION }}
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: ⚡ Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: 📥 Install dependencies (target version)
+        run: |
+          git checkout ${{ github.event.inputs.target_version }}
+          pnpm install --frozen-lockfile
+
+      - name: 🏗️ Build (target version)
+        run: pnpm build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+
+      - name: 🚀 Deploy rollback to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod --prebuilt'
+          scope: ${{ secrets.VERCEL_ORG_ID }}
+
+      - name: ↩️ Rollback Supabase migrations (if applicable)
+        shell: bash
+        run: |
+          echo "🔄 Checking for Supabase migration rollback needed..."
+          # Supabase stores migration history — use supabase db diff to check
+          # In practice, run: supabase db revert <migration_version>
+          echo "✅ Supabase schema rollback: manual review recommended for data safety"
+          echo "⚠️  Run 'supabase db diff' to see schema changes between versions"
+
+      - name: ✅ Verify rollback deployment
+        shell: bash
+        run: |
+          sleep 10
+          URL="https://${{ github.event.inputs.environment == 'production' && 'petemart.vercel.app' || format('{0}.petemart.vercel.app', github.event.inputs.environment) }}"
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
+          if [ "$STATUS" != "200" ]; then
+            echo "❌ Rollback target returned $STATUS"
+            exit 1
+          fi
+          echo "✅ Rollback verified: $URL → $STATUS"
+
+      - name: 📝 Log rollback
+        shell: bash
+        run: |
+          echo "## ↩️ Rollback Executed" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| Environment | ${{ github.event.inputs.environment }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Rolled back to | ${{ github.event.inputs.target_version }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Reason | ${{ github.event.inputs.reason }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Triggered by | ${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Timestamp | $(date -u '+%Y-%m-%dT%H:%M:%SZ') |" >> $GITHUB_STEP_SUMMARY

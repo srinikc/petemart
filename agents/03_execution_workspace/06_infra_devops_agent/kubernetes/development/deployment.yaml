@@ -1,0 +1,129 @@
+# =============================================================================
+# PeteMart — Development Kubernetes Deployment
+# =============================================================================
+# Environment: development
+# Domain: dev.petemart.vercel.app
+# Replicas: 1 (resource-conservative)
+# =============================================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: petemart-web
+  namespace: petemart
+  labels:
+    app: petemart
+    tier: web
+    environment: development
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: petemart
+      tier: web
+      environment: development
+  template:
+    metadata:
+      labels:
+        app: petemart
+        tier: web
+        environment: development
+    spec:
+      containers:
+        - name: petemart-web
+          image: petemart/web:development-latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+              name: http
+          env:
+            - name: NODE_ENV
+              value: "development"
+            - name: NEXT_PUBLIC_SUPABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: petemart-secrets
+                  key: supabase-url
+                  optional: true
+            - name: NEXT_PUBLIC_SUPABASE_ANON_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: petemart-secrets
+                  key: supabase-anon-key
+                  optional: true
+            - name: NEXT_TELEMETRY_DISABLED
+              value: "1"
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: petemart-web-svc
+  namespace: petemart
+  labels:
+    app: petemart
+    tier: web
+    environment: development
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 3000
+      protocol: TCP
+      name: http
+  selector:
+    app: petemart
+    tier: web
+    environment: development
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: petemart-web-ingress
+  namespace: petemart
+  labels:
+    app: petemart
+    environment: development
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+spec:
+  rules:
+    - host: dev.petemart.vercel.app
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: petemart-web-svc
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - dev.petemart.vercel.app
+      secretName: petemart-dev-tls

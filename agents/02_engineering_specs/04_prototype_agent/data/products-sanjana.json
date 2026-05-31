@@ -1,0 +1,26 @@
+{
+  "merchant": "Sanjana Apparels (India)",
+  "total_products": 20,
+  "products": [
+    { "id": "prod-sanjana-001", "name": "Women's Cotton Kurti - Blue", "sku": "SAN-KRT-001", "price": 599, "original_price": 750, "category": "Women's Kurtis", "unit": "piece", "moq": 1, "stock": 50 },
+    { "id": "prod-sanjana-002", "name": "Women's Cotton Kurti - Pink", "sku": "SAN-KRT-002", "price": 599, "original_price": 750, "category": "Women's Kurtis", "unit": "piece", "moq": 1, "stock": 45 },
+    { "id": "prod-sanjana-003", "name": "Women's Cotton Kurti - Green Printed", "sku": "SAN-KRT-003", "price": 649, "original_price": 800, "category": "Women's Kurtis", "unit": "piece", "moq": 1, "stock": 40 },
+    { "id": "prod-sanjana-004", "name": "Women's Rayon Kurti - White", "sku": "SAN-KRT-004", "price": 799, "original_price": 1000, "category": "Women's Kurtis", "unit": "piece", "moq": 1, "stock": 35 },
+    { "id": "prod-sanjana-005", "name": "Women's Rayon Kurti - Maroon", "sku": "SAN-KRT-005", "price": 849, "original_price": 1050, "category": "Women's Kurtis", "unit": "piece", "moq": 1, "stock": 30 },
+    { "id": "prod-sanjana-006", "name": "Women's Palazzo Pants - Black", "sku": "SAN-PAL-001", "price": 699, "original_price": 850, "category": "Women's Bottom Wear", "unit": "piece", "moq": 1, "stock": 40 },
+    { "id": "prod-sanjana-007", "name": "Women's Palazzo Pants - Navy", "sku": "SAN-PAL-002", "price": 699, "original_price": 850, "category": "Women's Bottom Wear", "unit": "piece", "moq": 1, "stock": 35 },
+    { "id": "prod-sanjana-008", "name": "Women's Leggings - Black", "sku": "SAN-LEG-001", "price": 399, "original_price": 500, "category": "Women's Bottom Wear", "unit": "piece", "moq": 1, "stock": 60 },
+    { "id": "prod-sanjana-009", "name": "Girls' Frock - Red & White", "sku": "SAN-FRK-001", "price": 899, "original_price": 1100, "category": "Kids Wear", "unit": "piece", "moq": 1, "stock": 25 },
+    { "id": "prod-sanjana-010", "name": "Girls' Frock - Pink Floral", "sku": "SAN-FRK-002", "price": 849, "original_price": 1050, "category": "Kids Wear", "unit": "piece", "moq": 1, "stock": 20 },
+    { "id": "prod-sanjana-011", "name": "Boys' Shirt - Blue Checks", "sku": "SAN-BOY-001", "price": 499, "original_price": 650, "category": "Kids Wear", "unit": "piece", "moq": 1, "stock": 30 },
+    { "id": "prod-sanjana-012", "name": "Boys' Shirt - White", "sku": "SAN-BOY-002", "price": 449, "original_price": 580, "category": "Kids Wear", "unit": "piece", "moq": 1, "stock": 35 },
+    { "id": "prod-sanjana-013", "name": "Men's Casual Shirt - Blue", "sku": "SAN-MEN-001", "price": 799, "original_price": 1000, "category": "Men's Wear", "unit": "piece", "moq": 1, "stock": 40 },
+    { "id": "prod-sanjana-014", "name": "Men's Casual Shirt - Black", "sku": "SAN-MEN-002", "price": 849, "original_price": 1050, "category": "Men's Wear", "unit": "piece", "moq": 1, "stock": 35 },
+    { "id": "prod-sanjana-015", "name": "Men's Cotton T-Shirt - Pack of 3", "sku": "SAN-MEN-003", "price": 999, "original_price": 1200, "category": "Men's Wear", "unit": "pack", "moq": 1, "stock": 50 },
+    { "id": "prod-sanjana-016", "name": "Men's Formal Trousers - Grey", "sku": "SAN-MEN-004", "price": 1099, "original_price": 1350, "category": "Men's Wear", "unit": "piece", "moq": 1, "stock": 30 },
+    { "id": "prod-sanjana-017", "name": "Women's Nighty - Cotton Printed", "sku": "SAN-NGT-001", "price": 449, "original_price": 580, "category": "Women's Nightwear", "unit": "piece", "moq": 1, "stock": 45 },
+    { "id": "prod-sanjana-018", "name": "Women's Nighty - Satin Pink", "sku": "SAN-NGT-002", "price": 599, "original_price": 750, "category": "Women's Nightwear", "unit": "piece", "moq": 1, "stock": 35 },
+    { "id": "prod-sanjana-019", "name": "Dupatta - Cotton Printed", "sku": "SAN-DUP-001", "price": 299, "original_price": 380, "category": "Dupattas", "unit": "piece", "moq": 1, "stock": 60 },
+    { "id": "prod-sanjana-020", "name": "Women's Handbag - Jute Tote", "sku": "SAN-BAG-001", "price": 399, "original_price": 500, "category": "Accessories", "unit": "piece", "moq": 1, "stock": 40 }
+  ]
+}

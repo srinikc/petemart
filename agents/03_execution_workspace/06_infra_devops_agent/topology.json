@@ -1,0 +1,195 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PeteMart Environment Topology",
+  "version": "1.0.0",
+  "description": "Complete environment topology for PeteMart multi-stage deployment",
+  "environments": {
+    "development": {
+      "name": "Development",
+      "branch": "develop",
+      "domain": "dev.petemart.vercel.app",
+      "vercelProject": "petemart-dev",
+      "vercelAlias": "dev.petemart.vercel.app",
+      "supabaseProject": "petemart-dev",
+      "supabaseTier": "free",
+      "authMode": "development",
+      "paymentGateway": "mock",
+      "logLevel": "debug",
+      "features": {
+        "auth": { "email": true, "phone": true, "otp": true, "magicLink": true },
+        "multiMerchantCart": true,
+        "consolidatedDelivery": true,
+        "whatsappIntegration": false,
+        "aiRecommendations": false
+      },
+      "deployment": {
+        "type": "auto",
+        "trigger": "push-to-develop",
+        "rollback": "immediate",
+        "smokeTest": true
+      }
+    },
+    "qa": {
+      "name": "Quality Assurance",
+      "branch": "qa",
+      "domain": "qa.petemart.vercel.app",
+      "vercelProject": "petemart-qa",
+      "vercelAlias": "qa.petemart.vercel.app",
+      "supabaseProject": "petemart-qa",
+      "supabaseTier": "free",
+      "authMode": "development",
+      "paymentGateway": "mock",
+      "logLevel": "info",
+      "features": {
+        "auth": { "email": true, "phone": true, "otp": true, "magicLink": true },
+        "multiMerchantCart": true,
+        "consolidatedDelivery": true,
+        "whatsappIntegration": false,
+        "aiRecommendations": false
+      },
+      "deployment": {
+        "type": "auto",
+        "trigger": "merge-to-qa",
+        "rollback": "immediate",
+        "smokeTest": true,
+        "e2eTests": true
+      }
+    },
+    "staging": {
+      "name": "Staging (Pre-Production)",
+      "branch": "staging",
+      "domain": "staging.petemart.vercel.app",
+      "vercelProject": "petemart-staging",
+      "vercelAlias": "staging.petemart.vercel.app",
+      "supabaseProject": "petemart-staging",
+      "supabaseTier": "free",
+      "authMode": "production-like",
+      "paymentGateway": "sandbox",
+      "logLevel": "warn",
+      "features": {
+        "auth": { "email": true, "phone": true, "otp": true, "magicLink": true },
+        "multiMerchantCart": true,
+        "consolidatedDelivery": true,
+        "whatsappIntegration": true,
+        "aiRecommendations": true
+      },
+      "deployment": {
+        "type": "semi-auto",
+        "trigger": "merge-to-staging",
+        "requiresApproval": true,
+        "approvers": ["qa-lead", "tech-lead"],
+        "rollback": "one-click",
+        "smokeTest": true,
+        "e2eTests": true,
+        "loadTest": true
+      }
+    },
+    "production": {
+      "name": "Production (Live)",
+      "branch": "main",
+      "domain": "petemart.vercel.app",
+      "vercelProject": "petemart-prod",
+      "vercelAlias": "petemart.vercel.app",
+      "supabaseProject": "petemart-prod",
+      "supabaseTier": "free",
+      "authMode": "production",
+      "paymentGateway": "live",
+      "logLevel": "error",
+      "features": {
+        "auth": { "email": true, "phone": true, "otp": true, "magicLink": true },
+        "multiMerchantCart": true,
+        "consolidatedDelivery": true,
+        "whatsappIntegration": true,
+        "aiRecommendations": true
+      },
+      "deployment": {
+        "type": "manual",
+        "trigger": "workflow_dispatch",
+        "requiresApproval": true,
+        "approvers": ["tech-lead", "vp-engineering", "qa-lead"],
+        "deploymentWindow": {
+          "days": ["Monday", "Tuesday", "Wednesday", "Thursday"],
+          "hours": "09:00-16:00 UTC"
+        },
+        "rollback": "one-click-verified",
+        "smokeTest": true,
+        "e2eTests": true,
+        "canaryPercent": 10
+      }
+    }
+  },
+  "infrastructure": {
+    "ciCd": {
+      "provider": "GitHub Actions",
+      "tier": "free",
+      "monthlyLimitMinutes": 2000,
+      "estimatedMinutesPerDeploy": 12,
+      "concurrentJobs": 5
+    },
+    "hosting": {
+      "provider": "Vercel",
+      "tier": "hobby",
+      "bandwidth": "100 GB",
+      "builds": 6000 per month
+    },
+    "database": {
+      "provider": "Supabase",
+      "tier": "free",
+      "databaseSize": "500 MB",
+      "rowLimit": 50000,
+      "authUsers": 10000
+    },
+    "containerization": {
+      "engine": "Docker",
+      "orchestration": "Kubernetes (k3s / minikube for local)",
+      "registry": "Docker Hub / GitHub Container Registry"
+    },
+    "mobile": {
+      "platform": "Expo (React Native)",
+      "buildService": "EAS Build (free tier)",
+      "stores": ["Google Play Store", "Apple App Store"]
+    }
+  },
+  "components": {
+    "web": {
+      "framework": "Next.js 14+",
+      "hosting": "Vercel",
+      "language": "TypeScript",
+      "packageManager": "pnpm"
+    },
+    "mobile": {
+      "framework": "React Native (Expo)",
+      "buildService": "EAS Build",
+      "language": "TypeScript"
+    },
+    "api": {
+      "architecture": "Next.js API Routes + Supabase Edge Functions",
+      "authentication": "Supabase Auth (JWT)",
+      "rateLimiting": "Vercel WAF + Supabase"
+    },
+    "database": {
+      "engine": "PostgreSQL 16 (Supabase)",
+      "orm": "Supabase JS Client / Drizzle ORM",
+      "migration": "Supabase CLI"
+    },
+    "storage": {
+      "provider": "Supabase Storage",
+      "bucketNames": ["product-images", "merchant-logos", "avatars"]
+    },
+    "auth": {
+      "provider": "Supabase Auth",
+      "methods": ["Email/Password", "Phone OTP", "Magic Link"],
+      "social": ["Google OAuth"]
+    },
+    "monitoring": {
+      "provider": "Sentry (free tier) + Vercel Analytics",
+      "uptime": "Better Uptime (free tier)"
+    }
+  },
+  "security": {
+    "secretsManagement": "GitHub Secrets + Supabase Vault",
+    "scanningTools": ["truffleHog", "Gitleaks", "CodeQL", "Checkov"],
+    "compliance": "GDPR-ready, SOC2-guardrails",
+    "networkPolicy": "default-deny in Kubernetes namespace"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "environment": "production",
+  "branch": "main",
+  "domain": "petemart.vercel.app",
+  "vercelProjectName": "petemart-prod",
+  "supabaseProjectRef": "prod",
+  "isProduction": true,
+  "features": {
+    "enableDebugLogging": false,
+    "enableHotReload": false,
+    "enableMockAuth": false,
+    "bypassPaymentGateway": false,
+    "enableSeedData": false
+  },
+  "resources": {
+    "compute": "free",
+    "vercelTier": "hobby",
+    "supabaseTier": "free",
+    "kubernetesReplicas": 3,
+    "autoscaling": {
+      "enabled": true,
+      "minReplicas": 3,
+      "maxReplicas": 10,
+      "targetCPUUtilization": 70,
+      "targetMemoryUtilization": 80
+    }
+  },
+  "monitoring": {
+    "enabled": true,
+    "logLevel": "error",
+    "errorReporting": true,
+    "uptimeMonitoring": true,
+    "alertOnFailure": true,
+    "alertChannels": ["email", "slack"]
+  },
+  "deployment": {
+    "strategy": "blue-green",
+    "autoDeployOnPush": false,
+    "requireApproval": true,
+    "previewDeployments": false,
+    "requiredApprovers": ["tech-lead", "vp-engineering", "qa-lead"],
+    "deploymentWindow": {
+      "allowedDays": ["Monday", "Tuesday", "Wednesday", "Thursday"],
+      "allowedHours": "09:00-16:00 UTC",
+      "blackoutWindows": [
+        {"start": "2026-12-24", "end": "2026-12-26", "reason": "Christmas"},
+        {"start": "2026-12-31", "end": "2027-01-02", "reason": "New Year"}
+      ]
+    }
+  },
+  "secrets": {
+    "NEXT_PUBLIC_SUPABASE_URL": "https://xxxxx.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJ...prod-anon-key"
+  }
+}

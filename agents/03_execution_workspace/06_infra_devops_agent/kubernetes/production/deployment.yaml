@@ -1,0 +1,235 @@
+# =============================================================================
+# PeteMart — Production Kubernetes Deployment
+# =============================================================================
+# Environment: production
+# Domain: petemart.vercel.app
+# Replicas: 3 (high availability)
+# Auto-scaling: Enabled (target 70% CPU)
+# Pod Disruption Budget: 1 min available
+# =============================================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: petemart-web
+  namespace: petemart
+  labels:
+    app: petemart
+    tier: web
+    environment: production
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: petemart
+      tier: web
+      environment: production
+  template:
+    metadata:
+      labels:
+        app: petemart
+        tier: web
+        environment: production
+    spec:
+      # ── Pod-level security ──
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: petemart-web
+          image: petemart/web:production-latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+              name: http
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: NEXT_PUBLIC_SUPABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: petemart-secrets
+                  key: supabase-url
+                  optional: false
+            - name: NEXT_PUBLIC_SUPABASE_ANON_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: petemart-secrets
+                  key: supabase-anon-key
+                  optional: false
+            - name: SUPABASE_SERVICE_ROLE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: petemart-secrets
+                  key: supabase-service-role-key
+                  optional: false
+            - name: NEXT_TELEMETRY_DISABLED
+              value: "1"
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+          # ── Health probes ──
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 30
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            failureThreshold: 2
+          startupProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 30
+---
+# ── Horizontal Pod Autoscaler ──
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: petemart-web-hpa
+  namespace: petemart
+  labels:
+    app: petemart
+    environment: production
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: petemart-web
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+---
+# ── Pod Disruption Budget ──
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: petemart-web-pdb
+  namespace: petemart
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: petemart
+      tier: web
+      environment: production
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: petemart-web-svc
+  namespace: petemart
+  labels:
+    app: petemart
+    tier: web
+    environment: production
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 3000
+      protocol: TCP
+      name: http
+  selector:
+    app: petemart
+    tier: web
+    environment: production
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: petemart-web-ingress
+  namespace: petemart
+  labels:
+    app: petemart
+    environment: production
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/cors-enabled: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://petemart.vercel.app"
+    nginx.ingress.kubernetes.io/rate-limit-rps: "100"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  rules:
+    - host: petemart.vercel.app
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: petemart-web-svc
+                port:
+                  number: 80
+    - host: www.petemart.vercel.app
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: petemart-web-svc
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - petemart.vercel.app
+        - www.petemart.vercel.app
+      secretName: petemart-prod-tls
+---
+# ── Production Network Policy ──
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: petemart-web-network-policy
+  namespace: petemart
+spec:
+  podSelector:
+    matchLabels:
+      app: petemart
+      tier: web
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - port: 3000
+          protocol: TCP

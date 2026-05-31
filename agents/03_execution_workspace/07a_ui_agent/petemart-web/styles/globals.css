@@ -1,0 +1,130 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 100% 97%;
+    --foreground: 0 0% 18%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 18%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 18%;
+    --primary: 42 48% 57%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 339 58% 27%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 40 30% 94%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 40 100% 96%;
+    --accent-foreground: 0 0% 18%;
+    --destructive: 4 90% 58%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 88%;
+    --input: 0 0% 88%;
+    --ring: 42 48% 57%;
+    --radius: 0.5rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-accent text-pm-text font-inter;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #f1f1f1; }
+  ::-webkit-scrollbar-thumb { background: #C8A45C; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #A8893A; }
+}
+
+@layer components {
+  /* Mode Badge Styles */
+  .mode-badge-buy {
+    @apply inline-flex items-center gap-1 px-3 py-1 rounded-pm-full text-pm-small font-medium;
+    background-color: #2E7D32;
+    color: white;
+  }
+  .mode-badge-whatsapp {
+    @apply inline-flex items-center gap-1 px-3 py-1 rounded-pm-full text-pm-small font-medium;
+    background-color: #25D366;
+    color: white;
+  }
+  .mode-badge-visit {
+    @apply inline-flex items-center gap-1 px-3 py-1 rounded-pm-full text-pm-small font-medium;
+    background-color: #1976D2;
+    color: white;
+  }
+
+  /* KPI Card */
+  .kpi-card {
+    @apply bg-white rounded-pm-lg p-5 border border-pm-border shadow-pm-sm;
+  }
+  .kpi-value {
+    @apply text-pm-h2 text-pm-text;
+  }
+  .kpi-label {
+    @apply text-pm-small text-pm-text-secondary;
+  }
+
+  /* Section Container */
+  .section-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Status Timeline */
+  .timeline-dot {
+    @apply w-4 h-4 rounded-full border-[3px] border-pm-gold bg-white z-10;
+  }
+  .timeline-dot-active {
+    @apply w-4 h-4 rounded-full bg-pm-gold border-[3px] border-pm-gold z-10;
+  }
+  .timeline-dot-completed {
+    @apply w-4 h-4 rounded-full bg-pm-success border-[3px] border-pm-success z-10;
+  }
+  .timeline-line {
+    @apply w-0.5 bg-gray-200;
+  }
+  .timeline-line-active {
+    @apply w-0.5 bg-pm-gold;
+  }
+
+  /* Market Card */
+  .market-card {
+    @apply relative overflow-hidden rounded-pm-lg bg-white border border-pm-border shadow-pm-sm 
+           transition-all duration-300 hover:shadow-pm-lg hover:-translate-y-1 cursor-pointer;
+  }
+
+  /* Product Card */
+  .product-card {
+    @apply bg-white rounded-pm-lg border border-pm-border overflow-hidden 
+           transition-all duration-300 hover:shadow-pm-md;
+  }
+
+  /* Merchant Nav */
+  .merchant-nav-link {
+    @apply flex items-center gap-3 px-4 py-3 rounded-pm-md text-pm-small text-pm-text-secondary
+           transition-colors hover:bg-pm-gold/10 hover:text-pm-gold;
+  }
+  .merchant-nav-link-active {
+    @apply flex items-center gap-3 px-4 py-3 rounded-pm-md text-pm-small
+           bg-pm-gold/10 text-pm-gold font-medium;
+  }
+}
+
+/* Helper text utility */
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+  .text-pretty { text-wrap: pretty; }
+}

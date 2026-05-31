@@ -1,0 +1,30 @@
+{
+  "merchant": "Sri Vinayaka Textorium",
+  "total_products": 24,
+  "products": [
+    { "id": "prod-vinayaka-001", "name": "Cotton Fabric - Plain White (Superfine)", "sku": "VIN-COT-001", "price": 145, "original_price": 180, "category": "Cotton Fabrics", "unit": "meter", "moq": 3, "stock": 300 },
+    { "id": "prod-vinayaka-002", "name": "Cotton Fabric - Light Grey", "sku": "VIN-COT-002", "price": 155, "original_price": 190, "category": "Cotton Fabrics", "unit": "meter", "moq": 3, "stock": 250 },
+    { "id": "prod-vinayaka-003", "name": "Cotton Fabric - Sky Blue Checks", "sku": "VIN-COT-003", "price": 165, "original_price": 200, "category": "Cotton Fabrics", "unit": "meter", "moq": 3, "stock": 200 },
+    { "id": "prod-vinayaka-004", "name": "Linen Fabric - Ecru", "sku": "VIN-LIN-001", "price": 320, "original_price": 390, "category": "Linen Fabrics", "unit": "meter", "moq": 2, "stock": 120 },
+    { "id": "prod-vinayaka-005", "name": "Linen Fabric - Slate Grey", "sku": "VIN-LIN-002", "price": 340, "original_price": 410, "category": "Linen Fabrics", "unit": "meter", "moq": 2, "stock": 100 },
+    { "id": "prod-vinayaka-006", "name": "Cotton Silk - Magenta", "sku": "VIN-CSLK-001", "price": 380, "original_price": 460, "category": "Cotton Silk", "unit": "meter", "moq": 2, "stock": 80 },
+    { "id": "prod-vinayaka-007", "name": "Cotton Silk - Emerald Green", "sku": "VIN-CSLK-002", "price": 400, "original_price": 480, "category": "Cotton Silk", "unit": "meter", "moq": 2, "stock": 75 },
+    { "id": "prod-vinayaka-008", "name": "Suit Length - Cotton Blend Navy", "sku": "VIN-SLT-001", "price": 850, "original_price": 1000, "category": "Suit Lengths", "unit": "set", "moq": 1, "stock": 60 },
+    { "id": "prod-vinayaka-009", "name": "Suit Length - Linen Beige", "sku": "VIN-SLT-002", "price": 1200, "original_price": 1450, "category": "Suit Lengths", "unit": "set", "moq": 1, "stock": 40 },
+    { "id": "prod-vinayaka-010", "name": "Suit Length - Silk Blend Maroon", "sku": "VIN-SLT-003", "price": 1800, "original_price": 2200, "category": "Suit Lengths", "unit": "set", "moq": 1, "stock": 30 },
+    { "id": "prod-vinayaka-011", "name": "Shirting Fabric - Blue Stripes", "sku": "VIN-SHT-001", "price": 220, "original_price": 270, "category": "Shirting Fabrics", "unit": "meter", "moq": 3, "stock": 180 },
+    { "id": "prod-vinayaka-012", "name": "Shirting Fabric - White on White", "sku": "VIN-SHT-002", "price": 240, "original_price": 290, "category": "Shirting Fabrics", "unit": "meter", "moq": 3, "stock": 160 },
+    { "id": "prod-vinayaka-013", "name": "Shirting Fabric - Light Pink", "sku": "VIN-SHT-003", "price": 210, "original_price": 260, "category": "Shirting Fabrics", "unit": "meter", "moq": 3, "stock": 140 },
+    { "id": "prod-vinayaka-014", "name": "Kurta Fabric - Cotton Printed", "sku": "VIN-KRT-001", "price": 280, "original_price": 340, "category": "Kurta Fabrics", "unit": "meter", "moq": 2, "stock": 120 },
+    { "id": "prod-vinayaka-015", "name": "Kurta Fabric - Solid Pastel Yellow", "sku": "VIN-KRT-002", "price": 250, "original_price": 300, "category": "Kurta Fabrics", "unit": "meter", "moq": 2, "stock": 100 },
+    { "id": "prod-vinayaka-016", "name": "Kurta Fabric - Linen Blend Blue", "sku": "VIN-KRT-003", "price": 350, "original_price": 420, "category": "Kurta Fabrics", "unit": "meter", "moq": 2, "stock": 80 },
+    { "id": "prod-vinayaka-017", "name": "Dhoti Fabric - Cotton White", "sku": "VIN-DHT-001", "price": 180, "original_price": 220, "category": "Dhoti Fabrics", "unit": "piece", "moq": 3, "stock": 200 },
+    { "id": "prod-vinayaka-018", "name": "Dhoti Fabric - Silk Border", "sku": "VIN-DHT-002", "price": 350, "original_price": 420, "category": "Dhoti Fabrics", "unit": "piece", "moq": 2, "stock": 100 },
+    { "id": "prod-vinayaka-019", "name": "Towel - Cotton 500GSM (Set of 3)", "sku": "VIN-TWL-001", "price": 699, "original_price": 850, "category": "Home Textiles", "unit": "set", "moq": 1, "stock": 80 },
+    { "id": "prod-vinayaka-020", "name": "Bedsheet - Cotton Double Bed", "sku": "VIN-BED-001", "price": 899, "original_price": 1100, "category": "Home Textiles", "unit": "set", "moq": 1, "stock": 50 },
+    { "id": "prod-vinayaka-021", "name": "Pillow Cover - Cotton Printed (Set of 2)", "sku": "VIN-PIL-001", "price": 299, "original_price": 380, "category": "Home Textiles", "unit": "set", "moq": 2, "stock": 100 },
+    { "id": "prod-vinayaka-022", "name": "Handkerchief - Cotton (Pack of 6)", "sku": "VIN-HNK-001", "price": 199, "original_price": 250, "category": "Accessories", "unit": "pack", "moq": 1, "stock": 150 },
+    { "id": "prod-vinayaka-023", "name": "Muffler - Wool Blend Grey", "sku": "VIN-MUF-001", "price": 449, "original_price": 550, "category": "Accessories", "unit": "piece", "moq": 1, "stock": 40 },
+    { "id": "prod-vinayaka-024", "name": "Stole - Cotton Printed", "sku": "VIN-STL-001", "price": 349, "original_price": 420, "category": "Accessories", "unit": "piece", "moq": 1, "stock": 60 }
+  ]
+}

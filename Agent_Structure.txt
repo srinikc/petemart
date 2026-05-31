@@ -1,0 +1,271 @@
+ Volume in drive C has no label.
+ Volume Serial Number is 1E2B-6F22
+
+ Directory of C:\Users\ADMIN\Documents\Srinikc\AI Products\petemart-agentic-framework
+
+05/28/2026  05:28 PM    <DIR>          .
+05/28/2026  04:38 PM    <DIR>          ..
+05/28/2026  01:34 PM    <DIR>          .antigravity
+05/28/2026  01:30 PM    <DIR>          00_state_ledger
+05/27/2026  01:54 PM    <DIR>          agents
+05/28/2026  05:28 PM                 0 Agent_Structure.txt
+05/27/2026  01:22 PM    <DIR>          config
+05/28/2026  05:19 PM    <DIR>          idea-research
+05/28/2026  05:13 PM               387 opencode.json
+               2 File(s)            387 bytes
+
+ Directory of C:\Users\ADMIN\Documents\Srinikc\AI Products\petemart-agentic-framework\.antigravity
+
+05/28/2026  01:34 PM    <DIR>          .
+05/28/2026  05:28 PM    <DIR>          ..
+05/28/2026  05:03 PM             1,092 .antigravity-config.json
+05/27/2026  01:51 PM    <DIR>          skills
+               1 File(s)          1,092 bytes
+
+ Directory of C:\Users\ADMIN\Documents\Srinikc\AI Products\petemart-agentic-framework\.antigravity\skills
+
+05/27/2026  01:51 PM    <DIR>          .
+05/28/2026  01:34 PM    <DIR>          ..
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\ADMIN\Documents\Srinikc\AI Products\petemart-agentic-framework\00_state_ledger
+
+05/28/2026  01:30 PM    <DIR>          .
+05/28/2026  05:28 PM    <DIR>          ..
+05/28/2026  01:30 PM               202 CHANGE_REQUEST.json
+05/28/2026  01:24 PM             5,411 STATE_MATRIX.json
+               2 File(s)          5,613 bytes
+
+ Directory of C:\Users\ADMIN\Documents\Srinikc\AI Products\petemart-agentic-framework\agents
+
+05/27/2026  01:54 PM    <DIR>          .
+05/28/2026  05:28 PM    <DIR>          ..
+05/27/2026  01:53 PM    <DIR>          01_front_office
+05/27/2026  01:53 PM    <DIR>          02_engineering_specs
+05/27/2026  01:54 PM    <DIR>          03_execution_workspace
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\ADMIN\Documents\Srinikc\AI Products\petemart-agentic-framework\agents\01_front_office
+
+05/27/2026  01:53 PM    <DIR>          .
+05/27/2026  01:54 PM    <DIR>          ..
+05/28/2026  04:00 PM    <DIR>          01-ideation_agent
+05/27/2026  01:53 PM    <DIR>          02_requirement_agent
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\ADMIN\Documents\Srinikc\AI Products\petemart-agentic-framework\agents\01_front_office\01-ideation_agent
+
+05/28/2026  04:00 PM    <DIR>          .
+05/27/2026  01:53 PM    <DIR>          ..
+05/12/2026  04:16 PM           270,918 area_classification_bar.png
+05/12/2026  04:16 PM               315 Classification-Count--ColorinExcel.csv
+05/12/2026  04:16 PM           234,543 classification_pie.png
+05/26/2026  11:28 PM         4,590,571 PeteMart Idea details.pdf
+05/12/2026  02:49 PM            32,067 petemart-agile-backlog.xlsx
+05/12/2026  06:12 PM            49,070 PeteMart-Business-Directory-FRESH.xlsx
+05/12/2026  01:37 PM            20,228 PeteMart-Business-Directory.xlsx
+05/12/2026  01:22 PM            10,836 petemart-business-reference.xlsx
+05/12/2026  02:34 PM            19,850 petemart-feature-matrix.xlsx
+05/26/2026  11:23 PM            49,527 PeteMart-MasterContext-SpawnBrief (1).docx
+05/12/2026  05:53 PM            49,527 PeteMart-MasterContext-SpawnBrief.docx
+05/12/2026  05:55 PM           154,867 PeteMart-PRD-v1-Original.docx
+05/12/2026  06:04 PM            78,308 PeteMart-PRD-v2 (1).docx
+05/26/2026  11:23 PM            78,308 PeteMart-PRD-v2-1.docx
+05/12/2026  04:46 PM            41,509 PeteMart-PRD-v2.docx
+05/12/2026  02:35 PM           154,867 petemart-prd.docx
+05/12/2026  02:35 PM             8,124 petemart-prd.md
+05/26/2026  11:26 PM            20,166 petemart-prd.md.docx
+05/12/2026  06:04 PM            46,671 PeteMart-Seller-Interview-Guide.docx
+05/12/2026  06:10 PM            46,671 PeteMart-SellerInterviewGuide.docx
+05/12/2026  06:05 PM            46,028 PeteMart-Strategic-Clarity-v1 (1).docx
+05/12/2026  04:19 PM            46,028 PeteMart-Strategic-Clarity-v1.docx
+05/12/2026  06:05 PM            41,598 PeteMart-Strategy-DecisionLog (1).docx
+05/12/2026  05:29 PM            40,330 PeteMart-Strategy-DecisionLog.docx
+05/26/2026  11:24 PM            21,978 PeteMart_FulldetailedContext.docx
+05/15/2026  05:56 PM            46,040 PeteMart_PRD_COMPLETE.docx
+05/12/2026  03:01 PM           767,676 petemart_wireframe_overview.png
+05/26/2026  11:24 PM           222,027 pete_businesses (1).csv
+05/14/2026  11:19 PM           222,027 pete_businesses.csv
+05/14/2026  11:19 PM           105,221 pete_priority_outreach.csv
+05/12/2026  03:07 PM           686,991 WF-C01-Landing-Home-Feed.png
+              31 File(s)      8,202,887 bytes
+
+ Directory of C:\Users\ADMIN\Documents\Srinikc\AI Products\petemart-agentic-framework\agents\01_front_office\02_requirement_agent
+
+05/27/2026  01:53 PM    <DIR>          .
+05/27/2026  01:53 PM    <DIR>          ..
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\ADMIN\Documents\Srinikc\AI Products\petemart-agentic-framework\agents\02_engineering_specs
+
+05/27/2026  01:53 PM    <DIR>          .
+05/27/2026  01:54 PM    <DIR>          ..
+05/27/2026  01:53 PM    <DIR>          03_architect_agent
+05/27/2026  01:53 PM    <DIR>          04_prototype_agent
+05/27/2026  01:53 PM    <DIR>          05_program_mgmt_agent
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\ADMIN\Documents\Srinikc\AI Products\petemart-agentic-framework\agents\02_engineering_specs\03_architect_agent
+
+05/27/2026  01:53 PM    <DIR>          .
+05/27/2026  01:53 PM    <DIR>          ..
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\ADMIN\Documents\Srinikc\AI Products\petemart-agentic-framework\agents\02_engineering_specs\04_prototype_agent
+
+05/27/2026  01:53 PM    <DIR>          .
+05/27/2026  01:53 PM    <DIR>          ..
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\ADMIN\Documents\Srinikc\AI Products\petemart-agentic-framework\agents\02_engineering_specs\05_program_mgmt_agent
+
+05/27/2026  01:53 PM    <DIR>          .
+05/27/2026  01:53 PM    <DIR>          ..
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\ADMIN\Documents\Srinikc\AI Products\petemart-agentic-framework\agents\03_execution_workspace
+
+05/27/2026  01:54 PM    <DIR>          .
+05/27/2026  01:54 PM    <DIR>          ..
+05/27/2026  01:54 PM    <DIR>          06_infra_devops_agent
+05/27/2026  01:54 PM    <DIR>          07a_ui_agent
+05/27/2026  01:54 PM    <DIR>          07b_api_agent
+05/27/2026  01:54 PM    <DIR>          07c_backend_db_agent
+05/27/2026  01:54 PM    <DIR>          07d_integration_agent
+05/27/2026  01:54 PM    <DIR>          08_qa_agent
+05/27/2026  01:54 PM    <DIR>          09_production_agent
+05/27/2026  01:54 PM    <DIR>          10_tech_pub_agent
+05/27/2026  01:54 PM    <DIR>          11_customer_onboarding_agent
+05/27/2026  01:54 PM    <DIR>          12_marketing_agent
+05/27/2026  01:54 PM    <DIR>          13_maintenance_agent
+05/27/2026  01:54 PM    <DIR>          14_finops_agent
+05/27/2026  01:54 PM    <DIR>          15_secrets_compliance_agent
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\ADMIN\Documents\Srinikc\AI Products\petemart-agentic-framework\agents\03_execution_workspace\06_infra_devops_agent
+
+05/27/2026  01:54 PM    <DIR>          .
+05/27/2026  01:54 PM    <DIR>          ..
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\ADMIN\Documents\Srinikc\AI Products\petemart-agentic-framework\agents\03_execution_workspace\07a_ui_agent
+
+05/27/2026  01:54 PM    <DIR>          .
+05/27/2026  01:54 PM    <DIR>          ..
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\ADMIN\Documents\Srinikc\AI Products\petemart-agentic-framework\agents\03_execution_workspace\07b_api_agent
+
+05/27/2026  01:54 PM    <DIR>          .
+05/27/2026  01:54 PM    <DIR>          ..
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\ADMIN\Documents\Srinikc\AI Products\petemart-agentic-framework\agents\03_execution_workspace\07c_backend_db_agent
+
+05/27/2026  01:54 PM    <DIR>          .
+05/27/2026  01:54 PM    <DIR>          ..
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\ADMIN\Documents\Srinikc\AI Products\petemart-agentic-framework\agents\03_execution_workspace\07d_integration_agent
+
+05/27/2026  01:54 PM    <DIR>          .
+05/27/2026  01:54 PM    <DIR>          ..
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\ADMIN\Documents\Srinikc\AI Products\petemart-agentic-framework\agents\03_execution_workspace\08_qa_agent
+
+05/27/2026  01:54 PM    <DIR>          .
+05/27/2026  01:54 PM    <DIR>          ..
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\ADMIN\Documents\Srinikc\AI Products\petemart-agentic-framework\agents\03_execution_workspace\09_production_agent
+
+05/27/2026  01:54 PM    <DIR>          .
+05/27/2026  01:54 PM    <DIR>          ..
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\ADMIN\Documents\Srinikc\AI Products\petemart-agentic-framework\agents\03_execution_workspace\10_tech_pub_agent
+
+05/27/2026  01:54 PM    <DIR>          .
+05/27/2026  01:54 PM    <DIR>          ..
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\ADMIN\Documents\Srinikc\AI Products\petemart-agentic-framework\agents\03_execution_workspace\11_customer_onboarding_agent
+
+05/27/2026  01:54 PM    <DIR>          .
+05/27/2026  01:54 PM    <DIR>          ..
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\ADMIN\Documents\Srinikc\AI Products\petemart-agentic-framework\agents\03_execution_workspace\12_marketing_agent
+
+05/27/2026  01:54 PM    <DIR>          .
+05/27/2026  01:54 PM    <DIR>          ..
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\ADMIN\Documents\Srinikc\AI Products\petemart-agentic-framework\agents\03_execution_workspace\13_maintenance_agent
+
+05/27/2026  01:54 PM    <DIR>          .
+05/27/2026  01:54 PM    <DIR>          ..
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\ADMIN\Documents\Srinikc\AI Products\petemart-agentic-framework\agents\03_execution_workspace\14_finops_agent
+
+05/27/2026  01:54 PM    <DIR>          .
+05/27/2026  01:54 PM    <DIR>          ..
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\ADMIN\Documents\Srinikc\AI Products\petemart-agentic-framework\agents\03_execution_workspace\15_secrets_compliance_agent
+
+05/27/2026  01:54 PM    <DIR>          .
+05/27/2026  01:54 PM    <DIR>          ..
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\ADMIN\Documents\Srinikc\AI Products\petemart-agentic-framework\config
+
+05/27/2026  01:22 PM    <DIR>          .
+05/28/2026  05:28 PM    <DIR>          ..
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\ADMIN\Documents\Srinikc\AI Products\petemart-agentic-framework\idea-research
+
+05/28/2026  05:19 PM    <DIR>          .
+05/28/2026  05:28 PM    <DIR>          ..
+05/12/2026  04:16 PM           270,918 area_classification_bar.png
+05/12/2026  04:16 PM               315 Classification-Count--ColorinExcel.csv
+05/12/2026  04:16 PM           234,543 classification_pie.png
+05/26/2026  11:28 PM         4,590,571 PeteMart Idea details.pdf
+05/12/2026  02:49 PM            32,067 petemart-agile-backlog.xlsx
+05/12/2026  06:12 PM            49,070 PeteMart-Business-Directory-FRESH.xlsx
+05/12/2026  01:37 PM            20,228 PeteMart-Business-Directory.xlsx
+05/12/2026  01:22 PM            10,836 petemart-business-reference.xlsx
+05/12/2026  02:34 PM            19,850 petemart-feature-matrix.xlsx
+05/26/2026  11:23 PM            49,527 PeteMart-MasterContext-SpawnBrief (1).docx
+05/12/2026  05:53 PM            49,527 PeteMart-MasterContext-SpawnBrief.docx
+05/12/2026  05:55 PM           154,867 PeteMart-PRD-v1-Original.docx
+05/12/2026  06:04 PM            78,308 PeteMart-PRD-v2 (1).docx
+05/26/2026  11:23 PM            78,308 PeteMart-PRD-v2-1.docx
+05/12/2026  04:46 PM            41,509 PeteMart-PRD-v2.docx
+05/12/2026  02:35 PM           154,867 petemart-prd.docx
+05/12/2026  02:35 PM             8,124 petemart-prd.md
+05/26/2026  11:26 PM            20,166 petemart-prd.md.docx
+05/12/2026  06:04 PM            46,671 PeteMart-Seller-Interview-Guide.docx
+05/12/2026  06:10 PM            46,671 PeteMart-SellerInterviewGuide.docx
+05/12/2026  06:05 PM            46,028 PeteMart-Strategic-Clarity-v1 (1).docx
+05/12/2026  04:19 PM            46,028 PeteMart-Strategic-Clarity-v1.docx
+05/12/2026  06:05 PM            41,598 PeteMart-Strategy-DecisionLog (1).docx
+05/12/2026  05:29 PM            40,330 PeteMart-Strategy-DecisionLog.docx
+05/26/2026  11:24 PM            21,978 PeteMart_FulldetailedContext.docx
+05/15/2026  05:56 PM            46,040 PeteMart_PRD_COMPLETE.docx
+05/12/2026  03:01 PM           767,676 petemart_wireframe_overview.png
+05/26/2026  11:24 PM           222,027 pete_businesses (1).csv
+05/14/2026  11:19 PM           222,027 pete_businesses.csv
+05/14/2026  11:19 PM           105,221 pete_priority_outreach.csv
+05/26/2026  11:13 PM            42,460 SDLC Life cycle Agent Architecture.docx
+05/26/2026  10:49 PM           138,061 SDLC Life cycle Agent Architecture.pdf
+05/26/2026  10:20 PM            15,215 SDLC Life cycle Agent Architecture.txt
+05/12/2026  03:07 PM           686,991 WF-C01-Landing-Home-Feed.png
+              34 File(s)      8,398,623 bytes
+
+     Total Files Listed:
+              70 File(s)     16,608,602 bytes
+              83 Dir(s)  683,479,146,496 bytes free

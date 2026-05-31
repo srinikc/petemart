@@ -1,0 +1,26 @@
+{
+  "merchant": "Madhumathi All-men's Ethnic",
+  "total_products": 20,
+  "products": [
+    { "id": "prod-madhumathi-001", "name": "Men's Cotton Kurta - White", "sku": "MAD-KRT-001", "price": 899, "original_price": 1100, "category": "Men's Kurtas", "unit": "piece", "moq": 1, "stock": 40 },
+    { "id": "prod-madhumathi-002", "name": "Men's Cotton Kurta - Blue", "sku": "MAD-KRT-002", "price": 949, "original_price": 1150, "category": "Men's Kurtas", "unit": "piece", "moq": 1, "stock": 35 },
+    { "id": "prod-madhumathi-003", "name": "Men's Cotton Kurta - Beige", "sku": "MAD-KRT-003", "price": 899, "original_price": 1100, "category": "Men's Kurtas", "unit": "piece", "moq": 1, "stock": 30 },
+    { "id": "prod-madhumathi-004", "name": "Men's Pathani Suit - White Cotton", "sku": "MAD-PAT-001", "price": 1499, "original_price": 1800, "category": "Pathani Suits", "unit": "set", "moq": 1, "stock": 20 },
+    { "id": "prod-madhumathi-005", "name": "Men's Pathani Suit - Black", "sku": "MAD-PAT-002", "price": 1599, "original_price": 1900, "category": "Pathani Suits", "unit": "set", "moq": 1, "stock": 18 },
+    { "id": "prod-madhumathi-006", "name": "Men's Pathani Suit - Grey", "sku": "MAD-PAT-003", "price": 1499, "original_price": 1800, "category": "Pathani Suits", "unit": "set", "moq": 1, "stock": 15 },
+    { "id": "prod-madhumathi-007", "name": "Men's Silk Kurta - Maroon", "sku": "MAD-SLK-001", "price": 2499, "original_price": 3000, "category": "Men's Silk Kurtas", "unit": "piece", "moq": 1, "stock": 12 },
+    { "id": "prod-madhumathi-008", "name": "Men's Silk Kurta - Gold", "sku": "MAD-SLK-002", "price": 2799, "original_price": 3400, "category": "Men's Silk Kurtas", "unit": "piece", "moq": 1, "stock": 10 },
+    { "id": "prod-madhumathi-009", "name": "Men's Silk Kurta - Navy Blue", "sku": "MAD-SLK-003", "price": 2599, "original_price": 3200, "category": "Men's Silk Kurtas", "unit": "piece", "moq": 1, "stock": 10 },
+    { "id": "prod-madhumathi-010", "name": "Wedding Sherwani - Cream & Gold", "sku": "MAD-SHW-001", "price": 8500, "original_price": 10000, "category": "Sherwanis", "unit": "piece", "moq": 1, "stock": 5 },
+    { "id": "prod-madhumathi-011", "name": "Wedding Sherwani - Navy & Silver", "sku": "MAD-SHW-002", "price": 9500, "original_price": 11000, "category": "Sherwanis", "unit": "piece", "moq": 1, "stock": 4 },
+    { "id": "prod-madhumathi-012", "name": "Wedding Sherwani - Maroon & Gold", "sku": "MAD-SHW-003", "price": 8999, "original_price": 10500, "category": "Sherwanis", "unit": "piece", "moq": 1, "stock": 4 },
+    { "id": "prod-madhumathi-013", "name": "Men's Dhoti Kurta Set - White", "sku": "MAD-DKT-001", "price": 1999, "original_price": 2400, "category": "Dhoti Kurta Sets", "unit": "set", "moq": 1, "stock": 15 },
+    { "id": "prod-madhumathi-014", "name": "Men's Dhoti Kurta Set - Red", "sku": "MAD-DKT-002", "price": 2199, "original_price": 2600, "category": "Dhoti Kurta Sets", "unit": "set", "moq": 1, "stock": 12 },
+    { "id": "prod-madhumathi-015", "name": "Men's Nehru Jacket - Black", "sku": "MAD-NJK-001", "price": 1499, "original_price": 1800, "category": "Nehru Jackets", "unit": "piece", "moq": 1, "stock": 20 },
+    { "id": "prod-madhumathi-016", "name": "Men's Nehru Jacket - Brown", "sku": "MAD-NJK-002", "price": 1499, "original_price": 1800, "category": "Nehru Jackets", "unit": "piece", "moq": 1, "stock": 18 },
+    { "id": "prod-madhumathi-017", "name": "Men's Pajama - Cotton White", "sku": "MAD-PAJ-001", "price": 399, "original_price": 500, "category": "Bottom Wear", "unit": "piece", "moq": 1, "stock": 60 },
+    { "id": "prod-madhumathi-018", "name": "Men's Pajama - Cotton Black", "sku": "MAD-PAJ-002", "price": 449, "original_price": 550, "category": "Bottom Wear", "unit": "piece", "moq": 1, "stock": 50 },
+    { "id": "prod-madhumathi-019", "name": "Men's Wedding Turban - Red & Gold", "sku": "MAD-TUR-001", "price": 999, "original_price": 1200, "category": "Wedding Accessories", "unit": "piece", "moq": 1, "stock": 10 },
+    { "id": "prod-madhumathi-020", "name": "Men's Stole - Silk Embroidered", "sku": "MAD-STL-001", "price": 799, "original_price": 1000, "category": "Wedding Accessories", "unit": "piece", "moq": 1, "stock": 25 }
+  ]
+}

@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PeteMart Git Branching Strategy",
+  "version": "1.0.0",
+  "description": "Machine-readable branching strategy for PeteMart microservices monorepo",
+  "branches": {
+    "main": {
+      "environment": "production",
+      "url": "https://petemart.vercel.app",
+      "protection": {
+        "requirePR": true,
+        "requireApprovals": 1,
+        "requireStatusChecks": ["ci-build", "ci-lint", "ci-typecheck", "ci-security-scan"],
+        "requireSignedCommits": true,
+        "requireUpToDate": true,
+        "requireHITL": true,
+        "includeAdmins": true,
+        "allowForcePush": false,
+        "allowDeletions": false
+      },
+      "deployTrigger": "manual",
+      "autoTag": true,
+      "versioning": "semver"
+    },
+    "staging": {
+      "environment": "staging",
+      "url": "https://staging.petemart.vercel.app",
+      "protection": {
+        "requirePR": true,
+        "requireApprovals": 1,
+        "requireStatusChecks": ["ci-build", "ci-lint", "ci-typecheck"],
+        "requireUpToDate": true,
+        "allowForcePush": false,
+        "allowDeletions": false
+      },
+      "deployTrigger": "auto-on-merge",
+      "parent": "qa"
+    },
+    "qa": {
+      "environment": "qa",
+      "url": "https://qa.petemart.vercel.app",
+      "protection": {
+        "requirePR": true,
+        "requireApprovals": 1,
+        "requireStatusChecks": ["ci-build", "ci-lint"],
+        "allowForcePush": false,
+        "allowDeletions": false
+      },
+      "deployTrigger": "auto-on-merge",
+      "parent": "develop"
+    },
+    "develop": {
+      "environment": "development",
+      "url": "https://dev.petemart.vercel.app",
+      "protection": {
+        "requirePR": false,
+        "requireStatusChecks": ["ci-build", "ci-lint"],
+        "allowForcePush": false,
+        "allowDeletions": false,
+        "allowHotfixDirectPush": true
+      },
+      "deployTrigger": "auto-on-merge",
+      "parent": null
+    },
+    "feature/*": {
+      "environment": "preview",
+      "url": "https://{branch}-petemart.vercel.app",
+      "protection": {
+        "requirePR": true,
+        "requireStatusChecks": ["ci-build", "ci-lint"],
+        "autoDeleteAfterMerge": true
+      },
+      "deployTrigger": "pr-preview",
+      "base": "develop"
+    },
+    "hotfix/*": {
+      "environment": "preview",
+      "url": "https://hotfix-{branch}-petemart.vercel.app",
+      "protection": {
+        "requirePR": true,
+        "requireApprovals": 1,
+        "autoDeleteAfterMerge": true
+      },
+      "deployTrigger": "pr-preview",
+      "base": "main",
+      "cherryPickTo": ["develop", "qa", "staging"]
+    }
+  },
+  "versioning": {
+    "scheme": "semver",
+    "format": "MAJOR.MINOR.PATCH",
+    "autoTagOnMergeTo": ["main"],
+    "tagPrefix": "v",
+    "bumpRules": {
+      "major": ["breaking-change", "breaking-db-migration", "ui-overhaul"],
+      "minor": ["new-feature", "non-breaking-addition"],
+      "patch": ["bug-fix", "security-patch", "hotfix"]
+    }
+  },
+  "environments": {
+    "development": {
+      "vercelProject": "petemart-dev",
+      "supabaseProject": "petemart-dev",
+      "domain": "dev.petemart.vercel.app"
+    },
+    "qa": {
+      "vercelProject": "petemart-qa",
+      "supabaseProject": "petemart-qa",
+      "domain": "qa.petemart.vercel.app"
+    },
+    "staging": {
+      "vercelProject": "petemart-staging",
+      "supabaseProject": "petemart-staging",
+      "domain": "staging.petemart.vercel.app"
+    },
+    "production": {
+      "vercelProject": "petemart-prod",
+      "supabaseProject": "petemart-prod",
+      "domain": "petemart.vercel.app"
+    }
+  },
+  "cicd": {
+    "provider": "github-actions",
+    "runnerType": "ubuntu-latest",
+    "freeTierMinutes": 2000,
+    "estimatedMinutesPerRun": {
+      "build": 3,
+      "lint": 1,
+      "typecheck": 2,
+      "test": 4,
+      "deploy": 2
+    }
+  }
+}

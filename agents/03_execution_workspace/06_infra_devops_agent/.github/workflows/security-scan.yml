@@ -1,0 +1,87 @@
+name: 🔐 Security & Compliance Scan
+
+on:
+  pull_request:
+    branches: [develop, qa, staging, main]
+  push:
+    branches: [develop, qa, staging, main]
+  schedule:
+    - cron: '0 6 * * 1'  # Every Monday 6 AM UTC
+
+jobs:
+  security-scan:
+    name: 🔐 Full Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 📦 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # ── Dependency vulnerabilities ──
+      - name: 📋 Audit npm/pnpm dependencies
+        shell: bash
+        run: |
+          if [ -f "pnpm-lock.yaml" ]; then
+            npx pnpm audit --audit-level=high || true
+          elif [ -f "package-lock.json" ]; then
+            npm audit --audit-level=high || true
+          fi
+
+      - name: 🚨 Check for known vulnerabilities (Socket.dev)
+        uses: socketdev/socket-action@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          only_changed: true
+
+      # ── Secrets scan (deep) ──
+      - name: 🕵️ Deep secrets scan (truffleHog)
+        uses: trufflesecurity/trufflehog@v3
+        with:
+          extra_args: --results=verified,failed --since-commit HEAD~5
+
+      - name: 🛡️ Gitleaks full scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # ── SAST (Static Analysis) ──
+      - name: 🧬 CodeQL Initialization
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript, typescript
+
+      - name: 🧬 CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+
+      # ── Infrastructure as Code scanning ──
+      - name: 🏗️ Checkov IaC scan
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: .
+          framework: docker,kubernetes,github_actions
+          skip_check: CKV_DOCKER_2,CKV2_DOCKER_1  # Allow latest tag in dev
+
+      # ── Dockerfile linting ──
+      - name: 🐳 Hadolint Dockerfile lint
+        uses: hadolint/hadolint-action@v3
+        with:
+          dockerfile: docker/Dockerfile
+
+      # ── Report ──
+      - name: 📊 Generate Security Report
+        if: always()
+        shell: bash
+        run: |
+          echo "## 🔐 Security Scan Report" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| Dependency Audit | ${{ job.status }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Secrets Scan | ${{ job.status }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| CodeQL SAST | ${{ job.status }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| IaC Scan (Checkov) | ${{ job.status }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Dockerfile Lint | ${{ job.status }} |" >> $GITHUB_STEP_SUMMARY

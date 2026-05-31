@@ -1,0 +1,53 @@
+# PeteMart CODEOWNERS — Automatic PR Review Assignment
+# Each line is a file pattern followed by one or more owners.
+
+# Global owners (everyone reviews everything by default)
+* @petemart/core-team
+
+# ── Infrastructure & CI/CD ──
+.github/workflows/*.yml                 @petemart/devops-team
+.github/CODEOWNERS                      @petemart/devops-team
+docker/*                                @petemart/devops-team
+kubernetes/**/*.yaml                    @petemart/devops-team
+scripts/*.sh                            @petemart/devops-team
+environments/*.json                     @petemart/devops-team
+terraform/**/*.tf                       @petemart/devops-team
+
+# ── Frontend (Web) ──
+web/**/*.tsx                            @petemart/ui-team
+web/**/*.ts                             @petemart/ui-team
+web/**/*.css                            @petemart/ui-team
+web/**/*.module.css                     @petemart/ui-team
+
+# ── Mobile (React Native / Expo) ──
+mobile/**/*.tsx                         @petemart/mobile-team
+mobile/**/*.ts                          @petemart/mobile-team
+app.json                                @petemart/mobile-team
+
+# ── API Layer ──
+api/**/*.ts                             @petemart/api-team
+api/**/*.ts                             @petemart/api-team
+api/routes/**/*.ts                      @petemart/api-team
+
+# ── Backend / Database ──
+supabase/migrations/*.sql               @petemart/backend-team
+supabase/seed.sql                       @petemart/backend-team
+supabase/config.toml                    @petemart/backend-team
+
+# ── Shared Library ──
+packages/**/*.ts                        @petemart/core-team
+
+# ── Configuration ──
+.env.example                            @petemart/devops-team
+package.json                            @petemart/core-team
+pnpm-lock.yaml                          @petemart/core-team
+tsconfig.json                           @petemart/core-team
+
+# ── Documentation ──
+docs/**/*.md                            @petemart/docs-team
+*.md                                    @petemart/docs-team
+
+# ── Security-sensitive files ──
+**/*.pem                                @petemart/security-officer
+**/*.key                                @petemart/security-officer
+**/*.env                                @petemart/security-officer

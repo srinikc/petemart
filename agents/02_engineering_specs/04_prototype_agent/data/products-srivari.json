@@ -1,0 +1,24 @@
+{
+  "merchant": "Sri Vari Traders",
+  "total_products": 18,
+  "products": [
+    { "id": "prod-srivari-001", "name": "Classic Camping Tent - 2 Person", "sku": "SRI-TNT-001", "price": 3499, "original_price": 4299, "category": "Camping Tents", "unit": "piece", "moq": 1, "stock": 25 },
+    { "id": "prod-srivari-002", "name": "Family Camping Tent - 4 Person", "sku": "SRI-TNT-002", "price": 5999, "original_price": 7499, "category": "Camping Tents", "unit": "piece", "moq": 1, "stock": 15 },
+    { "id": "prod-srivari-003", "name": "Waterproof Hiking Jacket", "sku": "SRI-JKT-001", "price": 1899, "original_price": 2499, "category": "Outdoor Jackets", "unit": "piece", "moq": 1, "stock": 40 },
+    { "id": "prod-srivari-004", "name": "Insulated Down Jacket", "sku": "SRI-JKT-002", "price": 2999, "original_price": 3999, "category": "Outdoor Jackets", "unit": "piece", "moq": 1, "stock": 20 },
+    { "id": "prod-srivari-005", "name": "Trekking Backpack - 40L", "sku": "SRI-BAG-001", "price": 2199, "original_price": 2799, "category": "Backpacks", "unit": "piece", "moq": 1, "stock": 30 },
+    { "id": "prod-srivari-006", "name": "Daypack Backpack - 20L", "sku": "SRI-BAG-002", "price": 999, "original_price": 1299, "category": "Backpacks", "unit": "piece", "moq": 1, "stock": 50 },
+    { "id": "prod-srivari-007", "name": "Sleeping Bag - Cold Weather", "sku": "SRI-SLP-001", "price": 2499, "original_price": 3199, "category": "Sleeping Bags", "unit": "piece", "moq": 1, "stock": 20 },
+    { "id": "prod-srivari-008", "name": "Sleeping Bag - Summer", "sku": "SRI-SLP-002", "price": 1499, "original_price": 1899, "category": "Sleeping Bags", "unit": "piece", "moq": 1, "stock": 35 },
+    { "id": "prod-srivari-009", "name": "Camping Stove - Butane", "sku": "SRI-STV-001", "price": 1299, "original_price": 1599, "category": "Camping Stoves", "unit": "piece", "moq": 1, "stock": 25 },
+    { "id": "prod-srivari-010", "name": "Camping Lantern - LED", "sku": "SRI-LAN-001", "price": 599, "original_price": 799, "category": "Camping Accessories", "unit": "piece", "moq": 1, "stock": 40 },
+    { "id": "prod-srivari-011", "name": "Hiking Shoes - Waterproof", "sku": "SRI-SHO-001", "price": 3999, "original_price": 4999, "category": "Hiking Shoes", "unit": "pair", "moq": 1, "stock": 30 },
+    { "id": "prod-srivari-012", "name": "Trekking Poles - Adjustable", "sku": "SRI-POL-001", "price": 1499, "original_price": 1899, "category": "Trekking Poles", "unit": "set", "moq": 1, "stock": 20 },
+    { "id": "prod-srivari-013", "name": "Water Bottle - Stainless Steel 1L", "sku": "SRI-BOT-001", "price": 499, "original_price": 649, "category": "Hydration", "unit": "piece", "moq": 1, "stock": 60 },
+    { "id": "prod-srivari-014", "name": "Hydration Pack - 2L", "sku": "SRI-HYD-001", "price": 1299, "original_price": 1599, "category": "Hydration", "unit": "piece", "moq": 1, "stock": 25 },
+    { "id": "prod-srivari-015", "name": "First Aid Kit - Trekking", "sku": "SRI-FAK-001", "price": 399, "original_price": 499, "category": "Safety", "unit": "piece", "moq": 1, "stock": 45 },
+    { "id": "prod-srivari-016", "name": "Headlamp - LED Rechargeable", "sku": "SRI-HL-001", "price": 699, "original_price": 899, "category": "Lighting", "unit": "piece", "moq": 1, "stock": 35 },
+    { "id": "prod-srivari-017", "name": "Camping Mat - Self Inflating", "sku": "SRI-MAT-001", "price": 899, "original_price": 1199, "category": "Sleeping Mats", "unit": "piece", "moq": 1, "stock": 30 },
+    { "id": "prod-srivari-018", "name": "Multi-tool - 12-in-1", "sku": "SRI-MT-001", "price": 799, "original_price": 999, "category": "Tools", "unit": "piece", "moq": 1, "stock": 40 }
+  ]
+}
