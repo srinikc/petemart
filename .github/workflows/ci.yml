@@ -11,10 +11,6 @@ concurrency:
   group: ci-${{ github.ref_name }}
   cancel-in-progress: true
 
-defaults:
-  run:
-    working-directory: ./agents/03_execution_workspace/07d_integration_agent/petemart-unified
-
 env:
   NODE_VERSION: '20.x'
   NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
@@ -27,9 +23,6 @@ jobs:
   secrets-scan:
     name: 🔐 Secrets & Credentials Scan
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: .
     steps:
       - uses: actions/checkout@v4
         with:
@@ -105,7 +98,7 @@ jobs:
         if: always()
         with:
           name: coverage-report
-          path: agents/03_execution_workspace/07d_integration_agent/petemart-unified/coverage/
+          path: coverage/
           retention-days: 7
 
   # ──────────────────────────────────────────────────────────────

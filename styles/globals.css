@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --pm-gold: #C8A45C;
+  --pm-gold-dark: #B8944C;
+  --pm-burgundy: #6B1D3A;
+  --pm-cream: #FFF8EE;
+  --pm-text: #2D2D2D;
+  --pm-text-secondary: #6B7280;
+  --pm-border: #E5E7EB;
+  --pm-error: #DC2626;
+  --pm-success: #16A34A;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  color: var(--pm-text);
+  background-color: #FAFAFA;
+}
+
+/* PeteMart Utility Classes */
+@layer components {
+  .section-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .market-card {
+    @apply bg-white rounded-pm-lg overflow-hidden border border-pm-border transition-all duration-300 hover:shadow-pm-lg hover:-translate-y-0.5;
+  }
+
+  .product-card {
+    @apply bg-white rounded-pm-lg overflow-hidden border border-pm-border transition-all duration-300 hover:shadow-pm-md;
+  }
+
+  .badge-buy {
+    @apply bg-green-100 text-green-800 border-green-200;
+  }
+
+  .badge-whatsapp {
+    @apply bg-green-50 text-green-700 border-green-300;
+  }
+
+  .badge-visit {
+    @apply bg-blue-100 text-blue-800 border-blue-200;
+  }
+
+  .kpi-card {
+    @apply bg-white rounded-pm-lg p-5 border border-pm-border;
+  }
+
+  .help-banner {
+    @apply bg-pm-cream border border-pm-border rounded-pm-lg p-4;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}

@@ -88,9 +88,6 @@ jobs:
     name: 🚀 Vercel Deploy (${{ needs.resolve-environment.outputs.environment }})
     needs: [resolve-environment]
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./agents/03_execution_workspace/07d_integration_agent/petemart-unified
     environment:
       name: ${{ needs.resolve-environment.outputs.environment }}
       url: https://${{ needs.resolve-environment.outputs.vercel_alias }}
