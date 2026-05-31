@@ -11,7 +11,7 @@ import { GET as ordersGet } from '@/app/api/v1/orders/route';
 import { MARKETS, MERCHANTS, PRODUCTS } from '@/lib/data';
 
 function mockRequest(url: string, init?: RequestInit): NextRequest {
-  return new NextRequest(url, init);
+  return new NextRequest(url, init as any);
 }
 
 describe('Route Handlers (in-process)', () => {
@@ -73,7 +73,7 @@ describe('Route Handlers (in-process)', () => {
     const { GET: productGet } = await import('@/app/api/v1/products/[id]/route');
     const res = await productGet(
       mockRequest(`http://localhost:3000/api/v1/products/${firstProductId}`),
-      { params: { id: firstProductId } }
+      { params: Promise.resolve({ id: firstProductId }) }
     );
     expect(res.status).toBe(200);
     const body = await res.json();
@@ -85,7 +85,7 @@ describe('Route Handlers (in-process)', () => {
     const { GET: productGet } = await import('@/app/api/v1/products/[id]/route');
     const res = await productGet(
       mockRequest('http://localhost:3000/api/v1/products/nonexistent'),
-      { params: { id: 'nonexistent' } }
+      { params: Promise.resolve({ id: 'nonexistent' }) }
     );
     expect(res.status).toBe(404);
   });
@@ -114,7 +114,7 @@ describe('Route Handlers (in-process)', () => {
     const { GET: merchantGet } = await import('@/app/api/v1/merchants/[slug]/route');
     const res = await merchantGet(
       mockRequest(`http://localhost:3000/api/v1/merchants/${firstMerchant.slug}`),
-      { params: { slug: firstMerchant.slug } }
+      { params: Promise.resolve({ slug: firstMerchant.slug }) }
     );
     expect(res.status).toBe(200);
     const body = await res.json();
@@ -127,7 +127,7 @@ describe('Route Handlers (in-process)', () => {
     const { GET: merchantGet } = await import('@/app/api/v1/merchants/[slug]/route');
     const res = await merchantGet(
       mockRequest('http://localhost:3000/api/v1/merchants/unknown-store'),
-      { params: { slug: 'unknown-store' } }
+      { params: Promise.resolve({ slug: 'unknown-store' }) }
     );
     expect(res.status).toBe(404);
   });
@@ -144,7 +144,7 @@ describe('Route Handlers (in-process)', () => {
     const { GET: orderGet } = await import('@/app/api/v1/orders/[id]/route');
     const res = await orderGet(
       mockRequest('http://localhost:3000/api/v1/orders/order-1'),
-      { params: { id: 'order-1' } }
+      { params: Promise.resolve({ id: 'order-1' }) }
     );
     expect(res.status).toBe(200);
     const body = await res.json();
