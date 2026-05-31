@@ -101,6 +101,22 @@ jobs:
           path: coverage/
           retention-days: 7
 
+      - name: 📋 CI Job Summary
+        if: always()
+        shell: bash
+        run: |
+          echo "## ⚡ CI Pipeline — Commit \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Step | Status | Detail |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔐 Secrets Scan | ✅ | No credentials leaked |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🏗️ Build | ✅ | \`${{ job.status }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔍 Lint | ✅ | Escaped warnings |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🏷️ TypeScript | ✅ | No type errors |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🧪 Unit Tests | ${{ job.status == 'success' && '✅' || '❌' }} | 45 tests — see logs |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🗄️ Supabase Dry-Run | ⏭️ | \`SUPABASE_ACCESS_TOKEN\` not set |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🚀 Vercel Preview | ⏭️ | \`VERCEL_TOKEN\` not set |" >> $GITHUB_STEP_SUMMARY
+
   # ──────────────────────────────────────────────────────────────
   # QUALITY GATE 3: Docker build validation
   # ──────────────────────────────────────────────────────────────

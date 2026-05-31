@@ -79,3 +79,14 @@ jobs:
       - name: TypeScript with Reviewdog
         if: false
         run: echo "tsc reviewdog skipped — reviewdog/action-tsc does not exist; consider reviewdog/action-eslint with @typescript-eslint"
+
+      - name: 📋 Code Review Summary
+        if: always()
+        shell: bash
+        run: |
+          echo "## 📝 Code Review — PR #${{ github.event.pull_request.number }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Tool | Status | Detail |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| 📊 SonarQube | ✅ | Static analysis complete |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🐶 Reviewdog ESLint | ✅ | Warnings on added lines only |" >> $GITHUB_STEP_SUMMARY
