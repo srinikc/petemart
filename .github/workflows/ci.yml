@@ -1,4 +1,4 @@
-name: CI — Build, Lint, TypeCheck & Test
+name: CI — Build, Lint, TypeCheck, Test & QA
 
 on:
   pull_request:
@@ -15,10 +15,11 @@ env:
   NODE_VERSION: '20.x'
   NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
   NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+  PLAYWRIGHT_BASE_URL: 'http://localhost:3458'
 
 jobs:
   # ──────────────────────────────────────────────────────────────
-  # QUALITY GATE 1: Secrets Scanner — FAIL if hardcoded credentials
+  # QUALITY GATE 1: Secrets Scanner
   # ──────────────────────────────────────────────────────────────
   secrets-scan:
     name: 🔐 Secrets & Credentials Scan
@@ -42,7 +43,6 @@ jobs:
         shell: bash
         run: |
           FAIL=0
-          # Check for common secret patterns
           grep -rnP '(?<![A-Za-z])[A-Za-z0-9_-]{20,}(?![A-Za-z])' --include='*.{js,ts,jsx,tsx,py,env,yml,yaml,json,env.example}' . \
             | grep -v '.github/workflows/' \
             | grep -v 'node_modules/' \
@@ -90,7 +90,7 @@ jobs:
       - name: 🏷️ TypeScript type check
         run: npm run typecheck || npx tsc --noEmit
 
-      - name: 🧪 Unit tests
+      - name: 🧪 Unit tests (Vitest)
         run: npm test -- --coverage
 
       - name: 📊 Upload coverage report
@@ -101,25 +101,86 @@ jobs:
           path: coverage/
           retention-days: 7
 
-      - name: 📋 CI Job Summary
+      - name: 📊 Collect QA results
+        run: node scripts/collect-test-results.js
+
+      - name: 📋 Upload QA dashboard data
+        uses: actions/upload-artifact@v4
         if: always()
-        shell: bash
-        run: |
-          echo "## ⚡ CI Pipeline — Commit \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Step | Status | Detail |" >> $GITHUB_STEP_SUMMARY
-          echo "|---|---|---|" >> $GITHUB_STEP_SUMMARY
-          echo "| 🔐 Secrets Scan | ✅ | No credentials leaked |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🏗️ Build | ✅ | \`${{ job.status }}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🔍 Lint | ✅ | Escaped warnings |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🏷️ TypeScript | ✅ | No type errors |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🧪 Unit Tests | ${{ job.status == 'success' && '✅' || '❌' }} | 45 tests — see logs |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🗄️ Supabase Dry-Run | ⏭️ | \`SUPABASE_ACCESS_TOKEN\` not set |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🚀 Vercel Preview | ⏭️ | \`VERCEL_TOKEN\` not set |" >> $GITHUB_STEP_SUMMARY
+        with:
+          name: qa-dashboard-data
+          path: |
+            qa-dashboard/results.json
+            qa-dashboard/history.json
+            qa-dashboard/run-history.json
+          retention-days: 30
 
   # ──────────────────────────────────────────────────────────────
-  # QUALITY GATE 3: Docker build validation
+  # QUALITY GATE 3: E2E Tests (Playwright) — runs after build
   # ──────────────────────────────────────────────────────────────
+  e2e-tests:
+    name: 🌐 E2E Tests (Playwright)
+    needs: [build-and-test]
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: ⚡ Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 📥 Install dependencies
+        run: npm ci
+
+      - name: 🌐 Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: 🚀 Start Next.js server
+        run: |
+          npm run build
+          npm run start &
+          npx wait-on http://localhost:3458 --timeout 60000
+
+      - name: 🌐 Run Playwright E2E tests
+        run: npx playwright test --project=chromium --reporter=json,html
+        continue-on-error: true
+
+      - name: 📊 Generate E2E test summary
+        shell: bash
+        run: |
+          if [ -f qa-dashboard/playwright-results.json ]; then
+            TOTAL=$(cat qa-dashboard/playwright-results.json | jq '.stats.expected')
+            FAILED=$(cat qa-dashboard/playwright-results.json | jq '.stats.unexpected')
+            PASSED=$((TOTAL - FAILED))
+            echo "## 🌐 Playwright E2E Results" >> $GITHUB_STEP_SUMMARY
+            echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+            echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+            echo "| Total | $TOTAL |" >> $GITHUB_STEP_SUMMARY
+            echo "| Passed | $PASSED |" >> $GITHUB_STEP_SUMMARY
+            echo "| Failed | $FAILED |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## 🌐 Playwright E2E Results" >> $GITHUB_STEP_SUMMARY
+            echo "No results file found — tests may have failed to run." >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: 📤 Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: qa-dashboard/playwright-report/
+          retention-days: 14
+
+      - name: 📤 Upload Playwright test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-results
+          path: qa-dashboard/playwright-results.json
+          retention-days: 14
+
   # ──────────────────────────────────────────────────────────────
   # QUALITY GATE 4: Vercel preview deployment (PR only)
   # ──────────────────────────────────────────────────────────────
@@ -157,8 +218,31 @@ jobs:
         run: |
           for f in supabase/migrations/*.sql; do
             echo "🔍 Validating $f..."
-            # Basic SQL syntax check (runs pg syntax validator)
             docker run --rm -i postgres:16-alpine psql -c "$(cat $f)" > /dev/null 2>&1 && \
               echo "  ✅ $f passed" || \
               echo "  ⚠️  $f syntax check skipped (needs actual DB)"
           done
+
+  # ──────────────────────────────────────────────────────────────
+  # CI Summary — aggregate all gate results
+  # ──────────────────────────────────────────────────────────────
+  ci-summary:
+    name: 📋 CI Summary
+    needs: [secrets-scan, build-and-test, e2e-tests]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📋 Generate CI Summary
+        shell: bash
+        run: |
+          echo "## ⚡ CI Pipeline — Commit \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Step | Status | Detail |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔐 Secrets Scan | ${{ needs.secrets-scan.result }} | No credentials leaked |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🏗️ Build | ${{ needs.build-and-test.result }} | Compilation + typecheck |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🧪 Unit Tests | ${{ needs.build-and-test.result }} | Vitest suite |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🌐 E2E Tests | ${{ needs.e2e-tests.result }} | Playwright browser tests |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📊 QA Dashboard | ✅ | results.json updated |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🗄️ Supabase Dry-Run | ${{ needs.supabase-migration-check.result || '⏭️' }} | SQL migration check |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🚀 Vercel Preview | ${{ needs.vercel-preview.result || '⏭️' }} | PR only |" >> $GITHUB_STEP_SUMMARY

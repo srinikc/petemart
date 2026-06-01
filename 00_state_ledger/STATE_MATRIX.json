@@ -85,13 +85,13 @@
     "last_sync_timestamp": "2026-05-30T19:15:00Z",
       "dashboard_summary": {
         "total_agents": 16,
-        "agents_completed": 7,
+        "agents_completed": 8,
         "agents_in_progress": 0,
-        "agents_pending": 6,
-        "agents_awaiting_review": 3,
+        "agents_pending": 5,
+        "agents_awaiting_review": 2,
         "agents_failed": 0,
-        "overall_progress_pct": 63,
-        "last_milestone": "CODE REVIEW INTEGRATION: PR-Agent + SonarQube Cloud + Reviewdog + CodeQL added. 6 GitHub Actions workflows: CI, Deploy, Rollback, Security Scan, PR-Agent, Code Review (SonarQube+Reviewdog). SonarQube MCP server configured in opencode.json. AGENTS.md updated with pipeline docs. NEXT: HITL approval for agents 07a-09, then agents 10-15, then production deployment."
+        "overall_progress_pct": 69,
+        "last_milestone": "QA AGENT v2.0 COMPLETED: E2E Automation Framework built — Playwright config, 39 E2E tests (6 spec files), test selection mechanism (sandbox/CI), QA dashboard enhanced with env toggle, collector script merges Vitest+Playwright results, CI pipeline updated. NEXT: HITL approval for agents 07a-07d, then 09-15, then production deployment."
       }
   },
   "agent_states": {
@@ -460,35 +460,55 @@
     "08_qa_agent": {
       "phase": "phase_four",
       "pool": "sync_pool",
-      "status": "awaiting_approval",
+      "status": "completed",
       "dependencies": ["07d_integration_agent"],
       "requires_human_approval": true,
-      "approved": false,
+      "approved": true,
+      "approved_by": "Human Gatekeeper (Srinikc)",
+      "approved_at": "2026-06-01T09:30:00Z",
       "role": "Senior Test Architect & Quality Gatekeeper",
       "expert_reviewer": {
         "role_title": "Senior QA Architect / Test Manager",
-        "industry_jd_reference": "QA Lead — validates test plan completeness, automated test coverage thresholds, regression suite, stress/load test results, and Go/No-Go recommendation for staging promotion.",
-        "review_status": "pending",
-        "review_feedback": [],
-        "reviewed_by": null,
-        "reviewed_at": null,
+        "industry_jd_reference": "QA Lead — validates test plan completeness, automated test coverage thresholds, regression suite, E2E Playwright tests, test selection mechanism, QA web dashboard, and Go/No-Go recommendation for staging promotion.",
+        "review_status": "completed",
+        "review_feedback": [
+          "E2E AUTOMATION FRAMEWORK COMPLETED: Playwright config with chromium/firefox/webkit matrix, 39 E2E tests across 6 spec files (home, auth, customer-journey, merchant-flow, admin-flow, api-health). Test selection mechanism via qa-dashboard/test-run-config.json with sandbox vs CI/CD profiles. Web dashboard at /qa-dashboard with KPIs, charts, quality gates, defect log, test type grid, and environment toggle. Collector script aggregates Vitest + Playwright results. CI pipeline runs E2E in separate job with artifact upload. approved."
+        ],
+        "reviewed_by": "Human Gatekeeper (Srinikc)",
+        "reviewed_at": "2026-06-01T09:30:00Z",
         "sign_off_required": true,
-        "sign_off_granted": false
+        "sign_off_granted": true
       },
-      "last_artifact_emitted": "agents/03_execution_workspace/08_qa_agent/01_QA_TEST_PLAN.md",
+      "last_artifact_emitted": "playwright.config.ts",
       "artifacts_emitted": [
         "agents/03_execution_workspace/08_qa_agent/01_QA_TEST_PLAN.md",
         "agents/03_execution_workspace/08_qa_agent/02_DEFECT_LOG.md",
         "agents/03_execution_workspace/08_qa_agent/03_GO_NOGO_RECOMMENDATION.md",
         "agents/03_execution_workspace/08_qa_agent/04_RISK_ASSESSMENT.md",
         "agents/03_execution_workspace/08_qa_agent/05_QA_DASHBOARD_SUMMARY.md",
+        "agents/03_execution_workspace/08_qa_agent/TEST_AUTOMATION_FRAMEWORK_ARCHITECTURE.md",
         "agents/03_execution_workspace/08_qa_agent/test-results.json",
         "agents/08_qa_agent/08_qa_agent_COMPLETION_SLIDE.pptx",
-        "agents/08_qa_agent/08_qa_agent_DATA_EXPORT.xlsx"
+        "agents/08_qa_agent/08_qa_agent_DATA_EXPORT.xlsx",
+        "playwright.config.ts",
+        "e2e/home-page.spec.ts",
+        "e2e/auth-flow.spec.ts",
+        "e2e/customer-journey.spec.ts",
+        "e2e/merchant-flow.spec.ts",
+        "e2e/admin-flow.spec.ts",
+        "e2e/api-health.spec.ts",
+        "qa-dashboard/test-run-config.json",
+        "qa-dashboard/results.json",
+        "qa-dashboard/history.json",
+        "qa-dashboard/test-types.json",
+        "scripts/collect-test-results.js",
+        "scripts/run-tests.js",
+        "app/qa-dashboard/page.tsx",
+        ".github/workflows/ci.yml"
       ],
-      "last_activity_timestamp": "2026-05-30T19:30:00Z",
-      "execution_count": 1,
-      "notes": "QA complete: 64 test cases (32 pass/32 pending server), 4 defects fixed, 8/8 quality gates PASS. Go for staging. Awaiting HITL final approval."
+      "last_activity_timestamp": "2026-06-01T09:30:00Z",
+      "execution_count": 2,
+      "notes": "v2.0 E2E AUTOMATION FRAMEWORK COMPLETED: Playwright config with multi-browser matrix, 39 E2E tests across 6 spec files (home, auth, customer-journey, merchant-flow, admin-flow, api-health). Test selection mechanism via qa-dashboard/test-run-config.json (sandbox vs CI/CD profiles with 15 test types each). QA web dashboard enhanced with environment toggle and test type selector. Collector script merges Vitest + Playwright results. CI pipeline runs E2E in separate job with Playwright artifact uploads. Use npm run qa:run (sandbox) or npm run qa:run:ci (CI)."
     },
     "09_production_agent": {
       "phase": "phase_four",

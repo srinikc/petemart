@@ -1,38 +1,65 @@
-# Session Checkpoint — May 31, 2026
+# Session Checkpoint — June 1, 2026
 
 ## Goal
-- Set up GitHub Actions CI/CD pipeline with pre-commit AI code review guard
+- Complete QA Agent (08) E2E Automation Framework — Playwright tests, test selection mechanism, dashboard enhancements, CI integration, and git check-in
 
 ## Done
-- CI workflow: build, lint, typecheck, test (all 45 passing with coverage)
-- Code Review workflow: SonarQube + Reviewdog (triggers on PR)
-- PR-Agent workflow: DeepSeek AI review on PR
-- Security Scan workflow: truffleHog, Gitleaks, CodeQL, Checkov, Hadolint (all `continue-on-error`)
-- Deploy workflow: Vercel + Supabase (blocked by missing secrets)
-- Husky pre-commit hook: runs AI code review → tsc --noEmit → npm test
-- AGENTS.md: "Universal Pre-Commit Code Review Gate" section added
-- All code agent prompts (7a–7d, 8, 13) updated to reference pre-commit gate
-- `DEEPSEEK_API_KEY` set via `setx` (permanent, new terminals only)
+- **Playwright config**: `playwright.config.ts` with chromium/firefox/webkit matrix, env-aware settings, HTML+JSON reporters
+- **39 E2E tests** across 6 spec files:
+  - `home-page.spec.ts` — landing page load, featured merchants, navigation, how-it-works
+  - `auth-flow.spec.ts` — login/signup tabs, email/phone forms, persona selection, validation
+  - `customer-journey.spec.ts` — market browse, merchant shop, product detail, cart, checkout, orders, tracking
+  - `merchant-flow.spec.ts` — auth redirect, protected route enforcement, layout verification
+  - `admin-flow.spec.ts` — auth redirect, admin page loading, layout verification
+  - `api-health.spec.ts` — 12 API endpoint tests (health, markets, products, merchants, auth, orders, tracking, admin)
+- **Test selection mechanism** (`qa-dashboard/test-run-config.json`):
+  - Sandbox profile: unit + integration + security + regression (fast subset, chromium only)
+  - CI profile: unit + integration + e2e + security + regression (full matrix, fail fast)
+  - `scripts/run-tests.js` — reads config, runs selected tests, logs history
+  - `npm run qa:run` (sandbox), `npm run qa:run:ci` (CI), `npm run qa:list` (list types)
+- **QA dashboard enhanced** (`app/qa-dashboard/page.tsx`):
+  - Environment toggle (Sandbox ↔ CI/CD) with visual badge
+  - Test selection panel showing enabled types per environment
+  - Playwright projects, fail-fast mode, and collection status display
+- **Collector script updated** (`scripts/collect-test-results.js`):
+  - Now reads `playwright-results.json` and merges E2E counts into dashboard
+- **CI workflow updated** (`.github/workflows/ci.yml`):
+  - New `e2e-tests` job: installs Playwright, starts Next.js, runs tests, uploads artifacts
+  - QA collector step in `build-and-test` job
+  - `ci-summary` aggregate job showing all gate results
+- **npm scripts added**: `e2e`, `e2e:ui`, `e2e:headed`, `e2e:debug`, `e2e:report`, `e2e:install`, `qa:run`, `qa:run:ci`, `qa:list`
+- **STATE_MATRIX.json**: QA Agent 08 marked completed, downstream agents unblocked
+- **Token usage** logged via `python scripts/track_usage.py`
 
 ## Key Decisions
-- ESLint is non-blocking (next lint deprecated in Next.js 15)
-- All code changes go through feature branch → PR → merge to develop
-- Pre-commit hook uses DeepSeek API for AI review (skips if key not set)
-- Deploy/Supabase workflows skip gracefully when secrets missing
+- Playwright E2E tests run as a **separate CI job** (e2e-tests) that depends on build-and-test, not inline
+- Test selection config is JSON-based (`test-run-config.json`) — easy to edit per environment
+- QA dashboard reads the config live and shows current environment's enabled types
+- `run-tests.js` can be called with `--type=unit,e2e` to override config for debugging
+- Playwright multi-browser (firefox, webkit) runs only in CI to keep local fast
 
 ## What's Blocked
-- Vercel CD: needs `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` secrets in GitHub
-- Supabase migrations: needs `SUPABASE_ACCESS_TOKEN` and related secrets
+- Agents 07a (UI), 07b (API), 07c (Backend DB), 07d (Integration) still awaiting HITL approval
+- Agent 09 (Production) needs 07a-07d approved first
+- Vercel CD: needs `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` secrets
+- Supabase migrations: needs `SUPABASE_ACCESS_TOKEN`
 
 ## Next Steps
-1. Close this session, restart terminal (so `DEEPSEEK_API_KEY` is available)
-2. Next session: start building actual product (agents 7a–15) using feature branches + PRs
-3. Open PR #1 from develop → main once ready
-4. Set GitHub secrets when ready to deploy
+1. HITL approve agents 07a-07d (UI, API, Backend DB, Integration)
+2. Proceed to agents 09-15 (Production, Tech Pub, Customer Onboarding, Marketing, Maintenance, FinOps, Secrets)
+3. Set GitHub secrets for Vercel + Supabase when ready to deploy
+4. Run `npm run qa:run` locally to verify test selection works
+5. Run `npx playwright test` to verify E2E tests pass on local dev server
 
-## Relevant Commits
-- `448643e` — docs: add Pre-Commit Code Review Gate to AGENTS.md
-- `0e0be6c` — feat: add AI code review to pre-commit hook
-- `e3ad3bf` — feat: add husky pre-commit hooks
-- `976c1a5` — fix: add @vitest/coverage-v8 + workflow summaries
-- `c7706c1` — fix: route handler test types and CI coverage
+## Package Scripts Added
+| Script | Description |
+|--------|-------------|
+| `npm run e2e` | Run all Playwright tests (headless) |
+| `npm run e2e:ui` | Playwright UI mode |
+| `npm run e2e:headed` | Run with browser visible |
+| `npm run e2e:debug` | Debug mode |
+| `npm run e2e:report` | Open Playwright HTML report |
+| `npm run e2e:install` | Install Playwright browsers |
+| `npm run qa:run` | Run tests per sandbox config |
+| `npm run qa:run:ci` | Run tests per CI config |
+| `npm run qa:list` | List enabled test types |

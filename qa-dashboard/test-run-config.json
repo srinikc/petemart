@@ -1,0 +1,66 @@
+{
+  "version": "1.0",
+  "description": "Test selection configuration. Controls which test types run in local sandbox vs CI/CD environments.",
+  "environments": {
+    "sandbox": {
+      "label": "Local Sandbox (dev)",
+      "description": "Fast test subset for local development. Skips E2E, performance, stress, cross-browser.",
+      "testTypes": {
+        "unit": { "enabled": true, "command": "vitest run --reporter=json" },
+        "component": { "enabled": false, "command": "vitest run --reporter=json" },
+        "integration": { "enabled": true, "command": "vitest run --reporter=json" },
+        "e2e": { "enabled": false, "command": "npx playwright test --project=chromium" },
+        "api-contract": { "enabled": false, "command": "vitest run --reporter=json" },
+        "visual-regression": { "enabled": false, "command": "npx playwright test --grep @visual" },
+        "performance": { "enabled": false, "command": "npx lhci collect" },
+        "stress": { "enabled": false, "command": "k6 run" },
+        "security": { "enabled": true, "command": "npm run security-scan" },
+        "accessibility": { "enabled": false, "command": "npx playwright test --grep @a11y" },
+        "cross-browser": { "enabled": false, "command": "npx playwright test --project=all" },
+        "regression": { "enabled": true, "command": "npm test" },
+        "multi-tenant": { "enabled": false, "command": "vitest run --reporter=json" },
+        "migration": { "enabled": false, "command": "vitest run --reporter=json" },
+        "disaster-recovery": { "enabled": false, "command": "echo 'manual: backup/restore'" }
+      },
+      "playwrightProjects": ["chromium"],
+      "collectResults": true,
+      "failFast": false,
+      "env": { "CI": "false", "PLAYWRIGHT_BASE_URL": "http://localhost:3458" }
+    },
+    "ci": {
+      "label": "CI/CD Pipeline (GitHub Actions)",
+      "description": "Full test suite for PR validation and merge gates.",
+      "testTypes": {
+        "unit": { "enabled": true, "command": "vitest run --reporter=json --coverage" },
+        "component": { "enabled": false, "command": "vitest run --reporter=json" },
+        "integration": { "enabled": true, "command": "vitest run --reporter=json" },
+        "e2e": { "enabled": true, "command": "npx playwright test --project=chromium --project=firefox --project=webkit" },
+        "api-contract": { "enabled": false, "command": "vitest run --reporter=json" },
+        "visual-regression": { "enabled": false, "command": "npx playwright test --grep @visual" },
+        "performance": { "enabled": false, "command": "npx lhci collect" },
+        "stress": { "enabled": false, "command": "k6 run" },
+        "security": { "enabled": true, "command": "npm run security-scan" },
+        "accessibility": { "enabled": false, "command": "npx playwright test --grep @a11y" },
+        "cross-browser": { "enabled": false, "command": "npx playwright test --project=all" },
+        "regression": { "enabled": true, "command": "npm test" },
+        "multi-tenant": { "enabled": false, "command": "vitest run --reporter=json" },
+        "migration": { "enabled": false, "command": "vitest run --reporter=json" },
+        "disaster-recovery": { "enabled": false, "command": "echo 'manual: backup/restore'" }
+      },
+      "playwrightProjects": ["chromium", "firefox", "webkit"],
+      "collectResults": true,
+      "failFast": true,
+      "env": {
+        "CI": "true",
+        "PLAYWRIGHT_BASE_URL": "http://localhost:3458",
+        "NODE_ENV": "test"
+      }
+    }
+  },
+  "metadata": {
+    "testTypesTotal": 15,
+    "testTypesImplemented": 4,
+    "lastUpdated": "2026-06-01T00:00:00Z",
+    "schema": "https://petemart.ai/schemas/test-run-config-v1.json"
+  }
+}
