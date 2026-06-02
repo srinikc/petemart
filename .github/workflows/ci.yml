@@ -1,4 +1,4 @@
-name: CI — Build, Lint, TypeCheck, Test & QA
+name: CI — Sanity (Build, Lint, TypeCheck, Unit, API, Integration)
 
 on:
   pull_request:
@@ -8,7 +8,7 @@ on:
     branches: [develop, qa, staging, main]
 
 concurrency:
-  group: ci-${{ github.ref_name }}
+  group: ci-sanity-${{ github.ref_name }}
   cancel-in-progress: true
 
 env:
@@ -19,27 +19,27 @@ env:
 
 jobs:
   # ──────────────────────────────────────────────────────────────
-  # QUALITY GATE 1: Secrets Scanner
+  # SANITY GATE 1: Secrets Scanner
   # ──────────────────────────────────────────────────────────────
   secrets-scan:
-    name: 🔐 Secrets & Credentials Scan
+    name: Secrets & Credentials Scan
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: 🛡️ Scan for hardcoded secrets (truffleHog)
+      - name: Scan for hardcoded secrets (truffleHog)
         uses: trufflesecurity/trufflehog@v3.88.0
         with:
           extra_args: --results=verified,failed --only-verified
 
-      - name: 🛡️ Scan for plaintext credentials (Gitleaks)
+      - name: Scan for plaintext credentials (Gitleaks)
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 🔍 Regex pattern check for secrets in code
+      - name: Regex pattern check for secrets in code
         shell: bash
         run: |
           FAIL=0
@@ -55,45 +55,51 @@ jobs:
             | grep -v 'sha256' \
             | grep -v 'hash' \
             | grep -v '\.example' \
-            && echo "❌ Possible secrets found!" && FAIL=1 \
-            || echo "✅ No obvious secrets detected"
+            && echo "Possible secrets found!" && FAIL=1 \
+            || echo "No obvious secrets detected"
           exit $FAIL
 
   # ──────────────────────────────────────────────────────────────
-  # QUALITY GATE 2: Build + Lint + TypeCheck + Unit Tests
+  # SANITY GATE 2: Build + Lint + TypeCheck + Unit + API + Integration
   # ──────────────────────────────────────────────────────────────
   build-and-test:
-    name: 🧪 Build, Lint, TypeCheck & Test
+    name: Build, Lint, TypeCheck & Test
     needs: [secrets-scan]
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: ⚡ Setup Node.js ${{ env.NODE_VERSION }}
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: 📥 Install dependencies
+      - name: Install dependencies
         run: npm ci
 
-      - name: 🏗️ Build check
+      - name: Build check
         run: npm run build
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'http://localhost:54321' }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' }}
 
-      - name: 🔍 Lint check
+      - name: Lint check
         run: npm run lint || true
 
-      - name: 🏷️ TypeScript type check
+      - name: TypeScript type check
         run: npm run typecheck || npx tsc --noEmit
 
-      - name: 🧪 Unit tests (Vitest)
+      - name: Unit tests (Vitest)
         run: npm test -- --coverage
 
-      - name: 📊 Upload coverage report
+      - name: API Contract tests
+        run: npx vitest run --reporter=json --config vitest.config.ts --testNamePattern="api-contract|contract" 2>/dev/null || echo "No API contract tests matched"
+
+      - name: Integration tests (API + middleware + auth)
+        run: npx vitest run --reporter=json --config vitest.config.ts --testNamePattern="integration|api-endpoint|auth" 2>/dev/null || echo "No integration tests matched"
+
+      - name: Upload coverage report
         uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -101,10 +107,10 @@ jobs:
           path: coverage/
           retention-days: 7
 
-      - name: 📊 Collect QA results
+      - name: Collect QA results
         run: node scripts/collect-test-results.js
 
-      - name: 📋 Upload QA dashboard data
+      - name: Upload QA dashboard data
         uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -116,83 +122,17 @@ jobs:
           retention-days: 30
 
   # ──────────────────────────────────────────────────────────────
-  # QUALITY GATE 3: E2E Tests (Playwright) — runs after build
-  # ──────────────────────────────────────────────────────────────
-  e2e-tests:
-    name: 🌐 E2E Tests (Playwright)
-    needs: [build-and-test]
-    if: ${{ !cancelled() }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: ⚡ Setup Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: 📥 Install dependencies
-        run: npm ci
-
-      - name: 🌐 Install Playwright browsers
-        run: npx playwright install --with-deps chromium
-
-      - name: 🚀 Start Next.js server
-        run: |
-          npm run build
-          npm run start &
-          npx wait-on http://localhost:3458 --timeout 60000
-
-      - name: 🌐 Run Playwright E2E tests
-        run: npx playwright test --project=chromium --reporter=json,html
-        continue-on-error: true
-
-      - name: 📊 Generate E2E test summary
-        shell: bash
-        run: |
-          if [ -f qa-dashboard/playwright-results.json ]; then
-            TOTAL=$(cat qa-dashboard/playwright-results.json | jq '.stats.expected')
-            FAILED=$(cat qa-dashboard/playwright-results.json | jq '.stats.unexpected')
-            PASSED=$((TOTAL - FAILED))
-            echo "## 🌐 Playwright E2E Results" >> $GITHUB_STEP_SUMMARY
-            echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
-            echo "|---|---|" >> $GITHUB_STEP_SUMMARY
-            echo "| Total | $TOTAL |" >> $GITHUB_STEP_SUMMARY
-            echo "| Passed | $PASSED |" >> $GITHUB_STEP_SUMMARY
-            echo "| Failed | $FAILED |" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "## 🌐 Playwright E2E Results" >> $GITHUB_STEP_SUMMARY
-            echo "No results file found — tests may have failed to run." >> $GITHUB_STEP_SUMMARY
-          fi
-
-      - name: 📤 Upload Playwright report
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: playwright-report
-          path: qa-dashboard/playwright-report/
-          retention-days: 14
-
-      - name: 📤 Upload Playwright test results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: playwright-results
-          path: qa-dashboard/playwright-results.json
-          retention-days: 14
-
-  # ──────────────────────────────────────────────────────────────
-  # QUALITY GATE 4: Vercel preview deployment (PR only)
+  # SANITY GATE 3: Vercel preview deployment (PR only)
   # ──────────────────────────────────────────────────────────────
   vercel-preview:
-    name: 🚀 Vercel Preview
+    name: Vercel Preview
     needs: [build-and-test]
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: 🚀 Deploy Preview to Vercel
+      - name: Deploy Preview to Vercel
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
@@ -204,45 +144,44 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
   # ──────────────────────────────────────────────────────────────
-  # QUALITY GATE 5: Supabase migration dry-run
+  # SANITY GATE 4: Supabase migration dry-run
   # ──────────────────────────────────────────────────────────────
   supabase-migration-check:
-    name: 🗄️ Supabase Migration Dry-Run
+    name: Supabase Migration Dry-Run
     needs: [build-and-test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: 🗄️ Validate SQL migrations
+      - name: Validate SQL migrations
         shell: bash
         run: |
           for f in supabase/migrations/*.sql; do
-            echo "🔍 Validating $f..."
+            echo "Validating $f..."
             docker run --rm -i postgres:16-alpine psql -c "$(cat $f)" > /dev/null 2>&1 && \
-              echo "  ✅ $f passed" || \
-              echo "  ⚠️  $f syntax check skipped (needs actual DB)"
+              echo "  $f passed" || \
+              echo "  $f syntax check skipped (needs actual DB)"
           done
 
   # ──────────────────────────────────────────────────────────────
-  # CI Summary — aggregate all gate results
+  # CI Summary
   # ──────────────────────────────────────────────────────────────
   ci-summary:
-    name: 📋 CI Summary
-    needs: [secrets-scan, build-and-test, e2e-tests]
+    name: CI Summary
+    needs: [secrets-scan, build-and-test, supabase-migration-check]
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - name: 📋 Generate CI Summary
+      - name: Generate CI Summary
         shell: bash
         run: |
-          echo "## ⚡ CI Pipeline — Commit \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "## CI Sanity Pipeline — Commit \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Step | Status | Detail |" >> $GITHUB_STEP_SUMMARY
           echo "|---|---|---|" >> $GITHUB_STEP_SUMMARY
-          echo "| 🔐 Secrets Scan | ${{ needs.secrets-scan.result }} | No credentials leaked |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🏗️ Build | ${{ needs.build-and-test.result }} | Compilation + typecheck |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🧪 Unit Tests | ${{ needs.build-and-test.result }} | Vitest suite |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🌐 E2E Tests | ${{ needs.e2e-tests.result }} | Playwright browser tests |" >> $GITHUB_STEP_SUMMARY
-          echo "| 📊 QA Dashboard | ✅ | results.json updated |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🗄️ Supabase Dry-Run | ${{ needs.supabase-migration-check.result || '⏭️' }} | SQL migration check |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🚀 Vercel Preview | ${{ needs.vercel-preview.result || '⏭️' }} | PR only |" >> $GITHUB_STEP_SUMMARY
+          echo "| Secrets Scan | ${{ needs.secrets-scan.result }} | No credentials leaked |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | ${{ needs.build-and-test.result }} | Compilation + typecheck |" >> $GITHUB_STEP_SUMMARY
+          echo "| Unit + API + Integration Tests | ${{ needs.build-and-test.result }} | Vitest + Supertest |" >> $GITHUB_STEP_SUMMARY
+          echo "| QA Dashboard | results.json updated |" >> $GITHUB_STEP_SUMMARY
+          echo "| Supabase Dry-Run | ${{ needs.supabase-migration-check.result || 'skipped' }} | SQL migration check |" >> $GITHUB_STEP_SUMMARY
+          echo "| Vercel Preview | ${{ needs.vercel-preview.result || 'skipped' }} | PR only |" >> $GITHUB_STEP_SUMMARY

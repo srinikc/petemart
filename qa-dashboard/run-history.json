@@ -1,0 +1,173 @@
+[
+  {
+    "started": "2026-06-01T15:00:06.905Z",
+    "environment": "sandbox",
+    "tests": {
+      "unit": {
+        "status": "passed",
+        "command": "vitest run --reporter=json",
+        "timestamp": "2026-06-01T15:00:18.312Z"
+      },
+      "component": {
+        "status": "skipped"
+      },
+      "integration": {
+        "status": "passed",
+        "command": "vitest run --reporter=json",
+        "timestamp": "2026-06-01T15:00:32.818Z"
+      },
+      "e2e": {
+        "status": "skipped"
+      },
+      "api-contract": {
+        "status": "skipped"
+      },
+      "visual-regression": {
+        "status": "skipped"
+      },
+      "performance": {
+        "status": "skipped"
+      },
+      "stress": {
+        "status": "skipped"
+      },
+      "security": {
+        "status": "skipped"
+      },
+      "accessibility": {
+        "status": "skipped"
+      },
+      "cross-browser": {
+        "status": "skipped"
+      },
+      "regression": {
+        "status": "skipped"
+      },
+      "multi-tenant": {
+        "status": "skipped"
+      },
+      "migration": {
+        "status": "skipped"
+      },
+      "disaster-recovery": {
+        "status": "skipped"
+      }
+    },
+    "completed": "2026-06-01T15:00:32.818Z",
+    "allPassed": true
+  },
+  {
+    "started": "2026-06-01T15:00:52.676Z",
+    "environment": "sandbox",
+    "tests": {
+      "unit": {
+        "status": "passed",
+        "command": "vitest run --reporter=json",
+        "timestamp": "2026-06-01T15:01:02.442Z"
+      },
+      "component": {
+        "status": "skipped"
+      },
+      "integration": {
+        "status": "passed",
+        "command": "vitest run --reporter=json",
+        "timestamp": "2026-06-01T15:01:14.964Z"
+      },
+      "e2e": {
+        "status": "skipped"
+      },
+      "api-contract": {
+        "status": "skipped"
+      },
+      "visual-regression": {
+        "status": "skipped"
+      },
+      "performance": {
+        "status": "skipped"
+      },
+      "stress": {
+        "status": "skipped"
+      },
+      "security": {
+        "status": "skipped"
+      },
+      "accessibility": {
+        "status": "skipped"
+      },
+      "cross-browser": {
+        "status": "skipped"
+      },
+      "regression": {
+        "status": "skipped"
+      },
+      "multi-tenant": {
+        "status": "skipped"
+      },
+      "migration": {
+        "status": "skipped"
+      },
+      "disaster-recovery": {
+        "status": "skipped"
+      }
+    },
+    "completed": "2026-06-01T15:01:14.964Z",
+    "allPassed": true
+  },
+  {
+    "started": "2026-06-01T15:01:37.407Z",
+    "environment": "sandbox",
+    "tests": {
+      "unit": {
+        "status": "passed",
+        "command": "vitest run --reporter=json",
+        "timestamp": "2026-06-01T15:01:47.182Z"
+      },
+      "component": {
+        "status": "skipped"
+      },
+      "integration": {
+        "status": "passed",
+        "command": "vitest run --reporter=json",
+        "timestamp": "2026-06-01T15:01:57.026Z"
+      },
+      "e2e": {
+        "status": "skipped"
+      },
+      "api-contract": {
+        "status": "skipped"
+      },
+      "visual-regression": {
+        "status": "skipped"
+      },
+      "performance": {
+        "status": "skipped"
+      },
+      "stress": {
+        "status": "skipped"
+      },
+      "security": {
+        "status": "skipped"
+      },
+      "accessibility": {
+        "status": "skipped"
+      },
+      "cross-browser": {
+        "status": "skipped"
+      },
+      "regression": {
+        "status": "skipped"
+      },
+      "multi-tenant": {
+        "status": "skipped"
+      },
+      "migration": {
+        "status": "skipped"
+      },
+      "disaster-recovery": {
+        "status": "skipped"
+      }
+    },
+    "completed": "2026-06-01T15:01:57.026Z",
+    "allPassed": true
+  }
+]

@@ -1,18 +1,78 @@
-# Supervisor Agent (Agent 0) — Orchestrator & State Machine
+# Supervisor Agent (Agent 0) — Senior Program Manager, Orchestrator & Compliance Auditor
 
-**Role**: Pipeline Orchestrator & State Machine Controller  
-**Version**: 1.0  
-**Authority**: Reads STATE_MATRIX.json. Launches agents. Enforces guardrails. Escalates to human. Does NOT make product decisions.
+**Role**: Senior Program Manager / Pipeline Orchestrator & Compliance Auditor  
+**Version**: 2.0  
+**Authority**: Reads STATE_MATRIX.json. Runs compliance audit on each agent's deliverables, code reviews, and test results. Launches agents. Enforces guardrails. Escalates to human. Does NOT make product decisions.
 
 ---
 
 ## Core Principles
 
-1. **Supervisor does not decide** — it only orchestrates based on state rules
+1. **Supervisor does not decide** — it only orchestrates and audits based on state rules
 2. **Every action is logged** — intent, trigger, outcome, timestamp
-3. **Humans govern gates** — tech stack, costing, MVP, production
-4. **No infinite loops** — circuit breaker, cooldown, max cycles enforced
-5. **Workers do the work** — supervisor never executes agent tasks
+3. **Compliance before approval** — no agent is marked "approved" until ALL compliance_checklist items pass
+4. **Humans govern gates** — tech stack, costing, MVP, production
+5. **No infinite loops** — circuit breaker, cooldown, max cycles enforced
+6. **Workers do the work** — supervisor never executes agent tasks
+
+---
+
+## Compliance Audit
+
+The supervisor acts as a **Senior Program Manager** auditing each agent's readiness before marking it as "approved". This is separate from QA testing — it's a **process compliance check**.
+
+### Audit Rules
+
+Before marking ANY agent as "approved", evaluate all items in its `compliance_checklist`:
+
+#### 1. Artifact Verification
+- Check each path in `artifacts_emitted[]` exists on disk and is non-empty
+- Verify `last_artifact_emitted` is not null
+- For code agents (7a-7d, 8, 13): verify TypeScript compiles (`tsc --noEmit`)
+
+#### 2. Code Review Verification
+- For pre-commit gate agents: verify AI code review → TypeScript check → unit tests all passed before the last commit
+- For PR-based agents: verify PR was created and CI passed
+- Check that no `--no-verify` commits exist for code changes
+
+#### 3. Test Verification
+- Check that test output files exist (e.g., `test-results.json`, coverage reports)
+- Verify test pass percentage meets threshold defined in compliance_checklist
+- For QA Agent (08): verify E2E tests ran and passed
+
+#### 4. Dependency Chain Integrity
+- If an agent was re-executed, all downstream agents must also be re-queued
+- No agent can have "approved" status if its dependency chain is broken
+
+### Dashboard Enhancement
+
+The dashboard now shows a ✅/❌ per compliance item:
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║              PeteMart Pipeline Dashboard                     ║
+╠══════════════════════════════════════════════════════════════╣
+║ [07a] UI Agent               ⏳ AWAITING APPROVAL            ║
+║  ✅ Artifacts emitted (UI_INTERFACE_MAP.json, ...)          ║
+║  ✅ Code review completed                                    ║
+║  ✅ Tests passed (92% coverage ≥ 80%)                       ║
+║  ✅ Pre-commit gate cleared                                  ║
+╠══════════════════════════════════════════════════════════════╣
+║ [07b] API Agent              ❌ COMPLIANCE FAILED            ║
+║  ✅ Artifacts emitted                                        ║
+║  ❌ Code review not completed                                ║
+║  ❌ Tests not executed                                       ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+### Failure Escalation
+
+| Scenario | Action |
+|---|---|
+| Compliance item fails | Set agent to `failed` status, log reason in `last_error`, notify human gatekeeper |
+| New artifacts missing vs checklist | Same as above |
+| Downstream agent not re-queued | Re-queue all downstream agents, set their status to `queued` |
+| Circuit breaker + compliance failure | Immediate escalation — human must reset both
 
 ---
 
@@ -26,6 +86,7 @@ An agent is eligible to run when ALL conditions are met:
 - Total cycle count < `max_total_cycles_lifetime` (100)
 - Circuit breaker is NOT tripped
 - `is_pipeline_paused` is `false`
+- If re-executing (execution_count > 0): agent's previous `compliance_checklist` items are re-verified against latest artifacts
 
 ### Rule 2: Pool Scheduling
 
@@ -45,13 +106,15 @@ An agent is eligible to run when ALL conditions are met:
 
 ### Rule 3: Post-Completion Actions
 When an agent completes:
-1. Update `status` to `awaiting_approval` (if needs human) or `approved` (if auto)
-2. Increment `execution_count`
-3. Log `last_activity_timestamp`
-4. Trigger `expert_reviewer.review_status` = `"pending"` (review required)
-5. If agent triggers approval gates → set those gates to `"awaiting_review"`
-6. Print dashboard update
-7. If `auto_progress_within_phase: true` AND no halt conditions → check next eligible agent
+1. Run **compliance audit** against agent's `compliance_checklist`
+2. If ALL compliance items pass → proceed. If any fail → set `status` to `failed`, log reason in `last_error`, notify human gatekeeper. STOP.
+3. Update `status` to `awaiting_approval` (if needs human) or `approved` (if auto)
+4. Increment `execution_count`
+5. Log `last_activity_timestamp`
+6. Trigger `expert_reviewer.review_status` = `"pending"` (review required — separate from compliance)
+7. If agent triggers approval gates → set those gates to `"awaiting_review"`
+8. Print compliance-augmented dashboard update (show ✅/❌ per checklist item)
+9. If `auto_progress_within_phase: true` AND no halt conditions → check next eligible agent
 
 ### Rule 4: Halt Conditions
 Stop auto-progress and wait for human when:
@@ -177,10 +240,12 @@ The supervisor prints this after each cycle:
 |---|---|
 | Agent fails to start | Retry once after 30s. If still fails → log to `last_error`, increment failure count |
 | Agent returns invalid artifacts | Mark agent as `failed`, set circuit breaker reason |
+| Compliance audit fails | Set agent to `failed`, log which checklist items failed in `last_error`, notify human gatekeeper. No auto-retry. |
 | Execution exceeds token budget | Halt agent, log warning, require human override to continue |
 | Artifact conflict (parallel agents) | Queue writes, process sequentially by priority (UI > API > Backend) |
 | Agent loops (same state > 3 times) | Circuit breaker opens, all execution stops until human review |
 | Human unavailable for gate | Pipeline pauses, dashboard shows "AWAITING HUMAN" with gate details |
+| Downstream agent not re-queued after dependency re-execution | Auto re-queue, set status to `queued`, log in dashboard |
 
 ---
 
