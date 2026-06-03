@@ -48,7 +48,34 @@ Before marking ANY agent as "approved", Agent 0 MUST execute these three automat
   5. Notify human gatekeeper with full error details
 - Circuit breaker resets only via explicit human gatekeeper command
 
-### Code Review & Fix Gate Enforcement (NEW — MANDATORY)
+### Commit Message Compliance Enforcement (MANDATORY)
+
+Before ANY agent can move to `awaiting_approval` or `approved`, Agent 0 MUST verify:
+
+**Layer 0: Commit Message Format**
+- Read the latest commit message on the agent's branch using `git log -1 --format=%B`
+- Verify all required metadata fields are present:
+  - `## Component:` — feature/component name
+  - `## Bug/Feature ID:` — bug number or feature reference
+  - `## Code Review:` — Done or Not Done
+  - `## Code Review Fix:` — Done or Not Done
+  - `## Tests Run:` — list of test files with results
+  - `## Fix Details:` — brief description of the change
+  - `## Change Done By:` — agent ID or name
+  - `## Branch:` — current branch name
+  - `## Version:` — semantic version
+  - `## Tag:` — git tag
+- Each field must contain meaningful content (not empty / not "N/A")
+- If any field is missing, empty, or "N/A" → set status to `"blocked"`, reason: "Commit message missing or incomplete: [list missing fields]"
+- Freeze pipeline until human gatekeeper resolves — do NOT trip circuit breaker
+
+**Layer 0b: Smart Test Verification**
+- Read the `## Tests Run:` field and verify that listed tests correspond to the changed files
+- Cross-reference against the smart test selection table in AGENTS.md
+- If tests listed don't match changed file patterns → flag as warning in dashboard
+- If no tests are listed → reject and re-queue
+
+### Code Review & Fix Gate Enforcement (MANDATORY)
 
 Before ANY agent can move to `awaiting_approval` or `approved`, Agent 0 MUST verify:
 
@@ -77,6 +104,20 @@ Before ANY agent can move to `awaiting_approval` or `approved`, Agent 0 MUST ver
   2. Append details to `state_context/current_work_order.json` under `last_error`
   3. Freeze pipeline until human gatekeeper resolves
   4. Do NOT trip circuit breaker (this is a process compliance issue, not a system error)
+
+### Commit Discipline & Data Integrity Enforcement
+
+Before marking ANY agent as approved, Agent 0 MUST verify:
+
+**Layer D0: Commit Granularity Check**
+- Review the agent's commit history on its branch using `git log --oneline -5`
+- If the latest commit touches 50+ files → flag as warning: "Work should be broken into smaller, focused commits"
+- If the agent's entire task output is in a single commit → flag warning, do not block (guideline, not gate)
+
+**Layer D1: JSON Integrity Check**
+- Review all `.json` artifacts in the agent's sandbox directory
+- Attempt to parse each `.json` file — if any fails to parse → set status to `"blocked"`, reason: "Corrupt JSON artifact: [filename]"
+- Do NOT trip circuit breaker (recoverable — regenerate the artifact)
 
 ### Self-Verification Enforcement
 

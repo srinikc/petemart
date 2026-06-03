@@ -177,6 +177,20 @@
           "type": "code_review",
           "required": true,
           "passed": false
+        },
+        {
+          "id": "SUP-CM-001",
+          "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+          "type": "commit_message",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "SUP-CM-002",
+          "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+          "type": "commit_message",
+          "required": true,
+          "passed": false
         }
       ],
       "notes": "Sr. Program Manager: Orchestrates pipeline AND audits compliance for all 15 agents. Evaluates compliance_checklist before marking any agent approved."
@@ -291,6 +305,20 @@
           "type": "code_review",
           "required": true,
           "passed": false
+        },
+        {
+          "id": "IDEA-CM-001",
+          "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+          "type": "commit_message",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "IDEA-CM-002",
+          "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+          "type": "commit_message",
+          "required": true,
+          "passed": false
         }
       ],
       "notes": "ENHANCED UPDATE (v3.0): Expanded from 392 to 406 merchants. Added 14 new Google Maps-resolved merchants. Enhanced ALL merchants with 17 new fields. Awaiting HITL approval."
@@ -395,6 +423,20 @@
           "id": "REQ-CR-003",
           "check": "CODE_REVIEW_LOG.json fix_gate_passed is true (all review findings have verified fixes)",
           "type": "code_review",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "REQ-CM-001",
+          "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+          "type": "commit_message",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "REQ-CM-002",
+          "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+          "type": "commit_message",
           "required": true,
           "passed": false
         }
@@ -531,6 +573,20 @@
           "type": "code_review",
           "required": true,
           "passed": false
+        },
+        {
+          "id": "ARCH-CM-001",
+          "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+          "type": "commit_message",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "ARCH-CM-002",
+          "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+          "type": "commit_message",
+          "required": true,
+          "passed": false
         }
       ],
       "notes": "Architecture complete. Google Stitch integrated as primary UI design tool. APPROVED by human gatekeeper with changes: Opencode/DeepSeek replaces Gemini, WhatsApp included in POC, synthetic inventory to be generated."
@@ -633,6 +689,20 @@
           "id": "POC-CR-003",
           "check": "CODE_REVIEW_LOG.json fix_gate_passed is true (all review findings have verified fixes)",
           "type": "code_review",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "POC-CM-001",
+          "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+          "type": "commit_message",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "POC-CM-002",
+          "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+          "type": "commit_message",
           "required": true,
           "passed": false
         }
@@ -754,6 +824,20 @@
           "type": "code_review",
           "required": true,
           "passed": false
+        },
+        {
+          "id": "PM-CM-001",
+          "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+          "type": "commit_message",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "PM-CM-002",
+          "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+          "type": "commit_message",
+          "required": true,
+          "passed": false
         }
       ],
       "notes": "Full product sprint plan created: 26 Epics, 113 User Stories, 12 Sprints (24 weeks), MVP = Sprints 1-6. Auth-first approach. APPROVED by human gatekeeper."
@@ -862,6 +946,20 @@
           "id": "DEVOPS-CR-003",
           "check": "CODE_REVIEW_LOG.json fix_gate_passed is true (all review findings have verified fixes)",
           "type": "code_review",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "DEVOPS-CM-001",
+          "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+          "type": "commit_message",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "DEVOPS-CM-002",
+          "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+          "type": "commit_message",
           "required": true,
           "passed": false
         }
@@ -988,6 +1086,20 @@
           "id": "UI-CR-003",
           "check": "CODE_REVIEW_LOG.json fix_gate_passed is true (all review findings have verified fixes)",
           "type": "code_review",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "UI-CM-001",
+          "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+          "type": "commit_message",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "UI-CM-002",
+          "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+          "type": "commit_message",
           "required": true,
           "passed": false
         }
@@ -1126,6 +1238,20 @@
           "id": "API-CR-003",
           "check": "CODE_REVIEW_LOG.json fix_gate_passed is true (all review findings have verified fixes)",
           "type": "code_review",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "API-CM-001",
+          "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+          "type": "commit_message",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "API-CM-002",
+          "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+          "type": "commit_message",
           "required": true,
           "passed": false
         }
@@ -1271,6 +1397,20 @@
           "type": "code_review",
           "required": true,
           "passed": false
+        },
+        {
+          "id": "DB-CM-001",
+          "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+          "type": "commit_message",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "DB-CM-002",
+          "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+          "type": "commit_message",
+          "required": true,
+          "passed": false
         }
       ],
       "notes": "v2.0 UPDATE: Schema upgraded for email+password auth. Added password_hash, auth_provider columns. 36 total indexes (34 v1 + 2 v2). 5 demo email accounts with bcrypt passwords. V2 migration with FULL rollback. Data export (10 sheets). Awaiting HITL approval."
@@ -1391,6 +1531,20 @@
           "id": "INT-CR-003",
           "check": "CODE_REVIEW_LOG.json fix_gate_passed is true (all review findings have verified fixes)",
           "type": "code_review",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "INT-CM-001",
+          "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+          "type": "commit_message",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "INT-CM-002",
+          "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+          "type": "commit_message",
           "required": true,
           "passed": false
         }
@@ -1624,6 +1778,20 @@
           "type": "code_review",
           "required": true,
           "passed": false
+        },
+        {
+          "id": "QA-CM-001",
+          "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+          "type": "commit_message",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "QA-CM-002",
+          "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+          "type": "commit_message",
+          "required": true,
+          "passed": false
         }
       ],
       "notes": "v2.1 QA DASHBOARD FIXES (2026-06-02): 9 fixes applied via work order. v3.0 WORK ORDER COMPLETED (2026-06-02): All 6 items implemented. | v3.3 BUGFIX EXECUTION (2026-06-02T18:38): All 3 bugfix items IMPLEMENTED and VERIFIED. ITEM-7 (FIXED): run/route.ts now passes --tier parameter to run-tests.js, so Sanity runs correctly record tier='sanity' instead of 'custom'. ITEM-8 (FIXED): CSV export now uses filteredTableData (only run-scoped types) and shows disabled 'Run a test tier first' state when no runs exist. ITEM-9 (FIXED): Test Summary now filters rows to only show test types from active run's tier scope; blue indicator banner shows 'Showing results for: {TierLabel} — {Timestamp}'. Design Review: Performed architecture review of QA data pipeline — identified tier propagation chain (UI→API→script→run-history) as single point of failure for ITEM-7; CSV/summary filter logic was missing run-scope awareness for ITEM-8/9. COMPLIANCE: TypeScript check: 0 errors in modified files. Tests: 148/148 pass. Dashboard: HTTP 200 at /qa-dashboard. Awaiting HITL approval."
@@ -1731,6 +1899,20 @@
           "type": "code_review",
           "required": true,
           "passed": false
+        },
+        {
+          "id": "PROD-CM-001",
+          "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+          "type": "commit_message",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "PROD-CM-002",
+          "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+          "type": "commit_message",
+          "required": true,
+          "passed": false
         }
       ],
       "notes": "Production deployment report complete: 21 API endpoints, 41 pages, 25 dynamic routes, 3 demo accounts, LOW risk, GO recommendation. Awaiting GATE-PRODUCTION-01 HITL sign-off."
@@ -1809,6 +1991,20 @@
           "id": "TECHPUB-CR-003",
           "check": "CODE_REVIEW_LOG.json fix_gate_passed is true (all review findings have verified fixes)",
           "type": "code_review",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "TECHPUB-CM-001",
+          "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+          "type": "commit_message",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "TECHPUB-CM-002",
+          "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+          "type": "commit_message",
           "required": true,
           "passed": false
         }
@@ -1891,6 +2087,20 @@
           "type": "code_review",
           "required": true,
           "passed": false
+        },
+        {
+          "id": "CRM-CM-001",
+          "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+          "type": "commit_message",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "CRM-CM-002",
+          "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+          "type": "commit_message",
+          "required": true,
+          "passed": false
         }
       ],
       "notes": null
@@ -1969,6 +2179,20 @@
           "id": "MKT-CR-003",
           "check": "CODE_REVIEW_LOG.json fix_gate_passed is true (all review findings have verified fixes)",
           "type": "code_review",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "MKT-CM-001",
+          "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+          "type": "commit_message",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "MKT-CM-002",
+          "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+          "type": "commit_message",
           "required": true,
           "passed": false
         }
@@ -2064,6 +2288,20 @@
           "type": "code_review",
           "required": true,
           "passed": false
+        },
+        {
+          "id": "MAINT-CM-001",
+          "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+          "type": "commit_message",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "MAINT-CM-002",
+          "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+          "type": "commit_message",
+          "required": true,
+          "passed": false
         }
       ],
       "notes": null
@@ -2143,6 +2381,20 @@
           "type": "code_review",
           "required": true,
           "passed": false
+        },
+        {
+          "id": "FIN-CM-001",
+          "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+          "type": "commit_message",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "FIN-CM-002",
+          "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+          "type": "commit_message",
+          "required": true,
+          "passed": false
         }
       ],
       "notes": null
@@ -2219,6 +2471,20 @@
           "id": "SEC-CR-003",
           "check": "CODE_REVIEW_LOG.json fix_gate_passed is true (all review findings have verified fixes)",
           "type": "code_review",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "SEC-CM-001",
+          "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+          "type": "commit_message",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "SEC-CM-002",
+          "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+          "type": "commit_message",
           "required": true,
           "passed": false
         }

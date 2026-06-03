@@ -1,1 +1,1 @@
-node .husky/code-review.cjs && npm test
+node .husky/code-review.cjs && node .husky/validate-json.cjs && node .husky/run-smart-tests.cjs
