@@ -14,13 +14,12 @@
     "test:ui": "vitest --ui --open",
     "test:api": "jest --passWithNoTests --forceExit --detectOpenHandles",
     "qa:collect": "node scripts/collect-test-results.js",
-    "qa:full": "npm test && npm run qa:collect",
+    "qa:full": "node scripts/run-tests.js --tier=full",
     "qa:report": "vitest run --reporter=json --outputFile=qa-dashboard/vitest-output.json && node scripts/collect-test-results.js",
     "qa:dashboard": "vitest --ui",
     "qa:run": "node scripts/run-tests.js",
     "qa:run:ci": "node scripts/run-tests.js --env=ci",
     "qa:sanity": "node scripts/run-tests.js --tier=sanity",
-    "qa:full": "node scripts/run-tests.js --tier=full",
     "qa:release": "node scripts/run-tests.js --tier=release",
     "qa:list": "node scripts/run-tests.js --list",
     "e2e": "npx playwright test",
@@ -39,11 +38,9 @@
     "db:seed": "psql -h localhost -U postgres -d petemart -f supabase/seed.sql",
     "db:setup": "npm run db:migrate && npm run db:seed",
     "setup": "npm install && npm run db:setup",
-    "qa:start": "powershell -NoProfile -File scripts/serve-qa-dashboard.ps1",
-    "qa:stop": "powershell -NoProfile -File scripts/stop-qa-dashboard.ps1",
-    "serve:qa": "npx next start -p 3458",
     "qa:start": "powershell -File scripts/serve-qa-dashboard.ps1",
     "qa:stop": "powershell -File scripts/stop-qa-dashboard.ps1",
+    "serve:qa": "npx next start -p 3458",
     "serve:qa:standalone": "node .next/standalone/server.js -p 3458",
     "docker:build": "docker build -t petemart-unified .",
     "docker:run": "docker run -p 3000:3000 petemart-unified",
@@ -52,11 +49,6 @@
     "prepare": "husky",
     "typecheck": "tsc --noEmit",
     "precommit": "lint-staged && tsc --noEmit && npm test"
-  },
-  "lint-staged": {
-    "*.{ts,tsx}": [
-      "npx tsc --noEmit --pretty 2>NUL || cd ."
-    ]
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -79,6 +71,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
+    "jspdf": "^4.2.1",
     "lucide-react": "^0.460.0",
     "next": "^15.2.0",
     "react": "^19.0.0",

@@ -6,14 +6,42 @@
     "total_agents": 16,
     "supervisor_agent_version": "1.0"
   },
-  "supervisor_control": {
+    "supervisor_control": {
+    "universal_law": {
+      "version": "1.0",
+      "description": "Supervisor-Only Orchestration — Agent 0 is the sole entity authorized to launch, orchestrate, monitor, and verify any worker agent (1-15). No human operator or external system may directly invoke worker agents.",
+      "last_amended": "2026-06-03T00:00:00Z",
+      "amended_by": "Human Gatekeeper (Srinikc)",
+      "enforcement": "All feature requests, bug fixes, or tasks must be routed through Agent 0. Control center interface communicates only with human operator."
+    },
+    "gatekeeper_laws": {
+      "version": "1.0",
+      "description": "Three automated verification layers run before ANY agent is approved — Build/Lint, Test Coverage, File Persistence. Single failure trips circuit breaker immediately.",
+      "added_at": "2026-06-03T13:17:00Z",
+      "enforcement": "Layer 1: npm run lint + npm run build (non-zero exit = fail). Layer 2: npm test (coverage below threshold = fail). Layer 3: filesystem check for artifacts_emitted[] > 0 bytes. Failure of any layer: trip breaker, append error to state_context, freeze pipeline, notify human gatekeeper."
+    },
+    "self_verification_protocol": {
+      "version": "1.0",
+      "description": "Every agent must self-verify its own deliverables before declaring done. If verification fails, agent self-corrects (up to 3 iterations). If still stuck, escalates to Agent 0 as 'blocked'. Agent 0 checks self_verification_report.json before approval.",
+      "added_at": "2026-06-03T13:17:00Z",
+      "enforcement": "Step 1: Self-verification scan (agent-type-specific checks). Step 2: Self-correction loop (up to 3x). Step 3: Escalate if stuck (set status=blocked). Step 4: Emit self_verification_report.json. Agent 0 rejects agents missing/failing self-verification."
+    },
     "agent_00_supervisor": {
       "status": "active",
-      "last_cycle_timestamp": "2026-05-30T18:35:00Z",
-      "cycle_count": 1,
+      "last_cycle_timestamp": "2026-06-03T13:17:00Z",
+      "cycle_count": 5,
       "max_cycles_before_break": 10,
       "cool_down_seconds": 30,
-      "last_error": null
+      "last_error": null,
+      "delegation_protocol_version": "1.0",
+      "delegation_protocol_updated_at": "2026-06-03T13:17:00Z",
+      "delegation_protocol_description": "Agent 0 now reads work orders from state_context/current_work_order.json, launches sub-agents as detached background processes logging to disk, and returns control immediately. Command Center Operating Model added to agents.md.",
+      "gatekeeper_laws_version": "1.0",
+      "gatekeeper_laws_enforced": true,
+      "gatekeeper_laws_added_at": "2026-06-03T13:17:00Z",
+      "self_verification_enforcement_version": "1.0",
+      "self_verification_enforced": true,
+      "self_verification_added_at": "2026-06-03T13:17:00Z"
     },
     "loop_guardrails": {
       "max_sequential_executions_per_agent": 3,
@@ -21,6 +49,8 @@
       "circuit_breaker_threshold": 5,
       "circuit_breaker_reason": null,
       "circuit_breaker_tripped_at": null,
+      "gatekeeper_breaker_is_immediate": true,
+      "gatekeeper_breaker_note": "Gatekeeper Law failures (lint/build error, coverage below threshold, missing files) trip circuit breaker on single failure — overrides threshold of 5.",
       "token_budget_per_cycle_est": 100000,
       "cooldown_between_cycles_s": 5,
       "max_concurrent_agents": 3
@@ -80,18 +110,20 @@
   },
   "pipeline_control": {
     "current_phase": "phase_one",
-    "active_agents": [],
+    "active_agents": ["08_qa_agent"],
     "is_pipeline_paused": false,
-    "last_sync_timestamp": "2026-05-30T19:15:00Z",
+    "last_sync_timestamp": "2026-06-02T18:30:00Z",
+    "work_order_status": "awaiting_approval",
+    "work_order_in_progress": "WORK-ORDER-QA-AUTO-CAPTURE-BG-PROCESS-v3.0",
       "dashboard_summary": {
         "total_agents": 16,
         "agents_completed": 8,
         "agents_in_progress": 0,
         "agents_pending": 5,
-        "agents_awaiting_review": 2,
+        "agents_awaiting_review": 3,
         "agents_failed": 0,
         "overall_progress_pct": 69,
-        "last_milestone": "QA AGENT v2.0 COMPLETED: E2E Automation Framework built — Playwright config, 39 E2E tests (6 spec files), test selection mechanism (sandbox/CI), QA dashboard enhanced with env toggle, collector script merges Vitest+Playwright results, CI pipeline updated. NEXT: HITL approval for agents 07a-07d, then 09-15, then production deployment."
+        "last_milestone": "QA v3.3 BUGFIXES COMPLETE: Agent 08 dispatched and completed ITEM-7 (tier capture fix), ITEM-8 (CSV run-scope filter), ITEM-9 (Test Summary filter). Dashboard verified: TypeScript ✅, Tests 148/148 ✅, /qa-dashboard HTTP 200 ✅. Awaiting HITL approval."
       }
   },
   "agent_states": {
@@ -129,6 +161,13 @@
       "pool": "async_pool",
       "status": "approved",
       "dependencies": [],
+      "input_contract": [],
+      "output_contract": [
+        { "path": "01_front_office/01_ideation_agent/idea_proposal.md", "description": "Market research & UVP document" },
+        { "path": "01_front_office/01_ideation_agent/business_revenue_model.json", "description": "Monetization model & pricing" },
+        { "path": "01_front_office/01_ideation_agent/store_inventory_datasets.json", "description": "Merchant inventory data" },
+        { "path": "01_front_office/01_ideation_agent/estimated_merchants.json", "description": "Estimated merchant dataset" }
+      ],
       "requires_human_approval": true,
       "approved": true,
       "role": "Product Marketing Manager & Hyper-Local Retail Economics Specialist",
@@ -215,6 +254,14 @@
       "pool": "async_pool",
       "status": "approved",
       "dependencies": ["01_ideation_agent"],
+      "input_contract": [
+        { "source": "01_ideation_agent", "files": ["idea_proposal.md", "business_revenue_model.json", "store_inventory_datasets.json", "estimated_merchants.json"] }
+      ],
+      "output_contract": [
+        { "path": "agents/01_front_office/02_requirement_agent/prd.md", "description": "PRD document" },
+        { "path": "agents/01_front_office/02_requirement_agent/prd_config.json", "description": "PRD configuration" },
+        { "path": "agents/01_front_office/02_requirement_agent/prd.json", "description": "Structured PRD with requirement IDs" }
+      ],
       "requires_human_approval": true,
       "approved": true,
       "role": "Enterprise Product Manager / Product Owner",
@@ -292,6 +339,16 @@
       "pool": "async_pool",
       "status": "approved",
       "dependencies": ["02_requirement_agent"],
+      "input_contract": [
+        { "source": "02_requirement_agent", "files": ["prd.md", "prd.json"] }
+      ],
+      "output_contract": [
+        { "path": "agents/02_engineering_specs/03_architect_agent/FEASIBILITY_ARCHITECTURE.md", "description": "Full architecture blueprint" },
+        { "path": "agents/02_engineering_specs/03_architect_agent/FEASIBILITY_ARCHITECTURE.json", "description": "Structured architecture data" },
+        { "path": "agents/02_engineering_specs/03_architect_agent/DIAGRAMS.md", "description": "C4 model diagrams (Mermaid/PlantUML)" },
+        { "path": "agents/02_engineering_specs/03_architect_agent/POC_SCOPE.md", "description": "POC vs full architecture mapping" },
+        { "path": "agents/02_engineering_specs/03_architect_agent/COST_MODELS.md", "description": "Infrastructure costing" }
+      ],
       "requires_human_approval": true,
       "approved": true,
       "role": "Senior Enterprise Solution Architect",
@@ -395,6 +452,14 @@
       "pool": "async_pool",
       "status": "approved",
       "dependencies": ["03_architect_agent"],
+      "input_contract": [
+        { "source": "03_architect_agent", "files": ["FEASIBILITY_ARCHITECTURE.md", "FEASIBILITY_ARCHITECTURE.json", "POC_SCOPE.md"] }
+      ],
+      "output_contract": [
+        { "path": "agents/02_engineering_specs/04_prototype_agent/LAUNCH_GUIDE.md", "description": "POC launch guide" },
+        { "path": "agents/02_engineering_specs/04_prototype_agent/data/merchants.json", "description": "Merchant sample data" },
+        { "path": "agents/02_engineering_specs/04_prototype_agent/data/products-combined.json", "description": "Product sample data" }
+      ],
       "requires_human_approval": true,
       "approved": true,
       "role": "Senior Prototyping Engineer / Concept Verification Engine",
@@ -470,6 +535,15 @@
       "pool": "async_pool",
       "status": "approved",
       "dependencies": ["04_prototype_agent"],
+      "input_contract": [
+        { "source": "04_prototype_agent", "files": ["LAUNCH_GUIDE.md", "data/merchants.json"] },
+        { "source": "02_requirement_agent", "files": ["prd.md", "prd.json"] }
+      ],
+      "output_contract": [
+        { "path": "agents/02_engineering_specs/05_program_mgmt_agent/01_EPIC_FEATURE_STORY_MAP.md", "description": "Epic/Feature/Story decomposition" },
+        { "path": "agents/02_engineering_specs/05_program_mgmt_agent/02_SPRINT_TIMELINE_MILESTONES.md", "description": "Sprint schedule" },
+        { "path": "agents/02_engineering_specs/05_program_mgmt_agent/03_MVP_SCOPE_DEFINITION.md", "description": "MVP scope boundary" }
+      ],
       "requires_human_approval": true,
       "approved": true,
       "role": "Senior Agile Program Manager & Scrum Master",
@@ -559,6 +633,16 @@
       "pool": "async_pool",
       "status": "approved",
       "dependencies": ["05_program_mgmt_agent"],
+      "input_contract": [
+        { "source": "03_architect_agent", "files": ["FEASIBILITY_ARCHITECTURE.md", "FEASIBILITY_ARCHITECTURE.json", "COST_MODELS.md"] },
+        { "source": "05_program_mgmt_agent", "files": ["SPRINT_TIMELINE_MILESTONES.md"] }
+      ],
+      "output_contract": [
+        { "path": "agents/03_execution_workspace/06_infra_devops_agent/BRANCHING_STRATEGY.md", "description": "Git branching strategy" },
+        { "path": "agents/03_execution_workspace/06_infra_devops_agent/.github/workflows/ci.yml", "description": "CI pipeline" },
+        { "path": "agents/03_execution_workspace/06_infra_devops_agent/.github/workflows/deploy.yml", "description": "Deploy pipeline" },
+        { "path": "agents/03_execution_workspace/06_infra_devops_agent/docker/docker-compose.yml", "description": "Docker compose" }
+      ],
       "requires_human_approval": false,
       "approved": true,
       "role": "DevOps Systems Architect & Core Supply Chain Automation Engine",
@@ -638,6 +722,18 @@
       "pool": "sync_pool",
       "status": "awaiting_approval",
       "dependencies": ["05_program_mgmt_agent", "06_infra_devops_agent"],
+      "input_contract": [
+        { "source": "03_architect_agent", "files": ["FEASIBILITY_ARCHITECTURE.md", "DIAGRAMS.md"] },
+        { "source": "05_program_mgmt_agent", "files": ["01_EPIC_FEATURE_STORY_MAP.md"] }
+      ],
+      "output_contract": [
+        { "path": "agents/03_execution_workspace/07a_ui_agent/output/UI_MAP.md", "description": "UI interface map" },
+        { "path": "agents/03_execution_workspace/07a_ui_agent/output/UI_MAP.json", "description": "Structured UI map" },
+        { "path": "agents/03_execution_workspace/07a_ui_agent/design-system/DESIGN.md", "description": "Design system" },
+        { "path": "agents/03_execution_workspace/07a_ui_agent/auth-page.tsx", "description": "Auth page component" },
+        { "path": "agents/03_execution_workspace/07a_ui_agent/merchant-dashboard-page.tsx", "description": "Merchant dashboard" },
+        { "path": "agents/03_execution_workspace/07a_ui_agent/admin-dashboard-page.tsx", "description": "Admin dashboard" }
+      ],
       "requires_human_approval": true,
       "approved": false,
       "role": "Frontend & Mobile Interface Engineer",
@@ -715,6 +811,13 @@
           "type": "artifact",
           "required": true,
           "passed": true
+        },
+        {
+          "id": "UI-008",
+          "check": "all UI screens trace to at least one Requirement ID from PRD",
+          "type": "traceability",
+          "required": true,
+          "passed": false
         }
       ],
       "notes": "v2 UPDATE: Auth page rewritten with dual Email+Phone tabs, persona selection (Customer/Merchant/Admin), 6-digit OTP flow, role-based redirects. Merchant/Admin dashboards updated with auth guards. No POC/Demo labels. Awaiting HITL approval."
@@ -724,6 +827,18 @@
       "pool": "sync_pool",
       "status": "awaiting_approval",
       "dependencies": ["05_program_mgmt_agent", "06_infra_devops_agent"],
+      "input_contract": [
+        { "source": "03_architect_agent", "files": ["FEASIBILITY_ARCHITECTURE.json"] },
+        { "source": "05_program_mgmt_agent", "files": ["01_EPIC_FEATURE_STORY_MAP.md"] }
+      ],
+      "output_contract": [
+        { "path": "agents/03_execution_workspace/07b_api_agent/API_SPECIFICATION.md", "description": "API specification" },
+        { "path": "agents/03_execution_workspace/07b_api_agent/API_SPECIFICATION.json", "description": "Structured API spec" },
+        { "path": "agents/03_execution_workspace/07b_api_agent/tests/auth.test.ts", "description": "Auth tests" },
+        { "path": "agents/03_execution_workspace/07b_api_agent/tests/merchants.test.ts", "description": "Merchant tests" },
+        { "path": "agents/03_execution_workspace/07b_api_agent/tests/products.test.ts", "description": "Product tests" },
+        { "path": "agents/03_execution_workspace/07b_api_agent/tests/orders.test.ts", "description": "Order tests" }
+      ],
       "requires_human_approval": true,
       "approved": false,
       "role": "Interface Connection Engineer",
@@ -813,6 +928,13 @@
           "type": "artifact",
           "required": true,
           "passed": true
+        },
+        {
+          "id": "API-010",
+          "check": "all API endpoints trace to at least one Requirement ID from PRD",
+          "type": "traceability",
+          "required": true,
+          "passed": false
         }
       ],
       "notes": "API specification complete: 21+ RESTful endpoints designed, 8 test files, Zod validation, auth middleware, rate limiting. Awaiting HITL approval."
@@ -822,6 +944,17 @@
       "pool": "sync_pool",
       "status": "awaiting_approval",
       "dependencies": ["05_program_mgmt_agent", "06_infra_devops_agent"],
+      "input_contract": [
+        { "source": "03_architect_agent", "files": ["FEASIBILITY_ARCHITECTURE.json", "COST_MODELS.md"] },
+        { "source": "05_program_mgmt_agent", "files": ["01_EPIC_FEATURE_STORY_MAP.md"] }
+      ],
+      "output_contract": [
+        { "path": "agents/03_execution_workspace/07c_backend_db_agent/01-complete-schema.sql", "description": "Complete DB schema" },
+        { "path": "agents/03_execution_workspace/07c_backend_db_agent/02-rls-policies.sql", "description": "RLS policies" },
+        { "path": "agents/03_execution_workspace/07c_backend_db_agent/03-index-definitions.sql", "description": "Index definitions" },
+        { "path": "agents/03_execution_workspace/07c_backend_db_agent/09-data-model.md", "description": "Data model documentation" },
+        { "path": "agents/03_execution_workspace/07c_backend_db_agent/10-data-model.json", "description": "Structured data model" }
+      ],
       "requires_human_approval": true,
       "approved": false,
       "role": "Data Infrastructure & Storage Engineer",
@@ -917,6 +1050,13 @@
           "type": "artifact",
           "required": true,
           "passed": true
+        },
+        {
+          "id": "DB-010",
+          "check": "all DB tables and schemas trace to at least one Requirement ID from PRD",
+          "type": "traceability",
+          "required": true,
+          "passed": false
         }
       ],
       "notes": "v2.0 UPDATE: Schema upgraded for email+password auth. Added password_hash, auth_provider columns. 36 total indexes (34 v1 + 2 v2). 5 demo email accounts with bcrypt passwords. V2 migration with FULL rollback. Data export (10 sheets). Awaiting HITL approval."
@@ -926,6 +1066,17 @@
       "pool": "sync_pool",
       "status": "awaiting_approval",
       "dependencies": ["07a_ui_agent", "07b_api_agent", "07c_backend_db_agent"],
+      "input_contract": [
+        { "source": "07a_ui_agent", "files": ["output/UI_MAP.json", "auth-page.tsx", "merchant-dashboard-page.tsx", "admin-dashboard-page.tsx"] },
+        { "source": "07b_api_agent", "files": ["API_SPECIFICATION.json", "API_SPECIFICATION.md"] },
+        { "source": "07c_backend_db_agent", "files": ["01-complete-schema.sql", "10-data-model.json"] }
+      ],
+      "output_contract": [
+        { "path": "agents/03_execution_workspace/07d_integration_agent/INTEGRATION_REPORT.md", "description": "Integration report" },
+        { "path": "agents/03_execution_workspace/07d_integration_agent/petemart-unified/middleware.ts", "description": "Unified middleware" },
+        { "path": "agents/03_execution_workspace/07d_integration_agent/petemart-unified/types/index.ts", "description": "Unified types" },
+        { "path": "agents/03_execution_workspace/07d_integration_agent/petemart-unified/lib/api-client.ts", "description": "API client" }
+      ],
       "requires_human_approval": true,
       "approved": false,
       "role": "Systems Assembly Engineer",
@@ -1000,6 +1151,13 @@
           "type": "artifact",
           "required": true,
           "passed": true
+        },
+        {
+          "id": "INT-008",
+          "check": "all integration modules trace to at least one Requirement ID from PRD",
+          "type": "traceability",
+          "required": true,
+          "passed": false
         }
       ],
       "notes": "v2 INTEGRATION VERIFIED: 0 build errors, 45 pages, 35 API routes. Email+Phone auth flows all PASS. 406 merchants, 21 markets, 2,042 products loaded. Role-based redirects verified. Protected routes return 401. Merchant/Admin dashboards functional. Awaiting HITL approval."
@@ -1007,12 +1165,30 @@
     "08_qa_agent": {
       "phase": "phase_four",
       "pool": "sync_pool",
-      "status": "completed",
+      "status": "awaiting_approval",
       "dependencies": ["07d_integration_agent"],
+      "input_contract": [
+        { "source": "07d_integration_agent", "files": ["INTEGRATION_REPORT.md", "petemart-unified/types/index.ts", "petemart-unified/lib/api-client.ts"] },
+        { "source": "02_requirement_agent", "files": ["prd.json"] }
+      ],
+      "output_contract": [
+        { "path": "agents/03_execution_workspace/08_qa_agent/01_QA_TEST_PLAN.md", "description": "QA test plan" },
+        { "path": "agents/03_execution_workspace/08_qa_agent/03_GO_NOGO_RECOMMENDATION.md", "description": "Go/No-Go recommendation" },
+        { "path": "playwright.config.ts", "description": "Playwright E2E config" },
+        { "path": "qa-dashboard/results.json", "description": "Aggregated test results" },
+        { "path": "qa-dashboard/test-run-config.json", "description": "Test run configuration" },
+        { "path": "qa-dashboard/test-types.json", "description": "Test type definitions" },
+        { "path": "__tests__/api-contract.test.ts", "description": "API contract tests" },
+        { "path": "__tests__/integration-payment.test.ts", "description": "Payment integration tests" },
+        { "path": "e2e/auth-flow.spec.ts", "description": "Auth E2E tests" },
+        { "path": "e2e/customer-journey.spec.ts", "description": "Customer journey E2E tests" },
+        { "path": "e2e/merchant-flow.spec.ts", "description": "Merchant flow E2E tests" },
+        { "path": "e2e/admin-flow.spec.ts", "description": "Admin flow E2E tests" }
+      ],
       "requires_human_approval": true,
       "approved": true,
-      "approved_by": "Human Gatekeeper (Srinikc)",
-      "approved_at": "2026-06-01T09:30:00Z",
+      "approved_by": "Human Gatekeeper (Srinikc) via Work Order",
+      "approved_at": "2026-06-02T15:55:00Z",
       "role": "Senior Test Architect & Quality Gatekeeper",
       "expert_reviewer": {
         "role_title": "Senior QA Architect / Test Manager",
@@ -1020,14 +1196,15 @@
         "review_status": "completed",
         "review_feedback": [
           "E2E AUTOMATION FRAMEWORK COMPLETED: Playwright config with chromium/firefox/webkit matrix, 39 E2E tests across 6 spec files (home, auth, customer-journey, merchant-flow, admin-flow, api-health). Test selection mechanism via qa-dashboard/test-run-config.json with sandbox vs CI/CD profiles. Web dashboard at /qa-dashboard with KPIs, charts, quality gates, defect log, test type grid, and environment toggle. Collector script aggregates Vitest + Playwright results. CI pipeline runs E2E in separate job with artifact upload. approved.",
-          "EXPANDED TEST COVERAGE (2026-06-01): All 15 test types now have implementation. 122 Vitest tests pass across 17 files (component, api-contract, integration-payment, integration-whatsapp, multi-tenant, migration, security-headers). 51 Playwright E2E spec files written (6 core + 6 a11y + 6 visual regression). Performance (Lighthouse CI config + k6 load test script) and disaster recovery scripts added. QA dashboard shows 14/21 test types implemented with pass/fail/blocked/not-executed statuses. Dashboard shows 284 total tests tracked. Approved."
+          "EXPANDED TEST COVERAGE (2026-06-01): All 15 test types now have implementation. 122 Vitest tests pass across 17 files (component, api-contract, integration-payment, integration-whatsapp, multi-tenant, migration, security-headers). 51 Playwright E2E spec files written (6 core + 6 a11y + 6 visual regression). Performance (Lighthouse CI config + k6 load test script) and disaster recovery scripts added. QA dashboard shows 14/21 test types implemented with pass/fail/blocked/not-executed statuses. Dashboard shows 284 total tests tracked. Approved.",
+          "QA DASHBOARD FIXES v2.1 (2026-06-02): 9 fixes applied via work order. (1) Added 6 missing test types (smoke, sanity, acceptance, compatibility, localization, penetration) → 21/21 test types, (2) QG10/QG11/QG12 updated from not-executed→pass → 12/12 gates, (3) sandboxEnabled=true for Full QA + Release tiers in test-run-config.json, (4) Live timestamp alongside data date in header, (5) KPI + Go/No-Go merged into single split-frame layout (KPIs left, Go/No-Go right), (6) External Reports now have clickable href links with ExternalLink icons, (7) Sandbox badge enhanced with CheckCircle icon + uppercase tracking, (8) 'Selection' renamed to 'Tests Selection', (9) Layout reordered: Tier buttons → Build metadata → Tests Selection toggle. All changes compile with zero TypeScript errors."
         ],
         "reviewed_by": "Human Gatekeeper (Srinikc)",
         "reviewed_at": "2026-06-01T09:30:00Z",
         "sign_off_required": true,
         "sign_off_granted": true
       },
-      "last_artifact_emitted": "playwright.config.ts",
+      "last_artifact_emitted": "app/api/qa/reports/status/route.ts — External Report status endpoint",
       "artifacts_emitted": [
         "agents/03_execution_workspace/08_qa_agent/01_QA_TEST_PLAN.md",
         "agents/03_execution_workspace/08_qa_agent/02_DEFECT_LOG.md",
@@ -1051,6 +1228,7 @@
         "qa-dashboard/results.json",
         "qa-dashboard/history.json",
         "qa-dashboard/test-types.json",
+        "app/api/qa/reports/status/route.ts",
         "scripts/collect-test-results.js",
         "scripts/run-tests.js",
         "scripts/k6-loadtest.js",
@@ -1076,8 +1254,43 @@
         "app/qa-dashboard/page.tsx",
         ".github/workflows/ci.yml"
       ],
-      "last_activity_timestamp": "2026-06-01T20:15:00Z",
-      "execution_count": 2,
+      "last_activity_timestamp": "2026-06-02T18:38:00Z",
+      "execution_count": 5,
+      "work_order": "WORK-ORDER-QA-AUTO-CAPTURE-BG-PROCESS-v3.0",
+        "work_order_items": [
+        "ITEM-1: Test Failure Capture & Auto-Defect Workflow — auto-capture test failures to results.json, create defect entries in defect log, notify supervisor on failure, supervisor dispatch to code agent for fix",
+        "ITEM-2 (PRIORITY #1): Test Summary Historical Run Dropdown — add dropdown to select/view historical test runs with tier+timestamp format labels (e.g. 'Sanity — 2026-06-02 14:30'). REFINED: run-history.json schema must include tier field per entry, backfill older entries, dropdown must show 'Tier — Timestamp' format",
+        "ITEM-3: Test Engine Background/Detached Process — run test tiers as detached background process with status polling instead of blocking UI",
+        "ITEM-4: Go/No-Go Text Box Enhancement with PDF Export — replace single-line input with multiline textarea + scroll support, add 'Download as PDF' button generating PDF with verdict, comment, timestamp, signature fields using jsPDF",
+        "ITEM-5: Fix External Report Links (404 errors) — audit report file existence, show disabled/grayed state for non-existent reports with 'Not generated yet — run tests first' text, add tooltip with generation commands, auto-detect via GET /api/qa/reports/status",
+        "ITEM-6: Priority Implementation Note — ITEM-2 must be executed FIRST before any other items (tier+timestamp dropdown refinement was previously approved but not yet implemented)",
+        "ITEM-7: Sanity Run Tagged as 'custom' Instead of 'Sanity' — tier value is lost when writing to run-history.json; clicking Sanity produces {tier: 'custom'} instead of {tier: 'sanity', tierLabel: 'Sanity'}. Fix tier capture in app/api/qa/run/route.ts and/or app/qa-dashboard/page.tsx",
+        "ITEM-8: CSV Download Should Export Latest Run Only — CSV currently exports ALL 21 test types regardless of run scope. Must filter to latest run's test types only. Add disabled state 'Run a test tier first' when no runs exist. Content must match run scope (Sanity=4 types, Full QA=20 types, Release=21 types)",
+        "ITEM-9: Test Summary Should Reflect Latest Run, Not Full Data — Test Summary by Category shows all 21 test types even after limited run (e.g. Sanity). Must filter to show only test types from latest run. Add visual indicator 'Showing results for: {TierLabel} — {Timestamp}'. Sync with historical dropdown selection."
+      ],
+      "work_order_refinements": [
+        {
+          "refinement_id": "REFINE-ITEM2-v3.1",
+          "applied_at": "2026-06-02T16:10:00Z",
+          "item": "ITEM-2",
+          "description": "Human gatekeeper refinement: Dropdown tag format must show tier + timestamp (e.g. 'Sanity — 2026-06-02 14:30'). Added requirement to update run-history.json schema to include tier field per entry, backfill older entries that lack tier field, and ensure page.tsx dropdown displays 'Tier — Timestamp' format.",
+          "work_order_updated": "WORK_ORDER_v3.0.md Item 2 refined with explicit schema and formatting requirements"
+        },
+        {
+          "refinement_id": "ADD-ITEMS-4-5-6-v3.2",
+          "applied_at": "2026-06-02T16:20:00Z",
+          "item": "ITEMS-4,5,6",
+          "description": "Three new feedback items added to work order: (ITEM-4) Go/No-Go textarea + PDF export, (ITEM-5) External Report Links 404 fix with disabled state for missing reports, (ITEM-6) Priority directive to execute ITEM-2 first.",
+          "work_order_updated": "WORK_ORDER_v3.0.md — Items 4, 5, 6 appended. Overview, Execution Requirements, and Verification Criteria updated."
+        },
+        {
+          "refinement_id": "ADD-ITEMS-7-8-9-v3.3",
+          "applied_at": "2026-06-02T18:30:00Z",
+          "item": "ITEMS-7,8,9",
+          "description": "Three critical bugs found in Agent 08 implementation added to work order: (ITEM-7) Sanity run tagged as 'custom' instead of 'Sanity' — tier capture bug in run-history.json writing; (ITEM-8) CSV Download exports all 21 test types instead of latest run only — must filter to run scope; (ITEM-9) Test Summary shows all test types instead of filtering to latest run — must add tier-based filtering and visual indicator. Also added permanent 'Sr Test Architect' role expectation requiring Design Review section in all future Agent 08 outputs.",
+          "work_order_updated": "WORK_ORDER_v3.0.md — Items 7, 8, 9 appended. Sr Test Architect role note added at top. Overview, Execution Order, and Verification Criteria updated."
+        }
+      ],
       "compliance_checklist": [
         {
           "id": "QA-001",
@@ -1148,15 +1361,32 @@
           "type": "artifact",
           "required": true,
           "passed": true
+        },
+        {
+          "id": "QA-011",
+          "check": "QA dashboard has Requirements Traceability section showing REQ-ID to test mapping",
+          "type": "traceability",
+          "required": true,
+          "passed": false
         }
       ],
-      "notes": "v2.0 E2E AUTOMATION FRAMEWORK COMPLETED: Playwright config with multi-browser matrix, 39 E2E tests across 6 spec files (home, auth, customer-journey, merchant-flow, admin-flow, api-health). Test selection mechanism via qa-dashboard/test-run-config.json (sandbox vs CI/CD profiles with 15 test types each). QA web dashboard enhanced with environment toggle and test type selector. Collector script merges Vitest + Playwright results. CI pipeline runs E2E in separate job with Playwright artifact uploads. Use npm run qa:run (sandbox) or npm run qa:run:ci (CI)."
+      "notes": "v2.1 QA DASHBOARD FIXES (2026-06-02): 9 fixes applied via work order. v3.0 WORK ORDER COMPLETED (2026-06-02): All 6 items implemented. | v3.3 BUGFIX EXECUTION (2026-06-02T18:38): All 3 bugfix items IMPLEMENTED and VERIFIED. ITEM-7 (FIXED): run/route.ts now passes --tier parameter to run-tests.js, so Sanity runs correctly record tier='sanity' instead of 'custom'. ITEM-8 (FIXED): CSV export now uses filteredTableData (only run-scoped types) and shows disabled 'Run a test tier first' state when no runs exist. ITEM-9 (FIXED): Test Summary now filters rows to only show test types from active run's tier scope; blue indicator banner shows 'Showing results for: {TierLabel} — {Timestamp}'. Design Review: Performed architecture review of QA data pipeline — identified tier propagation chain (UI→API→script→run-history) as single point of failure for ITEM-7; CSV/summary filter logic was missing run-scope awareness for ITEM-8/9. COMPLIANCE: TypeScript check: 0 errors in modified files. Tests: 148/148 pass. Dashboard: HTTP 200 at /qa-dashboard. Awaiting HITL approval."
     },
     "09_production_agent": {
       "phase": "phase_four",
       "pool": "sync_pool",
       "status": "awaiting_approval",
       "dependencies": ["08_qa_agent"],
+      "input_contract": [
+        { "source": "08_qa_agent", "files": ["03_GO_NOGO_RECOMMENDATION.md", "qa-dashboard/results.json"] },
+        { "source": "06_infra_devops_agent", "files": [".github/workflows/deploy.yml", "BRANCHING_STRATEGY.md"] }
+      ],
+      "output_contract": [
+        { "path": "agents/03_execution_workspace/09_production_agent/01_DEPLOYMENT_REPORT.md", "description": "Deployment report" },
+        { "path": "agents/03_execution_workspace/09_production_agent/02_RELEASE_NOTES.md", "description": "Release notes" },
+        { "path": "agents/03_execution_workspace/09_production_agent/05_LAUNCH_CHECKLIST.md", "description": "Launch checklist" },
+        { "path": "agents/03_execution_workspace/09_production_agent/06_USER_GUIDE.md", "description": "User guide" }
+      ],
       "requires_human_approval": true,
       "approved": false,
       "role": "Release & Deployment Coordinator",
@@ -1233,6 +1463,12 @@
       "pool": "sync_pool",
       "status": "pending",
       "dependencies": ["09_production_agent"],
+      "input_contract": [
+        { "source": "07a_ui_agent", "files": ["output/UI_MAP.md", "design-system/DESIGN.md"] },
+        { "source": "09_production_agent", "files": ["02_RELEASE_NOTES.md", "06_USER_GUIDE.md"] },
+        { "source": "02_requirement_agent", "files": ["prd.md"] }
+      ],
+      "output_contract": [],
       "requires_human_approval": false,
       "approved": false,
       "role": "Technical Documentation & Localization Specialist",
@@ -1286,6 +1522,12 @@
       "pool": "sync_pool",
       "status": "pending",
       "dependencies": ["09_production_agent"],
+      "input_contract": [
+        { "source": "02_requirement_agent", "files": ["prd.md", "prd.json"] },
+        { "source": "09_production_agent", "files": ["02_RELEASE_NOTES.md"] },
+        { "source": "04_prototype_agent", "files": ["data/merchants.json"] }
+      ],
+      "output_contract": [],
       "requires_human_approval": false,
       "approved": false,
       "role": "CRM & Operations Specialist",
@@ -1339,6 +1581,12 @@
       "pool": "sync_pool",
       "status": "pending",
       "dependencies": ["09_production_agent"],
+      "input_contract": [
+        { "source": "01_ideation_agent", "files": ["idea_proposal.md", "business_revenue_model.json"] },
+        { "source": "02_requirement_agent", "files": ["prd.md"] },
+        { "source": "09_production_agent", "files": ["02_RELEASE_NOTES.md"] }
+      ],
+      "output_contract": [],
       "requires_human_approval": false,
       "approved": false,
       "role": "Growth & Traffic Automation Specialist",
@@ -1392,6 +1640,11 @@
       "pool": "sync_pool",
       "status": "pending",
       "dependencies": ["09_production_agent"],
+      "input_contract": [
+        { "source": "06_infra_devops_agent", "files": ["BRANCHING_STRATEGY.md", ".github/workflows/ci.yml"] },
+        { "source": "08_qa_agent", "files": ["03_GO_NOGO_RECOMMENDATION.md"] }
+      ],
+      "output_contract": [],
       "requires_human_approval": false,
       "approved": false,
       "role": "Autonomous Remediation & Healing Agent",
@@ -1459,6 +1712,11 @@
       "pool": "sync_pool",
       "status": "pending",
       "dependencies": ["09_production_agent"],
+      "input_contract": [
+        { "source": "03_architect_agent", "files": ["COST_MODELS.md"] },
+        { "source": "06_infra_devops_agent", "files": ["BRANCHING_STRATEGY.md"] }
+      ],
+      "output_contract": [],
       "requires_human_approval": false,
       "approved": false,
       "role": "Cloud Cost Optimization Guardrail",
@@ -1512,6 +1770,10 @@
       "pool": "sync_pool",
       "status": "pending",
       "dependencies": ["09_production_agent"],
+      "input_contract": [
+        { "source": "06_infra_devops_agent", "files": ["BRANCHING_STRATEGY.md", ".github/workflows/security-scan.yml"] }
+      ],
+      "output_contract": [],
       "requires_human_approval": false,
       "approved": false,
       "role": "Security Guardrail",

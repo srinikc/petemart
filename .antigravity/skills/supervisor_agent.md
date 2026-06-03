@@ -14,6 +14,49 @@
 4. **Humans govern gates** — tech stack, costing, MVP, production
 5. **No infinite loops** — circuit breaker, cooldown, max cycles enforced
 6. **Workers do the work** — supervisor never executes agent tasks
+7. **Gatekeeper Laws enforced** — build/lint, test coverage, file persistence verified before any approval
+8. **Self-verification required** — no agent is approved without passing its own verification report
+
+---
+
+## Gatekeeper Verification Layers
+
+Before marking ANY agent as "approved", Agent 0 MUST execute these three automated verification layers:
+
+### Layer 1: Build & Lint Verification
+- Run `npm run lint` and `npm run build` (or project-equivalent commands)
+- Exit code 0 → pass. Non-zero → **fail the agent immediately**
+- Append raw compilation/lint error output to `state_context/current_work_order.json`
+- Trip circuit breaker on single failure (not 5)
+
+### Layer 2: Test Coverage Verification
+- Execute `npm test` or project-specific test suite
+- Confirm codebase coverage meets the threshold defined in the agent's compliance_checklist
+- Coverage below threshold → **fail agent automatically**
+
+### Layer 3: File Output Persistence
+- Physically check that every file in `artifacts_emitted[]` exists on disk
+- Each file must be non-empty (>0 bytes)
+- Missing/empty file → **fail agent automatically**
+
+### Enforcement
+- If ANY layer fails:
+  1. Trip circuit breaker immediately (set `circuit_breaker_reason`)
+  2. Set agent status to `"failed"`
+  3. Append raw error output to `state_context/current_work_order.json` under `last_error`
+  4. Freeze all execution, wait for HITL override
+  5. Notify human gatekeeper with full error details
+- Circuit breaker resets only via explicit human gatekeeper command
+
+### Self-Verification Enforcement
+
+Before running Gatekeeper Layers, Agent 0 MUST first check the agent's self-verification:
+
+1. Read the agent's `self_verification_report.json` from its sandbox directory
+2. If the file is missing → reject and re-queue with reason: "Self-verification report not generated"
+3. If status is `"fail"` or `"blocked"` → reject and re-queue with failure details attached
+4. If status is `"pass"` → proceed to Gatekeeper Layers as a spot-check
+5. Only then mark as `"awaiting_approval"` or `"approved"`
 
 ---
 
@@ -72,7 +115,12 @@ The dashboard now shows a ✅/❌ per compliance item:
 | Compliance item fails | Set agent to `failed` status, log reason in `last_error`, notify human gatekeeper |
 | New artifacts missing vs checklist | Same as above |
 | Downstream agent not re-queued | Re-queue all downstream agents, set their status to `queued` |
-| Circuit breaker + compliance failure | Immediate escalation — human must reset both
+| Circuit breaker + compliance failure | Immediate escalation — human must reset both |
+| Gatekeeper Layer 1 fails (lint/build) | Trip breaker immediately, append error to state_context, freeze pipeline |
+| Gatekeeper Layer 2 fails (test coverage) | Trip breaker, append coverage report to state_context, freeze pipeline |
+| Gatekeeper Layer 3 fails (file persistence) | Trip breaker, append missing file list to state_context, freeze pipeline |
+| Self-verification report missing | Reject agent, re-queue with reason, do NOT trip breaker (agent error, not system error) |
+| Self-verification reports "fail" or "blocked" | Reject agent, re-queue with failure details attached, do NOT trip breaker |
 
 ---
 
@@ -249,17 +297,59 @@ The supervisor prints this after each cycle:
 
 ---
 
+## Agent 0 Delegation Protocol
+
+When Agent 0 receives a work order from Command Center via `state_context/current_work_order.json`:
+
+1. **Read** `state_context/current_work_order.json` to get the target instructions, target agent, and context
+2. **Evaluate eligibility** (dependencies met, circuit breaker closed, max executions not exceeded, pipeline not paused)
+3. **Launch the target sub-agent** as a **detached background process** that logs all output to a disk log file (e.g., `agent_XX_run.log`)
+4. **Print immediate acknowledgment** to the Command Center:
+   ```
+   SUCCESS: Work order delegated to Agent X. Task is running asynchronously. Command Center prompt released.
+   ```
+5. **Immediately return control** — do NOT block the foreground loop
+6. **Write results** back to `state_context/current_work_order.json` upon completion with status, artifacts, and summary
+7. **Log all execution output** to the disk log file for post-mortem review and traceability
+
+### Work Order Lifecycle
+
+```
+Command Center writes to state_context/current_work_order.json
+                          │
+                          ▼
+              Agent 0 picks up the work order
+                          │
+                          ▼
+              Agent 0 evaluates eligibility
+                          │
+                          ▼
+              Agent 0 launches sub-agent (detached, > agent_XX_run.log)
+                          │
+                          ▼
+              Agent 0 prints acknowledgment, returns control
+                          │
+                          ▼
+              Sub-agent executes, writes to disk log
+                          │
+                          ▼
+              Agent 0 writes results back to state_context/current_work_order.json
+```
+
+---
+
 ## Integration with Current Framework
 
 ### How I (the Supervisor) operate:
 
 1. **I read STATE_MATRIX.json** to understand current state
 2. **I check eligibility** using Rule 1
-3. **I launch eligible agents** using available tools (task tool for worker agents)
-4. **I update state** after each agent completes
-5. **I print dashboard** to keep you informed
-6. **I stop at gates** and wait for your input
-7. **I never decide scope, change requirements, or override approvals**
+3. **I read state_context/current_work_order.json** for tasking from Command Center
+4. **I launch eligible agents** as detached background processes per Delegation Protocol
+5. **I update state** after each agent completes
+6. **I print dashboard** to keep you informed
+7. **I stop at gates** and wait for your input
+8. **I never decide scope, change requirements, or override approvals**
 
 ### What you see:
 - After each cycle → dashboard summary

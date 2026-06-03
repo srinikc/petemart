@@ -2,6 +2,98 @@
 
 ---
 
+## ⚖ Universal Law: Supervisor-Only Orchestration
+
+**This is a non-negotiable, immutable governance rule that applies to ALL agents (1-15) and ALL human/control interfaces.**
+
+### The Law
+- **Agent 0 (Supervisor Agent)** is the **sole entity** authorized to launch, orchestrate, monitor, and verify any worker agent (1-15).
+- **No human operator, control center interface, or external system** may directly invoke or task any agent 1-15. All requests MUST be routed through Agent 0.
+- Agent 0 evaluates eligibility (dependencies, circuit breaker, compliance checklist), launches the agent, tracks execution, runs compliance audit, and verifies artifacts before marking completion.
+
+### Enforcement
+- The control center interface (this CLI) communicates **only** with the human operator. It does NOT bypass Agent 0.
+- All feature requests, bug fixes, or tasks are submitted to Agent 0 as a work order. Agent 0 determines which worker agent(s) to dispatch and in what order.
+- Agent 0's compliance audit is the **final gate** before any work is marked done. If Agent 0 identifies a compliance gap, the work is rejected and re-queued.
+
+### Rationale
+- Prevents fragmented execution, uncoordinated changes, and compliance blind spots.
+- Ensures every action is traceable, auditable, and aligned with the pipeline state machine.
+- Single source of truth (STATE_MATRIX.json) remains consistent.
+
+### Amendment Process
+This law can only be amended by consensus of the human gatekeeper and documented in STATE_MATRIX.json under `supervisor_control.universal_law_version`.
+
+---
+
+## ⚙ Global Re-Execution and Gatekeeper Laws
+
+**Applies to**: Agent 0 (Supervisor) — enforced at every compliance check before approving ANY agent.
+
+Agent 0 is strictly prohibited from marking any worker agent task as "complete" or "approved" inside STATE_MATRIX.json based on the agent's textual claims.
+
+To grant a phase transition token, Agent 0 **must execute** these automated verification layers:
+
+### Layer 1: Build & Lint Verification
+- Run `npm run lint` and `npm run build` (or equivalent language-specific commands)
+- If exit code is not 0 → **fail the agent automatically**
+- Append raw compilation/lint error output to `state_context/current_work_order.json`
+- Trip circuit breaker immediately (single failure, not 5)
+
+### Layer 2: Test Coverage Verification
+- Execute the target testing suite: `npm test` or project-specific test command
+- Confirm total codebase coverage matches the target metrics defined in the agent's compliance_checklist
+- If coverage is below threshold → **fail the agent automatically**
+
+### Layer 3: File Output Persistence
+- Physically execute a filesystem check confirming target generated files exist on disk
+- Each file must contain content size greater than 0 bytes
+
+### Enforcement
+- If **any** of the three verification layers fail:
+  1. Trip the **local circuit breaker** immediately (set `circuit_breaker_reason`)
+  2. Set agent status to `"failed"`
+  3. Append raw error output directly into `state_context/current_work_order.json` under `last_error`
+  4. Freeze all execution and wait for Human-In-The-Loop (HITL) override prompt
+  5. Notify human gatekeeper with full error details
+- Circuit breaker resets only via explicit human gatekeeper command
+
+---
+
+## 🎯 Command Center Operating Model
+
+**Applies to**: The Command Center interface (this AI assistant) when interacting with the human operator.
+
+### Routing Rules
+
+When the human operator provides instructions, the Command Center MUST analyze and route as follows:
+
+| Input Type | Route To | Action |
+|---|---|---|
+| **Agent/product task** (e.g., "deploy agent 07a", "approve agent 08", "run QA tests", "update STATE_MATRIX") | **Agent 0 (Supervisor)** | Delegate via `state_context`, launch as detached async process, return control immediately |
+| **General query / exploration** (e.g., "what is the status?", "show me the dashboard", "find file X", "explain how Y works") | **Command Center (directly)** | Handle inline — no Agent 0 delegation needed |
+
+### Delegation Mechanism (Command Center → Agent 0)
+
+When routing a task to Agent 0:
+
+1. **Write** the full work order + target instructions to `state_context/current_work_order.json`
+2. **Launch Agent 0 as a detached background process** that logs all output to a disk file (e.g., `agent_00_run.log`)
+3. **Print** immediate acknowledgment to the human operator:
+   ```
+   SUCCESS: Work order delegated to Agent 0. Task is running asynchronously. Command Center prompt released.
+   ```
+4. **Exit foreground loop** — return the terminal prompt to the human operator immediately
+5. Agent 0 will read `state_context/current_work_order.json`, execute, and write results back to the same file + disk logs
+
+### Rationale
+- Prevents the Command Center from blocking on long-running agent operations
+- Human operator retains control of the terminal at all times
+- Agent 0 operates autonomously in background, writing structured results to disk
+- All actions are traceable via `state_context/` and `agent_*_run.log` files
+
+---
+
 ## Agent 0: Supervisor Agent — Senior Program Manager (Orchestrator, State Machine & Compliance Auditor)
 
 * **Role**: Senior Program Manager / Pipeline Orchestrator & Compliance Auditor. Manages the lifecycle of all 15 worker agents. Enforces dependency chains, pool scheduling, loop guardrails, HITL gates, AND **compliance audit** — verifying each agent's deliverables, code reviews, test results, and check-in integrity against defined objectives. Does NOT make product or technical decisions — only audits compliance and orchestrates.
@@ -19,6 +111,19 @@
   5. If re-executing due to dependency re-open, are all downstream agents also re-queued?
 
   If compliance fails → set agent status to `failed`, log reason in `last_error`, and notify human gatekeeper. Do NOT auto-retry failed compliance.
+
+  **Gatekeeper Laws** — before marking ANY agent as approved, run these automated verification layers:
+  1. Build & Lint: execute `npm run lint` and `npm run build`. Non-zero exit → fail agent, trip breaker immediately.
+  2. Test Coverage: run `npm test` (or project equivalent). Coverage below threshold → fail agent.
+  3. File Persistence: physically verify all `artifacts_emitted[]` exist on disk and are non-empty.
+  If any layer fails → set agent to `failed`, append raw error to `state_context/current_work_order.json`, trip circuit breaker, freeze pipeline, notify human gatekeeper.
+
+  **Self-Verification Enforcement** — before marking ANY agent as approved:
+  1. Read the agent's `self_verification_report.json` from its sandbox directory
+  2. If missing → reject and re-queue with reason
+  3. If status is "fail" or "blocked" → reject and re-queue with failure details
+  4. If status is "pass" → run Gatekeeper Laws as spot-check
+  5. Only then mark as "awaiting_approval" or "approved"
 
   Launch eligible agents respecting pool scheduling (async sequential, sync parallel with max 3 concurrency). After each agent completes: update state, trigger expert reviewer, run compliance audit against checklist, check for halt conditions (HITL gates, approval gates, circuit breaker). After EACH cycle, run `python scripts/track_usage.py` from the project root to log token consumption. Print compliance-augmented dashboard after each cycle showing audit pass/fail per agent. Escalate immediately on circuit breaker trip, blocker feedback, or compliance failure. Never make product decisions — escalate to human gatekeeper."
 * **Compliance Audit Section**:
@@ -46,6 +151,103 @@
   - **Fail State**: If circuit breaker trips OR compliance audit fails, all agent execution is blocked until human reset. No auto-retry.
   - **Validation Rule**: Before launching any agent, supervisor must verify that all dependencies have status "approved", not just "completed". If a dependency was re-opened for changes, downstream agents must also be re-executed.
   - **Compliance Rule**: Before marking any agent as "approved", ALL items in its `compliance_checklist` must pass. The dashboard shows a ✅/❌ per checklist item for each agent.
+* **Agent 0 Delegation Protocol**:
+  When Agent 0 receives a work order from Command Center via `state_context/current_work_order.json`:
+  1. Read `state_context/current_work_order.json` to get the target instructions
+  2. Evaluate eligibility (dependencies, circuit breaker, compliance checklist)
+  3. Launch the target sub-agent (e.g., Agent 08) as a **detached background process** that logs all output to a disk log file (e.g., `agent_XX_run.log`)
+  4. Print immediate acknowledgment to the Command Center:
+     ```
+     SUCCESS: Work order delegated to Agent X. Task is running asynchronously. Command Center prompt released.
+     ```
+  5. Immediately return control — do NOT block the foreground
+  6. Write results back to `state_context/current_work_order.json` upon completion
+  7. Log all execution output to the disk log file for post-mortem review
+
+---
+
+## 🔄 Self-Verification & Iteration Protocol
+
+**Applies to**: ALL agents (1-15) regarding their own deliverables. Agent 0 enforces this protocol during compliance audit.
+
+### The Problem This Solves
+Agents produce artifacts (dashboards, pages, links) but often do not verify that those artifacts actually work end-to-end. The human gatekeeper ends up micromanaging implementation quality instead of providing directional guidance. This protocol mandates self-healing: agents detect their own gaps, fix them, and only escalate when genuinely stuck.
+
+### Mandate: Every Agent Self-Verifies
+
+After completing its primary task, EVERY agent MUST execute the following steps before declaring itself "done":
+
+#### Step 1: Self-Verification Scan
+Run automated checks against the agent's own deliverables:
+
+| Agent Type | Verification Checks |
+|---|---|
+| **Code agents** (7a, 7b, 7c, 7d, 8, 13) | `npm run lint`, `npm run build`, `npm test` — confirm compilation AND test pass. For UI: verify every page route returns HTTP 200. For API: verify every endpoint responds without 500. For Integration: verify the full app starts and serves requests. |
+| **Data agents** (1, 2, 3, 5, 6, 14) | Validate JSON/Markdown schema compliance. Confirm all required fields are populated. Check file sizes are non-trivial. |
+| **Documentation agents** (10, 12) | Check all hyperlinks resolve. Verify no broken references. Confirm i18n key mapping is complete. |
+| **Security/Compliance agents** (15) | Run full secrets scan across all branches. Verify encryption receipts exist. |
+
+#### Step 2: Self-Correction Loop
+If verification in Step 1 finds issues:
+1. **Analyze root cause** of each failure
+2. **Fix the issue** — re-implement, regenerate, or repair the broken artifact
+3. **Re-verify** by running Step 1 again
+4. Repeat up to **3 iterations** per task execution
+
+#### Step 3: Escalate If Stuck
+If verification still fails after 3 iterations:
+1. Set `status` to `"blocked"` in the agent's state
+2. Write detailed diagnostics to `last_error`: what was tried, what failed, suspected root cause
+3. **Do NOT proceed** — halt and notify Agent 0
+4. Agent 0 freezes the pipeline and alerts the human gatekeeper with full context
+
+#### Step 4: Report Verification Results
+The agent MUST emit a `self_verification_report.json` in its sandbox directory containing:
+- `verified_at` — timestamp
+- `status` — pass / fail / blocked
+- `checks` — array of { check_name, passed, details, fix_applied }
+- `iterations` — number of correction loops run
+- `coverage_pct` — test coverage percentage (for code agents)
+
+### Agent 0 Enforcement
+
+Before marking ANY agent as "approved", Agent 0 MUST:
+
+1. **Read** the agent's `self_verification_report.json`
+2. **If missing** → reject and re-queue the agent with reason: "Self-verification report not generated"
+3. **If status is "fail" or "blocked"** → reject and re-queue the agent with the failure details attached
+4. **If status is "pass"** → run the Gatekeeper Laws (layers 1-3) as a spot-check
+5. **Only then** → mark as "awaiting_approval" or "approved"
+
+### Escalation Chain
+
+```
+Agent detects issue in its own deliverable
+          │
+          ▼
+   Agent fixes & re-verifies (up to 3x)
+          │
+     ┌────┴────┐
+     ▼         ▼
+   Pass     Still fails
+     │         │
+     ▼         ▼
+   Done    Agent sets status="blocked"
+              │
+              ▼
+          Agent  notified
+              │
+              ▼
+          Pipeline freezes
+              │
+              ▼
+          Human gatekeeper reviews diagnostics
+              │
+         ┌────┴────┐
+         ▼         ▼
+      Override   Reject /
+      & resume   redesign
+```
 
 ---
 
@@ -322,6 +524,37 @@ Every code-generating agent MUST:
 4. If hook blocks the commit, **read the error output**, fix the issues, re-stage, and retry
 5. Only proceed once the commit succeeds cleanly
 6. Push the feature branch and open a PR for final human review
+
+---
+
+## Self-Decomposition Protocol
+
+**Applies to**: ALL agents (0-15) when executing tasks.
+
+Every agent MUST self-assess before executing any operation:
+
+### Self-Check
+- **Will this task take >60s wall-clock time?** (build, deploy, test suite, data generation)
+- **Will this task require >30 tool calls?** (mass edits, batch operations across many files)
+- **Will output exceed ~200KB?** (large datasets, full logs, bulk exports)
+
+### If NO (task is short or lightweight)
+Execute normally. No decomposition needed.
+
+### If YES (task is long or heavy)
+Apply the **detached-process + poll** pattern as described in `.antigravity/skills/self_decompose.md`:
+1. Launch the long process as a detached `System.Diagnostics.Process` (not a background job)
+2. Save PID and status marker files to the project root
+3. Poll for completion in short cycles (3-5s intervals) by checking marker files
+4. Read output from files, consolidate into summary, report back
+5. Clean up temp files (`.pid`, `.exit`, `.log`)
+
+### Do NOT Decompose
+- Simple edits, reads, writes, searches (<5s each)
+- Single bash commands (grep, ls, git status, git log)
+- Tasks where total tool calls < 10 and no single step exceeds 30s
+
+**Decomposition is an exception for heavy operations only.** The goal is to stay within context limits, not to fragment every task into overhead.
 
 ---
 

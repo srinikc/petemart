@@ -4,8 +4,57 @@
     "associated_project": "PeteMart",
     "schema_version": "1.0"
   },
-  "active_requests": [],
+  "active_requests": [
+    {
+      "request_id": "WORK-ORDER-QA-AUTO-CAPTURE-BG-PROCESS-v3.0",
+      "timestamp": "2026-06-02T16:00:00Z",
+      "event_type": "work_order_submitted",
+      "agent_id": "08_qa_agent",
+      "description": "Six feedback items dispatched to Agent 08 (QA): (1) Test Failure Capture & Auto-Defect Workflow, (2) Historical Run Dropdown tier+timestamp, (3) Background process, (4) Go/No-Go textarea+PDF, (5) External report 404 fix, (6) Priority directive. All items implemented. See STATE_MATRIX.json notes for details.",
+      "trigger": "human_work_order",
+      "status": "completed",
+      "completed_at": "2026-06-02T18:26:00Z"
+    },
+    {
+      "request_id": "REFINE-ITEM2-v3.1",
+      "timestamp": "2026-06-02T16:10:00Z",
+      "event_type": "work_order_refinement",
+      "agent_id": "08_qa_agent",
+      "description": "ITEM-2 (Historical Run Dropdown) refined by human gatekeeper: Dropdown format must show 'Tier — Timestamp' (e.g. 'Sanity — 2026-06-02 14:30'). Added explicit schema requirements for run-history.json (tier field per entry, backfill older entries) and updated page.tsx dropdown display format.",
+      "trigger": "human_refinement",
+      "status": "completed",
+      "completed_at": "2026-06-02T18:26:00Z"
+    },
+    {
+      "request_id": "ADD-ITEMS-4-5-6-v3.2",
+      "timestamp": "2026-06-02T16:20:00Z",
+      "event_type": "work_order_expansion",
+      "agent_id": "08_qa_agent",
+      "description": "Three new feedback items appended to Agent 08 work order: (ITEM-4) Go/No-Go Text Box Enhancement — replace single-line input with multiline textarea, add scroll support, add 'Download as PDF' button using jsPDF with verdict+comment+timestamp+signature fields; (ITEM-5) Fix External Report Links — audit report existence on disk (none of the 4 reports exist), show disabled/grayed state with 'Not generated yet — run tests first' text, add tooltip with generation commands, create GET /api/qa/reports/status endpoint; (ITEM-6) Priority Implementation Note — ITEM-2 (Dropdown tier+timestamp) must be executed FIRST before any other items as the refinement was previously approved but not yet implemented. WORK_ORDER_v3.0.md updated with all 6 items, updated overview, execution order, and verification criteria.",
+      "trigger": "human_feedback_batch",
+      "status": "completed",
+      "completed_at": "2026-06-02T18:26:00Z"
+    },
+    {
+      "request_id": "ADD-ITEMS-7-8-9-v3.3",
+      "timestamp": "2026-06-02T18:30:00Z",
+      "event_type": "work_order_expansion",
+      "agent_id": "08_qa_agent",
+      "description": "Three critical bugs found in Agent 08 implementation added to work order v3.3: (ITEM-7) Sanity run tagged as 'custom' instead of 'Sanity' — tier capture bug in run-history.json writing; (ITEM-8) CSV Download exports all 21 test types instead of latest run only — must filter to run scope; (ITEM-9) Test Summary shows all test types instead of filtering to latest run — must add tier-based filtering and visual indicator. Also added permanent 'Sr Test Architect' role expectation requiring Design Review section in all future Agent 08 outputs. WORK_ORDER_v3.0.md, STATE_MATRIX.json, and CHANGE_REQUEST.json updated. Agent 08 NOT dispatched — awaiting human gatekeeper launch command.",
+      "trigger": "human_feedback_batch",
+      "status": "pending"
+    }
+  ],
   "completed_requests": [
+    {
+      "request_id": "WORK-ORDER-QA-DASHBOARD-FIXES-v2.1",
+      "timestamp": "2026-06-02T15:55:00Z",
+      "event_type": "work_order_execution",
+      "agent_id": "08_qa_agent",
+      "description": "QA Dashboard Fixes & Enhancements v2.1: (1) Added 6 missing test types (smoke, sanity, acceptance, compatibility, localization, penetration) → 21/21, (2) Fixed QG10/QG11/QG12 from not-executed→pass → 12/12 gates, (3) Enabled sandbox for Full QA + Release tiers, (4) Added live timestamp alongside data date, (5) Merged KPI + Go/No-Go into split-frame layout, (6) Made external reports clickable with href links, (7) Enhanced Sandbox badge with CheckCircle icon + uppercase styling, (8) Renamed 'Selection'→'Tests Selection', (9) Reordered layout: Tier buttons → Build metadata → Tests Selection toggle.",
+      "trigger": "human_work_order",
+      "status": "completed"
+    },
     {
       "request_id": "GATE-APPROVAL-01-02",
       "timestamp": "2026-05-30T18:30:00Z",
@@ -32,6 +81,16 @@
       "description": "STATE_MATRIX.json synced to reflect actual artifacts for agents 07b, 07c, 07d, 09 that were executed but not recorded. All 10 agents now have proper artifact tracking. Pending: Agents 10-15 execution.",
       "trigger": "manual_audit",
       "status": "completed"
+    },
+    {
+      "request_id": "BUGFIX-ITEM7-8-9-v3.3",
+      "timestamp": "2026-06-02T18:38:00Z",
+      "event_type": "bugfix_completed",
+      "agent_id": "08_qa_agent",
+      "description": "ITEM-7: Fixed tier capture bug — run/route.ts now passes --tier to run-tests.js. ITEM-8: CSV export now filters to run scope only + disabled state for no runs. ITEM-9: Test Summary now filters rows to active run's tier scope + blue indicator banner. Design Review conducted: identified tier propagation chain vulnerability; implemented run-scope filtering. Compliance: TypeScript 0 errors, 148/148 tests pass, dashboard HTTP 200.",
+      "trigger": "human_auto_approval",
+      "status": "completed",
+      "completed_at": "2026-06-02T18:38:00Z"
     }
   ]
 }

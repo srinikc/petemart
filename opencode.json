@@ -2,6 +2,14 @@
   "$schema": "https://opencode.ai",
   "autoupdate": true,
   "plugin": ["opencode-autosave-conversation", "@slkiser/opencode-quota"],
+  "instructions": ["context_lake/latest.json"],
+  "experimental": {
+    "hook": {
+      "session_completed": [
+        { "command": ["python", "context_lake/capture.py", "--window", "session-completed", "--project-root", "."] }
+      ]
+    }
+  },
   "mcp": {
     "sonarqube": {
       "type": "remote",

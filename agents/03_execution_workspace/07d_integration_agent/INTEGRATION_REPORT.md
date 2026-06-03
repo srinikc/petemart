@@ -295,3 +295,22 @@ Auth Page → signInWithEmail() → apiService.auth.login()
 | `i18n/en.ts` | English localization strings |
 | `supabase/migrations/*.sql` | Database schema, RLS, triggers |
 | `supabase/seed.sql` | POC merchant/product seed data |
+
+---
+
+## Requirements Traceability
+
+| Integration Module | Requirement IDs |
+|---|---|
+| Auth module | REQ-API-006, REQ-UI-011, REQ-BE-001, REQ-INFRA-004, REQ-INFRA-008 |
+| Markets module | REQ-API-001, REQ-UI-001, REQ-BE-001, REQ-BE-009, REQ-BE-022 |
+| Merchants module | REQ-API-001, REQ-API-008, REQ-UI-008, REQ-BE-001, REQ-BE-020, REQ-MICRO-001 |
+| Products module | REQ-API-001, REQ-UI-002, REQ-UI-003, REQ-UI-004, REQ-UI-005, REQ-BE-001, REQ-BE-009, REQ-BE-011, REQ-BE-016, REQ-COM-009 |
+| Cart & Checkout module | REQ-API-002, REQ-API-003, REQ-UI-003, REQ-UI-006, REQ-BE-002, REQ-BE-003, REQ-BE-005, REQ-COM-002, REQ-COM-004, REQ-COM-007, REQ-COM-008 |
+| Orders module | REQ-API-002, REQ-UI-007, REQ-BE-002, REQ-BE-005, REQ-BE-013, REQ-BE-015 |
+| Tracking module | REQ-API-007, REQ-UI-007, REQ-BE-007, REQ-BE-024, REQ-COM-004, REQ-COM-008 |
+| Merchant dashboard module | REQ-API-008, REQ-API-011, REQ-UI-011, REQ-UI-014, REQ-BE-004, REQ-BE-011, REQ-BE-020, REQ-MICRO-001, REQ-MICRO-002, REQ-MICRO-003, REQ-MICRO-004, REQ-MICRO-006, REQ-COM-001, REQ-COM-006 |
+| Admin dashboard module | REQ-API-008, REQ-API-010, REQ-UI-012, REQ-UI-020, REQ-BE-004, REQ-BE-005, REQ-BE-008, REQ-BE-020, REQ-BE-021, REQ-COM-005, REQ-COM-001, REQ-INFRA-003, REQ-INFRA-011, REQ-MICRO-007, REQ-MICRO-008 |
+| Health & Monitoring module | REQ-INFRA-003, REQ-MAINT-003, REQ-MAINT-005, REQ-BE-008 |
+| Middleware layer | REQ-INFRA-004, REQ-INFRA-006, REQ-INFRA-008 |
+| Types & Data layer | REQ-BE-001, REQ-BE-008, REQ-BE-009, REQ-BE-010 |

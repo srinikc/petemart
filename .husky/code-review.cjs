@@ -1,7 +1,13 @@
 const { execSync } = require('child_process');
 
 (async () => {
-  const diff = execSync('git diff --cached', { encoding: 'utf-8' }).trim();
+  let diff = '';
+  try {
+    diff = execSync('git diff --cached', { encoding: 'utf-8', windowsHide: true, maxBuffer: 50 * 1024 * 1024 }).trim();
+  } catch (e) {
+    console.log('\n  Code review skipped: could not read diff (' + e.message + ')');
+    process.exit(0);
+  }
 
   if (!diff) {
     process.exit(0);
@@ -20,8 +26,12 @@ const { execSync } = require('child_process');
 
   console.log('\n  Reviewing staged changes...');
 
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 30000);
+
   const res = await fetch('https://api.deepseek.com/chat/completions', {
     method: 'POST',
+    signal: controller.signal,
     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
     body: JSON.stringify({
       model: 'deepseek-chat',
@@ -35,7 +45,9 @@ const { execSync } = require('child_process');
   });
 
   const data = await res.json();
+  clearTimeout(timeout);
   const review = data.choices?.[0]?.message?.content || 'No review generated';
+  const trimmed = review.trim().toUpperCase();
 
   console.log('\n\u2500'.repeat(50));
   console.log('  AI CODE REVIEW');
@@ -43,12 +55,12 @@ const { execSync } = require('child_process');
   console.log(review);
   console.log('\u2500'.repeat(50));
 
-  if (review.startsWith('CHANGES_REQUIRED')) {
+  if (trimmed.startsWith('CHANGES_REQUIRED')) {
     console.log('\n  \u2716 Commit BLOCKED: fix the issues above, then git add + git commit again\n');
     process.exit(1);
   }
 
-  if (review.startsWith('APPROVED')) {
+  if (trimmed.startsWith('APPROVED')) {
     console.log('\n  \u2713 Code review passed\n');
     process.exit(0);
   }

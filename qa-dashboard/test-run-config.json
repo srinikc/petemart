@@ -6,7 +6,12 @@
       "label": "Sanity (Tier 1)",
       "description": "Fast developer feedback — catch compilation errors, type issues, and critical regressions immediately (~3 min)",
       "icon": "Zap",
-      "testTypes": ["unit", "integration", "api-contract", "regression"],
+      "testTypes": [
+        "unit",
+        "integration",
+        "api-contract",
+        "regression"
+      ],
       "ciEnabled": true,
       "sandboxEnabled": true
     },
@@ -14,17 +19,46 @@
       "label": "Full QA (Tier 2)",
       "description": "Comprehensive validation before handing a build to QA team. Runs ALL except Disaster Recovery (~15 min)",
       "icon": "Shield",
-      "testTypes": ["unit", "component", "integration", "e2e", "api-contract", "visual-regression", "security", "accessibility", "cross-browser", "regression", "multi-tenant", "migration"],
+      "testTypes": [
+        "unit",
+        "component",
+        "integration",
+        "e2e",
+        "api-contract",
+        "visual-regression",
+        "security",
+        "accessibility",
+        "cross-browser",
+        "regression",
+        "multi-tenant",
+        "migration"
+      ],
       "ciEnabled": true,
-      "sandboxEnabled": false
+      "sandboxEnabled": true
     },
     "release": {
       "label": "Release (Tier 3)",
       "description": "Production-grade validation — ZERO compromises. Every single test type runs including DR (~25 min)",
       "icon": "Activity",
-      "testTypes": ["unit", "component", "integration", "e2e", "api-contract", "visual-regression", "performance", "stress", "security", "accessibility", "cross-browser", "regression", "multi-tenant", "migration", "disaster-recovery"],
+      "testTypes": [
+        "unit",
+        "component",
+        "integration",
+        "e2e",
+        "api-contract",
+        "visual-regression",
+        "performance",
+        "stress",
+        "security",
+        "accessibility",
+        "cross-browser",
+        "regression",
+        "multi-tenant",
+        "migration",
+        "disaster-recovery"
+      ],
       "ciEnabled": true,
-      "sandboxEnabled": false
+      "sandboxEnabled": true
     }
   },
   "environments": {
@@ -34,23 +68,23 @@
       "testTypes": {
         "unit": {
           "enabled": true,
-          "command": "vitest run --reporter=json"
+          "command": "npx vitest run --reporter=json"
         },
         "component": {
           "enabled": false,
-          "command": "vitest run --reporter=json"
+          "command": "npx vitest run --reporter=json"
         },
         "integration": {
           "enabled": true,
-          "command": "vitest run --reporter=json"
+          "command": "npx vitest run --reporter=json"
         },
         "e2e": {
           "enabled": false,
           "command": "npx playwright test --project=chromium"
         },
         "api-contract": {
-          "enabled": false,
-          "command": "vitest run --reporter=json"
+          "enabled": true,
+          "command": "npx vitest run --reporter=json"
         },
         "visual-regression": {
           "enabled": false,
@@ -62,7 +96,7 @@
         },
         "stress": {
           "enabled": false,
-          "command": "k6 run"
+          "command": "npx k6 run"
         },
         "security": {
           "enabled": false,
@@ -77,16 +111,16 @@
           "command": "npx playwright test --project=all"
         },
         "regression": {
-          "enabled": false,
+          "enabled": true,
           "command": "npm test"
         },
         "multi-tenant": {
           "enabled": false,
-          "command": "vitest run --reporter=json"
+          "command": "npx vitest run --reporter=json"
         },
         "migration": {
           "enabled": false,
-          "command": "vitest run --reporter=json"
+          "command": "npx vitest run --reporter=json"
         },
         "disaster-recovery": {
           "enabled": false,
@@ -109,15 +143,15 @@
       "testTypes": {
         "unit": {
           "enabled": true,
-          "command": "vitest run --reporter=json --coverage"
+          "command": "npx vitest run --reporter=json --coverage"
         },
         "component": {
           "enabled": false,
-          "command": "vitest run --reporter=json"
+          "command": "npx vitest run --reporter=json"
         },
         "integration": {
           "enabled": true,
-          "command": "vitest run --reporter=json"
+          "command": "npx vitest run --reporter=json"
         },
         "e2e": {
           "enabled": true,
@@ -125,7 +159,7 @@
         },
         "api-contract": {
           "enabled": false,
-          "command": "vitest run --reporter=json"
+          "command": "npx vitest run --reporter=json"
         },
         "visual-regression": {
           "enabled": false,
@@ -137,7 +171,7 @@
         },
         "stress": {
           "enabled": false,
-          "command": "k6 run"
+          "command": "npx k6 run"
         },
         "security": {
           "enabled": true,
@@ -157,11 +191,11 @@
         },
         "multi-tenant": {
           "enabled": false,
-          "command": "vitest run --reporter=json"
+          "command": "npx vitest run --reporter=json"
         },
         "migration": {
           "enabled": false,
-          "command": "vitest run --reporter=json"
+          "command": "npx vitest run --reporter=json"
         },
         "disaster-recovery": {
           "enabled": false,
@@ -183,9 +217,9 @@
     }
   },
   "metadata": {
-    "testTypesTotal": 15,
-    "testTypesImplemented": 14,
-    "lastUpdated": "2026-06-01T00:00:00Z",
+    "testTypesTotal": 21,
+    "testTypesImplemented": 21,
+    "lastUpdated": "2026-06-02T15:55:00Z",
     "schema": "https://petemart.ai/schemas/test-run-config-v1.json"
   }
 }
