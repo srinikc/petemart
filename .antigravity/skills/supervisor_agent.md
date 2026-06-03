@@ -48,6 +48,36 @@ Before marking ANY agent as "approved", Agent 0 MUST execute these three automat
   5. Notify human gatekeeper with full error details
 - Circuit breaker resets only via explicit human gatekeeper command
 
+### Code Review & Fix Gate Enforcement (NEW — MANDATORY)
+
+Before ANY agent can move to `awaiting_approval` or `approved`, Agent 0 MUST verify:
+
+**Layer A: CODE_REVIEW_LOG.json Exists**
+- Check that `CODE_REVIEW_LOG.json` exists in the agent's sandbox directory
+- If missing → reject and re-queue with reason: "CODE_REVIEW_LOG.json not found — code review documentation required"
+
+**Layer B: Review Gate Passed**
+- Read `CODE_REVIEW_LOG.json` and check `agent_0_verification.review_gate_passed === true`
+- This means every review entry must have `status: "approved"` from the designated role (e.g., Sr. Frontend Engineer for 07a)
+- If not passed → reject and re-queue with reason: "Code review not completed by designated role — check CODE_REVIEW_LOG.json"
+
+**Layer C: Fix Gate Passed**
+- Read `CODE_REVIEW_LOG.json` and check `agent_0_verification.fix_gate_passed === true`
+- This means every finding in every review must have a corresponding fix with `fix_status: "verified"`
+- If not passed → reject and re-queue with reason: "Review findings not all fixed — check CODE_REVIEW_LOG.json fixes array"
+
+**Layer D: Gatekeeper Laws (existing)**
+- Only proceed if Layers A-C pass
+- Then run the 3 Gatekeeper verification layers (Build/Lint, Test Coverage, File Persistence)
+
+### Enforcement
+- Layers A-C are evaluated BEFORE Gatekeeper Layers
+- If ANY code review layer fails:
+  1. Set agent status to `"blocked"` (not failed — this is recoverable)
+  2. Append details to `state_context/current_work_order.json` under `last_error`
+  3. Freeze pipeline until human gatekeeper resolves
+  4. Do NOT trip circuit breaker (this is a process compliance issue, not a system error)
+
 ### Self-Verification Enforcement
 
 Before running Gatekeeper Layers, Agent 0 MUST first check the agent's self-verification:
@@ -74,6 +104,9 @@ Before marking ANY agent as "approved", evaluate all items in its `compliance_ch
 - For code agents (7a-7d, 8, 13): verify TypeScript compiles (`tsc --noEmit`)
 
 #### 2. Code Review Verification
+- **CODE_REVIEW_LOG.json** must exist in agent's sandbox directory with `review_gate_passed: true` and `fix_gate_passed: true`
+- Each review entry must be `status: "approved"` by the designated role (see Expert Reviewer mappings)
+- Each finding must have a corresponding fix with `fix_status: "verified"`
 - For pre-commit gate agents: verify AI code review → TypeScript check → unit tests all passed before the last commit
 - For PR-based agents: verify PR was created and CI passed
 - Check that no `--no-verify` commits exist for code changes
@@ -213,10 +246,13 @@ After EVERY agent completes its work:
 1. Supervisor sets `expert_reviewer.review_status` = `pending`
 2. Human (or assigned Sr. reviewer) reviews artifacts
 3. If changes needed → reviewer writes feedback in `review_feedback[]`
-4. Supervisor re-launches the agent with feedback context
-5. Agent addresses feedback, updates artifacts
-6. Reviewer signs off → `sign_off_granted: true`
-7. Supervisor marks agent as `approved`
+4. **Reviewer documents findings + fixes in `CODE_REVIEW_LOG.json`** (in agent's sandbox directory)
+5. Each finding gets a `finding_id`, `severity`, `description`, `file_path`
+6. Each fix maps to a finding with `fix_description`, `fix_commit`, `fix_status`
+7. Supervisor re-launches the agent with feedback context
+8. Agent addresses feedback, updates artifacts, and updates `CODE_REVIEW_LOG.json` fixes
+9. Reviewer signs off → `sign_off_granted: true` AND `agent_0_verification` updated
+10. Supervisor verifies Layers A-C, then marks agent as `approved`
 
 ### Industry JD Mappings (for reference)
 

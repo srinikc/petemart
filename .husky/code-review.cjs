@@ -26,12 +26,11 @@ const { execSync } = require('child_process');
 
   console.log('\n  Reviewing staged changes...');
 
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 30000);
+  const fetchTimeout = AbortSignal.timeout(30000);
 
   const res = await fetch('https://api.deepseek.com/chat/completions', {
     method: 'POST',
-    signal: controller.signal,
+    signal: fetchTimeout,
     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
     body: JSON.stringify({
       model: 'deepseek-chat',
@@ -45,7 +44,6 @@ const { execSync } = require('child_process');
   });
 
   const data = await res.json();
-  clearTimeout(timeout);
   const review = data.choices?.[0]?.message?.content || 'No review generated';
   const trimmed = review.trim().toUpperCase();
 

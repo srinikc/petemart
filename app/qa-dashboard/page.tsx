@@ -15,7 +15,7 @@ import {
   Shield, Accessibility, Globe, RotateCcw, Layers, Database, CloudOff,
   CheckCircle, XCircle, AlertCircle, Clock, ChevronDown, ChevronRight,
   Filter, Search, Download, RefreshCw, ExternalLink, Bug, Settings, Play,
-  Loader2, FileDown,
+  Loader2, FileDown, Info,
 } from 'lucide-react';
 import jsPDF from 'jspdf';
 
@@ -1379,10 +1379,112 @@ export default function QADashboard() {
         </div>
 
         {/* ═══════════════════════════════════════════════════ */}
+        {/* Code Reviews — Agent Work Review & Fix Tracking */}
+        {/* ═══════════════════════════════════════════════════ */}
+        <CodeReviewsSection />
+
+        {/* ═══════════════════════════════════════════════════ */}
         {/* Token Usage & Cost Tracking */}
         {/* ═══════════════════════════════════════════════════ */}
         <TokenUsageSection />
       </div>
+    </div>
+  );
+}
+
+function CodeReviewsSection() {
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/qa/reviews')
+      .then(r => r.json())
+      .then(d => { setReviews(d.reviews || []); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, []);
+
+  return (
+    <div id="code-reviews" className="bg-white rounded-xl border border-gray-200 p-5">
+      <div className="flex items-center gap-2 mb-4">
+        <Shield className="w-5 h-5 text-indigo-600" />
+        <h2 className="text-sm font-semibold text-gray-900">Code Reviews & Fix Gate Enforcement</h2>
+        <span className="text-[10px] text-gray-400 ml-auto">Agent 0 enforced</span>
+      </div>
+      {loading ? (
+        <div className="animate-pulse flex items-center gap-2 text-xs text-gray-400">
+          <Loader2 className="w-4 h-4 animate-spin" /> Loading code reviews...
+        </div>
+      ) : reviews.length === 0 ? (
+        <p className="text-xs text-gray-400">No code review data available.</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="border-b border-gray-200 bg-gray-50">
+                <th className="text-left py-2 px-2 font-semibold text-gray-600">Agent</th>
+                <th className="text-left py-2 px-2 font-semibold text-gray-600">Reviewer</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-600">Findings</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-600">Fixes</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-600">PR #</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-600">Review Gate</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-600">Fix Gate</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-600">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {reviews.map((agent: any, idx: number) => {
+                const findingsCount = agent.findings?.length || 0;
+                const fixesCount = agent.findings?.filter((f: any) => f.fix_applied).length || 0;
+                const reviewPassed = agent.agent_0_verification?.review_gate_passed === true;
+                const fixPassed = agent.agent_0_verification?.fix_gate_passed === true;
+                const hasPR = agent.agent_0_verification?.pr_number && agent.agent_0_verification?.pr_number !== '';
+                return (
+                  <tr key={agent.agent_id || idx} className={`border-b border-gray-100 hover:bg-gray-50 ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}>
+                    <td className="py-1.5 px-2 font-medium text-gray-900">{agent.agent_id}</td>
+                    <td className="py-1.5 px-2 text-gray-700">{agent.reviewer_role || '\u2014'}</td>
+                    <td className="py-1.5 px-2 text-center">
+                      <span className={`font-mono ${findingsCount > 0 ? 'text-amber-600' : 'text-green-600'}`}>
+                        {findingsCount}
+                      </span>
+                    </td>
+                    <td className="py-1.5 px-2 text-center">
+                      <span className={`font-mono ${fixesCount < findingsCount ? 'text-red-600' : 'text-green-600'}`}>
+                        {fixesCount}/{findingsCount}
+                      </span>
+                    </td>
+                    <td className="py-1.5 px-2 text-center font-mono text-gray-600">
+                      {hasPR ? agent.agent_0_verification.pr_number : '\u2014'}
+                    </td>
+                    <td className="py-1.5 px-2 text-center">
+                      <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium ${
+                        reviewPassed ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      }`}>
+                        {reviewPassed ? '\u2705 PASS' : '\u274C FAIL'}
+                      </span>
+                    </td>
+                    <td className="py-1.5 px-2 text-center">
+                      <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium ${
+                        fixPassed ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      }`}>
+                        {fixPassed ? '\u2705 PASS' : '\u274C FAIL'}
+                      </span>
+                    </td>
+                    <td className="py-1.5 px-2 text-center">
+                      <StatusBadge status={agent.status || 'unknown'} />
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+      {reviews.length > 0 && (
+        <div className="mt-3 pt-3 border-t border-gray-100 flex items-center gap-2 text-[10px] text-gray-400">
+          <Info className="w-3 h-3" />
+          Agent 0 enforces review + fix gate before Gatekeeper Laws. Agents with failing gates are blocked until human gatekeeper resolves.
+        </div>
+      )}
     </div>
   );
 }

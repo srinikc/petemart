@@ -1,1 +1,1 @@
-node .husky/code-review.cjs && npm test
+node .husky/check-pr-number.cjs && node .husky/code-review.cjs && npm test
