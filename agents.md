@@ -473,6 +473,103 @@ Agent detects issue in its own deliverable
 
 ---
 
+## Universal Commit Message Standard
+
+**Applies to**: ALL agents (0-15) for every git commit.
+
+Every commit MUST include the following metadata fields in its body (after the subject line):
+
+```
+## Component: <feature/component name>
+## Bug/Feature ID: <bug # or feature reference link>
+## Code Review: Done/Not Done
+## Code Review Fix: Done/Not Done
+## Tests Run: <list of test files executed and their results>
+## Fix Details: <brief description of the change>
+## Change Done By: <agent ID or name>
+## Branch: <current branch name>
+## Version: <semantic version if applicable>
+## Tag: <git tag if applicable>
+```
+
+### Smart Test Selection
+Before committing, agents MUST run only the **relevant tests** based on changed files. The pre-commit hook (`run-smart-tests.cjs`) automatically selects matching tests:
+
+| Changed File Pattern | Tests Run |
+|---|---|
+| `app/qa-dashboard/` | API routes |
+| `app/api/` | API routes, contract, helpers |
+| `components/` | All component tests |
+| `supabase/migrations/` | Migration tests |
+| `lib/supabase/` | Data, migration, multi-tenant tests |
+| `lib/` | Utils, API helpers |
+| `middleware`, `auth` | Security headers |
+| `security` | SQLi/XSS + security headers |
+| `whatsapp` | WhatsApp integration |
+| `payment`, `razorpay`, `checkout` | Payment integration |
+| `multi-tenant`, `merchant` | Multi-tenant isolation |
+| `docker`, `kubernetes`, `k8s` | Disaster recovery |
+| `stress`, `load`, `perform` | Stress + performance |
+| Config/system files | Full test suite |
+
+If no specific match is found, the basic utility tests run. System/config changes (`.husky/`, `.github/`, `package.json`, `tsconfig.json`, state ledger files) trigger the full suite.
+
+### Agent 0 Enforcement
+Agent 0 MUST verify the commit message format compliance as part of its compliance audit:
+1. Check that the latest commit on the agent's branch contains all required metadata fields
+2. If missing → set agent status to `"blocked"` with reason "Commit message missing required metadata fields"
+3. If present but any field is empty or `"N/A"` → reject and re-queue
+4. Verify that the listed tests were actually run by checking the commit's associated CI/test output
+
+### Example Commit
+
+```
+feat(ui): add merchant dashboard KPI cards (#47)
+
+## Component: Merchant Dashboard UI
+## Bug/Feature ID: FEAT-MERCHANT-DASH-01
+## Code Review: Done
+## Code Review Fix: Done
+## Tests Run: __tests__/components/ (5 tests, 5 passed), __tests__/api-routes.test.ts (13 tests, 13 passed)
+## Fix Details: Added KPI card components with real-time data fetching from /api/v1/merchant/dashboard
+## Change Done By: Agent 07a (UI Agent)
+## Branch: feature/merchant-dashboard
+## Version: 1.2.0
+## Tag: v1.2.0-rc.1
+```
+
+---
+
+## Universal Data Integrity & Commit Discipline
+
+**Applies to**: ALL agents (0-15) for every file modification.
+
+### The Problem
+Batch-editing critical files (`STATE_MATRIX.json`, `AGENTS.md`, `opencode.json`, agent sandbox files, any `.json`/`.md`) carries risk of structural corruption from tool bugs or script errors. Uncommitted work is vulnerable to loss.
+
+### The Rule: Commit Frequently
+1. **Commit after each meaningful change** to any critical file — do NOT batch hours of work into one giant commit
+2. A "meaningful change" = adding CM items to one agent, updating one section of a doc, fixing one file
+3. Each commit should have a clear, single purpose (visible in its diff)
+
+### Automatic Safeguards
+1. **JSON pre-commit validation** (`.husky/validate-json.cjs`) — every staged `.json` file is parsed and validated before commit. Invalid JSON blocks the commit.
+2. **Commit message validation** (`.husky/check-commit-format.cjs`) — all required metadata fields enforced before commit finalizes.
+3. **Git is the backup** — commit early, commit often. `git checkout HEAD -- <file>` instantly restores the last committed version.
+
+### What To Do If Corruption Happens
+1. **Uncommitted corruption**: `git checkout HEAD -- <file>` — restores last committed version (no data loss if you committed recently)
+2. **Committed corruption**: `git revert <commit-hash>` — safe reversal
+3. **Don't panic** — git retains every version. Nothing is truly lost.
+
+### Agent 0 Enforcement
+Agent 0 MUST verify as part of its compliance audit:
+- That the agent's work is spread across multiple commits (not one monolithic commit)
+- That all staged `.json` files parse correctly before approval
+- If an agent's sandbox directory shows one giant commit touching 50+ files → flag as warning: "Work should be broken into smaller, focused commits"
+
+---
+
 ## Universal Pre-Commit Code Review Gate
 
 **Applies to**: All agents that generate, modify, or review code/tests (7a UI, 7b API, 7c Backend DB, 7d Integration, 8 QA, 11 Customer Onboarding, 12 Marketing, 13 Maintenance)
@@ -498,11 +595,20 @@ git add <files>
        │
        ▼
   ┌─────────────────────────┐
-  │ 3. Unit Tests           │ ← npm test (all 45+ tests)
-  └─────────────────────────┘
+  │ 3. Smart Unit Tests     │ ← node .husky/run-smart-tests.cjs
+  │   (pre-commit hook)     │    selects tests matching changed files
+  └─────────────────────────┘     (falls back to full suite for system files)
        │
        ▼
      Commit succeeds
+       │
+       ▼
+  ┌─────────────────────────┐
+  │ 4. Commit Message Check │ ← commit-msg hook validates:
+  │   (commit-msg hook)     │    - PR number present
+  │                         │    - All metadata fields present
+  │                         │    (## Component:, ## Code Review:, etc.)
+  └─────────────────────────┘
        │
        ▼
   Push feature branch → PR → GitHub code review + CI
@@ -555,6 +661,42 @@ Apply the **detached-process + poll** pattern as described in `.antigravity/skil
 - Tasks where total tool calls < 10 and no single step exceeds 30s
 
 **Decomposition is an exception for heavy operations only.** The goal is to stay within context limits, not to fragment every task into overhead.
+
+---
+
+## Universal Token Conservation & Brevity Mandate
+
+**Applies to**: ALL agents (0-15) and the Command Center interface.
+
+To minimize token usage, avoid context bloat, and reduce costs, every agent MUST adhere to these rules:
+
+### 1. Response Conciseness
+- **Be Direct:** Start answering immediately. No pleasantries, conversational filler, or re-summarizing the task.
+- **Answer Briefing:** Keep explanations to minimum technical details necessary.
+
+### 2. Code Changes & Diffs
+- **No Full-File Output:** Never output an entire file's content after modifying it.
+- **Use Diffs or Target Blocks:** Show only specific lines added/deleted/changed using diff blocks or targeted snippets.
+
+### 3. Tool Usage & Context Management
+- **No Tool Output Mirroring:** Do not repeat tool output (file reads, listings, grep results) back in responses.
+- **Limit Terminal Output:** Filter command output with `head`, `tail`, `grep`, or flags to avoid dumping large traces.
+- **Prune File Reads:** Read only necessary line ranges. Do not read entire large files unless required.
+
+### Hard Rules
+- **Response ≤ 4 lines** per interaction unless user explicitly requests detail.
+- No greetings, sign-offs, pleasantries, or summaries.
+- Code changes MUST use diff blocks only (no full file output).
+- Tool output MUST NOT be mirrored back in responses.
+- File reads MUST be limited to needed line ranges only.
+
+### Enforcement (Agent 0 Compliance Audit)
+- Agent 0 MUST count response lines in each sub-agent's output log.
+- If any response exceeds 4 lines → **auto-fail**, set status to `"blocked"`, reason: `"Brevity violation: response exceeded 4 lines"`.
+- If sub-agent uses full file output instead of diffs → **auto-fail**, reason: `"Brevity violation: full file output instead of diff"`.
+- If sub-agent mirrors tool output → **auto-fail**, reason: `"Brevity violation: tool output mirrored"`.
+- Re-queued agents get ONE re-attempt. Second violation → permanent fail, escalated to human gatekeeper.
+- Command Center (this session): human gatekeeper enforces directly by calling out violations.
 
 ---
 
