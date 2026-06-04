@@ -1,0 +1,169 @@
+{
+  "traceability_metadata": {
+    "version": "1.0",
+    "created_at": "2026-06-04T13:00:00Z",
+    "prd_source": "agents/01_front_office/02_requirement_agent/prd.json",
+    "description": "Maps each agent to the PRD requirement IDs they are responsible for implementing or verifying. Agent 0 validates that each agent's artifacts trace back to these requirements."
+  },
+  "agent_requirement_mapping": {
+    "01_ideation_agent": {
+      "description": "Market research, merchant datasets, business model — feeds into all PRD requirements as foundational input",
+      "input_from": [],
+      "output_requirements": ["REQ-UI-001", "REQ-COM-001", "REQ-COM-002", "REQ-COM-003"],
+      "notes": "Provides merchant catalog structure used across all downstream agents"
+    },
+    "02_requirement_agent": {
+      "description": "Product Requirements Document — defines all 103 requirements",
+      "input_from": ["01_ideation_agent"],
+      "output_requirements": ["ALL"],
+      "notes": "Source of truth for all requirement IDs across the project"
+    },
+    "03_architect_agent": {
+      "description": "Full architecture design covering all 103 requirements, POC scope, cost models",
+      "input_from": ["02_requirement_agent"],
+      "output_requirements": ["REQ-INFRA-001", "REQ-INFRA-002", "REQ-INFRA-003", "REQ-INFRA-004", "REQ-PERF-001", "REQ-PERF-002", "REQ-PERF-003"],
+      "notes": "Blueprint guides implementation agents on HOW to build each requirement"
+    },
+    "04_prototype_agent": {
+      "description": "Proof of Concept with 8 pilot merchants — validates architecture feasibility",
+      "input_from": ["03_architect_agent"],
+      "output_requirements": ["REQ-UI-001", "REQ-UI-002", "REQ-UI-003", "REQ-BE-001", "REQ-BE-002"],
+      "notes": "POC subset — full implementation handled by agents 07a-07d"
+    },
+    "05_program_mgmt_agent": {
+      "description": "Sprint planning, epic/story breakdown, MVP scope — ensures all requirements are scheduled",
+      "input_from": ["02_requirement_agent", "04_prototype_agent"],
+      "output_requirements": ["ALL"],
+      "notes": "Every user story must trace to a PRD requirement ID"
+    },
+    "06_infra_devops_agent": {
+      "description": "CI/CD, Docker, Kubernetes, branch strategy, security workflows",
+      "input_from": ["03_architect_agent", "05_program_mgmt_agent"],
+      "output_requirements": ["REQ-INFRA-001", "REQ-INFRA-002", "REQ-INFRA-003", "REQ-INFRA-004", "REQ-INFRA-005", "REQ-INFRA-006", "REQ-INFRA-007"],
+      "notes": "Infrastructure requirements supporting all agents"
+    },
+    "07a_ui_agent": {
+      "description": "Responsive web and mobile UI implementation",
+      "input_from": ["02_requirement_agent", "03_architect_agent", "05_program_mgmt_agent"],
+      "output_requirements": [
+        "REQ-UI-001", "REQ-UI-002", "REQ-UI-003", "REQ-UI-004", "REQ-UI-005",
+        "REQ-UI-006", "REQ-UI-007", "REQ-UI-008", "REQ-UI-009", "REQ-UI-010",
+        "REQ-UI-011", "REQ-UI-012", "REQ-UI-013", "REQ-UI-014", "REQ-UI-015",
+        "REQ-UI-016", "REQ-UI-017", "REQ-UI-018", "REQ-UI-019", "REQ-UI-020",
+        "REQ-UI-021", "REQ-UI-022", "REQ-UI-023", "REQ-UI-024",
+        "REQ-COM-001", "REQ-COM-002", "REQ-COM-003"
+      ],
+      "notes": "All 24 UI/UX requirements + commerce UI elements"
+    },
+    "07b_api_agent": {
+      "description": "RESTful API endpoints, authentication, rate limiting, middleware",
+      "input_from": ["02_requirement_agent", "03_architect_agent", "05_program_mgmt_agent"],
+      "output_requirements": [
+        "REQ-API-001", "REQ-API-002", "REQ-API-003", "REQ-API-004", "REQ-API-005",
+        "REQ-API-006", "REQ-API-007", "REQ-API-008", "REQ-API-009", "REQ-API-010",
+        "REQ-API-011", "REQ-API-012", "REQ-API-013",
+        "REQ-COM-004", "REQ-COM-005", "REQ-COM-006", "REQ-COM-007", "REQ-COM-008",
+        "REQ-COM-009", "REQ-COM-010"
+      ],
+      "notes": "All 13 API requirements + commerce payment/settlement API"
+    },
+    "07c_backend_db_agent": {
+      "description": "Database schema, indexes, RLS policies, seed data, migrations",
+      "input_from": ["02_requirement_agent", "03_architect_agent", "05_program_mgmt_agent"],
+      "output_requirements": [
+        "REQ-BE-001", "REQ-BE-002", "REQ-BE-003", "REQ-BE-004", "REQ-BE-005",
+        "REQ-BE-006", "REQ-BE-007", "REQ-BE-008", "REQ-BE-009", "REQ-BE-010",
+        "REQ-BE-011", "REQ-BE-012", "REQ-BE-013", "REQ-BE-014", "REQ-BE-015",
+        "REQ-BE-016", "REQ-BE-017", "REQ-BE-018", "REQ-BE-019", "REQ-BE-020",
+        "REQ-BE-021", "REQ-BE-022", "REQ-BE-023", "REQ-BE-024", "REQ-BE-025",
+        "REQ-BE-026",
+        "REQ-MICRO-001", "REQ-MICRO-002", "REQ-MICRO-003", "REQ-MICRO-004",
+        "REQ-MICRO-005", "REQ-MICRO-006", "REQ-MICRO-007", "REQ-MICRO-008"
+      ],
+      "notes": "All 26 backend/data requirements + 8 merchant microsite data requirements"
+    },
+    "07d_integration_agent": {
+      "description": "End-to-end integration of UI + API + DB — validates cross-cutting flows",
+      "input_from": ["07a_ui_agent", "07b_api_agent", "07c_backend_db_agent"],
+      "output_requirements": [
+        "REQ-UI-006", "REQ-API-001", "REQ-API-013",
+        "REQ-BE-001", "REQ-BE-026",
+        "REQ-COM-001", "REQ-COM-002", "REQ-COM-003", "REQ-COM-004", "REQ-COM-010",
+        "REQ-INFRA-003", "REQ-INFRA-005"
+      ],
+      "notes": "End-to-end flow verification across all layers"
+    },
+    "08_qa_agent": {
+      "description": "Test automation, QA framework, E2E tests, defect tracking — verifies all requirements",
+      "input_from": ["02_requirement_agent", "03_architect_agent", "07d_integration_agent"],
+      "output_requirements": ["ALL"],
+      "notes": "Responsible for testing ALL 103 requirements"
+    },
+    "09_production_agent": {
+      "description": "Deployment, release management, Go/No-Go recommendation",
+      "input_from": ["08_qa_agent"],
+      "output_requirements": [
+        "REQ-INFRA-001", "REQ-INFRA-002", "REQ-INFRA-004",
+        "REQ-DR-001", "REQ-DR-002", "REQ-DR-003", "REQ-DR-004",
+        "REQ-PERF-001", "REQ-PERF-002", "REQ-PERF-003"
+      ],
+      "notes": "Disaster recovery, performance, and infrastructure deployment requirements"
+    },
+    "10_tech_pub_agent": {
+      "description": "Documentation, help files, i18n, release notes",
+      "input_from": ["02_requirement_agent", "07a_ui_agent", "07b_api_agent"],
+      "output_requirements": [
+        "REQ-UI-013",
+        "REQ-API-013",
+        "REQ-MICRO-008"
+      ],
+      "notes": "i18n/localization, API documentation, merchant guide documentation"
+    },
+    "11_customer_onboarding_agent": {
+      "description": "Merchant onboarding, CRM, support ticket system",
+      "input_from": ["02_requirement_agent", "05_program_mgmt_agent", "07c_backend_db_agent"],
+      "output_requirements": [
+        "REQ-UI-011", "REQ-UI-014",
+        "REQ-MICRO-001", "REQ-MICRO-002", "REQ-MICRO-003", "REQ-MICRO-004",
+        "REQ-MICRO-005", "REQ-MICRO-006", "REQ-MICRO-007", "REQ-MICRO-008"
+      ],
+      "notes": "Merchant onboarding UI + microsite + analytics"
+    },
+    "12_marketing_agent": {
+      "description": "Social media campaigns, SEO, analytics tracking, growth automation",
+      "input_from": ["02_requirement_agent", "09_production_agent"],
+      "output_requirements": [
+        "REQ-FUNNEL-001", "REQ-FUNNEL-002", "REQ-FUNNEL-003", "REQ-FUNNEL-004",
+        "REQ-PERF-002"
+      ],
+      "notes": "Customer acquisition funnels and SEO"
+    },
+    "13_maintenance_agent": {
+      "description": "Autonomous monitoring, patch management, hotfix deployment",
+      "input_from": ["02_requirement_agent", "09_production_agent"],
+      "output_requirements": [
+        "REQ-MAINT-001", "REQ-MAINT-002", "REQ-MAINT-003", "REQ-MAINT-004", "REQ-MAINT-005"
+      ],
+      "notes": "All maintenance and lifecycle requirements"
+    },
+    "14_finops_agent": {
+      "description": "Cloud cost tracking, budget enforcement, LLM token monitoring",
+      "input_from": ["03_architect_agent", "09_production_agent"],
+      "output_requirements": [
+        "REQ-COM-010",
+        "REQ-INFRA-001"
+      ],
+      "notes": "Cost optimization and budget tracking"
+    },
+    "15_secrets_compliance_agent": {
+      "description": "Secrets scanning, compliance auditing, encryption enforcement",
+      "input_from": ["06_infra_devops_agent", "09_production_agent"],
+      "output_requirements": [
+        "REQ-INFRA-005", "REQ-INFRA-006", "REQ-INFRA-007", "REQ-INFRA-008",
+        "REQ-INFRA-009", "REQ-INFRA-010", "REQ-INFRA-011",
+        "REQ-DATA-001", "REQ-DATA-002", "REQ-DATA-003"
+      ],
+      "notes": "Security, compliance, data privacy requirements"
+    }
+  }
+}

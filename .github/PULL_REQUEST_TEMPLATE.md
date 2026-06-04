@@ -8,6 +8,17 @@
 
 Agent: `[agent_id]`
 
+## Requirements Traceability
+
+<!-- List the PRD requirement IDs this PR implements (see TRACEABILITY_MATRIX.json) -->
+
+- [ ] Artifacts in this PR reference specific PRD requirement IDs
+- [ ] Upstream dependency artifacts were consumed before producing output
+- [ ] All assigned requirement IDs for this agent are addressed
+
+**Requirement IDs covered**:
+<!-- e.g., REQ-UI-001, REQ-UI-002, REQ-UI-003 -->
+
 ## Type of Change
 
 - [ ] Bug fix

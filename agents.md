@@ -420,6 +420,63 @@ No direct commits to `develop` or `main` are permitted.
 
 ---
 
+## Requirements Traceability Across Agents
+
+**Status**: ACTIVE (enforced from 2026-06-04)
+
+Every agent must trace its work products back to specific PRD requirement IDs. This ensures:
+- **No orphan work** — every artifact serves a defined requirement
+- **No gaps** — every requirement is covered by at least one agent
+- **Auditable** — Agent 0 can verify completeness by cross-referencing TRACEABILITY_MATRIX.json
+
+### Mechanism
+
+1. **TRACEABILITY_MATRIX.json** (`00_state_ledger/TRACEABILITY_MATRIX.json`) defines which PRD requirement IDs each agent owns
+2. **Agent 0 checks** (`SUP-008`, `SUP-009`) validate that each agent's artifacts:
+   - Reference their assigned requirement IDs
+   - Consume artifacts from upstream dependencies before producing output
+3. **Per-agent compliance items** (`*_traceability`, `*_input_from_upstream`) verify this for each agent individually
+
+### Agent Input/Output Flow
+
+```
+PRD (02) ──► Architect (03) ──► UI Agent (07a) ──┐
+                │                                   │
+                ├──► API Agent (07b) ──────────────┤──► Integration (07d) ──► QA (08) ──► Prod (09)
+                │                                   │
+                └──► DB Agent (07c) ───────────────┘
+```
+
+Each agent reads upstream artifacts, maps their work to requirement IDs, and Agent 0 validates the chain.
+
+### Compliance Checks in STATE_MATRIX.json
+
+| Check ID | What it verifies |
+|----------|-----------------|
+| `SUP-008` | Agent 0 validates traceability for all agents against TRACEABILITY_MATRIX.json |
+| `SUP-009` | Agent 0 verifies each agent consumed upstream artifacts before producing output |
+| `SUP-010` | TRACEABILITY_MATRIX.json exists and covers all 15 agents |
+| `*_traceability` | Per agent: artifacts reference correct PRD requirement IDs |
+| `*_input_from_upstream` | Per agent: upstream dependency artifacts were consumed |
+
+### PRD Requirement Categories
+
+| Category | ID Prefix | Count | Owning Agents |
+|----------|-----------|-------|---------------|
+| UI/UX | `REQ-UI-*` | 24 | 07a, 04, 11 |
+| API | `REQ-API-*` | 13 | 07b, 10 |
+| Backend/Data | `REQ-BE-*` | 26 | 07c |
+| Commerce | `REQ-COM-*` | 10 | 07a, 07b, 14 |
+| Infrastructure | `REQ-INFRA-*` | 11 | 06, 09, 14, 15 |
+| Performance | `REQ-PERF-*` | 3 | 09, 12 |
+| Maintenance | `REQ-MAINT-*` | 5 | 13 |
+| Disaster Recovery | `REQ-DR-*` | 4 | 09 |
+| Funnels | `REQ-FUNNEL-*` | 4 | 12 |
+| Merchant Microsite | `REQ-MICRO-*` | 8 | 07c, 11 |
+| Data Privacy | `REQ-DATA-*` | 3 | 15 |
+
+---
+
 ## Universal Agent Output Requirements
 
 The following requirements apply to ALL agents (0-15) upon task completion:
