@@ -117,7 +117,8 @@ jobs:
   supabase-migrate:
     name: 🗄️ Supabase Migration (${{ needs.resolve-environment.outputs.environment }})
     needs: [resolve-environment, vercel-deploy]
-    if: secrets.SUPABASE_ACCESS_TOKEN != ''
+    if: false
+    # Disabled: needs SUPABASE_ACCESS_TOKEN + SUPABASE_PROJECT_REF + SUPABASE_DB_PASSWORD secrets in GitHub
     runs-on: ubuntu-latest
     environment:
       name: ${{ needs.resolve-environment.outputs.environment }}
