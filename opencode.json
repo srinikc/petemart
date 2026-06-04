@@ -6,7 +6,8 @@
   "instructions": [
     "HARD RULE: Maximum 4 response lines. No greetings. No summaries. No pleasantries. Start answering immediately. This is enforced — violations are non-compliance.",
     "context_lake/latest.json",
-    "context_lake/system_instructions.md"
+    "context_lake/system_instructions.md",
+    "context_lake/tool_efficiency.md"
   ],
   "experimental": {
     "hook": {
