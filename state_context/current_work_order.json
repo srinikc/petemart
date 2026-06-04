@@ -1,0 +1,11 @@
+{
+  "work_order_id": "WO-20260603-001",
+  "source": "command_center",
+  "target_agent": "00_supervisor_agent",
+  "priority": "high",
+  "instructions": "Deploy the main Next.js app to Vercel production.\n\nCurrent state:\n- Vercel CLI (npx vercel) IS available — v54.7.1\n- Human gatekeeper IS logged into Vercel\n- .env.example created with all required vars documented\n- .env.local created (blank) — human needs to fill in real Supabase credentials\n- project has vercel:deploy script in package.json\n\nSteps:\n1. Ask human gatekeeper to fill NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY in .env.local\n   - Tell them where to find these: Supabase Dashboard → Project Settings → API\n2. Ask human gatekeeper if they have an existing Vercel project to link, or should we create a new one\n3. Create vercel.json in project root (standard Next.js config)\n4. Run npx vercel link (or vercel deploy with --prod)\n5. Set Supabase env vars in Vercel Dashboard → Project Settings → Environment Variables\n6. Run npm run build to verify\n7. Run npx vercel --prod to deploy\n8. Verify QA dashboard loads at deployed URL\n9. Write deployment URL and results to current_work_order.json result_log\n\nDeferred for later (Phase 2):\n- Secrets manager (Doppler/Vault)\n- Custom domain\n- CDN configuration",
+  "context": "Files created during this session: lib/storage.ts, app/api/token-usage/route.ts, app/api/qa/results/route.ts, app/api/qa/push-results/route.ts, .env.example, .env.local, docs/secrets-management-comparison.md. QA dashboard page.tsx was updated to fetch from API instead of static imports. Token Usage section added to dashboard.",
+  "dispatched_at": "2026-06-03T13:30:00+05:30",
+  "status": "idle",
+  "result_log": null
+}

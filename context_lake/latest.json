@@ -1,0 +1,44 @@
+{
+  "latest_entry": "lake/2026-06-03/2026-06-03T19-47-58_commit-standard-smart-tests-json-validation",
+  "window_name": "commit-standard-smart-tests-json-validation",
+  "captured_at": "2026-06-03T14:17:52.221344+00:00",
+  "git_branch": "feature/ui-redesign-v2",
+  "git_sha": "c086af5",
+  "last_commit": "feat(commit): enforce commit message standard with smart test selection and Agent 0 compliance (#46)",
+  "conversation": {
+    "file": "20260603-18-52-16-Zen-account-switch-strategy-fo.md",
+    "exchanges": 39,
+    "goal": "i can shift to deepseek v4 flash free in day till it gets expired and then shift to zen account right? also can switch to zen with claude only for agent 03 as and when required not everytime.",
+    "last_query": "does the listing out commands, file contents, change and others things in sessio window add up to token count because it is all verbose, if it affects, then we can lower teh details as currently i see",
+    "last_response": "Done. Added `textVerbosity: \"low\"` and `reasoningSummary: \"auto\"` for both `deepseek-v4-flash` and `deepseek-v4-flash-free` via Zen, with the default model set to the free tier.",
+    "topics": [
+      "admin",
+      "ai",
+      "api",
+      "auth",
+      "db",
+      "migration",
+      "model",
+      "order",
+      "schema",
+      "test",
+      "token",
+      "vercel"
+    ],
+    "done_mentions": 9,
+    "pending_mentions": 2,
+    "messages": 3
+  },
+  "state_files": [
+    {
+      "path": "00_state_ledger\\STATE_MATRIX.json",
+      "summary": "69% complete | 8/16 agents done"
+    },
+    {
+      "path": "00_state_ledger\\AGENT_REGISTRY.json",
+      "summary": "state file"
+    }
+  ],
+  "agent_count": 19,
+  "recent_sessions": []
+}

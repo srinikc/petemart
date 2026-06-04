@@ -1,7 +1,20 @@
 {
   "$schema": "https://opencode.ai",
   "autoupdate": true,
+  "model": "opencode/deepseek-v4-flash-free",
   "plugin": ["opencode-autosave-conversation", "@slkiser/opencode-quota"],
+  "instructions": [
+    "HARD RULE: Maximum 4 response lines. No greetings. No summaries. No pleasantries. Start answering immediately. This is enforced — violations are non-compliance.",
+    "context_lake/latest.json",
+    "context_lake/system_instructions.md"
+  ],
+  "experimental": {
+    "hook": {
+      "session_completed": [
+        { "command": ["python", "context_lake/capture.py", "--window", "session-completed", "--project-root", "."] }
+      ]
+    }
+  },
   "mcp": {
     "sonarqube": {
       "type": "remote",

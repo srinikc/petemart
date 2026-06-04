@@ -11,7 +11,7 @@
       "Store Inventory Datasets v1.1",
       "Estimated Merchants v2.1"
     ],
-    "total_requirements": 103,
+    "total_requirements": 111,
     "total_workflows": 13,
     "total_use_cases": 65,
     "total_personas": 5
@@ -43,11 +43,12 @@
         "Maintenance/Lifecycle": 5,
         "Disaster_Recovery": 4,
         "Funnels/Onboarding": 4,
+        "Merchant_Microsite": 8,
         "Data_Privacy/Compliance": 3
       },
       "by_priority": {
-        "P0_Critical": 42,
-        "P1_High": 41,
+        "P0_Critical": 45,
+        "P1_High": 45,
         "P2_Medium": 16,
         "P3_Low": 4
       }
@@ -433,9 +434,24 @@
           {"id": "REQ-FUNNEL-004", "title": "Progressive Web App (PWA)", "priority": "P1-High", "cost_ref": ["OC-INFRA-01"]}
         ]
       },
+      "merchant_microsite": {
+        "count": 8,
+        "category_label": "5.10 Merchant Microsite & Payment Settlement",
+        "priority_breakdown": {"P0": 3, "P1": 4, "P2": 1, "P3": 0},
+        "items": [
+          {"id": "REQ-MICRO-001", "title": "Merchant Microsite \u2014 Storefront URL", "priority": "P1-High", "personas": ["PERS-ADM-001", "PERS-MER-001"], "workflow_ref": "WF-ONBOARD-001", "cost_ref": ["OC-MICRO-01"]},
+          {"id": "REQ-MICRO-002", "title": "Merchant Microsite \u2014 Product Catalog Management", "priority": "P1-High", "personas": ["PERS-MER-001"], "workflow_ref": "WF-STORE-SETUP-001", "cost_ref": ["OC-MICRO-02"]},
+          {"id": "REQ-MICRO-003", "title": "Merchant Microsite \u2014 Order Management Dashboard", "priority": "P1-High", "personas": ["PERS-MER-001"], "workflow_ref": "WF-ORDER-001", "cost_ref": ["OC-MICRO-03"]},
+          {"id": "REQ-MICRO-004", "title": "Merchant Microsite \u2014 Inventory Sync", "priority": "P1-High", "personas": ["PERS-MER-001"], "workflow_ref": "WF-ORDER-001", "cost_ref": ["OC-MICRO-04"]},
+          {"id": "REQ-MICRO-005", "title": "Merchant Microsite \u2014 GST-Compliant Invoicing", "priority": "P0-Critical", "personas": ["PERS-MER-001"], "workflow_ref": "WF-CHECKOUT-001", "cost_ref": ["OC-MICRO-05"]},
+          {"id": "REQ-MICRO-006", "title": "Merchant Microsite \u2014 Sales Analytics", "priority": "P2-Medium", "personas": ["PERS-MER-001"], "workflow_ref": "WF-ANALYTICS-001", "cost_ref": ["OC-MICRO-06"]},
+          {"id": "REQ-MICRO-007", "title": "Merchant Microsite \u2014 Razorpay Subaccount Onboarding", "priority": "P0-Critical", "personas": ["PERS-MER-001"], "workflow_ref": "WF-ONBOARD-001", "cost_ref": ["OC-MICRO-07"]},
+          {"id": "REQ-MICRO-008", "title": "Merchant Microsite \u2014 Payment Settlement & Holding", "priority": "P0-Critical", "personas": [], "workflow_ref": "WF-SETTLEMENT-001", "cost_ref": ["OC-MICRO-08"]}
+        ]
+      },
       "data_privacy": {
         "count": 3,
-        "category_label": "5.10 Data Licensing, Privacy & Compliance",
+        "category_label": "5.11 Data Licensing, Privacy & Compliance",
         "priority_breakdown": {"P0": 1, "P1": 0, "P2": 1, "P3": 1},
         "items": [
           {"id": "REQ-DATA-001", "title": "Customer Data Inventory & Consent Management", "priority": "P0-Critical", "cost_ref": ["OC-DATA-11", "DC-SETUP-11"]},
@@ -461,7 +477,15 @@
       {"ref": "OC-DATA-11", "name": "Data Privacy & Compliance", "low": 5000, "high": 8000, "description": "Consent management, DPDP Act compliance"},
       {"ref": "OC-LOCAL-12", "name": "Localization & i18n", "low": 3000, "high": 5000, "description": "Translation management, locale files"},
       {"ref": "OC-TOOLS-13", "name": "Security & Patch Management", "low": 2000, "high": 4000, "description": "Snyk/Dependabot, license compliance, SBOM"},
-      {"ref": "OC-API-05", "name": "Bullion Rate API Subscription", "low": 500, "high": 2000, "description": "Live gold/silver rate feed from IndiaBulls/MCX/IBJA", "is_new": true}
+      {"ref": "OC-API-05", "name": "Bullion Rate API Subscription", "low": 500, "high": 2000, "description": "Live gold/silver rate feed from IndiaBulls/MCX/IBJA", "is_new": true},
+      {"ref": "OC-MICRO-01", "name": "Microsite — Storefront URL Generation", "low": 0, "high": 0, "description": "Subdomain/Directory URL generation for merchant microsites"},
+      {"ref": "OC-MICRO-02", "name": "Microsite — Product Catalog Management", "low": 0, "high": 0, "description": "CRUD interface for merchant product catalog"},
+      {"ref": "OC-MICRO-03", "name": "Microsite — Order Management Dashboard", "low": 0, "high": 0, "description": "Order listing, status management for merchants"},
+      {"ref": "OC-MICRO-04", "name": "Microsite — Inventory Sync", "low": 0, "high": 0, "description": "Inventory synchronization between merchant and platform"},
+      {"ref": "OC-MICRO-05", "name": "Microsite — GST-Compliant Invoicing", "low": 0, "high": 0, "description": "Auto-invoicing with GST compliance"},
+      {"ref": "OC-MICRO-06", "name": "Microsite — Sales Analytics", "low": 0, "high": 0, "description": "Sales performance dashboard for merchants"},
+      {"ref": "OC-MICRO-07", "name": "Microsite — Razorpay Subaccount Onboarding", "low": 0, "high": 0, "description": "Merchant Razorpay subaccount creation for direct settlements"},
+      {"ref": "OC-MICRO-08", "name": "Microsite — Payment Settlement & Holding", "low": 0, "high": 0, "description": "Automated settlement and escrow management"}
     ]
   },
   "deployment_costs": {
@@ -485,7 +509,7 @@
   "quality_guardrails": {
     "requirement_cost_coverage": {
       "status": "PASS",
-      "total_requirement_ids": 103,
+      "total_requirement_ids": 111,
       "all_have_operational_cost": true,
       "all_have_deployment_cost": true,
       "verification_detail": [
@@ -498,6 +522,7 @@
         {"range": "REQ-MAINT-001 through REQ-MAINT-005", "count": 5, "operational": true, "deployment": true},
         {"range": "REQ-DR-001 through REQ-DR-004", "count": 4, "operational": true, "deployment": true},
         {"range": "REQ-FUNNEL-001 through REQ-FUNNEL-004", "count": 4, "operational": true, "deployment": true},
+        {"range": "REQ-MICRO-001 through REQ-MICRO-008", "count": 8, "operational": true, "deployment": true},
         {"range": "REQ-DATA-001 through REQ-DATA-003", "count": 3, "operational": true, "deployment": true}
       ]
     },

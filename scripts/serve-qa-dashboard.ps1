@@ -29,11 +29,16 @@ if ($ForceRebuild -or !(Test-Path (Join-Path $root ".next"))) {
   Pop-Location
 }
 
-# Start detached process
+# Start detached process using Next.js binary directly (avoids npx module resolution issues)
 Write-Host "Starting server on port $Port..." -ForegroundColor Green
+$nextBin = Join-Path $root "node_modules\.bin\next.cmd"
+if (!(Test-Path $nextBin)) {
+  Write-Host "ERROR: next.cmd not found at $nextBin" -ForegroundColor Red
+  exit 1
+}
 $psi = New-Object System.Diagnostics.ProcessStartInfo
-$psi.FileName = "npx.cmd"
-$psi.Arguments = "next start -p $Port"
+$psi.FileName = $nextBin
+$psi.Arguments = "start -p $Port"
 $psi.WorkingDirectory = $root
 $psi.UseShellExecute = $false
 $psi.CreateNoWindow = $true
@@ -45,20 +50,29 @@ $proc = [System.Diagnostics.Process]::Start($psi)
 $proc.Id | Out-File -FilePath $pidFile -Encoding ascii
 Write-Host "Server PID: $($proc.Id)" -ForegroundColor Green
 
-# Wait and verify
-Start-Sleep -Seconds 8
-$serverLog = Join-Path (Join-Path $root ".next") "server-start.log"
-$proc.StandardOutput.ReadToEnd() | Out-File $serverLog
-$proc.StandardError.ReadToEnd() | Out-File ($serverLog -replace "\.log$", ".err")
+# Allow a brief moment for server to initialize before first check
+Start-Sleep -Seconds 2
 
-try {
-  $r = Invoke-WebRequest -Uri "http://localhost:$Port/qa-dashboard" -UseBasicParsing -TimeoutSec 10 -ErrorAction Stop
-  if ($r.StatusCode -eq 200) {
-    Write-Host "QA Dashboard: HTTP 200 OK ($($r.Content.Length) bytes)" -ForegroundColor Green
-    Write-Host "→ http://localhost:$Port/qa-dashboard" -ForegroundColor Cyan
-    exit 0
+# Wait and verify (retry loop: up to 5 attempts × 3s intervals = ~15s total)
+$maxRetries = 5
+$retrySeconds = 3
+
+for ($i = 1; $i -le $maxRetries; $i++) {
+  Write-Host "Verification attempt $i of $maxRetries..." -ForegroundColor Cyan
+  try {
+    $r = Invoke-WebRequest -Uri "http://localhost:$Port/qa-dashboard" -UseBasicParsing -TimeoutSec 5 -ErrorAction Stop
+    if ($r.StatusCode -eq 200) {
+      Write-Host "QA Dashboard: HTTP 200 OK ($($r.Content.Length) bytes)" -ForegroundColor Green
+      Write-Host "→ http://localhost:$Port/qa-dashboard" -ForegroundColor Cyan
+      exit 0
+    }
+  } catch {
+    if ($i -lt $maxRetries) {
+      Write-Host "  Not ready yet (attempt $i/$maxRetries). Waiting ${retrySeconds}s..." -ForegroundColor Yellow
+      Start-Sleep -Seconds $retrySeconds
+    }
   }
-} catch {
-  Write-Host "Dashboard verification FAILED: $_" -ForegroundColor Red
-  exit 1
 }
+
+Write-Host "Dashboard verification FAILED after $maxRetries attempts." -ForegroundColor Red
+exit 1

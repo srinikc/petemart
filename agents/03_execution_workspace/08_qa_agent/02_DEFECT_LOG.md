@@ -92,3 +92,27 @@
 | In-memory cart | Cart data lost on server restart | Acceptable for POC; Supabase cart in v1 |
 | Mock auth | JWT tokens are simulated | Supabase Auth integration in v1 |
 | No payment gateway | Razorpay test keys configured but not integrated | Payment flows simulated in POC |
+
+---
+
+## Auto-Captured Defects — Custom Run (2026-06-02 13:59)
+
+| ID | Component | Description |
+|----|-----------|-------------|
+| **DEF-005** | unit | Auto-captured: unit tests failed |
+| **DEF-006** | integration | Auto-captured: integration tests failed |
+| **DEF-007** | api-contract | Auto-captured: api-contract tests failed |
+| **DEF-008** | regression | Auto-captured: regression tests failed |
+
+
+---
+
+## Auto-Captured Defects — Custom Run (2026-06-02 15:14)
+
+| ID | Component | Description |
+|----|-----------|-------------|
+| **DEF-009** | unit | Auto-captured: unit tests failed |
+| **DEF-010** | integration | Auto-captured: integration tests failed |
+| **DEF-011** | api-contract | Auto-captured: api-contract tests failed |
+| **DEF-012** | regression | Auto-captured: regression tests failed |
+

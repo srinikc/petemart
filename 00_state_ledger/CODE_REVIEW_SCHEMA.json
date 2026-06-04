@@ -1,0 +1,65 @@
+{
+  "$schema": "https://opencode.ai/schemas/code-review-log-v1.json",
+  "title": "Agent Code Review Log",
+  "description": "Standardized log for tracking role-based code reviews and associated fixes per agent. Used by Agent 0 (Supervisor) to enforce the review+fix gate before approval.",
+  "version": "1.0",
+  "agent_mappings": {
+    "01_ideation_agent": { "reviewer_role": "Senior Product Marketing Manager" },
+    "02_requirement_agent": { "reviewer_role": "Senior Product Manager / VP of Product" },
+    "03_architect_agent": { "reviewer_role": "Senior Solution Architect / CTO" },
+    "04_prototype_agent": { "reviewer_role": "Senior Prototyping Engineer / Tech Lead" },
+    "05_program_mgmt_agent": { "reviewer_role": "Senior Program Manager / Delivery Head" },
+    "06_infra_devops_agent": { "reviewer_role": "Senior DevOps Architect / Platform Engineer" },
+    "07a_ui_agent": { "reviewer_role": "Senior Frontend Engineer / UI Architect" },
+    "07b_api_agent": { "reviewer_role": "Senior Backend Engineer / API Architect" },
+    "07c_backend_db_agent": { "reviewer_role": "Senior Database Engineer / DBA" },
+    "07d_integration_agent": { "reviewer_role": "Senior Integration Engineer / Systems Architect" },
+    "08_qa_agent": { "reviewer_role": "Senior QA Architect / Test Manager" },
+    "09_production_agent": { "reviewer_role": "Senior Release Manager / DevOps Lead" },
+    "10_tech_pub_agent": { "reviewer_role": "Senior Technical Writer / Documentation Lead" },
+    "11_customer_onboarding_agent": { "reviewer_role": "Senior Customer Success Manager / Operations Lead" },
+    "12_marketing_agent": { "reviewer_role": "Senior Marketing Manager / Growth Lead" },
+    "13_maintenance_agent": { "reviewer_role": "Senior SRE / Support Lead" },
+    "14_finops_agent": { "reviewer_role": "Senior FinOps Analyst / Cloud Cost Lead" },
+    "15_secrets_compliance_agent": { "reviewer_role": "Senior Security Engineer / Compliance Officer" }
+  },
+  "required_fields": [
+    "agent_id",
+    "review_log",
+    "agent_0_verification"
+  ],
+  "review_entry_schema": {
+    "review_id": "R-{agent_short_code}-{NNN} (e.g., R-UI-001)",
+    "reviewer_role": "The role that performed this review (must match agent_mappings)",
+    "reviewed_by": "Name or system identifier of reviewer",
+    "reviewed_at": "ISO 8601 timestamp",
+    "pr_number": "GitHub PR number (e.g., #42) or null if no PR",
+    "status": "open | changes_requested | approved",
+    "findings": [
+      {
+        "finding_id": "F-{NNN}",
+        "category": "logic | security | performance | style | completeness | test | other",
+        "description": "Description of the issue found",
+        "file_path": "Relative path to affected file",
+        "line_numbers": "Line numbers or range",
+        "severity": "critical | high | medium | low | info"
+      }
+    ],
+    "fixes": [
+      {
+        "finding_id": "F-{NNN}",
+        "fix_description": "What was changed to address the finding",
+        "fix_commit": "Commit SHA or null if not yet committed",
+        "fix_timestamp": "ISO 8601 timestamp",
+        "fix_status": "pending | applied | verified",
+        "verified_by": "Who verified the fix"
+      }
+    ]
+  },
+  "agent_0_verification": {
+    "review_gate_passed": false,
+    "fix_gate_passed": false,
+    "verified_at": null,
+    "notes": null
+  }
+}

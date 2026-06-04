@@ -1,0 +1,23 @@
+[
+  {
+    "notification_id": "FAIL-2026-06-02T15-14-45-858Z",
+    "agent_source": "08_qa_agent",
+    "event_type": "test_failure",
+    "timestamp": "2026-06-02T15:14:45.858Z",
+    "tier": "custom",
+    "failed_count": 4,
+    "defect_ids": [
+      "DEF-009",
+      "DEF-010",
+      "DEF-011",
+      "DEF-012"
+    ],
+    "failed_types": [
+      "unit",
+      "integration",
+      "api-contract",
+      "regression"
+    ],
+    "message": "4 test failure(s) in Custom tier. Defects created: DEF-009, DEF-010, DEF-011, DEF-012"
+  }
+]

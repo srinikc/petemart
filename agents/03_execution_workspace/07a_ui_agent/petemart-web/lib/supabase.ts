@@ -36,6 +36,16 @@ export interface Merchant {
   rating: number;
   distance?: number;
   digital_readiness?: string;
+  // Extended contact info for merchant microsite
+  phone?: string;
+  whatsapp?: string;
+  address?: string;
+  map_link?: string;
+  // GST details
+  gst_number?: string;
+  // Collections
+  collections?: string[];
+  is_new_arrival?: boolean;
 }
 
 export interface Market {
@@ -65,6 +75,12 @@ export interface Product {
   rating?: number;
   review_count?: number;
   is_active: boolean;
+  // Collection tags
+  collection_tags?: string[];
+  is_new_arrival?: boolean;
+  is_festival_collection?: boolean;
+  is_wedding_collection?: boolean;
+  festival_name?: string;
 }
 
 export interface CartItem {

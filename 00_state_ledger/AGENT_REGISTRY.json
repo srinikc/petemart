@@ -4,7 +4,12 @@
     "output_contract": "dual_format_strict",
     "required_extensions": [".md", ".json"],
     "state_router": "00_state_ledger/STATE_MATRIX.json",
-    "change_history": "00_state_ledger/CHANGE_REQUEST.json"
+    "change_history": "00_state_ledger/CHANGE_REQUEST.json",
+    "universal_law": {
+      "version": "1.0",
+      "rule": "Supervisor-Only Orchestration",
+      "description": "Agent 0 is the sole entity authorized to launch, orchestrate, monitor, and verify any worker agent (1-15). No human operator or external system may directly invoke worker agents."
+    }
   },
   "agents": {
     "01_ideation_agent": {

@@ -1,0 +1,3225 @@
+{
+  "capture_version": "1.0",
+  "window_name": "commit-standard-smart-tests-json-validation",
+  "project": {
+    "project_root": "C:\\Users\\ADMIN\\Documents\\Srinikc\\AI Products\\petemart-agentic-framework",
+    "project_name": "srinikc-petemart",
+    "os": "Windows",
+    "python_version": "3.14.5 (tags/v3.14.5:5607950, May 10 2026, 10:43:50) [MSC v.1944 64 bit (AMD64)]",
+    "captured_at": "2026-06-03T14:17:52.221344+00:00",
+    "git": {
+      "remote_url": "https://github.com/srinikc/petemart.git",
+      "branch": "feature/ui-redesign-v2",
+      "head_sha": "c086af5ee27bebbf81636874bed71a2d87a231ed",
+      "head_short_sha": "c086af5",
+      "last_commit_msg": "feat(commit): enforce commit message standard with smart test selection and Agent 0 compliance (#46)"
+    }
+  },
+  "opencode_sessions": [],
+  "state_files": [
+    {
+      "path": "00_state_ledger\\STATE_MATRIX.json",
+      "content": {
+        "project_metadata": {
+          "project_name": "PeteMart",
+          "version": "2.0",
+          "factory_root": "C:/Users/ADMIN/Documents/Srinikc/AI Products/petemart-agentic-framework",
+          "total_agents": 16,
+          "supervisor_agent_version": "1.0"
+        },
+        "supervisor_control": {
+          "universal_law": {
+            "version": "1.0",
+            "description": "Supervisor-Only Orchestration \u2014 Agent 0 is the sole entity authorized to launch, orchestrate, monitor, and verify any worker agent (1-15). No human operator or external system may directly invoke worker agents.",
+            "last_amended": "2026-06-03T00:00:00Z",
+            "amended_by": "Human Gatekeeper (Srinikc)",
+            "enforcement": "All feature requests, bug fixes, or tasks must be routed through Agent 0. Control center interface communicates only with human operator."
+          },
+          "gatekeeper_laws": {
+            "version": "1.0",
+            "description": "Three automated verification layers run before ANY agent is approved \u2014 Build/Lint, Test Coverage, File Persistence. Single failure trips circuit breaker immediately.",
+            "added_at": "2026-06-03T13:17:00Z",
+            "enforcement": "Layer 1: npm run lint + npm run build (non-zero exit = fail). Layer 2: npm test (coverage below threshold = fail). Layer 3: filesystem check for artifacts_emitted[] > 0 bytes. Failure of any layer: trip breaker, append error to state_context, freeze pipeline, notify human gatekeeper."
+          },
+          "self_verification_protocol": {
+            "version": "1.0",
+            "description": "Every agent must self-verify its own deliverables before declaring done. If verification fails, agent self-corrects (up to 3 iterations). If still stuck, escalates to Agent 0 as 'blocked'. Agent 0 checks self_verification_report.json before approval.",
+            "added_at": "2026-06-03T13:17:00Z",
+            "enforcement": "Step 1: Self-verification scan (agent-type-specific checks). Step 2: Self-correction loop (up to 3x). Step 3: Escalate if stuck (set status=blocked). Step 4: Emit self_verification_report.json. Agent 0 rejects agents missing/failing self-verification."
+          },
+          "agent_00_supervisor": {
+            "status": "active",
+            "last_cycle_timestamp": "2026-06-03T13:17:00Z",
+            "cycle_count": 5,
+            "max_cycles_before_break": 10,
+            "cool_down_seconds": 30,
+            "last_error": null,
+            "delegation_protocol_version": "1.0",
+            "delegation_protocol_updated_at": "2026-06-03T13:17:00Z",
+            "delegation_protocol_description": "Agent 0 now reads work orders from state_context/current_work_order.json, launches sub-agents as detached background processes logging to disk, and returns control immediately. Command Center Operating Model added to agents.md.",
+            "gatekeeper_laws_version": "1.0",
+            "gatekeeper_laws_enforced": true,
+            "gatekeeper_laws_added_at": "2026-06-03T13:17:00Z",
+            "self_verification_enforcement_version": "1.0",
+            "self_verification_enforced": true,
+            "self_verification_added_at": "2026-06-03T13:17:00Z",
+            "code_review_enforcement_version": "1.0",
+            "code_review_enforced": true,
+            "code_review_enforcement_added_at": "2026-06-03T17:49:00Z",
+            "code_review_enforcement_description": "Every agent must have CODE_REVIEW_LOG.json in its sandbox directory. Agent 0 verifies review_gate_passed and fix_gate_passed before allowing approval. All reviews performed by designated Senior role. Every finding must have a verified fix."
+          },
+          "loop_guardrails": {
+            "max_sequential_executions_per_agent": 3,
+            "max_total_cycles_lifetime": 100,
+            "circuit_breaker_threshold": 5,
+            "circuit_breaker_reason": null,
+            "circuit_breaker_tripped_at": null,
+            "gatekeeper_breaker_is_immediate": true,
+            "gatekeeper_breaker_note": "Gatekeeper Law failures (lint/build error, coverage below threshold, missing files) trip circuit breaker on single failure \u2014 overrides threshold of 5.",
+            "token_budget_per_cycle_est": 100000,
+            "cooldown_between_cycles_s": 5,
+            "max_concurrent_agents": 3
+          },
+          "pipeline_strategy": {
+            "auto_progress_within_phase": true,
+            "halt_at_approval_gates": true,
+            "halt_at_expert_review": true,
+            "halt_at_tech_stack_decision": true,
+            "halt_at_cost_approval": true,
+            "halt_at_mvp_definition": true,
+            "halt_at_production_deployment": true
+          },
+          "approval_gates": [
+            {
+              "gate_id": "GATE-TECH-STACK-01",
+              "name": "Tech Stack Selection & Evaluation",
+              "triggered_by": "03_architect_agent",
+              "description": "Architecture blueprint defines tech stack. Human must approve tech choices (Supabase, Railway, Vercel, React Native, Stitch, etc.) before prototyping begins.",
+              "status": "approved",
+              "approved": true,
+              "approved_by": "Human Gatekeeper (Srinikc)",
+              "approved_at": "2026-05-30T18:45:00Z",
+              "notes": "Approved with change: Replace Gemini AI with Opencode/DeepSeek platform. WhatsApp included in POC."
+            },
+            {
+              "gate_id": "GATE-COSTING-01",
+              "name": "Infrastructure Costing & Account Setup",
+              "triggered_by": "03_architect_agent",
+              "description": "Cloud provider selection, pricing tier evaluation, account provisioning. Requires review of cost estimates vs budget.",
+              "status": "approved",
+              "approved": true,
+              "approved_by": "Human Gatekeeper (Srinikc)",
+              "approved_at": "2026-05-30T18:45:00Z",
+              "notes": "Approved. \u20b90/month POC infra cost confirmed. Opencode/DeepSeek platform replaces Gemini AI (no additional cost)."
+            },
+            {
+              "gate_id": "GATE-MVP-01",
+              "name": "MVP Scope Definition",
+              "triggered_by": "05_program_mgmt_agent",
+              "description": "Formal MVP boundary drawn. Release milestones defined. Requires sign-off from product, engineering, and business stakeholders.",
+              "status": "approved",
+              "approved": true,
+              "approved_by": "Human Gatekeeper (Srinikc)",
+              "approved_at": "2026-05-30T19:15:00Z",
+              "notes": "MVP scope approved. Auth-first approach validated. Sprints 1-6 (12 weeks) greenlit."
+            },
+            {
+              "gate_id": "GATE-PRODUCTION-01",
+              "name": "Production Deployment Go/No-Go",
+              "triggered_by": "09_production_agent",
+              "description": "Final sign-off before production rollout. QA must pass, security scan must clear, stakeholders must approve.",
+              "status": "pending",
+              "approved": false
+            }
+          ]
+        },
+        "pipeline_control": {
+          "current_phase": "phase_one",
+          "active_agents": [
+            "08_qa_agent"
+          ],
+          "is_pipeline_paused": false,
+          "last_sync_timestamp": "2026-06-02T18:30:00Z",
+          "work_order_status": "awaiting_approval",
+          "work_order_in_progress": "WORK-ORDER-QA-AUTO-CAPTURE-BG-PROCESS-v3.0",
+          "dashboard_summary": {
+            "total_agents": 16,
+            "agents_completed": 8,
+            "agents_in_progress": 0,
+            "agents_pending": 5,
+            "agents_awaiting_review": 3,
+            "agents_failed": 0,
+            "overall_progress_pct": 69,
+            "last_milestone": "QA v3.3 BUGFIXES COMPLETE: Agent 08 dispatched and completed ITEM-7 (tier capture fix), ITEM-8 (CSV run-scope filter), ITEM-9 (Test Summary filter). Dashboard verified: TypeScript \u2705, Tests 148/148 \u2705, /qa-dashboard HTTP 200 \u2705. Awaiting HITL approval."
+          }
+        },
+        "agent_states": {
+          "00_supervisor_agent": {
+            "agent_id": "00_supervisor_agent",
+            "phase": "system",
+            "pool": "system",
+            "status": "idle",
+            "dependencies": [],
+            "requires_human_approval": false,
+            "approved": true,
+            "role": "Senior Program Manager / Pipeline Orchestrator & Compliance Auditor",
+            "last_artifact_emitted": null,
+            "last_activity_timestamp": null,
+            "compliance_checklist": [
+              {
+                "id": "SUP-001",
+                "check": "STATE_MATRIX.json is readable and valid JSON",
+                "type": "system_health",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "SUP-002",
+                "check": "AGENT_REGISTRY.json contract matches STATE_MATRIX.json agent list",
+                "type": "system_health",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "SUP-CR-001",
+                "check": "CODE_REVIEW_LOG.json exists in agent sandbox directory",
+                "type": "artifact",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "SUP-CR-002",
+                "check": "CODE_REVIEW_LOG.json review_gate_passed is true (all reviews completed by designated role)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "SUP-CR-003",
+                "check": "CODE_REVIEW_LOG.json fix_gate_passed is true (all review findings have verified fixes)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "SUP-CM-001",
+                "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "SUP-CM-002",
+                "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              }
+            ],
+            "notes": "Sr. Program Manager: Orchestrates pipeline AND audits compliance for all 15 agents. Evaluates compliance_checklist before marking any agent approved."
+          },
+          "01_ideation_agent": {
+            "phase": "phase_one",
+            "pool": "async_pool",
+            "status": "approved",
+            "dependencies": [],
+            "input_contract": [],
+            "output_contract": [
+              {
+                "path": "01_front_office/01_ideation_agent/idea_proposal.md",
+                "description": "Market research & UVP document"
+              },
+              {
+                "path": "01_front_office/01_ideation_agent/business_revenue_model.json",
+                "description": "Monetization model & pricing"
+              },
+              {
+                "path": "01_front_office/01_ideation_agent/store_inventory_datasets.json",
+                "description": "Merchant inventory data"
+              },
+              {
+                "path": "01_front_office/01_ideation_agent/estimated_merchants.json",
+                "description": "Estimated merchant dataset"
+              }
+            ],
+            "requires_human_approval": true,
+            "approved": true,
+            "role": "Product Marketing Manager & Hyper-Local Retail Economics Specialist",
+            "expert_reviewer": {
+              "role_title": "Senior Product Marketing Manager",
+              "industry_jd_reference": "GTM Strategy Lead / Retail Economics Specialist \u2014 evaluates market research depth, UVP differentiation, merchant dataset completeness, and monetization model viability.",
+              "review_status": "completed",
+              "review_triggered_by": "human_gatekeeper",
+              "review_feedback": [
+                "Market research covers all 21 Pete markets with 406 merchants. Enhanced fields (timings, payments, GST, languages) add depth. Approved by human gatekeeper."
+              ],
+              "reviewed_by": "Human Gatekeeper (Srinikc)",
+              "reviewed_at": "2026-05-30T10:00:00Z",
+              "sign_off_required": true,
+              "sign_off_granted": true
+            },
+            "last_artifact_emitted": "01_front_office/01_ideation_agent/estimated_merchants.json",
+            "artifacts_emitted": [
+              "01_front_office/01_ideation_agent/idea_proposal.md",
+              "01_front_office/01_ideation_agent/business_revenue_model.json",
+              "01_front_office/01_ideation_agent/store_inventory_datasets.json",
+              "01_front_office/01_ideation_agent/estimated_merchants.json",
+              "01_front_office/01_ideation_agent/01_ideation_agent_COMPLETION_SLIDE.pptx",
+              "01_front_office/01_ideation_agent/01_ideation_agent_DATA_EXPORT.xlsx",
+              "01_front_office/01_ideation_agent/01_ideation_agent_FULL_PRESENTATION.pptx"
+            ],
+            "last_activity_timestamp": "2026-05-30T18:30:00Z",
+            "execution_count": 2,
+            "compliance_checklist": [
+              {
+                "id": "IDEA-001",
+                "check": "artifact_exists(idea_proposal.md) \u2014 market research document present",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "IDEA-002",
+                "check": "artifact_exists(business_revenue_model.json) \u2014 monetization model present",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "IDEA-003",
+                "check": "artifact_exists(store_inventory_datasets.json) \u2014 merchant inventory data present",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "IDEA-004",
+                "check": "all 21 named Pete markets represented in inventory JSON",
+                "type": "data_completeness",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "IDEA-005",
+                "check": "cost_of_delivery and platform_monetization schemas present in output",
+                "type": "schema",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "IDEA-006",
+                "check": "COMPLETION_SLIDE.pptx generated",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "IDEA-007",
+                "check": "DATA_EXPORT.xlsx generated (merchant dataset)",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "IDEA-CR-001",
+                "check": "CODE_REVIEW_LOG.json exists in agent sandbox directory",
+                "type": "artifact",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "IDEA-CR-002",
+                "check": "CODE_REVIEW_LOG.json review_gate_passed is true (all reviews completed by designated role)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "IDEA-CR-003",
+                "check": "CODE_REVIEW_LOG.json fix_gate_passed is true (all review findings have verified fixes)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "IDEA-CM-001",
+                "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "IDEA-CM-002",
+                "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              }
+            ],
+            "notes": "ENHANCED UPDATE (v3.0): Expanded from 392 to 406 merchants. Added 14 new Google Maps-resolved merchants. Enhanced ALL merchants with 17 new fields. Awaiting HITL approval."
+          },
+          "02_requirement_agent": {
+            "phase": "phase_one",
+            "pool": "async_pool",
+            "status": "approved",
+            "dependencies": [
+              "01_ideation_agent"
+            ],
+            "input_contract": [
+              {
+                "source": "01_ideation_agent",
+                "files": [
+                  "idea_proposal.md",
+                  "business_revenue_model.json",
+                  "store_inventory_datasets.json",
+                  "estimated_merchants.json"
+                ]
+              }
+            ],
+            "output_contract": [
+              {
+                "path": "agents/01_front_office/02_requirement_agent/prd.md",
+                "description": "PRD document"
+              },
+              {
+                "path": "agents/01_front_office/02_requirement_agent/prd_config.json",
+                "description": "PRD configuration"
+              },
+              {
+                "path": "agents/01_front_office/02_requirement_agent/prd.json",
+                "description": "Structured PRD with requirement IDs"
+              }
+            ],
+            "requires_human_approval": true,
+            "approved": true,
+            "role": "Enterprise Product Manager / Product Owner",
+            "expert_reviewer": {
+              "role_title": "Senior Product Manager / VP of Product",
+              "industry_jd_reference": "Technical Product Manager (E-commerce) \u2014 validates requirement completeness, priority alignment to business goals, cost boundary accuracy, and workflow coverage across web and mobile channels.",
+              "review_status": "completed",
+              "review_triggered_by": "human_gatekeeper",
+              "review_feedback": [
+                "Expanded from 46 to 103 Requirement IDs across 10 categories. VP-level review conducted \u2014 added 32 new requirements including performance, DR, maintenance, funnels, data licensing, AI try-on, jewellery features, branding, multi-city, ShipRocket, kill switch, and unique differentiators. MVP scope tier defined. Approved by human gatekeeper."
+              ],
+              "reviewed_by": "Srinikc (VP Product review conducted)",
+              "reviewed_at": "2026-05-30T18:30:00Z",
+              "sign_off_required": true,
+              "sign_off_granted": true
+            },
+            "last_artifact_emitted": "agents/01_front_office/02_requirement_agent/prd.md",
+            "artifacts_emitted": [
+              "agents/01_front_office/02_requirement_agent/prd.md",
+              "agents/01_front_office/02_requirement_agent/prd_config.json",
+              "agents/01_front_office/02_requirement_agent/prd.json",
+              "agents/02_requirement_agent/02_requirement_agent_COMPLETION_SLIDE.pptx",
+              "agents/02_requirement_agent/02_requirement_agent_DATA_EXPORT.xlsx"
+            ],
+            "last_activity_timestamp": "2026-05-30T18:30:00Z",
+            "execution_count": 3,
+            "compliance_checklist": [
+              {
+                "id": "REQ-001",
+                "check": "artifact_exists(prd.md) \u2014 PRD document present",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "REQ-002",
+                "check": "artifact_exists(prd.json) \u2014 structured PRD present",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "REQ-003",
+                "check": "all Requirement IDs have associated cost projections",
+                "type": "data_completeness",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "REQ-004",
+                "check": "user workflows in Markdown match schema keys in JSON contract",
+                "type": "schema",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "REQ-005",
+                "check": "COMPLETION_SLIDE.pptx generated",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "REQ-006",
+                "check": "DATA_EXPORT.xlsx generated (requirement IDs, priorities, cost projections)",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "REQ-CR-001",
+                "check": "CODE_REVIEW_LOG.json exists in agent sandbox directory",
+                "type": "artifact",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "REQ-CR-002",
+                "check": "CODE_REVIEW_LOG.json review_gate_passed is true (all reviews completed by designated role)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "REQ-CR-003",
+                "check": "CODE_REVIEW_LOG.json fix_gate_passed is true (all review findings have verified fixes)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "REQ-CM-001",
+                "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "REQ-CM-002",
+                "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              }
+            ],
+            "notes": "PRD ENHANCED (v2.0): 96 reqs + 7 new (103 total). Added: kill switch (INFRA-011), reviews (UI-021, BE-025), Virtual Walk (UI-022), Live Bazaar (UI-023), Co-Shopping (UI-024), Virtual St. CMS (BE-026). \u00a79 MVP Scope defined. Awaiting HITL approval."
+          },
+          "03_architect_agent": {
+            "phase": "phase_one",
+            "pool": "async_pool",
+            "status": "approved",
+            "dependencies": [
+              "02_requirement_agent"
+            ],
+            "input_contract": [
+              {
+                "source": "02_requirement_agent",
+                "files": [
+                  "prd.md",
+                  "prd.json"
+                ]
+              }
+            ],
+            "output_contract": [
+              {
+                "path": "agents/02_engineering_specs/03_architect_agent/FEASIBILITY_ARCHITECTURE.md",
+                "description": "Full architecture blueprint"
+              },
+              {
+                "path": "agents/02_engineering_specs/03_architect_agent/FEASIBILITY_ARCHITECTURE.json",
+                "description": "Structured architecture data"
+              },
+              {
+                "path": "agents/02_engineering_specs/03_architect_agent/DIAGRAMS.md",
+                "description": "C4 model diagrams (Mermaid/PlantUML)"
+              },
+              {
+                "path": "agents/02_engineering_specs/03_architect_agent/POC_SCOPE.md",
+                "description": "POC vs full architecture mapping"
+              },
+              {
+                "path": "agents/02_engineering_specs/03_architect_agent/COST_MODELS.md",
+                "description": "Infrastructure costing"
+              }
+            ],
+            "requires_human_approval": true,
+            "approved": true,
+            "role": "Senior Enterprise Solution Architect",
+            "expert_reviewer": {
+              "role_title": "Senior Solution Architect / CTO",
+              "industry_jd_reference": "Enterprise Solution Architect \u2014 reviews technical blueprint, API strategy, caching layer, message-queue architecture, security framework, and infrastructure costing. Must validate feasibility of 103 requirements against chosen tech stack.",
+              "review_status": "completed",
+              "review_feedback": [
+                "APPROVED with changes: (1) Replace Gemini AI with Opencode/DeepSeek platform for any AI features, (2) Include WhatsApp integration in POC scope, (3) Generate synthetic product-level inventory for all 8 pilot merchants since real inventory arrays are empty."
+              ],
+              "reviewed_by": "Human Gatekeeper (Srinikc)",
+              "reviewed_at": "2026-05-30T18:45:00Z",
+              "sign_off_required": true,
+              "sign_off_granted": true
+            },
+            "approval_gate_triggers": [
+              "GATE-TECH-STACK-01",
+              "GATE-COSTING-01"
+            ],
+            "last_artifact_emitted": "agents/02_engineering_specs/03_architect_agent/FEASIBILITY_ARCHITECTURE.md",
+            "artifacts_emitted": [
+              "agents/02_engineering_specs/03_architect_agent/FEASIBILITY_ARCHITECTURE.md",
+              "agents/02_engineering_specs/03_architect_agent/FEASIBILITY_ARCHITECTURE.json",
+              "agents/02_engineering_specs/03_architect_agent/DIAGRAMS.md",
+              "agents/02_engineering_specs/03_architect_agent/POC_SCOPE.md",
+              "agents/02_engineering_specs/03_architect_agent/STITCH_INTEGRATION_GUIDE.md",
+              "agents/02_engineering_specs/03_architect_agent/COST_MODELS.md",
+              "agents/02_engineering_specs/03_architect_agent/GUARDRAIL_VERIFICATION.md",
+              "agents/03_architect_agent/03_architect_agent_COMPLETION_SLIDE.pptx",
+              "agents/03_architect_agent/03_architect_agent_DATA_EXPORT.xlsx",
+              "agents/03_architect_agent/03_architect_agent_FULL_PRESENTATION.pptx"
+            ],
+            "last_activity_timestamp": "2026-05-30T18:45:00Z",
+            "execution_count": 1,
+            "compliance_checklist": [
+              {
+                "id": "ARCH-001",
+                "check": "artifact_exists(FEASIBILITY_ARCHITECTURE.md) \u2014 architecture document present",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "ARCH-002",
+                "check": "artifact_exists(FEASIBILITY_ARCHITECTURE.json) \u2014 structured architecture present",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "ARCH-003",
+                "check": "Mermaid/PlantUML architectural diagrams produced (DIAGRAMS.md)",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "ARCH-004",
+                "check": "multi-layer testing architecture defined",
+                "type": "architecture",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "ARCH-005",
+                "check": "API gateway with rate-limiting rules defined",
+                "type": "architecture",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "ARCH-006",
+                "check": "POC scope clearly maps to subset of full architecture (POC_SCOPE.md)",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "ARCH-007",
+                "check": "infrastructure cost model accounts for scaling thresholds (COST_MODELS.md)",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "ARCH-008",
+                "check": "COMPLETION_SLIDE.pptx generated",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "ARCH-009",
+                "check": "DATA_EXPORT.xlsx generated (cost models, resource estimates)",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "ARCH-CR-001",
+                "check": "CODE_REVIEW_LOG.json exists in agent sandbox directory",
+                "type": "artifact",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "ARCH-CR-002",
+                "check": "CODE_REVIEW_LOG.json review_gate_passed is true (all reviews completed by designated role)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "ARCH-CR-003",
+                "check": "CODE_REVIEW_LOG.json fix_gate_passed is true (all review findings have verified fixes)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "ARCH-CM-001",
+                "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "ARCH-CM-002",
+                "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              }
+            ],
+            "notes": "Architecture complete. Google Stitch integrated as primary UI design tool. APPROVED by human gatekeeper with changes: Opencode/DeepSeek replaces Gemini, WhatsApp included in POC, synthetic inventory to be generated."
+          },
+          "04_prototype_agent": {
+            "phase": "phase_one",
+            "pool": "async_pool",
+            "status": "approved",
+            "dependencies": [
+              "03_architect_agent"
+            ],
+            "input_contract": [
+              {
+                "source": "03_architect_agent",
+                "files": [
+                  "FEASIBILITY_ARCHITECTURE.md",
+                  "FEASIBILITY_ARCHITECTURE.json",
+                  "POC_SCOPE.md"
+                ]
+              }
+            ],
+            "output_contract": [
+              {
+                "path": "agents/02_engineering_specs/04_prototype_agent/LAUNCH_GUIDE.md",
+                "description": "POC launch guide"
+              },
+              {
+                "path": "agents/02_engineering_specs/04_prototype_agent/data/merchants.json",
+                "description": "Merchant sample data"
+              },
+              {
+                "path": "agents/02_engineering_specs/04_prototype_agent/data/products-combined.json",
+                "description": "Product sample data"
+              }
+            ],
+            "requires_human_approval": true,
+            "approved": true,
+            "role": "Senior Prototyping Engineer / Concept Verification Engine",
+            "expert_reviewer": {
+              "role_title": "Senior Prototyping Engineer / Tech Lead",
+              "industry_jd_reference": "Prototyping Lead \u2014 validates POC functionality against architecture spec, sample data quality, and launch readiness of the prototype workspace.",
+              "review_status": "completed",
+              "review_feedback": [
+                "APPROVED as imperfect \u2014 moving to full product build. Key gaps identified: (1) Missing auth/personas (Customer/Merchant/Admin), (2) Poor UX labels (Sell, MOQ, Featured), (3) Incoherent flow between pages, (4) Not demo-ready for friends/stakeholders. Full build (Agents 05-15) will address all gaps with proper workflows reviewed by Sr Product/VP roles."
+              ],
+              "reviewed_by": "Human Gatekeeper (Srinikc)",
+              "reviewed_at": "2026-05-30T19:00:00Z",
+              "sign_off_required": true,
+              "sign_off_granted": true
+            },
+            "last_artifact_emitted": "agents/02_engineering_specs/04_prototype_agent/LAUNCH_GUIDE.md",
+            "artifacts_emitted": [
+              "agents/02_engineering_specs/04_prototype_agent/LAUNCH_GUIDE.md",
+              "agents/02_engineering_specs/04_prototype_agent/data/merchants.json",
+              "agents/02_engineering_specs/04_prototype_agent/data/products-combined.json",
+              "agents/04_prototype_agent/04_prototype_agent_COMPLETION_SLIDE.pptx"
+            ],
+            "last_activity_timestamp": "2026-05-30T19:00:00Z",
+            "execution_count": 1,
+            "compliance_checklist": [
+              {
+                "id": "POC-001",
+                "check": "artifact_exists(LAUNCH_GUIDE.md) \u2014 setup/launch guide present",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "POC-002",
+                "check": "artifact_exists(merchants.json) \u2014 sample merchant data present",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "POC-003",
+                "check": "artifact_exists(products-combined.json) \u2014 sample product data present",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "POC-004",
+                "check": "all 8 pilot merchants present in sample data",
+                "type": "data_completeness",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "POC-005",
+                "check": "merchant_digital_readiness field present in merchant profiles",
+                "type": "schema",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "POC-006",
+                "check": "COMPLETION_SLIDE.pptx generated",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "POC-CR-001",
+                "check": "CODE_REVIEW_LOG.json exists in agent sandbox directory",
+                "type": "artifact",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "POC-CR-002",
+                "check": "CODE_REVIEW_LOG.json review_gate_passed is true (all reviews completed by designated role)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "POC-CR-003",
+                "check": "CODE_REVIEW_LOG.json fix_gate_passed is true (all review findings have verified fixes)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "POC-CM-001",
+                "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "POC-CM-002",
+                "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              }
+            ],
+            "notes": "POC approved as imperfect. Moving to full product build. Gaps: auth/personas missing, UX labels confusing, flow not cohesive."
+          },
+          "05_program_mgmt_agent": {
+            "phase": "phase_two",
+            "pool": "async_pool",
+            "status": "approved",
+            "dependencies": [
+              "04_prototype_agent"
+            ],
+            "input_contract": [
+              {
+                "source": "04_prototype_agent",
+                "files": [
+                  "LAUNCH_GUIDE.md",
+                  "data/merchants.json"
+                ]
+              },
+              {
+                "source": "02_requirement_agent",
+                "files": [
+                  "prd.md",
+                  "prd.json"
+                ]
+              }
+            ],
+            "output_contract": [
+              {
+                "path": "agents/02_engineering_specs/05_program_mgmt_agent/01_EPIC_FEATURE_STORY_MAP.md",
+                "description": "Epic/Feature/Story decomposition"
+              },
+              {
+                "path": "agents/02_engineering_specs/05_program_mgmt_agent/02_SPRINT_TIMELINE_MILESTONES.md",
+                "description": "Sprint schedule"
+              },
+              {
+                "path": "agents/02_engineering_specs/05_program_mgmt_agent/03_MVP_SCOPE_DEFINITION.md",
+                "description": "MVP scope boundary"
+              }
+            ],
+            "requires_human_approval": true,
+            "approved": true,
+            "role": "Senior Agile Program Manager & Scrum Master",
+            "expert_reviewer": {
+              "role_title": "Senior Program Manager / Delivery Head",
+              "industry_jd_reference": "Agile Program Manager \u2014 reviews epic/story decomposition, sprint plans, dependency mapping, milestone timelines, and MVP scope definition against PRD requirements.",
+              "review_status": "completed",
+              "review_feedback": [
+                "MVP scope approved. Auth-first approach validated. Sprints 1-6 (12 weeks) covers core workflows. Deferred items documented."
+              ],
+              "reviewed_by": "Human Gatekeeper (Srinikc)",
+              "reviewed_at": "2026-05-30T19:15:00Z",
+              "sign_off_required": true,
+              "sign_off_granted": true
+            },
+            "approval_gate_triggers": [
+              "GATE-MVP-01"
+            ],
+            "last_artifact_emitted": "agents/02_engineering_specs/05_program_mgmt_agent/01_EPIC_FEATURE_STORY_MAP.md",
+            "artifacts_emitted": [
+              "agents/02_engineering_specs/05_program_mgmt_agent/01_EPIC_FEATURE_STORY_MAP.md",
+              "agents/02_engineering_specs/05_program_mgmt_agent/02_SPRINT_TIMELINE_MILESTONES.md",
+              "agents/02_engineering_specs/05_program_mgmt_agent/03_MVP_SCOPE_DEFINITION.md",
+              "agents/02_engineering_specs/05_program_mgmt_agent/04_WORKFLOW_MAPS.md",
+              "agents/02_engineering_specs/05_program_mgmt_agent/05_ACCEPTANCE_CRITERIA_REVIEW_GATES.md",
+              "agents/02_engineering_specs/05_program_mgmt_agent/06_PROGRAM_DASHBOARD.json",
+              "agents/02_engineering_specs/05_program_mgmt_agent/README.md",
+              "agents/05_program_mgmt_agent/05_program_mgmt_agent_COMPLETION_SLIDE.pptx",
+              "agents/05_program_mgmt_agent/05_program_mgmt_agent_DATA_EXPORT.xlsx",
+              "agents/05_program_mgmt_agent/05_program_mgmt_agent_FULL_PRESENTATION.pptx"
+            ],
+            "last_activity_timestamp": "2026-05-30T19:15:00Z",
+            "execution_count": 1,
+            "compliance_checklist": [
+              {
+                "id": "PM-001",
+                "check": "artifact_exists(EPIC_FEATURE_STORY_MAP.md) \u2014 epic/story decomposition present",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "PM-002",
+                "check": "artifact_exists(SPRINT_TIMELINE_MILESTONES.md) \u2014 sprint schedule present",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "PM-003",
+                "check": "artifact_exists(MVP_SCOPE_DEFINITION.md) \u2014 MVP scope defined",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "PM-004",
+                "check": "all User Stories trace to approved Requirement IDs from PRD",
+                "type": "traceability",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "PM-005",
+                "check": "delivery timeline has no unmapped task dependencies or deadlocks",
+                "type": "data_completeness",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "PM-006",
+                "check": "COMPLETION_SLIDE.pptx generated",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "PM-007",
+                "check": "DATA_EXPORT.xlsx generated (sprint timelines, story points, dependency maps)",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "PM-CR-001",
+                "check": "CODE_REVIEW_LOG.json exists in agent sandbox directory",
+                "type": "artifact",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "PM-CR-002",
+                "check": "CODE_REVIEW_LOG.json review_gate_passed is true (all reviews completed by designated role)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "PM-CR-003",
+                "check": "CODE_REVIEW_LOG.json fix_gate_passed is true (all review findings have verified fixes)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "PM-CM-001",
+                "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "PM-CM-002",
+                "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              }
+            ],
+            "notes": "Full product sprint plan created: 26 Epics, 113 User Stories, 12 Sprints (24 weeks), MVP = Sprints 1-6. Auth-first approach. APPROVED by human gatekeeper."
+          },
+          "06_infra_devops_agent": {
+            "phase": "phase_two",
+            "pool": "async_pool",
+            "status": "approved",
+            "dependencies": [
+              "05_program_mgmt_agent"
+            ],
+            "input_contract": [
+              {
+                "source": "03_architect_agent",
+                "files": [
+                  "FEASIBILITY_ARCHITECTURE.md",
+                  "FEASIBILITY_ARCHITECTURE.json",
+                  "COST_MODELS.md"
+                ]
+              },
+              {
+                "source": "05_program_mgmt_agent",
+                "files": [
+                  "SPRINT_TIMELINE_MILESTONES.md"
+                ]
+              }
+            ],
+            "output_contract": [
+              {
+                "path": "agents/03_execution_workspace/06_infra_devops_agent/BRANCHING_STRATEGY.md",
+                "description": "Git branching strategy"
+              },
+              {
+                "path": "agents/03_execution_workspace/06_infra_devops_agent/.github/workflows/ci.yml",
+                "description": "CI pipeline"
+              },
+              {
+                "path": "agents/03_execution_workspace/06_infra_devops_agent/.github/workflows/deploy.yml",
+                "description": "Deploy pipeline"
+              },
+              {
+                "path": "agents/03_execution_workspace/06_infra_devops_agent/docker/docker-compose.yml",
+                "description": "Docker compose"
+              }
+            ],
+            "requires_human_approval": false,
+            "approved": true,
+            "role": "DevOps Systems Architect & Core Supply Chain Automation Engine",
+            "expert_reviewer": {
+              "role_title": "Senior DevOps Architect / Platform Engineer",
+              "industry_jd_reference": "DevOps/Platform Architect \u2014 validates CI/CD pipeline design, Docker/K8s configuration, GitHub branching strategy, secrets management approach, and rollback protocols.",
+              "review_status": "completed",
+              "review_feedback": [],
+              "reviewed_by": "Auto-approved (no HITL required)",
+              "reviewed_at": "2026-05-30T19:10:00Z",
+              "sign_off_required": true,
+              "sign_off_granted": true
+            },
+            "last_artifact_emitted": "agents/03_execution_workspace/06_infra_devops_agent/BRANCHING_STRATEGY.md",
+            "artifacts_emitted": [
+              "agents/03_execution_workspace/06_infra_devops_agent/BRANCHING_STRATEGY.md",
+              "agents/03_execution_workspace/06_infra_devops_agent/.github/workflows/ci.yml",
+              "agents/03_execution_workspace/06_infra_devops_agent/.github/workflows/deploy.yml",
+              "agents/03_execution_workspace/06_infra_devops_agent/.github/workflows/rollback.yml",
+              "agents/03_execution_workspace/06_infra_devops_agent/.github/workflows/security-scan.yml",
+              "agents/03_execution_workspace/06_infra_devops_agent/.github/workflows/pr-agent.yml",
+              "agents/03_execution_workspace/06_infra_devops_agent/.github/workflows/code-review.yml",
+              "agents/03_execution_workspace/06_infra_devops_agent/docker/docker-compose.yml",
+              "agents/03_execution_workspace/06_infra_devops_agent/supabase/migrations/001_initial_schema.sql",
+              "agents/06_infra_devops_agent/06_infra_devops_agent_COMPLETION_SLIDE.pptx"
+            ],
+            "last_activity_timestamp": "2026-05-31T18:00:00Z",
+            "execution_count": 2,
+            "compliance_checklist": [
+              {
+                "id": "DEVOPS-001",
+                "check": "artifact_exists(BRANCHING_STRATEGY.md) \u2014 branching strategy present",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "DEVOPS-002",
+                "check": "CI/CD workflow files present (.github/workflows/*.yml)",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "DEVOPS-003",
+                "check": "Docker/K8s configuration files present",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "DEVOPS-004",
+                "check": "no hardcoded secrets/credentials in config files",
+                "type": "security",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "DEVOPS-005",
+                "check": "Docker and K8s configs parse without syntax errors",
+                "type": "validation",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "DEVOPS-006",
+                "check": "COMPLETION_SLIDE.pptx generated",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "DEVOPS-CR-001",
+                "check": "CODE_REVIEW_LOG.json exists in agent sandbox directory",
+                "type": "artifact",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "DEVOPS-CR-002",
+                "check": "CODE_REVIEW_LOG.json review_gate_passed is true (all reviews completed by designated role)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "DEVOPS-CR-003",
+                "check": "CODE_REVIEW_LOG.json fix_gate_passed is true (all review findings have verified fixes)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "DEVOPS-CM-001",
+                "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "DEVOPS-CM-002",
+                "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              }
+            ],
+            "notes": "v2 ENHANCED: Added automated code review pipeline \u2014 PR-Agent (AI review), SonarQube Cloud (static analysis + MCP server), Reviewdog (ESLint/TS linting), CodeQL (already present in security-scan.yml). MCP server configured for on-demand SonarQube queries. AGENTS.md updated with pipeline documentation. 6 GitHub Action workflows total."
+          },
+          "07a_ui_agent": {
+            "phase": "phase_three",
+            "pool": "sync_pool",
+            "status": "awaiting_approval",
+            "dependencies": [
+              "05_program_mgmt_agent",
+              "06_infra_devops_agent"
+            ],
+            "input_contract": [
+              {
+                "source": "03_architect_agent",
+                "files": [
+                  "FEASIBILITY_ARCHITECTURE.md",
+                  "DIAGRAMS.md"
+                ]
+              },
+              {
+                "source": "05_program_mgmt_agent",
+                "files": [
+                  "01_EPIC_FEATURE_STORY_MAP.md"
+                ]
+              }
+            ],
+            "output_contract": [
+              {
+                "path": "agents/03_execution_workspace/07a_ui_agent/output/UI_MAP.md",
+                "description": "UI interface map"
+              },
+              {
+                "path": "agents/03_execution_workspace/07a_ui_agent/output/UI_MAP.json",
+                "description": "Structured UI map"
+              },
+              {
+                "path": "agents/03_execution_workspace/07a_ui_agent/design-system/DESIGN.md",
+                "description": "Design system"
+              },
+              {
+                "path": "agents/03_execution_workspace/07a_ui_agent/auth-page.tsx",
+                "description": "Auth page component"
+              },
+              {
+                "path": "agents/03_execution_workspace/07a_ui_agent/merchant-dashboard-page.tsx",
+                "description": "Merchant dashboard"
+              },
+              {
+                "path": "agents/03_execution_workspace/07a_ui_agent/admin-dashboard-page.tsx",
+                "description": "Admin dashboard"
+              }
+            ],
+            "requires_human_approval": true,
+            "approved": false,
+            "role": "Frontend & Mobile Interface Engineer",
+            "expert_reviewer": {
+              "role_title": "Senior Frontend Engineer / UI Architect",
+              "industry_jd_reference": "Frontend Lead (React/React Native) \u2014 validates responsive wireframes, component architecture, mobile UX, accessibility, and frontend unit test coverage above 80%.",
+              "review_status": "pending",
+              "review_feedback": [],
+              "reviewed_by": null,
+              "reviewed_at": null,
+              "sign_off_required": true,
+              "sign_off_granted": false
+            },
+            "last_artifact_emitted": "agents/03_execution_workspace/07a_ui_agent/UI_INTERFACE_MAP.json",
+            "artifacts_emitted": [
+              "agents/03_execution_workspace/07a_ui_agent/output/UI_MAP.md",
+              "agents/03_execution_workspace/07a_ui_agent/output/UI_MAP.json",
+              "agents/03_execution_workspace/07a_ui_agent/design-system/DESIGN.md",
+              "agents/03_execution_workspace/07a_ui_agent/petemart-web/package.json",
+              "agents/03_execution_workspace/07a_ui_agent/07a_ui_agent_COMPLETION_SLIDE.pptx",
+              "agents/03_execution_workspace/07a_ui_agent/UI_AGENT_REPORT.md",
+              "agents/03_execution_workspace/07a_ui_agent/UI_INTERFACE_MAP.json",
+              "agents/03_execution_workspace/07a_ui_agent/auth-page.tsx",
+              "agents/03_execution_workspace/07a_ui_agent/merchant-dashboard-page.tsx",
+              "agents/03_execution_workspace/07a_ui_agent/admin-dashboard-page.tsx"
+            ],
+            "last_activity_timestamp": "2026-05-31T10:00:00Z",
+            "execution_count": 2,
+            "compliance_checklist": [
+              {
+                "id": "UI-001",
+                "check": "artifact_exists(UI_INTERFACE_MAP.json) \u2014 UI map present",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "UI-002",
+                "check": "artifact_exists(UI_AGENT_REPORT.md) \u2014 UI report present",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "UI-003",
+                "check": "code review completed (pre-commit gate cleared)",
+                "type": "code_review",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "UI-004",
+                "check": "TypeScript check passed (tsc --noEmit)",
+                "type": "test",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "UI-005",
+                "check": "unit tests executed with >= 80% code coverage",
+                "type": "test",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "UI-006",
+                "check": "all user-facing screens have matching localized help strings",
+                "type": "data_completeness",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "UI-007",
+                "check": "COMPLETION_SLIDE.pptx generated",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "UI-008",
+                "check": "all UI screens trace to at least one Requirement ID from PRD",
+                "type": "traceability",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "UI-CR-001",
+                "check": "CODE_REVIEW_LOG.json exists in agent sandbox directory",
+                "type": "artifact",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "UI-CR-002",
+                "check": "CODE_REVIEW_LOG.json review_gate_passed is true (all reviews completed by designated role)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "UI-CR-003",
+                "check": "CODE_REVIEW_LOG.json fix_gate_passed is true (all review findings have verified fixes)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "UI-CM-001",
+                "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "UI-CM-002",
+                "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              }
+            ],
+            "notes": "v2 UPDATE: Auth page rewritten with dual Email+Phone tabs, persona selection (Customer/Merchant/Admin), 6-digit OTP flow, role-based redirects. Merchant/Admin dashboards updated with auth guards. No POC/Demo labels. Awaiting HITL approval."
+          },
+          "07b_api_agent": {
+            "phase": "phase_three",
+            "pool": "sync_pool",
+            "status": "awaiting_approval",
+            "dependencies": [
+              "05_program_mgmt_agent",
+              "06_infra_devops_agent"
+            ],
+            "input_contract": [
+              {
+                "source": "03_architect_agent",
+                "files": [
+                  "FEASIBILITY_ARCHITECTURE.json"
+                ]
+              },
+              {
+                "source": "05_program_mgmt_agent",
+                "files": [
+                  "01_EPIC_FEATURE_STORY_MAP.md"
+                ]
+              }
+            ],
+            "output_contract": [
+              {
+                "path": "agents/03_execution_workspace/07b_api_agent/API_SPECIFICATION.md",
+                "description": "API specification"
+              },
+              {
+                "path": "agents/03_execution_workspace/07b_api_agent/API_SPECIFICATION.json",
+                "description": "Structured API spec"
+              },
+              {
+                "path": "agents/03_execution_workspace/07b_api_agent/tests/auth.test.ts",
+                "description": "Auth tests"
+              },
+              {
+                "path": "agents/03_execution_workspace/07b_api_agent/tests/merchants.test.ts",
+                "description": "Merchant tests"
+              },
+              {
+                "path": "agents/03_execution_workspace/07b_api_agent/tests/products.test.ts",
+                "description": "Product tests"
+              },
+              {
+                "path": "agents/03_execution_workspace/07b_api_agent/tests/orders.test.ts",
+                "description": "Order tests"
+              }
+            ],
+            "requires_human_approval": true,
+            "approved": false,
+            "role": "Interface Connection Engineer",
+            "expert_reviewer": {
+              "role_title": "Senior Backend Engineer / API Architect",
+              "industry_jd_reference": "API Architect \u2014 validates RESTful endpoint design, request/response schemas, authentication boundaries, rate limiting, and API security validation passes.",
+              "review_status": "pending",
+              "review_feedback": [],
+              "reviewed_by": null,
+              "reviewed_at": null,
+              "sign_off_required": true,
+              "sign_off_granted": false
+            },
+            "last_artifact_emitted": "agents/03_execution_workspace/07b_api_agent/API_SPECIFICATION.md",
+            "artifacts_emitted": [
+              "agents/03_execution_workspace/07b_api_agent/API_SPECIFICATION.md",
+              "agents/03_execution_workspace/07b_api_agent/API_SPECIFICATION.json",
+              "agents/03_execution_workspace/07b_api_agent/tests/auth.test.ts",
+              "agents/03_execution_workspace/07b_api_agent/tests/merchants.test.ts",
+              "agents/03_execution_workspace/07b_api_agent/tests/products.test.ts",
+              "agents/03_execution_workspace/07b_api_agent/tests/orders.test.ts",
+              "agents/03_execution_workspace/07b_api_agent/tests/admin-routes.test.ts",
+              "agents/03_execution_workspace/07b_api_agent/tests/merchant-routes.test.ts"
+            ],
+            "last_activity_timestamp": "2026-05-30T18:49:00Z",
+            "execution_count": 1,
+            "compliance_checklist": [
+              {
+                "id": "API-001",
+                "check": "artifact_exists(API_SPECIFICATION.md) \u2014 API spec document present",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "API-002",
+                "check": "artifact_exists(API_SPECIFICATION.json) \u2014 structured API spec present",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "API-003",
+                "check": "code review completed (pre-commit gate cleared)",
+                "type": "code_review",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "API-004",
+                "check": "TypeScript check passed (tsc --noEmit)",
+                "type": "test",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "API-005",
+                "check": "unit tests executed and passing",
+                "type": "test",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "API-006",
+                "check": "all API endpoint signatures match architecture contract schemas",
+                "type": "schema",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "API-007",
+                "check": "API routes pass automated security validation (input sanitization, payload size limits)",
+                "type": "security",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "API-008",
+                "check": "COMPLETION_SLIDE.pptx generated",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "API-009",
+                "check": "DATA_EXPORT.xlsx generated",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "API-010",
+                "check": "all API endpoints trace to at least one Requirement ID from PRD",
+                "type": "traceability",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "API-CR-001",
+                "check": "CODE_REVIEW_LOG.json exists in agent sandbox directory",
+                "type": "artifact",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "API-CR-002",
+                "check": "CODE_REVIEW_LOG.json review_gate_passed is true (all reviews completed by designated role)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "API-CR-003",
+                "check": "CODE_REVIEW_LOG.json fix_gate_passed is true (all review findings have verified fixes)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "API-CM-001",
+                "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "API-CM-002",
+                "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              }
+            ],
+            "notes": "API specification complete: 21+ RESTful endpoints designed, 8 test files, Zod validation, auth middleware, rate limiting. Awaiting HITL approval."
+          },
+          "07c_backend_db_agent": {
+            "phase": "phase_three",
+            "pool": "sync_pool",
+            "status": "awaiting_approval",
+            "dependencies": [
+              "05_program_mgmt_agent",
+              "06_infra_devops_agent"
+            ],
+            "input_contract": [
+              {
+                "source": "03_architect_agent",
+                "files": [
+                  "FEASIBILITY_ARCHITECTURE.json",
+                  "COST_MODELS.md"
+                ]
+              },
+              {
+                "source": "05_program_mgmt_agent",
+                "files": [
+                  "01_EPIC_FEATURE_STORY_MAP.md"
+                ]
+              }
+            ],
+            "output_contract": [
+              {
+                "path": "agents/03_execution_workspace/07c_backend_db_agent/01-complete-schema.sql",
+                "description": "Complete DB schema"
+              },
+              {
+                "path": "agents/03_execution_workspace/07c_backend_db_agent/02-rls-policies.sql",
+                "description": "RLS policies"
+              },
+              {
+                "path": "agents/03_execution_workspace/07c_backend_db_agent/03-index-definitions.sql",
+                "description": "Index definitions"
+              },
+              {
+                "path": "agents/03_execution_workspace/07c_backend_db_agent/09-data-model.md",
+                "description": "Data model documentation"
+              },
+              {
+                "path": "agents/03_execution_workspace/07c_backend_db_agent/10-data-model.json",
+                "description": "Structured data model"
+              }
+            ],
+            "requires_human_approval": true,
+            "approved": false,
+            "role": "Data Infrastructure & Storage Engineer",
+            "expert_reviewer": {
+              "role_title": "Senior Database Engineer / DBA",
+              "industry_jd_reference": "Database Architect \u2014 validates schema design, indexing strategy, connection pooling, migration rollback scripts, caching strategy, and query performance under concurrency.",
+              "review_status": "pending",
+              "review_feedback": [],
+              "reviewed_by": null,
+              "reviewed_at": null,
+              "sign_off_required": true,
+              "sign_off_granted": false
+            },
+            "last_artifact_emitted": "agents/03_execution_workspace/07c_backend_db_agent/09-auth-v2.sql",
+            "artifacts_emitted": [
+              "agents/03_execution_workspace/07c_backend_db_agent/01-complete-schema.sql",
+              "agents/03_execution_workspace/07c_backend_db_agent/02-rls-policies.sql",
+              "agents/03_execution_workspace/07c_backend_db_agent/03-index-definitions.sql",
+              "agents/03_execution_workspace/07c_backend_db_agent/04-seed-part1-auth-profiles-stores.sql",
+              "agents/03_execution_workspace/07c_backend_db_agent/05-seed-part2-products-stores1-3.sql",
+              "agents/03_execution_workspace/07c_backend_db_agent/06-seed-part3-products-stores4-6.sql",
+              "agents/03_execution_workspace/07c_backend_db_agent/07-seed-part4-products-stores7-9.sql",
+              "agents/03_execution_workspace/07c_backend_db_agent/08-migration-script.sql",
+              "agents/03_execution_workspace/07c_backend_db_agent/09-data-model.md",
+              "agents/03_execution_workspace/07c_backend_db_agent/10-data-model.json",
+              "agents/03_execution_workspace/07c_backend_db_agent/11-supplemental-products.sql",
+              "agents/03_execution_workspace/07c_backend_db_agent/09-auth-v2.sql",
+              "agents/03_execution_workspace/07c_backend_db_agent/12-auth-v2-seed.sql",
+              "agents/03_execution_workspace/07c_backend_db_agent/07c_backend_db_agent_DATA_EXPORT.xlsx"
+            ],
+            "last_activity_timestamp": "2026-05-31T10:00:00Z",
+            "execution_count": 2,
+            "compliance_checklist": [
+              {
+                "id": "DB-001",
+                "check": "artifact_exists(01-complete-schema.sql) \u2014 schema definitions present",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "DB-002",
+                "check": "code review completed (pre-commit gate cleared)",
+                "type": "code_review",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "DB-003",
+                "check": "TypeScript check passed (tsc --noEmit)",
+                "type": "test",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "DB-004",
+                "check": "database unit tests executed and passing",
+                "type": "test",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "DB-005",
+                "check": "migration scripts include automated rollback statements",
+                "type": "data_completeness",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "DB-006",
+                "check": "index definitions present for primary tables (non-indexed query check)",
+                "type": "data_completeness",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "DB-007",
+                "check": "connection timeout and pool parameters align with Architect's scaling criteria",
+                "type": "architecture",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "DB-008",
+                "check": "COMPLETION_SLIDE.pptx generated",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "DB-009",
+                "check": "DATA_EXPORT.xlsx generated (schema definitions, index configurations, migration logs)",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "DB-010",
+                "check": "all DB tables and schemas trace to at least one Requirement ID from PRD",
+                "type": "traceability",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "DB-CR-001",
+                "check": "CODE_REVIEW_LOG.json exists in agent sandbox directory",
+                "type": "artifact",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "DB-CR-002",
+                "check": "CODE_REVIEW_LOG.json review_gate_passed is true (all reviews completed by designated role)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "DB-CR-003",
+                "check": "CODE_REVIEW_LOG.json fix_gate_passed is true (all review findings have verified fixes)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "DB-CM-001",
+                "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "DB-CM-002",
+                "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              }
+            ],
+            "notes": "v2.0 UPDATE: Schema upgraded for email+password auth. Added password_hash, auth_provider columns. 36 total indexes (34 v1 + 2 v2). 5 demo email accounts with bcrypt passwords. V2 migration with FULL rollback. Data export (10 sheets). Awaiting HITL approval."
+          },
+          "07d_integration_agent": {
+            "phase": "phase_three",
+            "pool": "sync_pool",
+            "status": "awaiting_approval",
+            "dependencies": [
+              "07a_ui_agent",
+              "07b_api_agent",
+              "07c_backend_db_agent"
+            ],
+            "input_contract": [
+              {
+                "source": "07a_ui_agent",
+                "files": [
+                  "output/UI_MAP.json",
+                  "auth-page.tsx",
+                  "merchant-dashboard-page.tsx",
+                  "admin-dashboard-page.tsx"
+                ]
+              },
+              {
+                "source": "07b_api_agent",
+                "files": [
+                  "API_SPECIFICATION.json",
+                  "API_SPECIFICATION.md"
+                ]
+              },
+              {
+                "source": "07c_backend_db_agent",
+                "files": [
+                  "01-complete-schema.sql",
+                  "10-data-model.json"
+                ]
+              }
+            ],
+            "output_contract": [
+              {
+                "path": "agents/03_execution_workspace/07d_integration_agent/INTEGRATION_REPORT.md",
+                "description": "Integration report"
+              },
+              {
+                "path": "agents/03_execution_workspace/07d_integration_agent/petemart-unified/middleware.ts",
+                "description": "Unified middleware"
+              },
+              {
+                "path": "agents/03_execution_workspace/07d_integration_agent/petemart-unified/types/index.ts",
+                "description": "Unified types"
+              },
+              {
+                "path": "agents/03_execution_workspace/07d_integration_agent/petemart-unified/lib/api-client.ts",
+                "description": "API client"
+              }
+            ],
+            "requires_human_approval": true,
+            "approved": false,
+            "role": "Systems Assembly Engineer",
+            "expert_reviewer": {
+              "role_title": "Senior Integration Engineer / Systems Architect",
+              "industry_jd_reference": "Integration Architect \u2014 validates end-to-end data flow, authentication handshakes across layers, event trigger chains, security audit clearance, and absence of debug flags.",
+              "review_status": "pending",
+              "review_feedback": [],
+              "reviewed_by": null,
+              "reviewed_at": null,
+              "sign_off_required": true,
+              "sign_off_granted": false
+            },
+            "last_artifact_emitted": "agents/03_execution_workspace/07d_integration_agent/INTEGRATION_REPORT.md",
+            "artifacts_emitted": [
+              "agents/03_execution_workspace/07d_integration_agent/INTEGRATION_REPORT.md",
+              "agents/03_execution_workspace/07d_integration_agent/petemart-unified/package.json",
+              "agents/03_execution_workspace/07d_integration_agent/petemart-unified/middleware.ts",
+              "agents/03_execution_workspace/07d_integration_agent/petemart-unified/types/index.ts",
+              "agents/03_execution_workspace/07d_integration_agent/petemart-unified/lib/api-client.ts",
+              "agents/03_execution_workspace/07d_integration_agent/petemart-unified/lib/api-helpers.ts",
+              "agents/03_execution_workspace/07d_integration_agent/petemart-unified/lib/data.ts"
+            ],
+            "last_activity_timestamp": "2026-05-31T10:00:00Z",
+            "execution_count": 2,
+            "compliance_checklist": [
+              {
+                "id": "INT-001",
+                "check": "artifact_exists(INTEGRATION_REPORT.md) \u2014 integration report present",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "INT-002",
+                "check": "code review completed (pre-commit gate cleared)",
+                "type": "code_review",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "INT-003",
+                "check": "TypeScript check passed (tsc --noEmit)",
+                "type": "test",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "INT-004",
+                "check": "unit tests executed and passing",
+                "type": "test",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "INT-005",
+                "check": "end-to-end data flows verified (no connection timeouts)",
+                "type": "validation",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "INT-006",
+                "check": "no debug flags or unencrypted connection vectors active",
+                "type": "security",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "INT-007",
+                "check": "COMPLETION_SLIDE.pptx generated",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "INT-008",
+                "check": "all integration modules trace to at least one Requirement ID from PRD",
+                "type": "traceability",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "INT-CR-001",
+                "check": "CODE_REVIEW_LOG.json exists in agent sandbox directory",
+                "type": "artifact",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "INT-CR-002",
+                "check": "CODE_REVIEW_LOG.json review_gate_passed is true (all reviews completed by designated role)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "INT-CR-003",
+                "check": "CODE_REVIEW_LOG.json fix_gate_passed is true (all review findings have verified fixes)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "INT-CM-001",
+                "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "INT-CM-002",
+                "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              }
+            ],
+            "notes": "v2 INTEGRATION VERIFIED: 0 build errors, 45 pages, 35 API routes. Email+Phone auth flows all PASS. 406 merchants, 21 markets, 2,042 products loaded. Role-based redirects verified. Protected routes return 401. Merchant/Admin dashboards functional. Awaiting HITL approval."
+          },
+          "08_qa_agent": {
+            "phase": "phase_four",
+            "pool": "sync_pool",
+            "status": "awaiting_approval",
+            "dependencies": [
+              "07d_integration_agent"
+            ],
+            "input_contract": [
+              {
+                "source": "07d_integration_agent",
+                "files": [
+                  "INTEGRATION_REPORT.md",
+                  "petemart-unified/types/index.ts",
+                  "petemart-unified/lib/api-client.ts"
+                ]
+              },
+              {
+                "source": "02_requirement_agent",
+                "files": [
+                  "prd.json"
+                ]
+              }
+            ],
+            "output_contract": [
+              {
+                "path": "agents/03_execution_workspace/08_qa_agent/01_QA_TEST_PLAN.md",
+                "description": "QA test plan"
+              },
+              {
+                "path": "agents/03_execution_workspace/08_qa_agent/03_GO_NOGO_RECOMMENDATION.md",
+                "description": "Go/No-Go recommendation"
+              },
+              {
+                "path": "playwright.config.ts",
+                "description": "Playwright E2E config"
+              },
+              {
+                "path": "qa-dashboard/results.json",
+                "description": "Aggregated test results"
+              },
+              {
+                "path": "qa-dashboard/test-run-config.json",
+                "description": "Test run configuration"
+              },
+              {
+                "path": "qa-dashboard/test-types.json",
+                "description": "Test type definitions"
+              },
+              {
+                "path": "__tests__/api-contract.test.ts",
+                "description": "API contract tests"
+              },
+              {
+                "path": "__tests__/integration-payment.test.ts",
+                "description": "Payment integration tests"
+              },
+              {
+                "path": "e2e/auth-flow.spec.ts",
+                "description": "Auth E2E tests"
+              },
+              {
+                "path": "e2e/customer-journey.spec.ts",
+                "description": "Customer journey E2E tests"
+              },
+              {
+                "path": "e2e/merchant-flow.spec.ts",
+                "description": "Merchant flow E2E tests"
+              },
+              {
+                "path": "e2e/admin-flow.spec.ts",
+                "description": "Admin flow E2E tests"
+              }
+            ],
+            "requires_human_approval": true,
+            "approved": true,
+            "approved_by": "Human Gatekeeper (Srinikc) via Work Order",
+            "approved_at": "2026-06-02T15:55:00Z",
+            "role": "Senior Test Architect & Quality Gatekeeper",
+            "expert_reviewer": {
+              "role_title": "Senior QA Architect / Test Manager",
+              "industry_jd_reference": "QA Lead \u2014 validates test plan completeness, automated test coverage thresholds, regression suite, E2E Playwright tests, test selection mechanism, QA web dashboard, and Go/No-Go recommendation for staging promotion.",
+              "review_status": "completed",
+              "review_feedback": [
+                "E2E AUTOMATION FRAMEWORK COMPLETED: Playwright config with chromium/firefox/webkit matrix, 39 E2E tests across 6 spec files (home, auth, customer-journey, merchant-flow, admin-flow, api-health). Test selection mechanism via qa-dashboard/test-run-config.json with sandbox vs CI/CD profiles. Web dashboard at /qa-dashboard with KPIs, charts, quality gates, defect log, test type grid, and environment toggle. Collector script aggregates Vitest + Playwright results. CI pipeline runs E2E in separate job with artifact upload. approved.",
+                "EXPANDED TEST COVERAGE (2026-06-01): All 15 test types now have implementation. 122 Vitest tests pass across 17 files (component, api-contract, integration-payment, integration-whatsapp, multi-tenant, migration, security-headers). 51 Playwright E2E spec files written (6 core + 6 a11y + 6 visual regression). Performance (Lighthouse CI config + k6 load test script) and disaster recovery scripts added. QA dashboard shows 14/21 test types implemented with pass/fail/blocked/not-executed statuses. Dashboard shows 284 total tests tracked. Approved.",
+                "QA DASHBOARD FIXES v2.1 (2026-06-02): 9 fixes applied via work order. (1) Added 6 missing test types (smoke, sanity, acceptance, compatibility, localization, penetration) \u2192 21/21 test types, (2) QG10/QG11/QG12 updated from not-executed\u2192pass \u2192 12/12 gates, (3) sandboxEnabled=true for Full QA + Release tiers in test-run-config.json, (4) Live timestamp alongside data date in header, (5) KPI + Go/No-Go merged into single split-frame layout (KPIs left, Go/No-Go right), (6) External Reports now have clickable href links with ExternalLink icons, (7) Sandbox badge enhanced with CheckCircle icon + uppercase tracking, (8) 'Selection' renamed to 'Tests Selection', (9) Layout reordered: Tier buttons \u2192 Build metadata \u2192 Tests Selection toggle. All changes compile with zero TypeScript errors."
+              ],
+              "reviewed_by": "Human Gatekeeper (Srinikc)",
+              "reviewed_at": "2026-06-01T09:30:00Z",
+              "sign_off_required": true,
+              "sign_off_granted": true
+            },
+            "last_artifact_emitted": "app/api/qa/reports/status/route.ts \u2014 External Report status endpoint",
+            "artifacts_emitted": [
+              "agents/03_execution_workspace/08_qa_agent/01_QA_TEST_PLAN.md",
+              "agents/03_execution_workspace/08_qa_agent/02_DEFECT_LOG.md",
+              "agents/03_execution_workspace/08_qa_agent/03_GO_NOGO_RECOMMENDATION.md",
+              "agents/03_execution_workspace/08_qa_agent/04_RISK_ASSESSMENT.md",
+              "agents/03_execution_workspace/08_qa_agent/05_QA_DASHBOARD_SUMMARY.md",
+              "agents/03_execution_workspace/08_qa_agent/TEST_AUTOMATION_FRAMEWORK_ARCHITECTURE.md",
+              "agents/03_execution_workspace/08_qa_agent/test-results.json",
+              "agents/08_qa_agent/08_qa_agent_COMPLETION_SLIDE.pptx",
+              "agents/08_qa_agent/08_qa_agent_DATA_EXPORT.xlsx",
+              "playwright.config.ts",
+              "e2e/home-page.spec.ts",
+              "e2e/auth-flow.spec.ts",
+              "e2e/customer-journey.spec.ts",
+              "e2e/merchant-flow.spec.ts",
+              "e2e/admin-flow.spec.ts",
+              "e2e/api-health.spec.ts",
+              "e2e/accessibility.spec.ts",
+              "e2e/visual-regression.spec.ts",
+              "qa-dashboard/test-run-config.json",
+              "qa-dashboard/results.json",
+              "qa-dashboard/history.json",
+              "qa-dashboard/test-types.json",
+              "app/api/qa/reports/status/route.ts",
+              "scripts/collect-test-results.js",
+              "scripts/run-tests.js",
+              "scripts/k6-loadtest.js",
+              "scripts/disaster-recovery-test.js",
+              "scripts/track_usage.py",
+              "lighthouse.config.js",
+              "vitest.config.ts",
+              "__tests__/setup.ts",
+              "__tests__/api-contract.test.ts",
+              "__tests__/integration-payment.test.ts",
+              "__tests__/integration-whatsapp.test.ts",
+              "__tests__/multi-tenant.test.ts",
+              "__tests__/migration.test.ts",
+              "__tests__/security-headers.test.ts",
+              "__tests__/components/badge.test.tsx",
+              "__tests__/components/avatar.test.tsx",
+              "__tests__/components/input.test.tsx",
+              "__tests__/components/tabs.test.tsx",
+              "__tests__/components/separator.test.tsx",
+              "__tests__/components/header.test.tsx",
+              "__tests__/components/button.test.tsx",
+              "qa-dashboard/results.json",
+              "app/qa-dashboard/page.tsx",
+              ".github/workflows/ci.yml"
+            ],
+            "last_activity_timestamp": "2026-06-02T18:38:00Z",
+            "execution_count": 5,
+            "work_order": "WORK-ORDER-QA-AUTO-CAPTURE-BG-PROCESS-v3.0",
+            "work_order_items": [
+              "ITEM-1: Test Failure Capture & Auto-Defect Workflow \u2014 auto-capture test failures to results.json, create defect entries in defect log, notify supervisor on failure, supervisor dispatch to code agent for fix",
+              "ITEM-2 (PRIORITY #1): Test Summary Historical Run Dropdown \u2014 add dropdown to select/view historical test runs with tier+timestamp format labels (e.g. 'Sanity \u2014 2026-06-02 14:30'). REFINED: run-history.json schema must include tier field per entry, backfill older entries, dropdown must show 'Tier \u2014 Timestamp' format",
+              "ITEM-3: Test Engine Background/Detached Process \u2014 run test tiers as detached background process with status polling instead of blocking UI",
+              "ITEM-4: Go/No-Go Text Box Enhancement with PDF Export \u2014 replace single-line input with multiline textarea + scroll support, add 'Download as PDF' button generating PDF with verdict, comment, timestamp, signature fields using jsPDF",
+              "ITEM-5: Fix External Report Links (404 errors) \u2014 audit report file existence, show disabled/grayed state for non-existent reports with 'Not generated yet \u2014 run tests first' text, add tooltip with generation commands, auto-detect via GET /api/qa/reports/status",
+              "ITEM-6: Priority Implementation Note \u2014 ITEM-2 must be executed FIRST before any other items (tier+timestamp dropdown refinement was previously approved but not yet implemented)",
+              "ITEM-7: Sanity Run Tagged as 'custom' Instead of 'Sanity' \u2014 tier value is lost when writing to run-history.json; clicking Sanity produces {tier: 'custom'} instead of {tier: 'sanity', tierLabel: 'Sanity'}. Fix tier capture in app/api/qa/run/route.ts and/or app/qa-dashboard/page.tsx",
+              "ITEM-8: CSV Download Should Export Latest Run Only \u2014 CSV currently exports ALL 21 test types regardless of run scope. Must filter to latest run's test types only. Add disabled state 'Run a test tier first' when no runs exist. Content must match run scope (Sanity=4 types, Full QA=20 types, Release=21 types)",
+              "ITEM-9: Test Summary Should Reflect Latest Run, Not Full Data \u2014 Test Summary by Category shows all 21 test types even after limited run (e.g. Sanity). Must filter to show only test types from latest run. Add visual indicator 'Showing results for: {TierLabel} \u2014 {Timestamp}'. Sync with historical dropdown selection."
+            ],
+            "work_order_refinements": [
+              {
+                "refinement_id": "REFINE-ITEM2-v3.1",
+                "applied_at": "2026-06-02T16:10:00Z",
+                "item": "ITEM-2",
+                "description": "Human gatekeeper refinement: Dropdown tag format must show tier + timestamp (e.g. 'Sanity \u2014 2026-06-02 14:30'). Added requirement to update run-history.json schema to include tier field per entry, backfill older entries that lack tier field, and ensure page.tsx dropdown displays 'Tier \u2014 Timestamp' format.",
+                "work_order_updated": "WORK_ORDER_v3.0.md Item 2 refined with explicit schema and formatting requirements"
+              },
+              {
+                "refinement_id": "ADD-ITEMS-4-5-6-v3.2",
+                "applied_at": "2026-06-02T16:20:00Z",
+                "item": "ITEMS-4,5,6",
+                "description": "Three new feedback items added to work order: (ITEM-4) Go/No-Go textarea + PDF export, (ITEM-5) External Report Links 404 fix with disabled state for missing reports, (ITEM-6) Priority directive to execute ITEM-2 first.",
+                "work_order_updated": "WORK_ORDER_v3.0.md \u2014 Items 4, 5, 6 appended. Overview, Execution Requirements, and Verification Criteria updated."
+              },
+              {
+                "refinement_id": "ADD-ITEMS-7-8-9-v3.3",
+                "applied_at": "2026-06-02T18:30:00Z",
+                "item": "ITEMS-7,8,9",
+                "description": "Three critical bugs found in Agent 08 implementation added to work order: (ITEM-7) Sanity run tagged as 'custom' instead of 'Sanity' \u2014 tier capture bug in run-history.json writing; (ITEM-8) CSV Download exports all 21 test types instead of latest run only \u2014 must filter to run scope; (ITEM-9) Test Summary shows all test types instead of filtering to latest run \u2014 must add tier-based filtering and visual indicator. Also added permanent 'Sr Test Architect' role expectation requiring Design Review section in all future Agent 08 outputs.",
+                "work_order_updated": "WORK_ORDER_v3.0.md \u2014 Items 7, 8, 9 appended. Sr Test Architect role note added at top. Overview, Execution Order, and Verification Criteria updated."
+              }
+            ],
+            "compliance_checklist": [
+              {
+                "id": "QA-001",
+                "check": "artifact_exists(QA_TEST_PLAN.md) \u2014 test plan present",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "QA-002",
+                "check": "artifact_exists(DEFECT_LOG.md) \u2014 defect log present",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "QA-003",
+                "check": "artifact_exists(GO_NOGO_RECOMMENDATION.md) \u2014 Go/No-Go recommendation present",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "QA-004",
+                "check": "code review completed (pre-commit gate cleared)",
+                "type": "code_review",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "QA-005",
+                "check": "TypeScript check passed (tsc --noEmit)",
+                "type": "test",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "QA-006",
+                "check": "test coverage meets specified threshold",
+                "type": "test",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "QA-007",
+                "check": "no high-severity defects open on release candidate branch",
+                "type": "quality",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "QA-008",
+                "check": "E2E tests executed with Playwright multi-browser matrix",
+                "type": "test",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "QA-009",
+                "check": "COMPLETION_SLIDE.pptx generated",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "QA-010",
+                "check": "DATA_EXPORT.xlsx generated (test results, defect logs, coverage metrics)",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "QA-011",
+                "check": "QA dashboard has Requirements Traceability section showing REQ-ID to test mapping",
+                "type": "traceability",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "QA-CR-001",
+                "check": "CODE_REVIEW_LOG.json exists in agent sandbox directory",
+                "type": "artifact",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "QA-CR-002",
+                "check": "CODE_REVIEW_LOG.json review_gate_passed is true (all reviews completed by designated role)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "QA-CR-003",
+                "check": "CODE_REVIEW_LOG.json fix_gate_passed is true (all review findings have verified fixes)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "QA-CM-001",
+                "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "QA-CM-002",
+                "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              }
+            ],
+            "notes": "v2.1 QA DASHBOARD FIXES (2026-06-02): 9 fixes applied via work order. v3.0 WORK ORDER COMPLETED (2026-06-02): All 6 items implemented. | v3.3 BUGFIX EXECUTION (2026-06-02T18:38): All 3 bugfix items IMPLEMENTED and VERIFIED. ITEM-7 (FIXED): run/route.ts now passes --tier parameter to run-tests.js, so Sanity runs correctly record tier='sanity' instead of 'custom'. ITEM-8 (FIXED): CSV export now uses filteredTableData (only run-scoped types) and shows disabled 'Run a test tier first' state when no runs exist. ITEM-9 (FIXED): Test Summary now filters rows to only show test types from active run's tier scope; blue indicator banner shows 'Showing results for: {TierLabel} \u2014 {Timestamp}'. Design Review: Performed architecture review of QA data pipeline \u2014 identified tier propagation chain (UI\u2192API\u2192script\u2192run-history) as single point of failure for ITEM-7; CSV/summary filter logic was missing run-scope awareness for ITEM-8/9. COMPLIANCE: TypeScript check: 0 errors in modified files. Tests: 148/148 pass. Dashboard: HTTP 200 at /qa-dashboard. Awaiting HITL approval."
+          },
+          "09_production_agent": {
+            "phase": "phase_four",
+            "pool": "sync_pool",
+            "status": "awaiting_approval",
+            "dependencies": [
+              "08_qa_agent"
+            ],
+            "input_contract": [
+              {
+                "source": "08_qa_agent",
+                "files": [
+                  "03_GO_NOGO_RECOMMENDATION.md",
+                  "qa-dashboard/results.json"
+                ]
+              },
+              {
+                "source": "06_infra_devops_agent",
+                "files": [
+                  ".github/workflows/deploy.yml",
+                  "BRANCHING_STRATEGY.md"
+                ]
+              }
+            ],
+            "output_contract": [
+              {
+                "path": "agents/03_execution_workspace/09_production_agent/01_DEPLOYMENT_REPORT.md",
+                "description": "Deployment report"
+              },
+              {
+                "path": "agents/03_execution_workspace/09_production_agent/02_RELEASE_NOTES.md",
+                "description": "Release notes"
+              },
+              {
+                "path": "agents/03_execution_workspace/09_production_agent/05_LAUNCH_CHECKLIST.md",
+                "description": "Launch checklist"
+              },
+              {
+                "path": "agents/03_execution_workspace/09_production_agent/06_USER_GUIDE.md",
+                "description": "User guide"
+              }
+            ],
+            "requires_human_approval": true,
+            "approved": false,
+            "role": "Release & Deployment Coordinator",
+            "expert_reviewer": {
+              "role_title": "Senior Release Manager / DevOps Lead",
+              "industry_jd_reference": "Release Manager \u2014 validates staging sign-off, production deployment scripts, post-deployment monitoring, and final Go/No-Go status before live rollout.",
+              "review_status": "pending",
+              "review_feedback": [],
+              "reviewed_by": null,
+              "reviewed_at": null,
+              "sign_off_required": true,
+              "sign_off_granted": false
+            },
+            "approval_gate_triggers": [
+              "GATE-PRODUCTION-01"
+            ],
+            "last_artifact_emitted": "agents/03_execution_workspace/09_production_agent/01_DEPLOYMENT_REPORT.md",
+            "artifacts_emitted": [
+              "agents/03_execution_workspace/09_production_agent/01_DEPLOYMENT_REPORT.md",
+              "agents/03_execution_workspace/09_production_agent/02_RELEASE_NOTES.md",
+              "agents/03_execution_workspace/09_production_agent/03_DEMO_ACCOUNTS_TEST_SCENARIOS.md",
+              "agents/03_execution_workspace/09_production_agent/04_KNOWN_LIMITATIONS.md",
+              "agents/03_execution_workspace/09_production_agent/05_LAUNCH_CHECKLIST.md",
+              "agents/03_execution_workspace/09_production_agent/06_USER_GUIDE.md"
+            ],
+            "last_activity_timestamp": "2026-05-30T19:35:00Z",
+            "execution_count": 1,
+            "compliance_checklist": [
+              {
+                "id": "PROD-001",
+                "check": "artifact_exists(DEPLOYMENT_REPORT.md) \u2014 deployment report present",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "PROD-002",
+                "check": "artifact_exists(RELEASE_NOTES.md) \u2014 release notes present",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "PROD-003",
+                "check": "QA sign-off obtained before deployment",
+                "type": "quality",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "PROD-004",
+                "check": "deployment sequence generates no unhandled server errors",
+                "type": "validation",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "PROD-005",
+                "check": "all deployment endpoints return HTTP 200",
+                "type": "validation",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "PROD-006",
+                "check": "COMPLETION_SLIDE.pptx generated",
+                "type": "artifact",
+                "required": true,
+                "passed": true
+              },
+              {
+                "id": "PROD-CR-001",
+                "check": "CODE_REVIEW_LOG.json exists in agent sandbox directory",
+                "type": "artifact",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "PROD-CR-002",
+                "check": "CODE_REVIEW_LOG.json review_gate_passed is true (all reviews completed by designated role)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "PROD-CR-003",
+                "check": "CODE_REVIEW_LOG.json fix_gate_passed is true (all review findings have verified fixes)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "PROD-CM-001",
+                "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "PROD-CM-002",
+                "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              }
+            ],
+            "notes": "Production deployment report complete: 21 API endpoints, 41 pages, 25 dynamic routes, 3 demo accounts, LOW risk, GO recommendation. Awaiting GATE-PRODUCTION-01 HITL sign-off."
+          },
+          "10_tech_pub_agent": {
+            "phase": "phase_four",
+            "pool": "sync_pool",
+            "status": "pending",
+            "dependencies": [
+              "09_production_agent"
+            ],
+            "input_contract": [
+              {
+                "source": "07a_ui_agent",
+                "files": [
+                  "output/UI_MAP.md",
+                  "design-system/DESIGN.md"
+                ]
+              },
+              {
+                "source": "09_production_agent",
+                "files": [
+                  "02_RELEASE_NOTES.md",
+                  "06_USER_GUIDE.md"
+                ]
+              },
+              {
+                "source": "02_requirement_agent",
+                "files": [
+                  "prd.md"
+                ]
+              }
+            ],
+            "output_contract": [],
+            "requires_human_approval": false,
+            "approved": false,
+            "role": "Technical Documentation & Localization Specialist",
+            "expert_reviewer": {
+              "role_title": "Senior Technical Writer / Documentation Lead",
+              "industry_jd_reference": "Technical Writing Lead \u2014 validates help file coverage, i18n key mapping, installation guide completeness, style guide compliance, and release notes accuracy.",
+              "review_status": "pending",
+              "review_feedback": [],
+              "reviewed_by": null,
+              "reviewed_at": null,
+              "sign_off_required": true,
+              "sign_off_granted": false
+            },
+            "last_artifact_emitted": null,
+            "last_activity_timestamp": null,
+            "execution_count": 0,
+            "compliance_checklist": [
+              {
+                "id": "TECHPUB-001",
+                "check": "user-facing interface paths have matching help document entries",
+                "type": "artifact",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "TECHPUB-002",
+                "check": "localization key mapping configuration is complete (no broken keys)",
+                "type": "data_completeness",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "TECHPUB-003",
+                "check": "embedded hyperlinks, screenshots, and install scripts match active build",
+                "type": "validation",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "TECHPUB-004",
+                "check": "COMPLETION_SLIDE.pptx generated",
+                "type": "artifact",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "TECHPUB-CR-001",
+                "check": "CODE_REVIEW_LOG.json exists in agent sandbox directory",
+                "type": "artifact",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "TECHPUB-CR-002",
+                "check": "CODE_REVIEW_LOG.json review_gate_passed is true (all reviews completed by designated role)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "TECHPUB-CR-003",
+                "check": "CODE_REVIEW_LOG.json fix_gate_passed is true (all review findings have verified fixes)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "TECHPUB-CM-001",
+                "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "TECHPUB-CM-002",
+                "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              }
+            ],
+            "notes": null
+          },
+          "11_customer_onboarding_agent": {
+            "phase": "phase_five",
+            "pool": "sync_pool",
+            "status": "pending",
+            "dependencies": [
+              "09_production_agent"
+            ],
+            "input_contract": [
+              {
+                "source": "02_requirement_agent",
+                "files": [
+                  "prd.md",
+                  "prd.json"
+                ]
+              },
+              {
+                "source": "09_production_agent",
+                "files": [
+                  "02_RELEASE_NOTES.md"
+                ]
+              },
+              {
+                "source": "04_prototype_agent",
+                "files": [
+                  "data/merchants.json"
+                ]
+              }
+            ],
+            "output_contract": [],
+            "requires_human_approval": false,
+            "approved": false,
+            "role": "CRM & Operations Specialist",
+            "expert_reviewer": {
+              "role_title": "Senior Customer Success Manager / Operations Lead",
+              "industry_jd_reference": "Customer Onboarding Lead \u2014 validates acquisition pipeline design, account provisioning flow, merchant onboarding guides, billing integration, and support ticket routing.",
+              "review_status": "pending",
+              "review_feedback": [],
+              "reviewed_by": null,
+              "reviewed_at": null,
+              "sign_off_required": true,
+              "sign_off_granted": false
+            },
+            "last_artifact_emitted": null,
+            "last_activity_timestamp": null,
+            "execution_count": 0,
+            "compliance_checklist": [
+              {
+                "id": "CRM-001",
+                "check": "provisioned account has billing model attached",
+                "type": "data_completeness",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "CRM-002",
+                "check": "merchant profile schema is complete and verified",
+                "type": "schema",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "CRM-003",
+                "check": "support interface parses log data into structured JSON matching defect reporting requirements",
+                "type": "validation",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "CRM-004",
+                "check": "COMPLETION_SLIDE.pptx generated",
+                "type": "artifact",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "CRM-CR-001",
+                "check": "CODE_REVIEW_LOG.json exists in agent sandbox directory",
+                "type": "artifact",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "CRM-CR-002",
+                "check": "CODE_REVIEW_LOG.json review_gate_passed is true (all reviews completed by designated role)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "CRM-CR-003",
+                "check": "CODE_REVIEW_LOG.json fix_gate_passed is true (all review findings have verified fixes)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "CRM-CM-001",
+                "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "CRM-CM-002",
+                "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              }
+            ],
+            "notes": null
+          },
+          "12_marketing_agent": {
+            "phase": "phase_five",
+            "pool": "sync_pool",
+            "status": "pending",
+            "dependencies": [
+              "09_production_agent"
+            ],
+            "input_contract": [
+              {
+                "source": "01_ideation_agent",
+                "files": [
+                  "idea_proposal.md",
+                  "business_revenue_model.json"
+                ]
+              },
+              {
+                "source": "02_requirement_agent",
+                "files": [
+                  "prd.md"
+                ]
+              },
+              {
+                "source": "09_production_agent",
+                "files": [
+                  "02_RELEASE_NOTES.md"
+                ]
+              }
+            ],
+            "output_contract": [],
+            "requires_human_approval": false,
+            "approved": false,
+            "role": "Growth & Traffic Automation Specialist",
+            "expert_reviewer": {
+              "role_title": "Senior Marketing Manager / Growth Lead",
+              "industry_jd_reference": "Growth Marketing Lead \u2014 validates campaign architecture, SEO strategy, meta-tag maps, social media assets, video scripts, and analytics tracking setup.",
+              "review_status": "pending",
+              "review_feedback": [],
+              "reviewed_by": null,
+              "reviewed_at": null,
+              "sign_off_required": true,
+              "sign_off_granted": false
+            },
+            "last_artifact_emitted": null,
+            "last_activity_timestamp": null,
+            "execution_count": 0,
+            "compliance_checklist": [
+              {
+                "id": "MKT-001",
+                "check": "public web routing tags and SEO meta tags present",
+                "type": "data_completeness",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "MKT-002",
+                "check": "analytics trackers configured in production build",
+                "type": "validation",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "MKT-003",
+                "check": "marketing webhooks do not trigger if system monitoring reports active scaling bottleneck",
+                "type": "quality",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "MKT-004",
+                "check": "COMPLETION_SLIDE.pptx generated",
+                "type": "artifact",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "MKT-CR-001",
+                "check": "CODE_REVIEW_LOG.json exists in agent sandbox directory",
+                "type": "artifact",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "MKT-CR-002",
+                "check": "CODE_REVIEW_LOG.json review_gate_passed is true (all reviews completed by designated role)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "MKT-CR-003",
+                "check": "CODE_REVIEW_LOG.json fix_gate_passed is true (all review findings have verified fixes)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "MKT-CM-001",
+                "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "MKT-CM-002",
+                "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              }
+            ],
+            "notes": null
+          },
+          "13_maintenance_agent": {
+            "phase": "phase_five",
+            "pool": "sync_pool",
+            "status": "pending",
+            "dependencies": [
+              "09_production_agent"
+            ],
+            "input_contract": [
+              {
+                "source": "06_infra_devops_agent",
+                "files": [
+                  "BRANCHING_STRATEGY.md",
+                  ".github/workflows/ci.yml"
+                ]
+              },
+              {
+                "source": "08_qa_agent",
+                "files": [
+                  "03_GO_NOGO_RECOMMENDATION.md"
+                ]
+              }
+            ],
+            "output_contract": [],
+            "requires_human_approval": false,
+            "approved": false,
+            "role": "Autonomous Remediation & Healing Agent",
+            "expert_reviewer": {
+              "role_title": "Senior SRE / Support Lead",
+              "industry_jd_reference": "Site Reliability Lead \u2014 validates monitoring setup, incident response playbooks, auto-remediation scripts, patch validation in sandbox, and DevOps pipeline clearance for hotfixes.",
+              "review_status": "pending",
+              "review_feedback": [],
+              "reviewed_by": null,
+              "reviewed_at": null,
+              "sign_off_required": true,
+              "sign_off_granted": false
+            },
+            "last_artifact_emitted": null,
+            "last_activity_timestamp": null,
+            "execution_count": 0,
+            "compliance_checklist": [
+              {
+                "id": "MAINT-001",
+                "check": "code review completed (pre-commit gate cleared)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "MAINT-002",
+                "check": "TypeScript check passed (tsc --noEmit)",
+                "type": "test",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "MAINT-003",
+                "check": "patch validated in sandbox environment (does not degrade performance)",
+                "type": "validation",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "MAINT-004",
+                "check": "DevOps verification pipeline cleared before deployment",
+                "type": "quality",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "MAINT-005",
+                "check": "valid human authorization token present in state ledger for production patch",
+                "type": "security",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "MAINT-006",
+                "check": "COMPLETION_SLIDE.pptx generated",
+                "type": "artifact",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "MAINT-CR-001",
+                "check": "CODE_REVIEW_LOG.json exists in agent sandbox directory",
+                "type": "artifact",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "MAINT-CR-002",
+                "check": "CODE_REVIEW_LOG.json review_gate_passed is true (all reviews completed by designated role)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "MAINT-CR-003",
+                "check": "CODE_REVIEW_LOG.json fix_gate_passed is true (all review findings have verified fixes)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "MAINT-CM-001",
+                "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "MAINT-CM-002",
+                "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              }
+            ],
+            "notes": null
+          },
+          "14_finops_agent": {
+            "phase": "phase_five",
+            "pool": "sync_pool",
+            "status": "pending",
+            "dependencies": [
+              "09_production_agent"
+            ],
+            "input_contract": [
+              {
+                "source": "03_architect_agent",
+                "files": [
+                  "COST_MODELS.md"
+                ]
+              },
+              {
+                "source": "06_infra_devops_agent",
+                "files": [
+                  "BRANCHING_STRATEGY.md"
+                ]
+              }
+            ],
+            "output_contract": [],
+            "requires_human_approval": false,
+            "approved": false,
+            "role": "Cloud Cost Optimization Guardrail",
+            "expert_reviewer": {
+              "role_title": "Senior FinOps Analyst / Cloud Cost Lead",
+              "industry_jd_reference": "FinOps Lead \u2014 validates cloud spend tracking against budget, LLM token consumption monitoring, cost anomaly detection thresholds, and auto-scaling cost projections.",
+              "review_status": "pending",
+              "review_feedback": [],
+              "reviewed_by": null,
+              "reviewed_at": null,
+              "sign_off_required": true,
+              "sign_off_granted": false
+            },
+            "last_artifact_emitted": null,
+            "last_activity_timestamp": null,
+            "execution_count": 0,
+            "compliance_checklist": [
+              {
+                "id": "FIN-001",
+                "check": "cost tracking ledger matches incoming billing metrics with active resource IDs",
+                "type": "data_completeness",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "FIN-002",
+                "check": "operational spend within 15% of budget (no overrun flag)",
+                "type": "quality",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "FIN-003",
+                "check": "COMPLETION_SLIDE.pptx generated",
+                "type": "artifact",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "FIN-004",
+                "check": "DATA_EXPORT.xlsx generated (cost tracking data, budget comparisons)",
+                "type": "artifact",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "FIN-CR-001",
+                "check": "CODE_REVIEW_LOG.json exists in agent sandbox directory",
+                "type": "artifact",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "FIN-CR-002",
+                "check": "CODE_REVIEW_LOG.json review_gate_passed is true (all reviews completed by designated role)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "FIN-CR-003",
+                "check": "CODE_REVIEW_LOG.json fix_gate_passed is true (all review findings have verified fixes)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "FIN-CM-001",
+                "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "FIN-CM-002",
+                "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              }
+            ],
+            "notes": null
+          },
+          "15_secrets_compliance_agent": {
+            "phase": "phase_five",
+            "pool": "sync_pool",
+            "status": "pending",
+            "dependencies": [
+              "09_production_agent"
+            ],
+            "input_contract": [
+              {
+                "source": "06_infra_devops_agent",
+                "files": [
+                  "BRANCHING_STRATEGY.md",
+                  ".github/workflows/security-scan.yml"
+                ]
+              }
+            ],
+            "output_contract": [],
+            "requires_human_approval": false,
+            "approved": false,
+            "role": "Security Guardrail",
+            "expert_reviewer": {
+              "role_title": "Senior Security Engineer / Compliance Officer",
+              "industry_jd_reference": "Security Lead \u2014 validates secrets scanning across branches, API key exposure checks, encryption standards, compliance variance detection, and credential isolation in vault.",
+              "review_status": "pending",
+              "review_feedback": [],
+              "reviewed_by": null,
+              "reviewed_at": null,
+              "sign_off_required": true,
+              "sign_off_granted": false
+            },
+            "last_artifact_emitted": null,
+            "last_activity_timestamp": null,
+            "execution_count": 0,
+            "compliance_checklist": [
+              {
+                "id": "SEC-001",
+                "check": "all active credentials reside in isolated secrets manager or encrypted vault",
+                "type": "security",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "SEC-002",
+                "check": "no unprotected authentication variables detected across all branches",
+                "type": "security",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "SEC-003",
+                "check": "encryption receipts maintained and verifiable",
+                "type": "artifact",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "SEC-004",
+                "check": "COMPLETION_SLIDE.pptx generated",
+                "type": "artifact",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "SEC-CR-001",
+                "check": "CODE_REVIEW_LOG.json exists in agent sandbox directory",
+                "type": "artifact",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "SEC-CR-002",
+                "check": "CODE_REVIEW_LOG.json review_gate_passed is true (all reviews completed by designated role)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "SEC-CR-003",
+                "check": "CODE_REVIEW_LOG.json fix_gate_passed is true (all review findings have verified fixes)",
+                "type": "code_review",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "SEC-CM-001",
+                "check": "Commit message contains all required metadata fields (## Component:, ## Bug/Feature ID:, ## Code Review:, ## Code Review Fix:, ## Tests Run:, ## Fix Details:, ## Change Done By:, ## Branch:, ## Version:, ## Tag:)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              },
+              {
+                "id": "SEC-CM-002",
+                "check": "Tests Run field in commit message matches changed files (smart test selection verified)",
+                "type": "commit_message",
+                "required": true,
+                "passed": false
+              }
+            ],
+            "notes": null
+          }
+        }
+      }
+    },
+    {
+      "path": "00_state_ledger\\AGENT_REGISTRY.json",
+      "content": {
+        "_parse_error": "Expecting value: line 137 column 314 (char 10392)",
+        "_raw_preview": "{\n  \"$schema\": \"https://opencode.ai\",\n  \"global_guardrails\": {\n    \"output_contract\": \"dual_format_strict\",\n    \"required_extensions\": [\".md\", \".json\"],\n    \"state_router\": \"00_state_ledger/STATE_MATRIX.json\",\n    \"change_history\": \"00_state_ledger/CHANGE_REQUEST.json\",\n    \"universal_law\": {\n      \"version\": \"1.0\",\n      \"rule\": \"Supervisor-Only Orchestration\",\n      \"description\": \"Agent 0 is the sole entity authorized to launch, orchestrate, monitor, and verify any worker agent (1-15). No hum"
+      }
+    }
+  ],
+  "agents": {
+    "00_supervisor_agent": {
+      "description": "Pipeline Orchestrator & State Machine Controller. Manages the lifecycle of all 15 worker agents. Enforces dependency chains, pool scheduling, loop guardrails, and HITL gates. Does NOT make product decisions."
+    },
+    "01_ideation_agent": {
+      "description": "Product Marketing Manager & Hyper-Local Retail Economics Specialist for Old Bangalore Pete markets. Use when researching traditional physical merchants, designing e-commerce UVP, or generating synthetic retail datasets."
+    },
+    "02_requirement_agent": {
+      "description": "Enterprise Product Manager / Product Owner that translates idea proposals into PRDs with Requirement IDs, user personas, workflows, and cost boundaries. Use after ideation is approved."
+    },
+    "03_architect_agent": {
+      "description": "Senior Enterprise Solution Architect producing technical blueprints, API-first strategy, caching, message-queue, event-driven architecture, and cost models. Use after PRD is approved."
+    },
+    "04_prototype_agent": {
+      "description": "Senior Prototyping Engineer / Concept Verification Engine that builds launchable POC workspaces with realistic sample datasets. Use after architecture specs are approved."
+    },
+    "05_program_mgmt_agent": {
+      "description": "Senior Agile Program Manager & Scrum Master that decomposes scope into Epics, Features, User Stories, and tasks with SDLC timelines and Jira integration. Use after POC is validated."
+    },
+    "06_infra_devops_agent": {
+      "description": "DevOps Systems Architect & Core Supply Chain Automation Engine for GitHub branching, Docker/K8s, CI/CD pipelines, and rollback protocols. Use for infrastructure and deployment pipeline tasks."
+    },
+    "07a_ui_agent": {
+      "description": "Frontend & Mobile Interface Engineer designing responsive wireframes, HTML/CSS, and mobile UI modules with localization and unit tests. Use for frontend implementation tasks."
+    },
+    "07b_api_agent": {
+      "description": "Interface Connection Engineer designing and implementing RESTful API specs, mock endpoints, and secure data-routing code with unit tests. Use for API layer tasks."
+    },
+    "07c_backend_db_agent": {
+      "description": "Data Infrastructure & Storage Engineer provisioning databases, schemas, indexes, caching strategies, and migration scripts. Use for database and data layer tasks."
+    },
+    "07d_integration_agent": {
+      "description": "Systems Assembly Engineer that stitches together frontend, API, and backend components into a fully integrated software package with security auditing. Use for integration and end-to-end assembly."
+    },
+    "08_qa_agent": {
+      "description": "Senior Test Architect & Quality Gatekeeper that builds end-to-end QA test plans, automated test suites, and Go/No-Go recommendations. Use for QA and test execution."
+    },
+    "09_production_agent": {
+      "description": "Release & Deployment Coordinator that manages build and deployment across Staging and Production with final Go/No-Go validation. Use for release management and deployment."
+    },
+    "10_tech_pub_agent": {
+      "description": "Technical Documentation & Localization Specialist that writes help files, installation guides, release notes, and i18n/localization assets. Use for documentation and translation tasks."
+    },
+    "11_customer_onboarding_agent": {
+      "description": "CRM & Operations Specialist that designs customer acquisition pipelines, account provisioning, and merchant onboarding with support ticket ingestion. Use for onboarding and CRM workflows."
+    },
+    "12_marketing_agent": {
+      "description": "Growth & Traffic Automation Specialist that generates social media assets, SEO strategies, video scripts, and multi-channel campaign architectures. Use for marketing and growth tasks."
+    },
+    "13_maintenance_agent": {
+      "description": "Autonomous Remediation & Healing Agent that monitors production logs, isolates errors, formulates fixes, and validates patches through the DevOps pipeline. Use for system maintenance and hotfixes."
+    },
+    "14_finops_agent": {
+      "description": "Cloud Cost Optimization Guardrail that monitors infrastructure spend, LLM token consumption, and enforces budget boundaries with constraint flags. Use for cost tracking and FinOps."
+    },
+    "15_secrets_compliance_agent": {
+      "description": "Security Guardrail that scans all repos, branches, and container configs for exposed secrets, API keys, and compliance variances. Use for security auditing and secrets management."
+    }
+  },
+  "conversations": [
+    {
+      "filename": "20260603-18-52-16-Zen-account-switch-strategy-fo.md",
+      "path": "conversations\\20260603-18-52-16-Zen-account-switch-strategy-fo.md",
+      "size_bytes": 224663,
+      "modified_at": "2026-06-03T14:06:33.206338+00:00"
+    },
+    {
+      "filename": "20260603-17-38-42-Uncommitted-changes-check-in-p.md",
+      "path": "conversations\\20260603-17-38-42-Uncommitted-changes-check-in-p.md",
+      "size_bytes": 1982225,
+      "modified_at": "2026-06-03T14:17:07.955635+00:00"
+    },
+    {
+      "filename": "20260603-13-52-45-New-session-2026-06-03T08-22-4.md",
+      "path": "conversations\\20260603-13-52-45-New-session-2026-06-03T08-22-4.md",
+      "size_bytes": 566716,
+      "modified_at": "2026-06-03T13:12:14.528501+00:00"
+    },
+    {
+      "filename": "20260603-13-09-29-New-session-2026-06-03T07-39-2.md",
+      "path": "conversations\\20260603-13-09-29-New-session-2026-06-03T07-39-2.md",
+      "size_bytes": 3029829,
+      "modified_at": "2026-06-03T12:06:59.314947+00:00"
+    },
+    {
+      "filename": "20260602-18-15-55-New-session-2026-06-02T12-45-5.md",
+      "path": "conversations\\20260602-18-15-55-New-session-2026-06-02T12-45-5.md",
+      "size_bytes": 323245,
+      "modified_at": "2026-06-02T14:05:50.758632+00:00"
+    },
+    {
+      "filename": "20260602-17-07-55-New-session-2026-06-02T11-37-5.md",
+      "path": "conversations\\20260602-17-07-55-New-session-2026-06-02T11-37-5.md",
+      "size_bytes": 2634181,
+      "modified_at": "2026-06-02T15:15:53.890461+00:00"
+    },
+    {
+      "filename": "20260602-08-15-02-New-session-2026-06-02T02-45-0.md",
+      "path": "conversations\\20260602-08-15-02-New-session-2026-06-02T02-45-0.md",
+      "size_bytes": 1637190,
+      "modified_at": "2026-06-02T07:17:46.221372+00:00"
+    },
+    {
+      "filename": "20260601-09-32-39-New-session-2026-06-01T04-02-3.md",
+      "path": "conversations\\20260601-09-32-39-New-session-2026-06-01T04-02-3.md",
+      "size_bytes": 2332701,
+      "modified_at": "2026-06-01T18:10:18.073796+00:00"
+    },
+    {
+      "filename": "20260531-23-39-44-New-session-2026-05-31T18-09-4.md",
+      "path": "conversations\\20260531-23-39-44-New-session-2026-05-31T18-09-4.md",
+      "size_bytes": 356,
+      "modified_at": "2026-05-31T18:20:35.940696+00:00"
+    },
+    {
+      "filename": "20260531-23-21-09-Reading-session_checkpoint.md",
+      "path": "conversations\\20260531-23-21-09-Reading-session_checkpoint.md",
+      "size_bytes": 205113,
+      "modified_at": "2026-05-31T17:59:31.969193+00:00"
+    },
+    {
+      "filename": "20260531-15-44-12-Apply-pending-updates.md",
+      "path": "conversations\\20260531-15-44-12-Apply-pending-updates.md",
+      "size_bytes": 5455450,
+      "modified_at": "2026-05-31T17:50:46.481881+00:00"
+    },
+    {
+      "filename": "20260531-14-25-16-New-session-2026-05-31T08-55-1.md",
+      "path": "conversations\\20260531-14-25-16-New-session-2026-05-31T08-55-1.md",
+      "size_bytes": 2199386,
+      "modified_at": "2026-06-02T11:05:17.607485+00:00"
+    }
+  ],
+  "git_log": [
+    {
+      "sha": "c086af5ee27bebbf81636874bed71a2d87a231ed",
+      "date": "2026-06-03 19:37:29 +0530",
+      "message": "feat(commit): enforce commit message standard with smart test selection and Agent 0 compliance (#46)"
+    },
+    {
+      "sha": "3d2151fe6902c2d99aaa19c7b61ff3c73dfce424",
+      "date": "2026-06-03 18:21:37 +0530",
+      "message": "fix(hooks): replace native fetch with https module to fix libuv crash on Windows, move PR check to commit-msg (#45)"
+    },
+    {
+      "sha": "31928af5e57536f9faba2c8ac14ee678e9e6a7ba",
+      "date": "2026-06-03 18:16:32 +0530",
+      "message": "feat(code-review): add code review gate enforcement system with per-agent review logs, QA dashboard section, and PR number check (#44)"
+    },
+    {
+      "sha": "dc5e5a0940db8504e55ffb9bab6a4f5604036627",
+      "date": "2026-06-03 17:49:16 +0530",
+      "message": "feat(qa-dashboard): auto-capture failures, expanded test tiers, improved infrastructure"
+    },
+    {
+      "sha": "486bb6efbdd4b29ac454f12e5eed888aaca261dc",
+      "date": "2026-06-02 10:29:15 +0530",
+      "message": "fix(qa-dashboard): permanent startup script, Tests Engine, tier runner, layout reorganization"
+    },
+    {
+      "sha": "6c8b9fc3c4175f94fbfdfeeffe2d81b99ce35b7c",
+      "date": "2026-06-01 19:52:02 +0530",
+      "message": "feat(qa): complete E2E automation framework with Playwright tests, test selection, and dashboard"
+    },
+    {
+      "sha": "d1fb405d880f9ba3b52ab9646921995472ca2128",
+      "date": "2026-05-31 23:17:23 +0530",
+      "message": "chore: add session checkpoint for next session"
+    },
+    {
+      "sha": "448643ebb038c9ce8fd1fec950609a7c5719e005",
+      "date": "2026-05-31 23:11:33 +0530",
+      "message": "docs: add Pre-Commit Code Review Gate to AGENTS.md and all code agent prompts"
+    },
+    {
+      "sha": "0e0be6c301dfd0b7c0391430d190d59ccd5c0f86",
+      "date": "2026-05-31 23:07:57 +0530",
+      "message": "feat: add AI code review to pre-commit hook"
+    },
+    {
+      "sha": "e3ad3bf25fd0716cf958435e503c31e509666030",
+      "date": "2026-05-31 22:36:38 +0530",
+      "message": "feat: add husky pre-commit hooks with typecheck + test gate"
+    },
+    {
+      "sha": "976c1a5b77f5e2e2b8593b7ec27aeed1798957ff",
+      "date": "2026-05-31 22:32:11 +0530",
+      "message": "fix: add @vitest/coverage-v8 for CI coverage + add workflow job summaries"
+    },
+    {
+      "sha": "c4297932557ac2205b8dfe48d56fee909183efff",
+      "date": "2026-05-31 22:15:52 +0530",
+      "message": "fix: add continue-on-error to truffleHog and Gitleaks steps"
+    },
+    {
+      "sha": "c7706c1644725405ac6fef5767ce17b099d1f71d",
+      "date": "2026-05-31 22:07:20 +0530",
+      "message": "fix: wrap route handler params in Promise.resolve to match Next.js 15 types"
+    },
+    {
+      "sha": "6a5a643e8318849b04afbb2529023b4848e2cf52",
+      "date": "2026-05-31 22:02:32 +0530",
+      "message": "fix: security-scan non-failing CodeQL, Checkov, Hadolint"
+    },
+    {
+      "sha": "07163e37b6bf337811a4854c466d7f990ff70640",
+      "date": "2026-05-31 22:00:37 +0530",
+      "message": "fix: make lint non-failing (no ESLint config), fix reviewdog deprecated input"
+    },
+    {
+      "sha": "6b38dada559fb3d89bc17030bc1014785eb2b6d4",
+      "date": "2026-05-31 20:59:27 +0530",
+      "message": "fix: exclude agents dir from tsconfig, rewrite API tests as in-process, update data test"
+    },
+    {
+      "sha": "3f01922671cdf0ff13e6dc048fe13caaf9b39036",
+      "date": "2026-05-31 19:42:51 +0530",
+      "message": "fix: move app to repo root, remove working-directory, fix all workflows"
+    },
+    {
+      "sha": "881a92ac46f438b40effd7b13188af2b04198483",
+      "date": "2026-05-31 19:32:11 +0530",
+      "message": "fix: remove cache from setup-node (lockfile in subdir), sonarqube@v6, npm ci -> install"
+    },
+    {
+      "sha": "18f70e4b22b75b51b092aa5c0e201ea955a68aea",
+      "date": "2026-05-31 19:29:45 +0530",
+      "message": "fix: npm instead of pnpm, working-directory, sonarqube action, reviewdog, hadolint, socket.dev"
+    },
+    {
+      "sha": "f7c3605155d7cd7203a463a27fe20c70f4a16ae8",
+      "date": "2026-05-31 19:18:42 +0530",
+      "message": "fix: trufflehog version, cascading CI job deps, enable build even if secrets scan fails"
+    }
+  ],
+  "conversation_last": {
+    "filename": "20260603-18-52-16-Zen-account-switch-strategy-fo.md",
+    "modified_at": "2026-06-03T14:06:33.206338+00:00",
+    "last_messages": [
+      {
+        "role": "assistant",
+        "text": "Yes, all tool outputs (bash, file reads, edits, listings) get fed back to the model as context on every subsequent call \u2014 that's what's driving up costs when agents loop with verbose output.  Ways to reduce token burn:  **1. Add `textVerbosity: \"low\"`** to the model config \u2014 makes the model produce shorter responses: ```jsonc \"provider\": { \"opencode\": { \"models\": { \"deepseek-v4-flash\": { \"options\": { \"textVerbosity\": \"low\", \"reasoningSummary\": \"auto\" } } } } } ```  **2. Cap agent steps** to prevent runaway loops: ```jsonc \"agent\": { \"00_supervisor_agent\": { \"steps\": 20 }, \"03_architect_agent\": { \"steps\": 15 } } ```  **3. The compaction agent** already runs automatically when context gets long \u2014 it summarizes old turns. Make sure you're not disabling it.  **$1 for a single bug-fix loop session** is high. The main culprit is likely STATE_MATRIX.json being read entirely on every cycle \u2014 that file at ~69% completion is probably quite large. Each read re-ingests the full file into context. You could split it or trim older agent entries that are already approved.  Want me to add the `textVerbosity: \"low\"` + `reasoningSummary: \"auto\"` config to your project's `opencode.json`?"
+      },
+      {
+        "role": "assistant",
+        "text": "**Status:** completed **Title:** opencode.json  **Input:** ```json { \"filePath\": \"C:\\\\Users\\\\ADMIN\\\\Documents\\\\Srinikc\\\\AI Products\\\\petemart-agentic-framework\\\\opencode.json\", \"oldString\": \"  \\\"autoupdate\\\": true,\", \"newString\": \"  \\\"autoupdate\\\": true,\\n  \\\"model\\\": \\\"opencode/deepseek-v4-flash-free\\\",\\n  \\\"provider\\\": {\\n    \\\"opencode\\\": {\\n      \\\"models\\\": {\\n        \\\"deepseek-v4-flash\\\": {\\n          \\\"options\\\": {\\n            \\\"textVerbosity\\\": \\\"low\\\",\\n            \\\"reasoningSummary\\\": \\\"auto\\\"\\n          }\\n        },\\n        \\\"deepseek-v4-flash-free\\\": {\\n          \\\"options\\\": {\\n            \\\"textVerbosity\\\": \\\"low\\\",\\n            \\\"reasoningSummary\\\": \\\"auto\\\"\\n          }\\n        }\\n      }\\n    }\\n  },\" } ```  **Output:** ``` Edit applied successfully. ```"
+      },
+      {
+        "role": "assistant",
+        "text": "Done. Added `textVerbosity: \"low\"` and `reasoningSummary: \"auto\"` for both `deepseek-v4-flash` and `deepseek-v4-flash-free` via Zen, with the default model set to the free tier."
+      }
+    ],
+    "summary": {
+      "goal": "i can shift to deepseek v4 flash free in day till it gets expired and then shift to zen account right? also can switch to zen with claude only for agent 03 as and when required not everytime.",
+      "last_user_query": "does the listing out commands, file contents, change and others things in sessio window add up to token count because it is all verbose, if it affects, then we can lower teh details as currently i see in another session, some check-in going in round and bug fix and state matrix is corrupted, it cons",
+      "last_assistant_summary": "Done. Added `textVerbosity: \"low\"` and `reasoningSummary: \"auto\"` for both `deepseek-v4-flash` and `deepseek-v4-flash-free` via Zen, with the default model set to the free tier.",
+      "topics": [
+        "admin",
+        "ai",
+        "api",
+        "auth",
+        "db",
+        "migration",
+        "model",
+        "order",
+        "schema",
+        "test",
+        "token",
+        "vercel"
+      ],
+      "done_mentions": 9,
+      "pending_mentions": 2,
+      "exchanges": 39
+    },
+    "exchange_count": 39,
+    "total_size_bytes": 223008
+  }
+}
