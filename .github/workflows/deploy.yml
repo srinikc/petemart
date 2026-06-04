@@ -1,8 +1,19 @@
 name: CD — Deploy to Environment
 
 on:
+  # Automatic: only when infra/deploy config changes
   push:
-    branches: [develop, qa, staging]
+    paths:
+      - '.github/workflows/deploy.yml'
+      - '.github/workflows/ci*.yml'
+      - 'supabase/**'
+      - 'Dockerfile*'
+      - 'docker-compose*'
+      - 'docker/**'
+      - 'k8s/**'
+      - 'infra/**'
+      - '.github/actions/**'
+  # Manual: any environment, any time
   workflow_dispatch:
     inputs:
       environment:
