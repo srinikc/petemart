@@ -37,6 +37,6 @@ test.describe('Auth Flow', () => {
 
   test('auth page displays help or branding text', async ({ page }) => {
     const bodyText = await page.locator('body').textContent();
-    expect(bodyText.length).toBeGreaterThan(10);
+    expect(bodyText?.length ?? 0).toBeGreaterThan(10);
   });
 });

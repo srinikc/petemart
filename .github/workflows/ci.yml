@@ -122,29 +122,7 @@ jobs:
           retention-days: 30
 
   # ──────────────────────────────────────────────────────────────
-  # SANITY GATE 3: Vercel preview deployment (PR only)
-  # ──────────────────────────────────────────────────────────────
-  vercel-preview:
-    name: Vercel Preview
-    needs: [build-and-test]
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Deploy Preview to Vercel
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: '--prebuilt'
-          scope: ${{ secrets.VERCEL_ORG_ID }}
-          github-comment: true
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-  # ──────────────────────────────────────────────────────────────
-  # SANITY GATE 4: Supabase migration dry-run
+  # SANITY GATE 3: Supabase migration dry-run
   # ──────────────────────────────────────────────────────────────
   supabase-migration-check:
     name: Supabase Migration Dry-Run
@@ -184,4 +162,4 @@ jobs:
           echo "| Unit + API + Integration Tests | ${{ needs.build-and-test.result }} | Vitest + Supertest |" >> $GITHUB_STEP_SUMMARY
           echo "| QA Dashboard | results.json updated |" >> $GITHUB_STEP_SUMMARY
           echo "| Supabase Dry-Run | ${{ needs.supabase-migration-check.result || 'skipped' }} | SQL migration check |" >> $GITHUB_STEP_SUMMARY
-          echo "| Vercel Preview | ${{ needs.vercel-preview.result || 'skipped' }} | PR only |" >> $GITHUB_STEP_SUMMARY
+          echo "| Vercel Preview | native (Vercel GitHub integration) | PR only |" >> $GITHUB_STEP_SUMMARY

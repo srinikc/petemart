@@ -1,5 +1,4 @@
 import { describe, it, expect } from 'vitest';
-import { PAYMENT_METHODS } from '@/lib/data';
 
 describe('Payment Integration', () => {
   it('supports all standard payment methods', () => {
