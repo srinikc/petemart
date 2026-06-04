@@ -406,17 +406,18 @@ Agent 0 enforces this via:
 
 ### AI Assistant (opencode) Rules
 
-When making ANY code or configuration change, the AI assistant MUST:
+When making ANY code or configuration change, the AI assistant MUST follow this exact workflow:
+
 1. Create a feature branch from `develop`: `feature/<brief-description>`
 2. Make all changes on that branch
-3. Commit through the pre-commit hook
+3. **Commit through the pre-commit hook WITHOUT `--no-verify`** — the hook runs AI code review → TypeScript check → unit tests. If it fails, fix the issues and retry. The `--no-verify` flag is ONLY permitted for initial infrastructure setup (e.g., initializing husky, committing tooling config), NEVER for code or configuration changes.
 4. Push the branch
-5. Create a PR to `develop`
-6. Wait for CI + review
+5. **Create a PR to `develop` using the PR template** (`.github/PULL_REQUEST_TEMPLATE.md`) — fill in all applicable checkboxes (workflow compliance, code review, traceability)
+6. Wait for CI + code review to pass
 7. Merge
-8. Update STATE_MATRIX.json with the PR reference
+8. **Update `STATE_MATRIX.json`** with the PR reference under the appropriate agent's compliance checklist or supervisor control section
 
-No direct commits to `develop` or `main` are permitted.
+No direct commits to `develop` or `main` are permitted. The pre-push hook enforces this server-side.
 
 ---
 
