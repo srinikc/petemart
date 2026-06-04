@@ -108,16 +108,8 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets[format('NEXT_PUBLIC_SUPABASE_URL_{0}', needs.resolve-environment.outputs.environment)] || secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets[format('NEXT_PUBLIC_SUPABASE_ANON_KEY_{0}', needs.resolve-environment.outputs.environment)] || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
-      - name: 🚀 Deploy to Vercel
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: '--prod --prebuilt'
-          scope: ${{ secrets.VERCEL_ORG_ID }}
-          alias-domains: |
-            ${{ needs.resolve-environment.outputs.vercel_alias }}
+      - name: 🚀 Deploy to Vercel (native)
+        run: echo "Vercel native integration handles deployment — skipped manual action"
 
   # ──────────────────────────────────────────────────────────────
   # Run Supabase migrations
@@ -125,6 +117,7 @@ jobs:
   supabase-migrate:
     name: 🗄️ Supabase Migration (${{ needs.resolve-environment.outputs.environment }})
     needs: [resolve-environment, vercel-deploy]
+    if: secrets.SUPABASE_ACCESS_TOKEN != ''
     runs-on: ubuntu-latest
     environment:
       name: ${{ needs.resolve-environment.outputs.environment }}
