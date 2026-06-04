@@ -362,8 +362,8 @@ develop branch (base)
   Fix any review issues → re-push
        │
        ▼
-  Merge to develop
-  gh pr merge --merge --subject "..."
+   Squash merge to develop (linear history)
+   gh pr merge --squash --subject "..."
 ```
 
 ### Pre-Push Hook Protection

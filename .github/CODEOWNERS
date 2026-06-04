@@ -1,0 +1,91 @@
+# CODEOWNERS — Auto-assign reviewers per agent sandbox
+# Each pattern maps a directory to reviewers.
+# Patterns are evaluated bottom-to-top; last match wins.
+#
+# Format: <pattern> @<owner> @<owner2>
+# Use @srinikc as default owner for solo project.
+
+# ──────────────────────────────────────────────
+# State & Registry (shared by all agents)
+# ──────────────────────────────────────────────
+/00_state_ledger/         @srinikc
+00_state_ledger/          @srinikc
+
+# ──────────────────────────────────────────────
+# Agent 0 — Supervisor / Program Manager
+# ──────────────────────────────────────────────
+.antigravity/skills/supervisor_agent.md  @srinikc
+.opencode/agents/00_supervisor_agent.md  @srinikc
+
+# ──────────────────────────────────────────────
+# Phase 1: Front-Office & Architectural Layer
+# ──────────────────────────────────────────────
+.antigravity/skills/ideation_*.md     @srinikc
+agents/01_front_office/01_*/           @srinikc
+
+agents/01_front_office/02_*/           @srinikc
+.opencode/agents/02_requirement_agent.md @srinikc
+
+agents/02_engineering_specs/03_*/       @srinikc
+.opencode/agents/03_architect_agent.md  @srinikc
+
+agents/02_engineering_specs/04_*/       @srinikc
+.opencode/agents/04_prototype_agent.md  @srinikc
+
+# ──────────────────────────────────────────────
+# Phase 2: Project Management & Infra
+# ──────────────────────────────────────────────
+agents/02_engineering_specs/05_*/       @srinikc
+.opencode/agents/05_program_mgmt_agent.md @srinikc
+
+agents/03_execution_workspace/06_*/     @srinikc
+.opencode/agents/06_infra_devops_agent.md @srinikc
+.antigravity/skills/infra_devops_*.md   @srinikc
+
+# ──────────────────────────────────────────────
+# Phase 3: Execution & Implementation
+# ──────────────────────────────────────────────
+agents/03_execution_workspace/07a_*/    @srinikc
+agents/03_execution_workspace/07b_*/    @srinikc
+agents/03_execution_workspace/07c_*/    @srinikc
+agents/03_execution_workspace/07d_*/    @srinikc
+
+# ──────────────────────────────────────────────
+# Phase 4: Verification & Operational Quality
+# ──────────────────────────────────────────────
+agents/03_execution_workspace/08_*/     @srinikc
+agents/03_execution_workspace/09_*/     @srinikc
+agents/03_execution_workspace/10_*/     @srinikc
+
+# ──────────────────────────────────────────────
+# Phase 5: Post-Delivery & Maintenance
+# ──────────────────────────────────────────────
+agents/03_execution_workspace/11_*/     @srinikc
+agents/03_execution_workspace/12_*/     @srinikc
+agents/03_execution_workspace/13_*/     @srinikc
+agents/03_execution_workspace/14_*/     @srinikc
+agents/03_execution_workspace/15_*/     @srinikc
+
+# ──────────────────────────────────────────────
+# CI/CD, Workflows, Config
+# ──────────────────────────────────────────────
+.github/workflows/        @srinikc
+.github/actions/          @srinikc
+.husky/                   @srinikc
+opencode.json             @srinikc
+AGENTS.md                 @srinikc
+agents.md                 @srinikc
+
+# ──────────────────────────────────────────────
+# Application Code
+# ──────────────────────────────────────────────
+app/                      @srinikc
+components/               @srinikc
+lib/                      @srinikc
+supabase/                 @srinikc
+scripts/                  @srinikc
+
+# ──────────────────────────────────────────────
+# Tests
+# ──────────────────────────────────────────────
+__tests__/                @srinikc
