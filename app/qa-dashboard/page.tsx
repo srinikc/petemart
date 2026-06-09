@@ -111,7 +111,7 @@ export default function QADashboard() {
   const [showDefectForm, setShowDefectForm] = useState(false);
   const [defectsList, setDefectsList] = useState<Defect[]>(defects);
   const [newDefect, setNewDefect] = useState({ title: '', description: '', severity: 'medium', component: '' });
-  const [testEnv, setTestEnv] = useState<'sandbox' | 'ci'>('sandbox');
+  const testEnv = 'sandbox';
   const [showTestConfig, setShowTestConfig] = useState(false);
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
   const [isRunning, setIsRunning] = useState(false);
@@ -157,6 +157,7 @@ export default function QADashboard() {
 
   // ── ITEM 2: Historical run dropdown ──
   const [selectedHistoricalRun, setSelectedHistoricalRun] = useState<number>(-1);
+  const [sourceFilter, setSourceFilter] = useState<string>('all');
   const runHistory = (runHistoryData as any[]) || [];
   const [historicalRuns, setHistoricalRuns] = useState<any[]>(runHistory);
 
@@ -483,7 +484,15 @@ export default function QADashboard() {
     URL.revokeObjectURL(url);
   }, [filteredTableData, totals, defectsList]);
 
-  const hasNoRuns = historicalRuns.length === 0;
+  useEffect(() => { setSelectedHistoricalRun(-1); }, [sourceFilter]);
+  const filteredRuns = useMemo(() => {
+    if (sourceFilter === 'all') return historicalRuns;
+    return historicalRuns.filter(r => {
+      const source = r.source || r.metadata?.triggeredBy || 'local';
+      return source === sourceFilter;
+    });
+  }, [historicalRuns, sourceFilter]);
+  const hasNoRuns = filteredRuns.length === 0;
 
   const applyGoNoGo = () => {
     if (!goNoGo) return;
@@ -728,7 +737,7 @@ export default function QADashboard() {
         </div>
 
         {/* ═══════════════════════════════════════════════════ */}
-        {/* Tests Engine — Tiered Runner + Mode Switch + Selection */}
+        {/* Tests Engine — Tiered Runner + Source Filter */}
         {/* ═══════════════════════════════════════════════════ */}
         <div id="tests-engine" className="bg-white rounded-xl border border-gray-200 p-5">
           <div className="flex items-center justify-between mb-4">
@@ -737,25 +746,9 @@ export default function QADashboard() {
                 <Activity className="w-5 h-5 text-amber-600" />
                 <h2 className="text-sm font-semibold text-gray-900">Tests Engine</h2>
               </div>
-              <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold border shadow-sm ${
-                testEnv === 'sandbox' ? 'bg-green-50 text-green-700 border-green-300' : 'bg-blue-50 text-blue-700 border-blue-300'
-              }`}>
-                {testEnv === 'sandbox' ? <CheckCircle className="w-3 h-3" /> : <Settings className="w-3 h-3" />}
-                <span className="uppercase tracking-wider">{testEnv === 'sandbox' ? 'Sandbox' : 'CI/CD'}</span>
-              </div>
-              <span className="text-[10px] text-gray-400 hidden sm:inline">{envConfig.description}</span>
-              <div className="relative group">
-                <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-gray-200 text-gray-500 text-[10px] font-bold cursor-help">?</span>
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-[10px] rounded-lg shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
-                  {testEnv === 'sandbox' ? 'Quick local runs. Skips E2E, performance, stress, cross-browser, DR.' : 'Full CI/CD suite. Runs all tests including E2E, security, performance, a11y.'}
-                  <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <button onClick={() => setTestEnv(testEnv === 'sandbox' ? 'ci' : 'sandbox')} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
-                <Settings className="w-3.5 h-3.5" /> Switch to {testEnv === 'sandbox' ? 'CI/CD' : 'Sandbox'}
-              </button>
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-green-50 text-green-700 border border-green-300">
+                🏠 Local
+              </span>
             </div>
           </div>
 
@@ -803,10 +796,13 @@ export default function QADashboard() {
               </select>
             </div>
             <div className="flex items-center gap-2">
-              <label className="text-[10px] font-medium text-gray-500 uppercase tracking-wide">Env</label>
-              <span className="text-xs font-mono font-medium text-gray-700 bg-white px-2 py-1.5 rounded-md border border-gray-200">
-                {testEnv === 'sandbox' ? 'Local' : 'CI/CD'}
-              </span>
+              <label className="text-[10px] font-medium text-gray-500 uppercase tracking-wide">Source Filter</label>
+              <select value={sourceFilter} onChange={(e) => setSourceFilter(e.target.value)} className="text-xs border border-gray-200 rounded-md px-2 py-1.5 bg-white">
+                <option value="all">All</option>
+                <option value="local">🏠 Local</option>
+                <option value="ci-pipeline">🏭 CI Pipeline</option>
+                <option value="pre-commit">⚡ Pre-commit</option>
+              </select>
             </div>
             {lastRunMeta && (
               <div className="flex items-center gap-2 ml-auto text-[10px] text-green-700 bg-green-50 px-2 py-1 rounded-md border border-green-200">
@@ -855,7 +851,7 @@ export default function QADashboard() {
             <div className="pt-4 border-t border-gray-100">
               <div className="flex items-center justify-between mb-3">
                 <div>
-                  <p className="text-xs font-medium text-gray-700">Select test types to run in <span className="font-semibold">{testEnv.toUpperCase()}</span> environment:</p>
+                  <p className="text-xs font-medium text-gray-700">Select test types to run:</p>
                   <p className="text-[10px] text-gray-400">{selectedTypes.size} of {testTypes.length} types selected</p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -912,7 +908,7 @@ export default function QADashboard() {
                     className="text-xs border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 pr-7 cursor-pointer hover:border-amber-300 focus:ring-1 focus:ring-amber-400 focus:outline-none"
                   >
                     <option value={-1}>Current Results (Latest)</option>
-                    {historicalRuns.map((run, idx) => {
+                    {filteredRuns.map((run, idx) => {
                       const tierLabel = run.tierLabel || run.tier || 'Run';
                       const ts = run.started
                         ? (() => {
@@ -921,9 +917,11 @@ export default function QADashboard() {
                           })()
                         : `#${idx + 1}`;
                       const statusIcon = run.allPassed ? '✅' : run.allPassed === false ? '❌' : '⏳';
+                      const source = run.source || run.metadata?.triggeredBy || 'local';
+                      const sourceIcon = source === 'ci-pipeline' ? '🏭' : source === 'pre-commit' ? '⚡' : '🏠';
                       return (
                         <option key={idx} value={idx}>
-                          {statusIcon} {tierLabel} — {ts}
+                          {statusIcon} {sourceIcon} {tierLabel} — {ts}
                         </option>
                       );
                     })}
