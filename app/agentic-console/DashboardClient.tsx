@@ -7,7 +7,7 @@ import {
   Bot, Activity, ExternalLink, RefreshCw, FileText,
   AlertTriangle, ArrowRight, X, Radio, Monitor, Code, Database,
   Layers, Server, Globe, BookOpen, UserCheck, Camera, Settings,
-  Coins, Lock, Lightbulb, Layout, Truck, GitMerge, Bell,
+  Coins, Lock, Lightbulb, Layout, Truck, GitMerge, Bell, Play,
 } from 'lucide-react';
 
 import {
@@ -514,7 +514,10 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
             <span className={`w-2 h-2 rounded-full ${liveConnected ? 'bg-green-500 pulse-dot' : 'bg-red-500'}`} />
             {liveConnected ? 'LIVE' : 'OFFLINE'}
           </span>
-          {isPaused && <span className="flex items-center gap-1 text-amber-600 font-bold">⏸ PAUSED</span>}
+          <button onClick={async () => { try { await fetch('/api/agentic-console/pipeline', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: isPaused ? 'resume' : 'pause' }) }); window.location.reload(); } catch {} } }
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition-all active:scale-[0.97] ${isPaused ? 'bg-amber-50 border-amber-300 text-amber-700 hover:bg-amber-100' : 'bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100'}`}>
+            {isPaused ? <><Play size={12} /> Resume</> : <><Radio size={12} /> Pause</>}
+          </button>
           <button onClick={() => window.location.reload()} className="text-gray-300 hover:text-gray-500"><RefreshCw size={13} /></button>
           <div ref={notifRef} className="relative">
             <button onClick={() => setNotifOpen(o => !o)} className={`relative p-1.5 rounded-lg transition-all hover:bg-gray-100 ${notifOpen ? 'bg-gray-100' : ''}`}>
