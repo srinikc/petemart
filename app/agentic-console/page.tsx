@@ -244,6 +244,22 @@ export default function AgenticConsoleDashboard() {
 
   useEffect(() => { loadState(); }, [loadState]);
 
+  // Re-fetch state when page becomes visible (catches browser back-navigation)
+  useEffect(() => {
+    const onVisible = () => { if (document.visibilityState === 'visible') loadState(); };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
+  }, [loadState]);
+
+  // Safety check: if state loaded but has no agent_states, retry once
+  useEffect(() => {
+    if (loading) return;
+    if (state && !state?.stateMatrix?.agent_states && !state?.agent_states) {
+      const timer = setTimeout(() => loadState(), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, state, loadState]);
+
   const handleFlyoutAction = async (action: string) => {
     const agentId = selectedFlyoutAgent;
     if (!agentId) return;
