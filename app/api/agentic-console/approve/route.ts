@@ -16,7 +16,7 @@ function writeState(data: any) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { agentId, action, feedback } = await req.json();
+    const { agentId, action, feedback, inputs } = await req.json();
     if (!agentId || !action) {
       return NextResponse.json({ error: 'agentId and action required' }, { status: 400 });
     }
@@ -77,6 +77,13 @@ export async function POST(req: NextRequest) {
       gate.approved_by = 'Human Gatekeeper (via Agentic Console)';
       gate.approved_at = new Date().toISOString();
       gate.notes = feedback || gate.notes;
+    } else if (action === 'provide-input') {
+      agent.pending_inputs = [];
+      agent.provided_inputs = { ...(agent.provided_inputs || {}), ...(inputs || {}) };
+      agent.status = 'pending';
+      agent.last_error = null;
+      agent.last_activity_timestamp = new Date().toISOString();
+      agent.inputs_provided_at = new Date().toISOString();
     } else {
       return NextResponse.json({ error: `Unknown action: ${action}` }, { status: 400 });
     }
