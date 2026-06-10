@@ -650,7 +650,7 @@ export default function AgenticConsoleDashboard() {
                   <div className="flex items-center gap-1.5 px-2 py-1 rounded-full text-[9px] font-medium"
                     style={{ backgroundColor: PHASE_COLORS[agent.phase] + '12', color: PHASE_COLORS[agent.phase] }}>
                     <StatusDot status={agent.status} size={6} />
-                    {PHASE_LABELS[agent.phase].split(':')[0]}
+                    {(PHASE_LABELS[agent.phase] || agent.phase).split(':')[0]}
                   </div>
                   <button onClick={() => setSelectedFlyoutAgent(null)} className="text-gray-300 hover:text-gray-500"><X size={16} /></button>
                 </div>
