@@ -20,6 +20,8 @@ export type AgentState = {
     last_error: string | null;
     expert_reviewer: ExpertReview | null;
     approval_gate_triggers?: string[];
+    pending_inputs?: { key: string; description: string; secret?: boolean }[];
+    provided_inputs?: Record<string, string>;
 };
 
 export type ComplianceCheck = {

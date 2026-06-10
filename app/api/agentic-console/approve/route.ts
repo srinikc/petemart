@@ -85,6 +85,8 @@ export async function POST(req: NextRequest) {
       agent.last_activity_timestamp = new Date().toISOString();
       agent.inputs_provided_at = new Date().toISOString();
     } else {
+      return NextResponse.json({ error: `Unknown action: ${action}` }, { status: 400 });
+    }
 
     state.pipeline_control.last_sync_timestamp = new Date().toISOString();
     writeState(state);

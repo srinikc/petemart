@@ -279,6 +279,9 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
     setFlyoutInputs({});
     setFlyoutInstruction('');
   }, [selectedFlyoutAgent]);
+
+  // Safety check: if state loaded but has no agent_states, retry once
+  useEffect(() => {
     if (loading || !state) return;
     const hasAgents = !!state?.stateMatrix?.agent_states || !!state?.agent_states;
     if (!hasAgents) {
