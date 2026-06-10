@@ -37,28 +37,15 @@ export default function AgentDetailPage() {
 
   useEffect(() => {
     if (!agentId) return;
+    const es = new EventSource('/api/agentic-console/events');
     const load = async () => {
       try {
-        const [detailRes, eventsRes, msgRes] = await Promise.all([
+        const [detailRes, msgRes] = await Promise.all([
           fetchWithTimeout(`/api/agentic-console/agent-detail?agentId=${agentId}`, 10000),
-          fetch('/api/agentic-console/events'),
           fetch(`/api/agentic-console/agent-messages?agentId=${agentId}`),
         ]);
         const detail = await detailRes.json();
         setData(detail);
-        if (eventsRes.ok) {
-          const es = new EventSource('/api/agentic-console/events');
-          es.addEventListener('state_snapshot', (e: MessageEvent) => {
-            const sd = JSON.parse(e.data);
-            const updated = sd.stateMatrix?.agent_states?.[agentId];
-            if (updated) setData((prev: any) => ({ ...prev, agentState: updated }));
-          });
-          es.addEventListener('state_update', (e: MessageEvent) => {
-            const sd = JSON.parse(e.data);
-            const updated = sd.stateMatrix?.agent_states?.[agentId];
-            if (updated) setData((prev: any) => ({ ...prev, agentState: updated }));
-          });
-        }
         if (msgRes.ok) {
           const msgData = await msgRes.json();
           setMessages(msgData.messages || []);
@@ -68,12 +55,18 @@ export default function AgentDetailPage() {
     };
     load();
 
-    // Fetch pipeline events
-    fetch('/api/agentic-console/state').then(r => r.json()).then(s => {
-      // Parse events from jsonl manually - load from API
-      fetch('/api/agentic-console/agent-messages?agentId=' + agentId)
-        .then(r => r.json()).then(d => setMessages(d.messages || [])).catch(() => {});
-    }).catch(() => {});
+    es.addEventListener('state_snapshot', (e: MessageEvent) => {
+      const sd = JSON.parse(e.data);
+      const updated = sd.stateMatrix?.agent_states?.[agentId];
+      if (updated) setData((prev: any) => ({ ...prev, agentState: updated }));
+    });
+    es.addEventListener('state_update', (e: MessageEvent) => {
+      const sd = JSON.parse(e.data);
+      const updated = sd.stateMatrix?.agent_states?.[agentId];
+      if (updated) setData((prev: any) => ({ ...prev, agentState: updated }));
+    });
+
+    return () => { es.close(); };
   }, [agentId]);
 
   const agent = data?.agentState;
@@ -83,69 +76,6 @@ export default function AgentDetailPage() {
   const consumedArtifacts = data?.consumedArtifacts || [];
   const agentMcpServers = data?.agentMcpServers || [];
   const lastError = data?.lastError;
-
-  // Agent events from jsonl
-  useEffect(() => {
-    const loadEvents = async () => {
-      try {
-        const res = await fetch('/api/agentic-console/events');
-        // We'll just read the jsonl file through a small endpoint
-        const evRes = await fetch('/api/agentic-console/agent-detail?agentId=' + agentId);
-        const detail = await evRes.json();
-        // Try reading events from event source snapshot
-      } catch {}
-    };
-    loadEvents();
-  }, [agentId]);
-
-  // Read pipeline events for this agent
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      try {
-        const res = await fetch('/api/agentic-console/events');
-      } catch {}
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [agentId]);
-
-  // Fetch event history
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const res = await fetch(`/api/agentic-console/agent-detail?agentId=${agentId}`);
-        const d = await res.json();
-        if (d) setData(d);
-      } catch {}
-    };
-    // Fetch once to get events from jsonl too - we need a dedicated events endpoint
-    try {
-      const res = fetch('/api/agentic-console/events').then(r => r.json()).catch(() => {});
-    } catch {}
-  }, [agentId]);
-
-  // Better: read events from the snapshot
-  useEffect(() => {
-    if (!data?.agentState) return;
-    // Try to read PIPELINE_EVENTS directly
-    fetch('/00_state_ledger/PIPELINE_EVENTS.jsonl').catch(() => {});
-  }, [data]);
-
-  // Actually read the events file more directly
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const res = await fetch('/api/agentic-console/events');
-      } catch {}
-      try {
-        // Read events from jsonl through a simple fetch
-        const res = await fetch('/api/agentic-console/agent-detail?agentId=' + agentId);
-        const detail = await res.json();
-      } catch {}
-    };
-    fetchEvents();
-    const iv = setInterval(fetchEvents, 5000);
-    return () => clearInterval(iv);
-  }, [agentId]);
 
   const handleAction = async (action: string) => {
     setActionLoading(action);
