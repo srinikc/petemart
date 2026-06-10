@@ -23,6 +23,7 @@ export type AgentState = {
     pending_inputs?: { key: string; description: string; secret?: boolean }[];
     provided_inputs?: Record<string, string>;
     disabled?: boolean;
+    user_instruction?: string;
 };
 
 export type ComplianceCheck = {

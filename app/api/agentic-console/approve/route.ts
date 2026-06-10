@@ -94,6 +94,12 @@ export async function POST(req: NextRequest) {
       agent.disabled_at = null;
       agent.last_error = null;
       agent.last_activity_timestamp = new Date().toISOString();
+    } else if (action === 'add_instruction') {
+      const existing = agent.user_instruction || '';
+      const timestamp = new Date().toISOString();
+      const newEntry = `[${timestamp}] ${feedback}`;
+      agent.user_instruction = existing ? `${existing}\n${newEntry}` : newEntry;
+      agent.last_activity_timestamp = timestamp;
     } else {
       return NextResponse.json({ error: `Unknown action: ${action}` }, { status: 400 });
     }

@@ -179,6 +179,7 @@ function launchAgentTask(agentId, state) {
     deliverables: registryDef?.deliverables || {},
     sandbox_dir: registryDef?.workspace_root || `agents/03_execution_workspace/${agentId}/`,
     prompt_source: `.opencode/agents/${agentId}.md`,
+    user_instruction: agent.user_instruction || null,
     compliance_checks: agent.compliance_checklist || [],
     launched_at: new Date().toISOString(),
     status: 'launched',

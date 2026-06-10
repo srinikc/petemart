@@ -101,8 +101,13 @@ export default function AgentDetailPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ from_agent: 'human_gatekeeper', to_agent: agentId, subject: 'Instruction from Console', body: instruction }),
       });
+      // Also append to agent's user_instruction in state
+      await fetch('/api/agentic-console/approve', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ agentId, action: 'add_instruction', feedback: instruction }),
+      });
       if (res.ok) {
-        showToast('Instruction sent');
+        showToast('Instruction sent and attached to agent');
         setInstruction('');
       }
     } catch { showToast('Failed to send'); }
