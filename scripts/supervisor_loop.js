@@ -104,6 +104,7 @@ function getEligibleAgents(state) {
 
   for (const [id, agent] of Object.entries(agents)) {
     if (id === '00_supervisor_agent') continue;
+    if (agent.disabled) continue; // Skip disabled agents
     if (agent.status === 'approved' || agent.status === 'completed') continue;
     if (agent.status === 'failed') continue;
     if (agent.status === 'in_progress') continue;
@@ -247,6 +248,19 @@ async function runCycle(state) {
   }
   state.supervisor_control.agent_00_supervisor.cycle_count = cycleCount;
   state.supervisor_control.agent_00_supervisor.last_cycle_timestamp = new Date().toISOString();
+
+  // Auto-approve awaiting_approval agents that pass compliance audit
+  for (const [id, agent] of Object.entries(state.agent_states)) {
+    if (id === '00_supervisor_agent') continue;
+    if (agent.status !== 'awaiting_approval') continue;
+    if (agent.disabled) continue;
+    const audit = runComplianceAudit(state);
+    const agentAudit = audit[id];
+    if (agentAudit?.allPassed) {
+      transitionAgent(state, id, 'approved', { approved: true, approved_by: 'Supervisor (Auto)', approved_at: new Date().toISOString() });
+      logEvent({ type: 'auto_approved', agent_id: id, reason: 'Compliance audit passed' });
+    }
+  }
 
   const { eligible, circuitBreakerTripped } = getEligibleAgents(state);
 

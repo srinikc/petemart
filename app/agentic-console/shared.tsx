@@ -20,6 +20,9 @@ export type AgentState = {
     last_error: string | null;
     expert_reviewer: ExpertReview | null;
     approval_gate_triggers?: string[];
+    pending_inputs?: { key: string; description: string; secret?: boolean }[];
+    provided_inputs?: Record<string, string>;
+    disabled?: boolean;
 };
 
 export type ComplianceCheck = {
@@ -58,6 +61,7 @@ export type DashboardSummary = {
     agents_in_progress: number;
     agents_pending: number;
     agents_awaiting_review: number;
+    agents_awaiting_input: number;
     agents_failed: number;
     overall_progress_pct: number;
     last_milestone: string;

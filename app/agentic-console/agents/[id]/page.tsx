@@ -414,6 +414,59 @@ export default function AgentDetailPage() {
             </div>
           )}
 
+          {/* ═══ PROMPTS TAB ═══ */}
+          {activeTab === 'prompts' && (
+            <div className="space-y-4">
+              <h3 className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1.5">
+                <BookOpen size={12} /> System Prompt
+              </h3>
+              {systemPrompt ? (
+                <div className="bg-gray-50 border rounded-xl p-4 max-h-96 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
+                  <pre className="text-[10px] text-gray-700 whitespace-pre-wrap font-sans leading-relaxed">{systemPrompt}</pre>
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <BookOpen size={24} className="text-gray-300 mx-auto mb-2" />
+                  <p className="text-xs text-gray-400">No system prompt found in registry.</p>
+                  <p className="text-[9px] text-gray-400 mt-1">Agent prompts are stored in <code className="bg-gray-100 px-1 rounded">00_state_ledger/AGENT_REGISTRY.json</code></p>
+                </div>
+              )}
+              {systemPrompt && (
+                <div className="flex items-center gap-2 text-[10px] text-gray-400">
+                  <Code size={10} />
+                  <span className="font-mono">system_prompt</span>
+                  <span className="ml-auto">{systemPrompt.length.toLocaleString()} chars</span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ═══ ARTIFACTS TAB ═══ */}
+          {activeTab === 'artifacts' && (
+            <div className="space-y-4">
+              <h3 className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1.5">
+                <FileText size={12} /> Artifact Status
+              </h3>
+              {artifactStatus.length === 0 ? (
+                <p className="text-xs text-gray-400 text-center py-4">No artifacts emitted yet.</p>
+              ) : (
+                <div className="space-y-1">
+                  {artifactStatus.map((a: any, i: number) => (
+                    <div key={i} className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-[11px] ${
+                      a.exists ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
+                    }`}>
+                      {a.exists ? <CheckCircle size={12} className="text-green-500 shrink-0" /> : <XCircle size={12} className="text-red-500 shrink-0" />}
+                      <span className="font-mono text-[10px] truncate flex-1">{a.file}</span>
+                      <span className={`text-[9px] ${a.exists ? 'text-green-600' : 'text-red-500'}`}>
+                        {a.exists ? `${a.size > 1024 ? `${(a.size / 1024).toFixed(1)} KB` : `${a.size} B`}` : 'MISSING'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* ═══ RUN LOGS TAB ═══ */}
           {activeTab === 'logs' && (
             <div>
