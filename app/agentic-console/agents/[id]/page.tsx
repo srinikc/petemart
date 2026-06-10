@@ -330,6 +330,18 @@ export default function AgentDetailPage() {
                 </div>
               </div>
 
+              {/* User Instruction */}
+              {agent.user_instruction && (
+                <div>
+                  <h3 className="text-xs font-semibold text-amber-600 mb-2 flex items-center gap-1.5">
+                    <MessageSquare size={12} /> User Instruction <span className="text-[9px] text-amber-400 font-normal">(appended at runtime)</span>
+                  </h3>
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-[11px] font-mono whitespace-pre-wrap max-h-40 overflow-y-auto leading-relaxed text-amber-900">
+                    {agent.user_instruction}
+                  </div>
+                </div>
+              )}
+
               <div>
                 <h3 className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1.5">
                   <Code size={12} /> Prompt History
@@ -441,6 +453,18 @@ export default function AgentDetailPage() {
                   <Code size={10} />
                   <span className="font-mono">system_prompt</span>
                   <span className="ml-auto">{systemPrompt.length.toLocaleString()} chars</span>
+                </div>
+              )}
+
+              {/* User Instruction */}
+              {agent.user_instruction && (
+                <div className="space-y-2">
+                  <h3 className="text-xs font-semibold text-amber-600 flex items-center gap-1.5">
+                    <MessageSquare size={12} /> User Instruction <span className="text-[9px] text-amber-400 font-normal">(appended at runtime)</span>
+                  </h3>
+                  <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                    <pre className="text-[10px] text-amber-900 whitespace-pre-wrap font-sans leading-relaxed">{agent.user_instruction}</pre>
+                  </div>
                 </div>
               )}
             </div>
