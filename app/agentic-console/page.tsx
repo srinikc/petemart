@@ -5,7 +5,9 @@ import { useRouter } from 'next/navigation';
 import {
   CheckCircle, XCircle, AlertCircle, Loader2, Shield,
   Bot, Activity, ExternalLink, RefreshCw, FileText,
-  AlertTriangle, ArrowRight, X, Radio,
+  AlertTriangle, ArrowRight, X, Radio, Monitor, Code, Database,
+  Layers, Server, Globe, BookOpen, UserCheck, Camera, Settings,
+  Coins, Lock, Lightbulb, Layout, Truck, GitMerge,
 } from 'lucide-react';
 
 import {
@@ -244,17 +246,23 @@ export default function AgenticConsoleDashboard() {
 
   useEffect(() => { loadState(); }, [loadState]);
 
-  // Re-fetch state when page becomes visible (catches browser back-navigation)
+  // Re-fetch state when page becomes visible or restored from bfcache
   useEffect(() => {
     const onVisible = () => { if (document.visibilityState === 'visible') loadState(); };
+    const onPageShow = (e: PageTransitionEvent) => { if (e.persisted) loadState(); };
     document.addEventListener('visibilitychange', onVisible);
-    return () => document.removeEventListener('visibilitychange', onVisible);
+    window.addEventListener('pageshow', onPageShow);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('pageshow', onPageShow);
+    };
   }, [loadState]);
 
   // Safety check: if state loaded but has no agent_states, retry once
   useEffect(() => {
-    if (loading) return;
-    if (state && !state?.stateMatrix?.agent_states && !state?.agent_states) {
+    if (loading || !state) return;
+    const hasAgents = !!state?.stateMatrix?.agent_states || !!state?.agent_states;
+    if (!hasAgents) {
       const timer = setTimeout(() => loadState(), 500);
       return () => clearTimeout(timer);
     }
@@ -647,7 +655,9 @@ export default function AgenticConsoleDashboard() {
         const total = agent.compliance_checklist?.length || 0;
         const awaiting = agent.status === 'awaiting_approval';
         const circuitTripped = agent.execution_count >= 3 || agent.status === 'blocked';
-        const Icon = AGENT_ICONS_MAP[selectedFlyoutAgent] || Bot;
+        const iconName = AGENT_ICONS_MAP[selectedFlyoutAgent] || 'Bot';
+        const ICON_MAP: Record<string, React.ElementType> = { Shield, Bot, Activity, FileText, CheckCircle, Monitor: Monitor, Code: Code, Database: Database, Layers: Layers, Server: Server, Globe: Globe, BookOpen: BookOpen, UserCheck: UserCheck, Camera: Camera, Settings: Settings, Coins: Coins, Lock: Lock, Lightbulb: Lightbulb, Layout: Layout, Truck: Truck, GitMerge: GitMerge };
+        const Icon = ICON_MAP[iconName] || Bot;
         const failedChecks = agent.compliance_checklist?.filter(c => !c.passed && c.required) || [];
         return (
           <>
