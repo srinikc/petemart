@@ -1,0 +1,41 @@
+{
+  "latest_entry": "lake/2026-06-09/2026-06-09T23-00-15_cockpit-redesign-analysis",
+  "window_name": "cockpit-redesign-analysis",
+  "captured_at": "2026-06-09T17:47:00.000000+00:00",
+  "git_branch": "feature/agent-detail-and-mcp-registry",
+  "git_sha": "f3e89cf",
+  "last_commit": "feat(agentic-console): agent detail page with guardrails, artifacts, run logs, A2A comm, MCP tools + MCP servers registry (#13)",
+  "conversation": {
+    "file": "20260609-21-58-36-Agentic-console-not-coming-up.md",
+    "exchanges": 110,
+    "goal": "agentic console not coming up → SSE connection leak fix → research best UI → redesign agents page with inline approval → build interactive pipeline graph → plan cockpit redesign",
+    "last_query": "save context and then proceed",
+    "last_response": "Context saved to lake",
+    "topics": [
+      "ui",
+      "cockpit",
+      "pipeline-graph",
+      "dashboard",
+      "approval",
+      "flyout",
+      "sse-fix",
+      "react-flow",
+      "apple-like-design"
+    ],
+    "done_mentions": 32,
+    "pending_mentions": 0,
+    "messages": 3
+  },
+  "state_files": [
+    {
+      "path": "00_state_ledger\\STATE_MATRIX.json",
+      "summary": "69% complete | 8/16 agents done"
+    },
+    {
+      "path": "00_state_ledger\\AGENT_REGISTRY.json",
+      "summary": "state file"
+    }
+  ],
+  "agent_count": 19,
+  "recent_sessions": []
+}

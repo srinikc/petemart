@@ -1,0 +1,10 @@
+{
+  "agent_id": "11_customer_onboarding_agent",
+  "review_log": [],
+  "agent_0_verification": {
+    "review_gate_passed": false,
+    "fix_gate_passed": false,
+    "verified_at": null,
+    "notes": "Agent not yet executed."
+  }
+}

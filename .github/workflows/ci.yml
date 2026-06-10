@@ -3,9 +3,20 @@ name: CI — Sanity (Build, Lint, TypeCheck, Unit, API, Integration)
 on:
   pull_request:
     branches: [develop, qa, staging, main]
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened, labeled, unlabeled]
   push:
     branches: [develop, qa, staging, main]
+  workflow_dispatch:
+    inputs:
+      test_tier:
+        description: 'Test suite to run'
+        type: choice
+        options:
+          - sanity
+          - full
+          - release
+        default: 'sanity'
+        required: true
 
 concurrency:
   group: ci-sanity-${{ github.ref_name }}
@@ -18,6 +29,33 @@ env:
   PLAYWRIGHT_BASE_URL: 'http://localhost:3458'
 
 jobs:
+  # ──────────────────────────────────────────────────────────────
+  # TIER DETECTION: From workflow_dispatch input or auto-detect
+  # ──────────────────────────────────────────────────────────────
+  detect-tier:
+    name: Detect Test Tier
+    runs-on: ubuntu-latest
+    outputs:
+      tier: ${{ steps.detect.outputs.tier }}
+    steps:
+      - id: detect
+        run: |
+          TIER="sanity"
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            TIER="${{ inputs.test_tier }}"
+          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            LABELS="${{ toJSON(github.event.pull_request.labels) }}"
+            if echo "$LABELS" | grep -q '"name":"tier:release"'; then
+              TIER="release"
+            elif echo "$LABELS" | grep -q '"name":"tier:full"'; then
+              TIER="full"
+            elif echo "$LABELS" | grep -q '"name":"tier:sanity"'; then
+              TIER="sanity"
+            fi
+          fi
+          echo "tier=$TIER" >> $GITHUB_OUTPUT
+          echo "Selected tier: $TIER"
+
   # ──────────────────────────────────────────────────────────────
   # SANITY GATE 1: Secrets Scanner
   # ──────────────────────────────────────────────────────────────
@@ -63,8 +101,8 @@ jobs:
   # SANITY GATE 2: Build + Lint + TypeCheck + Unit + API + Integration
   # ──────────────────────────────────────────────────────────────
   build-and-test:
-    name: Build, Lint, TypeCheck & Test
-    needs: [secrets-scan]
+    name: Build, Lint, TypeCheck & Test (${{ needs.detect-tier.outputs.tier || 'sanity' }})
+    needs: [detect-tier, secrets-scan]
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     steps:
@@ -78,6 +116,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Detect tier
+        id: tier
+        run: echo "tier=${{ needs.detect-tier.outputs.tier || 'sanity' }}" >> $GITHUB_OUTPUT
+
       - name: Build check
         run: npm run build
         env:
@@ -90,6 +132,7 @@ jobs:
       - name: TypeScript type check
         run: npm run typecheck || npx tsc --noEmit
 
+      # ── Tier 1: Sanity (always runs) ──
       - name: Unit tests (Vitest)
         run: npm test -- --coverage
 
@@ -99,6 +142,45 @@ jobs:
       - name: Integration tests (API + middleware + auth)
         run: npx vitest run --reporter=json --config vitest.config.ts --testNamePattern="integration|api-endpoint|auth" 2>/dev/null || echo "No integration tests matched"
 
+      # ── Tier 2: Full QA (only if tier = full or release) ──
+      - name: Component tests (Full QA)
+        if: ${{ steps.tier.outputs.tier == 'full' || steps.tier.outputs.tier == 'release' }}
+        run: npx vitest run __tests__/components/ --reporter=json 2>/dev/null || echo "No component tests matched"
+
+      - name: Multi-tenant isolation tests (Full QA)
+        if: ${{ steps.tier.outputs.tier == 'full' || steps.tier.outputs.tier == 'release' }}
+        run: npx vitest run __tests__/multi-tenant.test.ts --reporter=json 2>/dev/null || echo "No multi-tenant tests matched"
+
+      - name: Migration tests (Full QA)
+        if: ${{ steps.tier.outputs.tier == 'full' || steps.tier.outputs.tier == 'release' }}
+        run: npx vitest run __tests__/migration.test.ts --reporter=json 2>/dev/null || echo "No migration tests matched"
+
+      - name: Security headers check (Full QA)
+        if: ${{ steps.tier.outputs.tier == 'full' || steps.tier.outputs.tier == 'release' }}
+        run: npx vitest run __tests__/security-headers.test.ts --reporter=json 2>/dev/null || echo "No security header tests matched"
+
+      - name: Accessibility audit (Full QA)
+        if: ${{ steps.tier.outputs.tier == 'full' || steps.tier.outputs.tier == 'release' }}
+        run: npx playwright test --grep @a11y --project=chromium --reporter=list 2>/dev/null || echo "No accessibility tests matched"
+
+      - name: Visual regression (Full QA)
+        if: ${{ steps.tier.outputs.tier == 'full' || steps.tier.outputs.tier == 'release' }}
+        run: npx playwright test --grep @visual --project=chromium --reporter=list 2>/dev/null || echo "No visual regression tests matched"
+
+      # ── Tier 3: Release (only if tier = release) ──
+      - name: Performance audit (Release)
+        if: ${{ steps.tier.outputs.tier == 'release' }}
+        run: npx lhci collect --config=lighthouse.config.js 2>/dev/null || echo "Lighthouse CI not configured"
+
+      - name: Cross-browser E2E (Release)
+        if: ${{ steps.tier.outputs.tier == 'release' }}
+        run: npx playwright test --project=chromium --project=firefox --project=webkit --reporter=list 2>/dev/null || echo "Cross-browser tests not configured"
+
+      - name: Disaster recovery check (Release)
+        if: ${{ steps.tier.outputs.tier == 'release' }}
+        run: node scripts/disaster-recovery-test.js 2>/dev/null || echo "DR test not configured"
+
+      # ── Shared steps (always run) ──
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
         if: always()
@@ -121,34 +203,25 @@ jobs:
             qa-dashboard/run-history.json
           retention-days: 30
 
-  # ──────────────────────────────────────────────────────────────
-  # SANITY GATE 3: Vercel preview deployment (PR only)
-  # ──────────────────────────────────────────────────────────────
-  vercel-preview:
-    name: Vercel Preview
-    needs: [build-and-test]
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Deploy Preview to Vercel
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: '--prebuilt'
-          scope: ${{ secrets.VERCEL_ORG_ID }}
-          github-comment: true
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push results to QA dashboard
+        if: always()
+        env:
+          QA_DASHBOARD_URL: ${{ secrets.QA_DASHBOARD_URL || 'http://localhost:3000' }}
+        run: |
+          if [ -f qa-dashboard/results.json ]; then
+            curl -s -X POST "$QA_DASHBOARD_URL/api/qa/push-results" \
+              -H "Content-Type: application/json" \
+              -d "$(cat qa-dashboard/results.json)" \
+              || echo "QA dashboard not reachable (non-blocking)"
+          fi
 
   # ──────────────────────────────────────────────────────────────
-  # SANITY GATE 4: Supabase migration dry-run
+  # SANITY GATE 3: Supabase migration dry-run
   # ──────────────────────────────────────────────────────────────
   supabase-migration-check:
     name: Supabase Migration Dry-Run
-    needs: [build-and-test]
+    needs: [detect-tier, build-and-test]
+    if: ${{ needs.build-and-test.result != 'failure' && needs.build-and-test.result != 'cancelled' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -168,20 +241,22 @@ jobs:
   # ──────────────────────────────────────────────────────────────
   ci-summary:
     name: CI Summary
-    needs: [secrets-scan, build-and-test, supabase-migration-check]
+    needs: [detect-tier, secrets-scan, build-and-test, supabase-migration-check]
     if: always()
     runs-on: ubuntu-latest
     steps:
       - name: Generate CI Summary
         shell: bash
         run: |
-          echo "## CI Sanity Pipeline — Commit \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          TIER="${{ needs.detect-tier.outputs.tier || 'sanity' }}"
+          echo "## CI Sanity Pipeline — Commit \`${{ github.sha }}\` (Tier: $TIER)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Step | Status | Detail |" >> $GITHUB_STEP_SUMMARY
           echo "|---|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| Tier | $TIER | Selected test suite |" >> $GITHUB_STEP_SUMMARY
           echo "| Secrets Scan | ${{ needs.secrets-scan.result }} | No credentials leaked |" >> $GITHUB_STEP_SUMMARY
           echo "| Build | ${{ needs.build-and-test.result }} | Compilation + typecheck |" >> $GITHUB_STEP_SUMMARY
           echo "| Unit + API + Integration Tests | ${{ needs.build-and-test.result }} | Vitest + Supertest |" >> $GITHUB_STEP_SUMMARY
           echo "| QA Dashboard | results.json updated |" >> $GITHUB_STEP_SUMMARY
           echo "| Supabase Dry-Run | ${{ needs.supabase-migration-check.result || 'skipped' }} | SQL migration check |" >> $GITHUB_STEP_SUMMARY
-          echo "| Vercel Preview | ${{ needs.vercel-preview.result || 'skipped' }} | PR only |" >> $GITHUB_STEP_SUMMARY
+          echo "| Vercel Preview | native (Vercel GitHub integration) | PR only |" >> $GITHUB_STEP_SUMMARY

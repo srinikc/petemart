@@ -325,6 +325,159 @@ Every code-generating agent MUST:
 
 ---
 
+## Feature Branch Workflow Enforcement
+
+**Status**: ACTIVE (enforced from 2026-06-04)
+
+**Applies to**: All code-generating agents (07a, 07b, 07c, 07d, 08, 09, 11, 12, 13), documentation agents (10), infra agents (06, 14, 15), and the AI assistant (opencode).
+
+All work MUST go through this workflow — no exceptions:
+
+```
+develop branch (base)
+       │
+       ▼
+  Create feature branch
+  git checkout -b feature/<agent-id>-<brief-desc> develop
+       │
+       ▼
+  Make changes & commit
+  (pre-commit hook: AI review → tsc → tests)
+       │
+       ▼
+  Push feature branch
+  git push origin feature/<agent-id>-<brief-desc>
+       │
+       ▼
+  Create Pull Request to develop
+  gh pr create --base develop --title "..." --body "..."
+       │
+       ▼
+  CI Pipeline runs (build + test + security scan)
+       │
+       ▼
+  Code review (PR-Agent + human)
+       │
+       ▼
+  Fix any review issues → re-push
+       │
+       ▼
+   Squash merge to develop (linear history)
+   gh pr merge --squash --subject "..."
+```
+
+### Pre-Push Hook Protection
+
+A `.husky/pre-push` hook blocks direct pushes to `develop` and `main`. If you try:
+
+```bash
+git push origin develop
+```
+
+You'll get:
+
+```
+✖ Direct push to 'develop' is BLOCKED.
+You must push a FEATURE BRANCH and create a Pull Request to 'develop'.
+```
+
+**Bypass** (emergency only): `git push origin develop --no-verify`
+
+### Compliance Checks in STATE_MATRIX.json
+
+Every agent now has these compliance items in its `compliance_checklist`:
+
+| Check ID | Check | Description |
+|----------|-------|-------------|
+| `*_feature_branch_used` | feature_branch_used() | Work was done on a feature branch off develop, not directly on develop/main |
+| `*_pr_created` | pr_created_and_merged() | PR was opened targeting develop and merged after CI passed |
+| `*_ci_pipeline_passed` | ci_pipeline_passed() | GitHub Actions CI build succeeded before merge |
+
+Agent 0 (Supervisor) will **not** mark any agent as "approved" unless these checks pass.
+
+### Agent 0 Supervision
+
+Agent 0 enforces this via:
+1. `SUP-003`: Verifies all code agents use feature branch → PR → CI → merge cycle
+2. `SUP-004`: Verifies pre-push hook is in place blocking direct pushes
+3. `SUP-005`: Verifies PR template exists
+4. `SUP-006`: Verifies CI pipeline triggers on PRs
+5. `SUP-007`: Verifies opencode/AI assistant follows the same workflow
+
+### AI Assistant (opencode) Rules
+
+When making ANY code or configuration change, the AI assistant MUST follow this exact workflow:
+
+1. Create a feature branch from `develop`: `feature/<brief-description>`
+2. Make all changes on that branch
+3. **Commit through the pre-commit hook WITHOUT `--no-verify`** — the hook runs AI code review → TypeScript check → unit tests. If it fails, fix the issues and retry. The `--no-verify` flag is ONLY permitted for initial infrastructure setup (e.g., initializing husky, committing tooling config), NEVER for code or configuration changes.
+4. Push the branch
+5. **Create a PR to `develop` using the PR template** (`.github/PULL_REQUEST_TEMPLATE.md`) — fill in all applicable checkboxes (workflow compliance, code review, traceability)
+6. Wait for CI + code review to pass
+7. Merge
+8. **Update `STATE_MATRIX.json`** with the PR reference under the appropriate agent's compliance checklist or supervisor control section
+
+No direct commits to `develop` or `main` are permitted. The pre-push hook enforces this server-side.
+
+---
+
+## Requirements Traceability Across Agents
+
+**Status**: ACTIVE (enforced from 2026-06-04)
+
+Every agent must trace its work products back to specific PRD requirement IDs. This ensures:
+- **No orphan work** — every artifact serves a defined requirement
+- **No gaps** — every requirement is covered by at least one agent
+- **Auditable** — Agent 0 can verify completeness by cross-referencing TRACEABILITY_MATRIX.json
+
+### Mechanism
+
+1. **TRACEABILITY_MATRIX.json** (`00_state_ledger/TRACEABILITY_MATRIX.json`) defines which PRD requirement IDs each agent owns
+2. **Agent 0 checks** (`SUP-008`, `SUP-009`) validate that each agent's artifacts:
+   - Reference their assigned requirement IDs
+   - Consume artifacts from upstream dependencies before producing output
+3. **Per-agent compliance items** (`*_traceability`, `*_input_from_upstream`) verify this for each agent individually
+
+### Agent Input/Output Flow
+
+```
+PRD (02) ──► Architect (03) ──► UI Agent (07a) ──┐
+                │                                   │
+                ├──► API Agent (07b) ──────────────┤──► Integration (07d) ──► QA (08) ──► Prod (09)
+                │                                   │
+                └──► DB Agent (07c) ───────────────┘
+```
+
+Each agent reads upstream artifacts, maps their work to requirement IDs, and Agent 0 validates the chain.
+
+### Compliance Checks in STATE_MATRIX.json
+
+| Check ID | What it verifies |
+|----------|-----------------|
+| `SUP-008` | Agent 0 validates traceability for all agents against TRACEABILITY_MATRIX.json |
+| `SUP-009` | Agent 0 verifies each agent consumed upstream artifacts before producing output |
+| `SUP-010` | TRACEABILITY_MATRIX.json exists and covers all 15 agents |
+| `*_traceability` | Per agent: artifacts reference correct PRD requirement IDs |
+| `*_input_from_upstream` | Per agent: upstream dependency artifacts were consumed |
+
+### PRD Requirement Categories
+
+| Category | ID Prefix | Count | Owning Agents |
+|----------|-----------|-------|---------------|
+| UI/UX | `REQ-UI-*` | 24 | 07a, 04, 11 |
+| API | `REQ-API-*` | 13 | 07b, 10 |
+| Backend/Data | `REQ-BE-*` | 26 | 07c |
+| Commerce | `REQ-COM-*` | 10 | 07a, 07b, 14 |
+| Infrastructure | `REQ-INFRA-*` | 11 | 06, 09, 14, 15 |
+| Performance | `REQ-PERF-*` | 3 | 09, 12 |
+| Maintenance | `REQ-MAINT-*` | 5 | 13 |
+| Disaster Recovery | `REQ-DR-*` | 4 | 09 |
+| Funnels | `REQ-FUNNEL-*` | 4 | 12 |
+| Merchant Microsite | `REQ-MICRO-*` | 8 | 07c, 11 |
+| Data Privacy | `REQ-DATA-*` | 3 | 15 |
+
+---
+
 ## Universal Agent Output Requirements
 
 The following requirements apply to ALL agents (0-15) upon task completion:

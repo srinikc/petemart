@@ -1,0 +1,29 @@
+#!/bin/sh
+# context_lake/hooks/post-commit — Git post-commit hook
+# Auto-captures context after every git commit.
+#
+# Install: copy or symlink to .git/hooks/post-commit
+#   cp context_lake/hooks/post-commit .git/hooks/post-commit
+#   chmod +x .git/hooks/post-commit
+
+PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)"
+if [ -z "$PROJECT_ROOT" ]; then
+    exit 0
+fi
+
+CAPTURE_SCRIPT="$PROJECT_ROOT/context_lake/capture.py"
+if [ ! -f "$CAPTURE_SCRIPT" ]; then
+    exit 0
+fi
+
+cd "$PROJECT_ROOT" || exit 0
+
+# Get window name from terminal title or use "post-commit"
+WINDOW="post-commit"
+
+# macOS: get terminal title
+if command -v osascript >/dev/null 2>&1; then
+    WINDOW=$(osascript -e 'tell app "System Events" to get name of first process whose frontmost is true' 2>/dev/null || echo "post-commit")
+fi
+
+python "$CAPTURE_SCRIPT" --window "$WINDOW" 2>/dev/null || true

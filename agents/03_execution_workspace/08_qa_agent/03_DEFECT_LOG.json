@@ -1,0 +1,172 @@
+{
+  "version": "1.0",
+  "lastUpdated": "2026-06-02T15:14:45.858Z",
+  "defects": [
+    {
+      "id": "DEF-001",
+      "severity": "medium",
+      "status": "fixed",
+      "component": "API Route Handlers",
+      "title": "Next.js 15 Async Route Params",
+      "description": "4 dynamic API routes used synchronous params instead of Promise<params>. Required await.",
+      "files": [
+        "app/api/v1/merchants/[slug]/route.ts",
+        "app/api/v1/products/[id]/route.ts",
+        "app/api/v1/orders/[id]/route.ts",
+        "app/api/v1/tracking/[orderId]/route.ts"
+      ],
+      "foundAt": "2026-05-30T18:00:00Z",
+      "fixedAt": "2026-05-30T18:15:00Z",
+      "fixedBy": "Agent 08 (QA)"
+    },
+    {
+      "id": "DEF-002",
+      "severity": "medium",
+      "status": "fixed",
+      "component": "Cart API + Types",
+      "title": "Product Image URL Type Mismatch",
+      "description": "Cart route referenced product.image_url but Product type uses images: string[]",
+      "files": [
+        "app/api/v1/cart/route.ts"
+      ],
+      "foundAt": "2026-05-30T18:00:00Z",
+      "fixedAt": "2026-05-30T18:15:00Z",
+      "fixedBy": "Agent 08 (QA)"
+    },
+    {
+      "id": "DEF-003",
+      "severity": "medium",
+      "status": "fixed",
+      "component": "Cart + Checkout API",
+      "title": "Cart/Checkout State Isolation",
+      "description": "Cart and checkout routes had separate in-memory maps. Checkout always saw empty cart.",
+      "files": [
+        "app/api/v1/cart/route.ts",
+        "app/api/v1/checkout/route.ts"
+      ],
+      "foundAt": "2026-05-30T18:00:00Z",
+      "fixedAt": "2026-05-30T18:20:00Z",
+      "fixedBy": "Agent 08 (QA)"
+    },
+    {
+      "id": "DEF-004",
+      "severity": "medium",
+      "status": "fixed",
+      "component": "Types",
+      "title": "OrderStatus Missing Values",
+      "description": "OrderStatus union type missing 'in_transit' and 'completed' statuses used in mock data.",
+      "files": [
+        "types/index.ts"
+      ],
+      "foundAt": "2026-05-30T18:00:00Z",
+      "fixedAt": "2026-05-30T18:25:00Z",
+      "fixedBy": "Agent 08 (QA)"
+    }
+  ],
+  "autoCaptured": [
+    {
+      "id": "DEF-005",
+      "severity": "medium",
+      "status": "open",
+      "component": "unit",
+      "title": "Auto-captured: unit tests failed",
+      "description": "Test type \"unit\" failed during Custom tier run. Command: vitest run --reporter=json. Timestamp: 2026-06-02T13:59:31.452Z",
+      "files": [],
+      "foundAt": "2026-06-02T13:59:31.452Z",
+      "autoCaptured": true,
+      "sourceTier": "custom",
+      "sourceRunId": "custom-2026-06-02T13-59-42-047Z"
+    },
+    {
+      "id": "DEF-006",
+      "severity": "medium",
+      "status": "open",
+      "component": "integration",
+      "title": "Auto-captured: integration tests failed",
+      "description": "Test type \"integration\" failed during Custom tier run. Command: vitest run --reporter=json. Timestamp: 2026-06-02T13:59:31.622Z",
+      "files": [],
+      "foundAt": "2026-06-02T13:59:31.622Z",
+      "autoCaptured": true,
+      "sourceTier": "custom",
+      "sourceRunId": "custom-2026-06-02T13-59-42-047Z"
+    },
+    {
+      "id": "DEF-007",
+      "severity": "medium",
+      "status": "open",
+      "component": "api-contract",
+      "title": "Auto-captured: api-contract tests failed",
+      "description": "Test type \"api-contract\" failed during Custom tier run. Command: vitest run --reporter=json. Timestamp: 2026-06-02T13:59:31.780Z",
+      "files": [],
+      "foundAt": "2026-06-02T13:59:31.780Z",
+      "autoCaptured": true,
+      "sourceTier": "custom",
+      "sourceRunId": "custom-2026-06-02T13-59-42-047Z"
+    },
+    {
+      "id": "DEF-008",
+      "severity": "medium",
+      "status": "open",
+      "component": "regression",
+      "title": "Auto-captured: regression tests failed",
+      "description": "Test type \"regression\" failed during Custom tier run. Command: npm test. Timestamp: 2026-06-02T13:59:42.045Z",
+      "files": [],
+      "foundAt": "2026-06-02T13:59:42.045Z",
+      "autoCaptured": true,
+      "sourceTier": "custom",
+      "sourceRunId": "custom-2026-06-02T13-59-42-047Z"
+    },
+    {
+      "id": "DEF-009",
+      "severity": "medium",
+      "status": "open",
+      "component": "unit",
+      "title": "Auto-captured: unit tests failed",
+      "description": "Test type \"unit\" failed during Custom tier run. Command: npx vitest run --reporter=json. Timestamp: 2026-06-02T15:14:04.292Z",
+      "files": [],
+      "foundAt": "2026-06-02T15:14:04.292Z",
+      "autoCaptured": true,
+      "sourceTier": "custom",
+      "sourceRunId": "custom-2026-06-02T15-14-45-858Z"
+    },
+    {
+      "id": "DEF-010",
+      "severity": "medium",
+      "status": "open",
+      "component": "integration",
+      "title": "Auto-captured: integration tests failed",
+      "description": "Test type \"integration\" failed during Custom tier run. Command: npx vitest run --reporter=json. Timestamp: 2026-06-02T15:14:18.055Z",
+      "files": [],
+      "foundAt": "2026-06-02T15:14:18.055Z",
+      "autoCaptured": true,
+      "sourceTier": "custom",
+      "sourceRunId": "custom-2026-06-02T15-14-45-858Z"
+    },
+    {
+      "id": "DEF-011",
+      "severity": "medium",
+      "status": "open",
+      "component": "api-contract",
+      "title": "Auto-captured: api-contract tests failed",
+      "description": "Test type \"api-contract\" failed during Custom tier run. Command: npx vitest run --reporter=json. Timestamp: 2026-06-02T15:14:31.779Z",
+      "files": [],
+      "foundAt": "2026-06-02T15:14:31.779Z",
+      "autoCaptured": true,
+      "sourceTier": "custom",
+      "sourceRunId": "custom-2026-06-02T15-14-45-858Z"
+    },
+    {
+      "id": "DEF-012",
+      "severity": "medium",
+      "status": "open",
+      "component": "regression",
+      "title": "Auto-captured: regression tests failed",
+      "description": "Test type \"regression\" failed during Custom tier run. Command: npm test. Timestamp: 2026-06-02T15:14:45.855Z",
+      "files": [],
+      "foundAt": "2026-06-02T15:14:45.855Z",
+      "autoCaptured": true,
+      "sourceTier": "custom",
+      "sourceRunId": "custom-2026-06-02T15-14-45-858Z"
+    }
+  ]
+}

@@ -1,7 +1,21 @@
 {
   "$schema": "https://opencode.ai",
   "autoupdate": true,
+  "model": "opencode/deepseek-v4-flash-free",
   "plugin": ["opencode-autosave-conversation", "@slkiser/opencode-quota"],
+  "instructions": [
+    "HARD RULE: Maximum 4 response lines. No greetings. No summaries. No pleasantries. Start answering immediately. This is enforced — violations are non-compliance.",
+    "context_lake/latest.json",
+    "context_lake/system_instructions.md",
+    "context_lake/tool_efficiency.md"
+  ],
+  "experimental": {
+    "hook": {
+      "session_completed": [
+        { "command": ["python", "context_lake/capture.py", "--window", "session-completed", "--project-root", "."] }
+      ]
+    }
+  },
   "mcp": {
     "sonarqube": {
       "type": "remote",
@@ -14,6 +28,26 @@
     "read": "allow",
     "bash": {
       "python *": "allow",
+      "npm test*": "allow",
+      "npm run *": "allow",
+      "npx tsc *": "allow",
+      "git status*": "allow",
+      "git log*": "allow",
+      "git diff*": "allow",
+      "git branch*": "allow",
+      "git stash*": "allow",
+      "git pull*": "allow",
+      "Get-ChildItem*": "allow",
+      "Get-Content*": "allow",
+      "Select-Object*": "allow",
+      "Start-Sleep*": "allow",
+      "Remove-Item*": "ask",
+      "git push*": "ask",
+      "git commit*": "ask",
+      "git add*": "ask",
+      "git checkout*": "ask",
+      "New-Item*": "ask",
+      "Set-Content*": "ask",
       "*": "ask"
     },
     "webfetch": "allow"

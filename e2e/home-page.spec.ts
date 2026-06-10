@@ -21,7 +21,7 @@ test.describe('Landing Page', () => {
     const content = page.locator('body');
     await expect(content).toBeVisible();
     const text = await content.textContent();
-    expect(text.length).toBeGreaterThan(50);
+    expect(text?.length ?? 0).toBeGreaterThan(50);
   });
 
   test('should have working navigation links', async ({ page }) => {

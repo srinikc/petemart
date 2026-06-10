@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: 'PeteMart - Old Bangalore\'s Pete Markets at Your Doorstep',
   description: 'Shop from 5,000+ traditional merchants across Chickpet, Balepet, Raja Market and more. Buy Now, Enquire on WhatsApp, or Visit Store.',
   keywords: 'Bangalore markets, Chickpet, Balepet, Indian e-commerce, hyperlocal, traditional merchants',
+  icons: { icon: null },
 };
 
 export default function RootLayout({

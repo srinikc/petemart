@@ -1,0 +1,64 @@
+<mxfile host="opencode" modified="2026-06-02T00:00:00Z">
+  <diagram id="context-lake" name="Architecture">
+    <mxGraphModel dx="800" dy="600" grid="1" gridSize="10">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="t" value="TRIGGERS" style="swimlane;startSize=30;" vertex="1" parent="1">
+          <mxGeometry x="30" y="30" width="260" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="t1" value="session_completed hook&#xa;(close/compact)" style="rounded=1;fillColor=#FFF3E0;" vertex="1" parent="1">
+          <mxGeometry x="50" y="70" width="100" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="t2" value="instructions&#xa;(new window)" style="rounded=1;fillColor=#FFF3E0;" vertex="1" parent="1">
+          <mxGeometry x="170" y="70" width="100" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="i" value="INPUT SOURCES" style="swimlane;startSize=30;" vertex="1" parent="1">
+          <mxGeometry x="30" y="180" width="260" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="i1" value="conversations/*.md&#xa;Autosave Plugin" style="rounded=1;fillColor=#E8F5E9;" vertex="1" parent="1">
+          <mxGeometry x="50" y="220" width="100" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="i2" value="STATE_MATRIX.json&#xa;AGENT_REGISTRY.json" style="rounded=1;fillColor=#E8F5E9;" vertex="1" parent="1">
+          <mxGeometry x="170" y="220" width="100" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="i3" value=".git/&#xa;Branch, SHA, Log" style="rounded=1;fillColor=#E8F5E9;" vertex="1" parent="1">
+          <mxGeometry x="50" y="275" width="100" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="i4" value=".opencode/agents/&#xa;Agent .md configs" style="rounded=1;fillColor=#E8F5E9;" vertex="1" parent="1">
+          <mxGeometry x="170" y="275" width="100" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="e" value="CAPTURE ENGINE (capture.py)" style="swimlane;startSize=30;" vertex="1" parent="1">
+          <mxGeometry x="320" y="180" width="200" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" value="1. Discover&#xa;Config, git, state" style="rounded=1;fillColor=#E3F2FD;" vertex="1" parent="1">
+          <mxGeometry x="335" y="220" width="170" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" value="2. Extract&#xa;Parse conversation" style="rounded=1;fillColor=#E3F2FD;" vertex="1" parent="1">
+          <mxGeometry x="335" y="253" width="170" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" value="3. Summarize&#xa;Heuristic all exchanges" style="rounded=1;fillColor=#E3F2FD;" vertex="1" parent="1">
+          <mxGeometry x="335" y="286" width="170" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4" value="4. Persist&#xa;Write JSON+MD" style="rounded=1;fillColor=#E3F2FD;" vertex="1" parent="1">
+          <mxGeometry x="335" y="319" width="170" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="s" value="STORAGE / OUTPUTS" style="swimlane;startSize=30;" vertex="1" parent="1">
+          <mxGeometry x="550" y="180" width="220" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="s1" value="latest.json" style="rounded=1;fillColor=#F3E5F5;" vertex="1" parent="1">
+          <mxGeometry x="570" y="220" width="180" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="s2" value="lake/YYYY-MM-DD/..." style="rounded=1;fillColor=#F3E5F5;" vertex="1" parent="1">
+          <mxGeometry x="570" y="258" width="180" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="s3" value="latest.md" style="rounded=1;fillColor=#F3E5F5;" vertex="1" parent="1">
+          <mxGeometry x="570" y="296" width="180" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="ctx" value="LLM Context&#xa;(new window AI session)" style="rounded=1;fillColor=#FFEBEE;" vertex="1" parent="1">
+          <mxGeometry x="570" y="340" width="180" height="40" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

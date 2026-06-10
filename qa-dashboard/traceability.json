@@ -1,0 +1,240 @@
+{
+  "generated_at": "2026-06-03T13:17:00Z",
+  "sources": {
+    "prd": "agents/01_front_office/02_requirement_agent/prd.json",
+    "program_dashboard": "agents/02_engineering_specs/05_program_mgmt_agent/06_PROGRAM_DASHBOARD.json"
+  },
+  "total_prd_requirements": 111,
+  "traceability_coverage_pct": 36,
+  "categories": [
+    {
+      "id": "ui_ux",
+      "label": "UI/UX",
+      "req_prefix": "REQ-UI",
+      "total": 24,
+      "covered_by_code": 3,
+      "coverage_pct": 13,
+      "items": [
+        {"id": "REQ-UI-001", "title": "Landing Page with Pete Tapestry", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-UI-002", "title": "Product Catalog & Search", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-UI-003", "title": "Mode A Product Card & In-App Cart", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-UI-004", "title": "Mode B WhatsApp Enquiry Button", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-UI-005", "title": "Mode C Visit Store Interface", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-UI-006", "title": "Multi-Store Checkout Flow", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-UI-007", "title": "Order Tracking Dashboard", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-UI-008", "title": "Merchant Store Microsite", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-UI-009", "title": "Mobile App (iOS) — Core Screens", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-UI-010", "title": "Mobile App (Android) — Core Screens", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-UI-011", "title": "Merchant Onboarding Dashboard", "tests": ["auth.test.ts"], "code_files": ["auth-page.tsx", "merchant-dashboard-page.tsx"], "status": "partial"},
+        {"id": "REQ-UI-012", "title": "Admin/Operator Dashboard", "tests": ["admin-routes.test.ts"], "code_files": ["admin-dashboard-page.tsx"], "status": "partial"},
+        {"id": "REQ-UI-013", "title": "Multi-Language / i18n Support", "tests": [], "code_files": ["auth-page.tsx"], "status": "partial"},
+        {"id": "REQ-UI-014", "title": "Merchant Sales & Analytics Dashboard", "tests": [], "code_files": ["merchant-dashboard-page.tsx"], "status": "partial"},
+        {"id": "REQ-UI-015", "title": "AI Virtual Try-On for Apparel", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-UI-016", "title": "AI Virtual Try-On for Jewellery", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-UI-017", "title": "Jewellery Product Card with Live Rate", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-UI-018", "title": "White-Label Branding & Theming Engine", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-UI-019", "title": "Multi-City / State Geographic Selector", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-UI-020", "title": "Admin Configuration Dashboard", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-UI-021", "title": "Merchant Review & Feedback Interface", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-UI-022", "title": "Pete Street Virtual Walk", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-UI-023", "title": "Live Bazaar", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-UI-024", "title": "Shop Together — Co-Shopping", "tests": [], "code_files": [], "status": "not_implemented"}
+      ]
+    },
+    {
+      "id": "api",
+      "label": "API",
+      "req_prefix": "REQ-API",
+      "total": 13,
+      "covered_by_code": 8,
+      "coverage_pct": 62,
+      "items": [
+        {"id": "REQ-API-001", "title": "Product Catalog API", "tests": ["products.test.ts", "merchant-routes.test.ts"], "code_files": ["GET /products", "GET /products/:id", "GET /merchant/products", "POST /merchant/products"], "status": "implemented"},
+        {"id": "REQ-API-002", "title": "Order Management API", "tests": ["orders.test.ts", "merchant-routes.test.ts"], "code_files": ["GET /orders", "POST /cart/checkout", "GET /merchant/orders", "PUT /merchant/orders/:id/status"], "status": "implemented"},
+        {"id": "REQ-API-003", "title": "Payment Gateway Integration API", "tests": ["orders.test.ts"], "code_files": ["POST /cart/checkout"], "status": "partial"},
+        {"id": "REQ-API-004", "title": "WhatsApp Deep-Linking API", "tests": [], "code_files": ["client-side utility"], "status": "partial"},
+        {"id": "REQ-API-005", "title": "Google Maps Integration API", "tests": [], "code_files": ["client-side Maps deep-links"], "status": "partial"},
+        {"id": "REQ-API-006", "title": "User Authentication & Profile API", "tests": ["auth.test.ts"], "code_files": ["POST /auth/signup", "POST /auth/login", "POST /auth/verify-otp", "GET /auth/me"], "status": "implemented"},
+        {"id": "REQ-API-007", "title": "Delivery Tracking API", "tests": ["merchant-routes.test.ts"], "code_files": ["GET /orders/:id", "PUT /merchant/orders/:id/status"], "status": "partial"},
+        {"id": "REQ-API-008", "title": "Merchant Management API", "tests": ["merchants.test.ts", "admin-routes.test.ts"], "code_files": ["GET /merchants", "GET /admin/merchants", "PUT /admin/merchants/:id/approve"], "status": "implemented"},
+        {"id": "REQ-API-009", "title": "Notification & SMS API", "tests": [], "code_files": ["backend event-driven service"], "status": "partial"},
+        {"id": "REQ-API-010", "title": "Analytics & Reporting API", "tests": ["admin-routes.test.ts"], "code_files": ["GET /merchant/dashboard", "GET /admin/dashboard", "GET /admin/analytics"], "status": "implemented"},
+        {"id": "REQ-API-011", "title": "Mode Switching After Onboarding API", "tests": [], "code_files": ["PUT /admin/merchants/:id/approve"], "status": "partial"},
+        {"id": "REQ-API-012", "title": "Live Bullion Rate API Integration", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-API-013", "title": "ShipRocket API Integration", "tests": [], "code_files": [], "status": "not_implemented"}
+      ]
+    },
+    {
+      "id": "backend",
+      "label": "Backend/Data",
+      "req_prefix": "REQ-BE",
+      "total": 26,
+      "covered_by_code": 22,
+      "coverage_pct": 85,
+      "items": [
+        {"id": "REQ-BE-001", "title": "Database Schema & Data Models", "tests": [], "code_files": ["01-complete-schema.sql", "petemart-unified/types/index.ts"], "status": "implemented"},
+        {"id": "REQ-BE-002", "title": "Order Processing Engine", "tests": ["orders.test.ts"], "code_files": ["orders table", "order_items table"], "status": "implemented"},
+        {"id": "REQ-BE-003", "title": "Multi-Store Consolidation Engine", "tests": [], "code_files": ["consolidation_id in orders"], "status": "implemented"},
+        {"id": "REQ-BE-004", "title": "Subscription & Billing Engine", "tests": [], "code_files": ["profiles.platform_tier"], "status": "partial"},
+        {"id": "REQ-BE-005", "title": "Payment Reconciliation & Payouts", "tests": [], "code_files": ["orders.payment_status"], "status": "partial"},
+        {"id": "REQ-BE-006", "title": "Notification Engine", "tests": [], "code_files": ["triggers", "profiles.phone"], "status": "partial"},
+        {"id": "REQ-BE-007", "title": "Delivery/Logistics Engine", "tests": [], "code_files": ["delivery_tracking table", "orders.delivery_fee"], "status": "implemented"},
+        {"id": "REQ-BE-008", "title": "Analytics Data Pipeline", "tests": [], "code_files": ["admin analytics routes"], "status": "partial"},
+        {"id": "REQ-BE-009", "title": "Search & Discovery Engine", "tests": [], "code_files": ["products GIN indexes", "products.tags"], "status": "partial"},
+        {"id": "REQ-BE-010", "title": "Caching & Performance Layer", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-BE-011", "title": "Merchant Catalog Management", "tests": ["merchant-routes.test.ts"], "code_files": ["stores table", "merchant/products routes"], "status": "implemented"},
+        {"id": "REQ-BE-012", "title": "Product Review & Rating System", "tests": [], "code_files": ["reviews table"], "status": "implemented"},
+        {"id": "REQ-BE-013", "title": "Dispute Resolution & Support Ticketing", "tests": [], "code_files": ["orders.notes"], "status": "partial"},
+        {"id": "REQ-BE-014", "title": "Offline-First Mobile Capability", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-BE-015", "title": "GST/TCS Compliance & Auto-Invoicing", "tests": [], "code_files": ["stores.gst_registered", "generate_order_number trigger"], "status": "partial"},
+        {"id": "REQ-BE-016", "title": "MOQ & Bulk Order Enforcement", "tests": [], "code_files": ["products.min_order_qty", "order_items.quantity"], "status": "implemented"},
+        {"id": "REQ-BE-017", "title": "Customer Data Platform & Analytics", "tests": [], "code_files": ["profiles.metadata"], "status": "partial"},
+        {"id": "REQ-BE-018", "title": "Virtual Try-On Engine (AI/ML)", "tests": [], "code_files": ["products.images"], "status": "partial"},
+        {"id": "REQ-BE-019", "title": "Jewellery Inventory Management", "tests": [], "code_files": ["products.category", "products.price"], "status": "partial"},
+        {"id": "REQ-BE-020", "title": "Dynamic Merchant Registry Service", "tests": [], "code_files": ["stores.is_active", "products.mode_available"], "status": "implemented"},
+        {"id": "REQ-BE-021", "title": "Dynamic Configuration Service", "tests": [], "code_files": ["stores.business_hours JSONB"], "status": "partial"},
+        {"id": "REQ-BE-022", "title": "Geo-Hierarchy & Region Management", "tests": [], "code_files": ["profiles.merchant_store_id", "stores.market"], "status": "implemented"},
+        {"id": "REQ-BE-023", "title": "City/State Onboarding Workflow", "tests": [], "code_files": ["profiles.role", "stores.market"], "status": "partial"},
+        {"id": "REQ-BE-024", "title": "Hybrid Delivery Orchestrator", "tests": [], "code_files": ["delivery_tracking.status"], "status": "partial"},
+        {"id": "REQ-BE-025", "title": "Review Moderation & Analytics Engine", "tests": [], "code_files": ["reviews.is_active"], "status": "partial"},
+        {"id": "REQ-BE-026", "title": "Virtual Street CMS", "tests": [], "code_files": ["stores.banner_url", "stores.logo_url"], "status": "partial"}
+      ]
+    },
+    {
+      "id": "commerce",
+      "label": "Commerce/Monetization",
+      "req_prefix": "REQ-COM",
+      "total": 10,
+      "covered_by_code": 6,
+      "coverage_pct": 60,
+      "items": [
+        {"id": "REQ-COM-001", "title": "Subscription Plan Management", "tests": [], "code_files": ["merchant dashboard", "admin dashboard"], "status": "partial"},
+        {"id": "REQ-COM-002", "title": "Transaction Fee Processing", "tests": [], "code_files": ["cart/checkout route"], "status": "partial"},
+        {"id": "REQ-COM-003", "title": "Value-Added Services Billing", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-COM-004", "title": "Courier/Delivery Fee Calculator", "tests": [], "code_files": ["orders.delivery_fee"], "status": "partial"},
+        {"id": "REQ-COM-005", "title": "Revenue Dashboard & Audit Trail", "tests": ["admin-routes.test.ts"], "code_files": ["GET /admin/dashboard", "GET /admin/analytics"], "status": "implemented"},
+        {"id": "REQ-COM-006", "title": "Merchant Payout System", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-COM-007", "title": "Coupon & Promo Engine", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-COM-008", "title": "Payment Escrow & Hold Period", "tests": [], "code_files": ["orders.payment_status"], "status": "partial"},
+        {"id": "REQ-COM-009", "title": "Look, See, Feel Trust Features", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-COM-010", "title": "National Shipping — ShipRocket", "tests": [], "code_files": [], "status": "not_implemented"}
+      ]
+    },
+    {
+      "id": "infra",
+      "label": "Infrastructure/Security",
+      "req_prefix": "REQ-INFRA",
+      "total": 11,
+      "covered_by_code": 7,
+      "coverage_pct": 64,
+      "items": [
+        {"id": "REQ-INFRA-001", "title": "Cloud Infrastructure Provisioning", "tests": [], "code_files": ["docker-compose.yml", "supabase migrations"], "status": "implemented"},
+        {"id": "REQ-INFRA-002", "title": "CI/CD Pipeline", "tests": [], "code_files": [".github/workflows/ci.yml"], "status": "implemented"},
+        {"id": "REQ-INFRA-003", "title": "Monitoring & Observability", "tests": [], "code_files": ["GET /health"], "status": "partial"},
+        {"id": "REQ-INFRA-004", "title": "Security & Encryption Framework", "tests": ["security-headers.test.ts"], "code_files": ["rls_policies", "middleware.ts"], "status": "implemented"},
+        {"id": "REQ-INFRA-005", "title": "Backup & Disaster Recovery", "tests": ["disaster-recovery-test.js"], "code_files": [], "status": "partial"},
+        {"id": "REQ-INFRA-006", "title": "API Gateway & Rate Limiting", "tests": [], "code_files": ["middleware.ts"], "status": "partial"},
+        {"id": "REQ-INFRA-007", "title": "Database Scaling & Connection Pooling", "tests": [], "code_files": ["03-index-definitions.sql"], "status": "implemented"},
+        {"id": "REQ-INFRA-008", "title": "SSL/TLS & Secrets Management", "tests": [], "code_files": ["middleware.ts"], "status": "partial"},
+        {"id": "REQ-INFRA-009", "title": "PCI DSS Compliance via Razorpay", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-INFRA-010", "title": "Modular Merchant Onboarding", "tests": [], "code_files": ["PUT /admin/merchants/:id/approve"], "status": "implemented"},
+        {"id": "REQ-INFRA-011", "title": "Feature Flag & Kill Switch", "tests": [], "code_files": [], "status": "not_implemented"}
+      ]
+    },
+    {
+      "id": "perf",
+      "label": "Performance/Scale",
+      "req_prefix": "REQ-PERF",
+      "total": 3,
+      "covered_by_code": 1,
+      "coverage_pct": 33,
+      "items": [
+        {"id": "REQ-PERF-001", "title": "Performance Baseline at 50% Load", "tests": ["scripts/k6-loadtest.js"], "code_files": [], "status": "partial"},
+        {"id": "REQ-PERF-002", "title": "Horizontal Scalability Architecture", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-PERF-003", "title": "Load Testing & Benchmarking", "tests": ["scripts/k6-loadtest.js"], "code_files": [], "status": "partial"}
+      ]
+    },
+    {
+      "id": "maint",
+      "label": "Maintenance/Patch",
+      "req_prefix": "REQ-MAINT",
+      "total": 5,
+      "covered_by_code": 2,
+      "coverage_pct": 40,
+      "items": [
+        {"id": "REQ-MAINT-001", "title": "Automated Patch Management", "tests": [], "code_files": [".github/workflows/security-scan.yml"], "status": "partial"},
+        {"id": "REQ-MAINT-002", "title": "Zero-Downtime Deployment", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-MAINT-003", "title": "Full-Stack Observability", "tests": [], "code_files": ["GET /health"], "status": "partial"},
+        {"id": "REQ-MAINT-004", "title": "Dependency Vulnerability Scanning", "tests": [], "code_files": [".github/workflows/security-scan.yml"], "status": "implemented"},
+        {"id": "REQ-MAINT-005", "title": "System Health Dashboard", "tests": [], "code_files": [], "status": "not_implemented"}
+      ]
+    },
+    {
+      "id": "dr",
+      "label": "Disaster Recovery",
+      "req_prefix": "REQ-DR",
+      "total": 4,
+      "covered_by_code": 1,
+      "coverage_pct": 25,
+      "items": [
+        {"id": "REQ-DR-001", "title": "DR Plan & RPO/RTO Targets", "tests": ["scripts/disaster-recovery-test.js"], "code_files": [], "status": "partial"},
+        {"id": "REQ-DR-002", "title": "Multi-Region Failover Architecture", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-DR-003", "title": "Automated Backup & PIT Recovery", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-DR-004", "title": "DR Testing & Compliance Program", "tests": [], "code_files": [], "status": "not_implemented"}
+      ]
+    },
+    {
+      "id": "funnels",
+      "label": "Customer Funnels",
+      "req_prefix": "REQ-FUNNEL",
+      "total": 4,
+      "covered_by_code": 1,
+      "coverage_pct": 25,
+      "items": [
+        {"id": "REQ-FUNNEL-001", "title": "Multi-Channel Acquisition Engine", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-FUNNEL-002", "title": "Guest Browsing with Conversion", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-FUNNEL-003", "title": "Onboarding Incentive & Loyalty", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-FUNNEL-004", "title": "Progressive Web App (PWA)", "tests": [], "code_files": [], "status": "not_implemented"}
+      ]
+    },
+    {
+      "id": "micro",
+      "label": "Merchant Microsite",
+      "req_prefix": "REQ-MICRO",
+      "total": 8,
+      "covered_by_code": 5,
+      "coverage_pct": 63,
+      "items": [
+        {"id": "REQ-MICRO-001", "title": "Microsite — Storefront URL", "tests": [], "code_files": ["merchant dashboard", "GET /merchants/:slug"], "status": "partial"},
+        {"id": "REQ-MICRO-002", "title": "Microsite — Product Catalog Management", "tests": ["merchant-routes.test.ts"], "code_files": ["GET /merchant/products", "POST /merchant/products"], "status": "implemented"},
+        {"id": "REQ-MICRO-003", "title": "Microsite — Order Management Dashboard", "tests": ["merchant-routes.test.ts"], "code_files": ["GET /merchant/orders", "PUT /merchant/orders/:id/status"], "status": "implemented"},
+        {"id": "REQ-MICRO-004", "title": "Microsite — Inventory Sync", "tests": [], "code_files": ["merchant products routes"], "status": "partial"},
+        {"id": "REQ-MICRO-005", "title": "Microsite — GST-Compliant Invoicing", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-MICRO-006", "title": "Microsite — Sales Analytics", "tests": [], "code_files": ["merchant dashboard KPIs"], "status": "partial"},
+        {"id": "REQ-MICRO-007", "title": "Microsite — Razorpay Subaccount Onboarding", "tests": [], "code_files": ["PUT /admin/merchants/:id/approve"], "status": "partial"},
+        {"id": "REQ-MICRO-008", "title": "Microsite — Payment Settlement", "tests": [], "code_files": [], "status": "not_implemented"}
+      ]
+    },
+    {
+      "id": "data_privacy",
+      "label": "Data Privacy",
+      "req_prefix": "REQ-DATA",
+      "total": 3,
+      "covered_by_code": 0,
+      "coverage_pct": 0,
+      "items": [
+        {"id": "REQ-DATA-001", "title": "Customer Data & Consent Management", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-DATA-002", "title": "Usage Pattern Analytics", "tests": [], "code_files": [], "status": "not_implemented"},
+        {"id": "REQ-DATA-003", "title": "Data Licensing & Monetization", "tests": [], "code_files": [], "status": "not_implemented"}
+      ]
+    }
+  ],
+  "coverage_summary": {
+    "implemented": 18,
+    "partial": 30,
+    "not_implemented": 63,
+    "total": 111,
+    "implemented_pct": 16,
+    "covered_pct": 43
+  }
+}

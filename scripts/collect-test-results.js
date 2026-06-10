@@ -45,6 +45,7 @@ function runVitest() {
       encoding: 'utf-8',
       timeout: 120000,
       cwd: path.join(__dirname, '..'),
+      windowsHide: true,
     });
 
     const lines = output.trim().split('\n');
@@ -143,6 +144,10 @@ function updateResults(vitestResults) {
     results.summary.blocked = totalBlocked;
     results.summary.passRate = totalTests > 0 ? Math.round((totalPassed / totalTests) * 100) : 0;
     results.summary.testTypesImplemented = typesImplemented;
+    results.summary.testTypesTotal = results.testTypes.length;
+    results.summary.qualityGatesPassed = results.qualityGates ? results.qualityGates.filter(g => g.status === 'pass').length : 0;
+    results.summary.qualityGatesTotal = results.qualityGates ? results.qualityGates.length : 0;
+    results.summary.openDefects = results.defects ? results.defects.filter(d => d.status === 'open').length : 0;
     results.summary.durationMs = vitestResults.testResults
       ? vitestResults.testResults.reduce((acc, r) => acc + (r.endTime - r.startTime), 0)
       : 0;

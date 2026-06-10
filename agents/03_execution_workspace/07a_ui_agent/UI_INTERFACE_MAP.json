@@ -149,5 +149,10 @@
     "roleRedirects": "100% (Customer, Merchant, Admin all tested)",
     "formValidations": "100% (Email format, Phone format, Password, Name required)",
     "edgeCases": "Empty fields, invalid formats, wrong credentials, already authenticated"
+  },
+  "requirements_traceability": {
+    "auth_page": ["REQ-UI-011", "REQ-UI-013"],
+    "merchant_dashboard": ["REQ-UI-011", "REQ-UI-014"],
+    "admin_dashboard": ["REQ-UI-012"]
   }
 }

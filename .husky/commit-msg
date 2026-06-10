@@ -1,0 +1,1 @@
+node .husky/check-pr-number.cjs "$1" && node .husky/check-commit-format.cjs "$1"

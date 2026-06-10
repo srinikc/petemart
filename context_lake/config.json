@@ -1,0 +1,33 @@
+{
+  "_description": "Generic Context Lake configuration. Drop this into any project and it auto-discovers project info.",
+  "lake": {
+    "max_entries_per_dir": 1000,
+    "date_format": "%Y-%m-%d",
+    "datetime_format": "%Y-%m-%dT%H-%M-%S"
+  },
+  "watch": {
+    "interval_minutes": 2,
+    "enabled": false
+  },
+  "capture": {
+    "state_file_patterns": [
+      "**/STATE_MATRIX*.json",
+      "**/*_STATE*.json",
+      "**/*_REGISTRY*.json",
+      "**/state_ledger/**/*.json",
+      "**/state/**/*.json"
+    ],
+    "conversation_dirs": ["conversations"],
+    "agent_dirs": [".opencode/agents"],
+    "opencode_db_paths": [
+      "~/.config/opencode/opencode.db",
+      "~/.opencode/opencode.db",
+      ".opencode/opencode.db"
+    ],
+    "git": {
+      "enabled": true,
+      "max_log_entries": 20
+    }
+  },
+  "entry_name_template": "{datetime}_{window_name}"
+}
