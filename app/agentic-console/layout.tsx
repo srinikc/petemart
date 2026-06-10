@@ -2,11 +2,11 @@
 
 import React, { useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Shield, Menu, X, Activity, Bot, Settings } from 'lucide-react';
+import { Shield, Menu, X, Activity, Bot, Settings, Server } from 'lucide-react';
 import { GLOBAL_NAV_ITEMS } from './shared';
 
 const ICON_MAP: Record<string, React.ElementType> = {
-    Activity, Bot, Shield, Settings,
+    Activity, Bot, Shield, Settings, Server,
 };
 
 // Simple route guard: if path matches exactly or starts with href

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import {
     Bot, FileText, Loader2, Shield, Layout, Server, Monitor, Code, Database, Layers,
     Activity as ActivityIcon, Globe, BookOpen, UserCheck, Camera, Settings, Coins, Lock,
-    Lightbulb, GitMerge, Truck, ArrowLeft,
+    Lightbulb, GitMerge, Truck, ArrowLeft, ExternalLink,
 } from 'lucide-react';
 import {
     AgentState, StatusBadge, PageTOC, fetchWithTimeout,
@@ -222,6 +222,15 @@ export default function AgentsPage() {
                             {selectedAgent.last_error && (
                                 <div className="text-red-600 bg-red-50 p-2.5 rounded text-xs">{selectedAgent.last_error}</div>
                             )}
+
+                            <div className="pt-2 border-t flex gap-2">
+                                <button onClick={() => { router.push(`/agentic-console/agents/${selectedAgent.agent_id}`); setSelectedAgent(null); }}
+                                    className="flex items-center gap-1 text-xs px-3 py-1.5 rounded bg-indigo-600 text-white hover:bg-indigo-700">
+                                    <ExternalLink size={12} /> Full Details
+                                </button>
+                                <button onClick={() => setSelectedAgent(null)}
+                                    className="text-xs px-3 py-1.5 rounded bg-gray-200 text-gray-600 hover:bg-gray-300 ml-auto">Close</button>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -2,15 +2,15 @@
  * run-tests.js — Test Selection & Execution Engine
  *
  * Reads qa-dashboard/test-run-config.json to determine which test types
- * to run based on the current environment (sandbox vs CI).
+ * to run based on the current environment (sandbox).
  *
  * Usage:
  *   node scripts/run-tests.js                         # sandbox mode (default)
- *   node scripts/run-tests.js --env=ci                # CI mode
+ *   node scripts/run-tests.js --env=sandbox           # Local sandbox mode
  *   node scripts/run-tests.js --list                  # List enabled test types
  *   node scripts/run-tests.js --type=unit,e2e         # Override to specific types
  *   node scripts/run-tests.js --tier=sanity           # Run a predefined tier (sanity|full|release)
- *   node scripts/run-tests.js --tier=sanity --env=ci  # Run tier in CI mode
+ *   node scripts/run-tests.js --tier=sanity --env=sandbox  # Run tier in sandbox mode
  *
  * npm scripts:
  *   npm run test:all      → sandbox mode
