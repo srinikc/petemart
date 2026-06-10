@@ -84,6 +84,16 @@ export async function POST(req: NextRequest) {
       agent.last_error = null;
       agent.last_activity_timestamp = new Date().toISOString();
       agent.inputs_provided_at = new Date().toISOString();
+    } else if (action === 'disable') {
+      agent.disabled = true;
+      agent.status = 'blocked';
+      agent.last_error = 'Disabled by human gatekeeper via Dashboard';
+      agent.last_activity_timestamp = new Date().toISOString();
+    } else if (action === 'enable') {
+      agent.disabled = false;
+      agent.status = 'pending';
+      agent.last_error = null;
+      agent.last_activity_timestamp = new Date().toISOString();
     } else {
       return NextResponse.json({ error: `Unknown action: ${action}` }, { status: 400 });
     }

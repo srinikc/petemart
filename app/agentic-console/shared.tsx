@@ -22,6 +22,7 @@ export type AgentState = {
     approval_gate_triggers?: string[];
     pending_inputs?: { key: string; description: string; secret?: boolean }[];
     provided_inputs?: Record<string, string>;
+    disabled?: boolean;
 };
 
 export type ComplianceCheck = {

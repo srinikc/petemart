@@ -67,6 +67,7 @@ function AgentMiniCard({
   const failed = agent.status === 'failed' || agent.status === 'blocked';
   const active = agent.status === 'active' || agent.status === 'in_progress';
   const done = agent.status === 'approved' || agent.status === 'completed';
+  const skipped = (agent as any).disabled;
 
   return (
     <button
@@ -75,6 +76,7 @@ function AgentMiniCard({
         }         ${awaiting ? 'border-amber-200 bg-amber-50/40 live-glow-amber' :
           needsInput ? 'border-purple-200 bg-purple-50/40 live-glow-amber' :
           failed ? 'border-red-200 bg-red-50/40 live-glow-red' :
+          skipped ? 'border-gray-200 bg-gray-100/60 opacity-60' :
             active ? 'border-blue-200 bg-blue-50/30 live-pulse-blue' :
               done ? 'border-green-200 bg-green-50/40' :
                 'border-gray-200 bg-white'
@@ -89,7 +91,8 @@ function AgentMiniCard({
         {needsInput && <span className="ml-auto text-[9px] text-purple-500 font-semibold shrink-0 animate-pulse">⌨ Input</span>}
         {active && <Loader2 size={10} className="ml-auto text-blue-500 animate-spin shrink-0" />}
         {done && <span className="ml-auto text-[9px] text-green-600 shrink-0">✓ Done</span>}
-        {!awaiting && !needsInput && !active && !done && <span className="ml-auto text-[9px] text-gray-400 shrink-0">{STATUS_DOT[agent.status]?.label || agent.status}</span>}
+        {skipped && <span className="ml-auto text-[9px] text-gray-400 shrink-0">⊘ Skipped</span>}
+        {!awaiting && !needsInput && !active && !done && !skipped && <span className="ml-auto text-[9px] text-gray-400 shrink-0">{STATUS_DOT[agent.status]?.label || agent.status}</span>}
       </div>
       <div className="text-[10px] text-gray-500 leading-tight mt-0.5 pl-[22px] break-words">{shortRole}</div>
     </button>
@@ -939,6 +942,11 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
                     <button onClick={() => handleFlyoutAction('rerun')}
                       className="flex-1 flex items-center justify-center gap-1 text-xs font-medium py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all active:scale-[0.97]">
                       {flyoutActionLoading === 'rerun' ? <Loader2 size={12} className="animate-spin" /> : <RefreshCw size={12} />} Rerun
+                    </button>
+                    <button onClick={() => handleFlyoutAction((agent as any).disabled ? 'enable' : 'disable')}
+                      className={`flex items-center justify-center gap-1 text-xs font-medium py-2 px-2 rounded-xl border transition-all active:scale-[0.97] ${(agent as any).disabled ? 'bg-green-50 border-green-200 text-green-700 hover:bg-green-100' : 'bg-red-50 border-red-200 text-red-600 hover:bg-red-100'}`}
+                      title={(agent as any).disabled ? 'Enable this agent' : 'Disable/skip this agent'}>
+                      {(agent as any).disabled ? <CheckCircle size={12} /> : <XCircle size={12} />}
                     </button>
                   </div>
                 </div>
