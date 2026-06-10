@@ -84,7 +84,10 @@ function dependenciesMet(state, agentState) {
   if (!agentState.dependencies || agentState.dependencies.length === 0) return true;
   return agentState.dependencies.every(depId => {
     const dep = state.agent_states[depId];
-    return dep && (dep.status === 'approved' || dep.status === 'completed');
+    if (!dep) return false;
+    // Disabled/blocked deps count as met (they're skipped, not blockers)
+    if (dep.disabled || dep.status === 'blocked') return true;
+    return dep.status === 'approved' || dep.status === 'completed';
   });
 }
 
@@ -250,7 +253,9 @@ async function runCycle(state) {
   state.supervisor_control.agent_00_supervisor.cycle_count = cycleCount;
   state.supervisor_control.agent_00_supervisor.last_cycle_timestamp = new Date().toISOString();
 
-  // Auto-approve awaiting_approval agents that pass compliance audit
+  const launched = [];
+
+  // Auto-approve awaiting_approval agents that pass compliance — then launch immediately
   for (const [id, agent] of Object.entries(state.agent_states)) {
     if (id === '00_supervisor_agent') continue;
     if (agent.status !== 'awaiting_approval') continue;
@@ -258,8 +263,10 @@ async function runCycle(state) {
     const audit = runComplianceAudit(state);
     const agentAudit = audit[id];
     if (agentAudit?.allPassed) {
-      transitionAgent(state, id, 'approved', { approved: true, approved_by: 'Supervisor (Auto)', approved_at: new Date().toISOString() });
-      logEvent({ type: 'auto_approved', agent_id: id, reason: 'Compliance audit passed' });
+      transitionAgent(state, id, 'in_progress', { approved: true, approved_by: 'Supervisor (Auto)', approved_at: new Date().toISOString() });
+      const manifest = launchAgentTask(id, state);
+      launched.push({ id, manifest });
+      logEvent({ type: 'auto_launched', agent_id: id, reason: 'Compliance audit passed, auto-launched' });
     }
   }
 
@@ -271,18 +278,16 @@ async function runCycle(state) {
   }
 
   if (eligible.length === 0) {
-    const allDone = Object.values(state.agent_states).every(a =>
-      a.agent_id === '00_supervisor_agent' || a.status === 'approved' || a.status === 'completed' || a.status === 'failed'
+    const allDone = Object.entries(state.agent_states).every(([k, a]) =>
+      k === '00_supervisor_agent' || a.status === 'approved' || a.status === 'completed' || a.status === 'failed' || a.disabled
     );
     if (allDone) {
       logEvent({ type: 'pipeline_complete', cycle_count: cycleCount });
       return { skipped: true, reason: 'All agents processed', complete: true };
     }
-    logEvent({ type: 'no_eligible_agents', cycle_count: cycleCount, pending: Object.values(state.agent_states).filter(a => a.status !== 'approved' && a.status !== 'completed' && a.status !== 'failed').map(a => a.agent_id) });
+    logEvent({ type: 'no_eligible_agents', cycle_count: cycleCount, pending: Object.entries(state.agent_states).filter(([k, a]) => k !== '00_supervisor_agent' && a.status !== 'approved' && a.status !== 'completed' && a.status !== 'failed' && !a.disabled).map(([k]) => k) });
     return { skipped: true, reason: 'No eligible agents (probably waiting on dependencies or HITL)' };
   }
-
-  const launched = [];
 
   for (const agent of eligible.slice(0, maxConcurrent)) {
     const needsApproval = agent.requires_human_approval;

@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
 
     if (action === 'approve') {
       agent.approved = true;
-      agent.status = 'approved';
+      agent.status = 'pending';
       agent.approved_by = 'Human Gatekeeper (via Agentic Console)';
       agent.approved_at = new Date().toISOString();
       if (agent.expert_reviewer) {
