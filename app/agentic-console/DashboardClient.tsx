@@ -89,7 +89,7 @@ function AgentMiniCard({
         </span>
         {awaiting && <span className="ml-auto text-[9px] text-amber-500 font-semibold shrink-0 animate-pulse">⚠ Awaiting</span>}
         {needsInput && <span className="ml-auto text-[9px] text-purple-500 font-semibold shrink-0 animate-pulse">⌨ Input</span>}
-        {active && <Loader2 size={10} className="ml-auto text-blue-500 animate-spin shrink-0" />}
+        {active && <span className="ml-auto flex items-center gap-1 text-[9px] text-green-600 font-bold shrink-0"><span className="w-2 h-2 rounded-full bg-green-500 running-dot" /> RUNNING</span>}
         {done && <span className="ml-auto text-[9px] text-green-600 shrink-0">✓ Done</span>}
         {skipped && <span className="ml-auto text-[9px] text-gray-400 shrink-0">⊘ Skipped</span>}
         {!awaiting && !needsInput && !active && !done && !skipped && <span className="ml-auto text-[9px] text-gray-400 shrink-0">{STATUS_DOT[agent.status]?.label || agent.status}</span>}
@@ -499,6 +499,8 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
         @keyframes slideIn { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
         .pulse-dot { animation: pulse-dot 1.5s ease-in-out infinite; }
         @keyframes pulse-dot { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+        .running-dot { animation: running-dot 1s ease-in-out infinite; box-shadow: 0 0 6px #22C55E80; }
+        @keyframes running-dot { 0%,100% { opacity:1; transform: scale(1); } 50% { opacity:0.6; transform: scale(1.3); } }
       `}</style>
 
       {/* ═══ Instrument Bar — Live Computed Summary ═══ */}
