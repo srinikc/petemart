@@ -259,9 +259,10 @@ export default function AgenticConsoleDashboard() {
     setFlyoutActionLoading(null);
   };
 
-  const agentStates: Record<string, AgentState> = state?.agent_states || state?.stateMatrix?.agent_states || {};
-  const pipelineControl = state?.pipeline_control || state?.stateMatrix?.pipeline_control || {};
-  const supervisorControl = state?.supervisor_control || state?.stateMatrix?.supervisor_control || {};
+  const matrix = state?.stateMatrix || state;
+  const agentStates: Record<string, AgentState> = matrix?.agent_states || {};
+  const pipelineControl = matrix?.pipeline_control || {};
+  const supervisorControl = matrix?.supervisor_control || {};
   const summary: DashboardSummary = pipelineControl?.dashboard_summary || {
     total_agents: 16, agents_completed: 8, agents_in_progress: 0, agents_pending: 5,
     agents_awaiting_review: 2, agents_failed: 0, overall_progress_pct: 69, last_milestone: '',
