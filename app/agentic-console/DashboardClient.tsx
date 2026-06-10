@@ -336,7 +336,7 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
     const inProgress = entries.filter(([, v]) => v.status === 'active' || v.status === 'in_progress').length;
     const awaiting = entries.filter(([, v]) => v.status === 'awaiting_approval').length;
     const needsInput = entries.filter(([, v]) => v.status === 'awaiting_input').length;
-    const failed = entries.filter(([, v]) => v.status === 'failed' || v.status === 'blocked').length;
+    const failed = entries.filter(([, v]) => (v.status === 'failed' || v.status === 'blocked') && !(v as any).disabled).length;
     const pending = entries.filter(([, v]) => v.status === 'pending' || v.status === 'idle').length;
     const total = entries.length;
     const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
@@ -397,7 +397,7 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
 
   const failedAgentList = useMemo(() => {
     return Object.entries(agentStates)
-      .filter(([, v]) => v.status === 'failed' || v.status === 'blocked')
+      .filter(([, v]) => (v.status === 'failed' || v.status === 'blocked') && !(v as any).disabled)
       .map(([k]) => k);
   }, [agentStates]);
 
@@ -445,8 +445,20 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
         allIds: failedAgentList,
       };
     }
+    // Check disabled agents
+    const disabledIds = Object.entries(agentStates).filter(([, v]) => (v as any).disabled).map(([k]) => k);
+    if (disabledIds.length > 0) {
+      return {
+        agentId: disabledIds[0],
+        label: `${disabledIds.length} agent(s) disabled`,
+        type: 'rerun',
+        severity: 'low',
+        count: disabledIds.length,
+        allIds: disabledIds,
+      };
+    }
     return null;
-  }, [awaitingAgentList, failedAgentList]);
+  }, [awaitingAgentList, failedAgentList, agentStates]);
 
   const sortedAgentEntries = useMemo(() =>
     Object.entries(agentStates).map(([k, v]) => ({ ...v, agent_id: k })).sort((a, b) => {

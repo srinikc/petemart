@@ -86,12 +86,12 @@ export async function POST(req: NextRequest) {
       agent.inputs_provided_at = new Date().toISOString();
     } else if (action === 'disable') {
       agent.disabled = true;
-      agent.status = 'blocked';
+      agent.disabled_at = new Date().toISOString();
       agent.last_error = 'Disabled by human gatekeeper via Dashboard';
       agent.last_activity_timestamp = new Date().toISOString();
     } else if (action === 'enable') {
       agent.disabled = false;
-      agent.status = 'pending';
+      agent.disabled_at = null;
       agent.last_error = null;
       agent.last_activity_timestamp = new Date().toISOString();
     } else {
