@@ -7,7 +7,7 @@ import {
   Bot, Activity, ExternalLink, RefreshCw, FileText,
   AlertTriangle, ArrowRight, X, Radio, Monitor, Code, Database,
   Layers, Server, Globe, BookOpen, UserCheck, Camera, Settings,
-  Coins, Lock, Lightbulb, Layout, Truck, GitMerge,
+  Coins, Lock, Lightbulb, Layout, Truck, GitMerge, Bell,
 } from 'lucide-react';
 
 import {
@@ -112,6 +112,8 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
   const [activities, setActivities] = useState<ActivityEntry[]>([]);
   const [liveConnected, setLiveConnected] = useState(false);
   const [lastHeartbeat, setLastHeartbeat] = useState<number>(Date.now());
+  const [notifOpen, setNotifOpen] = useState(false);
+  const notifRef = useRef<HTMLDivElement>(null);
   const prevStatuses = useRef<Record<string, string>>({});
   const prevApproved = useRef<Record<string, boolean>>({});
   const flashTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
@@ -223,6 +225,15 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
 
     return () => { es.close(); clearTimeout(reconnectTimer); };
   }, [addActivity, flashAgent]);
+
+  // Close notification dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) setNotifOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   // Auto-scroll activity feed
   useEffect(() => {
@@ -460,6 +471,50 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
           </span>
           {isPaused && <span className="flex items-center gap-1 text-amber-600 font-bold">⏸ PAUSED</span>}
           <button onClick={() => window.location.reload()} className="text-gray-300 hover:text-gray-500"><RefreshCw size={13} /></button>
+          <div ref={notifRef} className="relative">
+            <button onClick={() => setNotifOpen(o => !o)} className={`relative p-1.5 rounded-lg transition-all hover:bg-gray-100 ${notifOpen ? 'bg-gray-100' : ''}`}>
+              <Bell size={14} className={notifOpen ? 'text-indigo-600' : 'text-gray-400'} />
+              {(effectiveSummary.agents_awaiting_review + effectiveSummary.agents_failed) > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white rounded-full text-[8px] font-bold flex items-center justify-center">
+                  {effectiveSummary.agents_awaiting_review + effectiveSummary.agents_failed}
+                </span>
+              )}
+            </button>
+            {notifOpen && (
+              <div className="absolute right-0 top-full mt-1.5 w-80 bg-white border rounded-xl shadow-lg z-50 overflow-hidden">
+                <div className="px-3 py-2 border-b bg-gray-50 text-[11px] font-bold text-gray-700 flex items-center gap-2">
+                  <Bell size={12} /> Alerts
+                </div>
+                <div className="max-h-72 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
+                  {awaitingAgentList.map(id => (
+                    <div key={id} className="px-3 py-2 border-b last:border-0 hover:bg-amber-50 cursor-pointer text-[11px] flex items-center gap-2"
+                      onClick={() => { router.push(`/agentic-console/agents/${id}`); setNotifOpen(false); }}>
+                      <AlertCircle size={12} className="text-amber-500 shrink-0 animate-pulse" />
+                      <span className="font-medium truncate">{id.replace('_agent', '').replace(/^0+/, '')}</span>
+                      <span className="ml-auto text-amber-600 font-semibold text-[10px]">Awaiting</span>
+                    </div>
+                  ))}
+                  {failedAgentList.map(id => (
+                    <div key={id} className="px-3 py-2 border-b last:border-0 hover:bg-red-50 cursor-pointer text-[11px] flex items-center gap-2"
+                      onClick={() => { router.push(`/agentic-console/agents/${id}`); setNotifOpen(false); }}>
+                      <XCircle size={12} className="text-red-500 shrink-0" />
+                      <span className="font-medium truncate">{id.replace('_agent', '').replace(/^0+/, '')}</span>
+                      <span className="ml-auto text-red-600 font-semibold text-[10px]">Failed</span>
+                    </div>
+                  ))}
+                  {effectiveSummary.agents_awaiting_review + effectiveSummary.agents_failed === 0 && (
+                    <div className="px-3 py-6 text-center text-[11px] text-gray-400">
+                      <CheckCircle size={16} className="mx-auto mb-1.5 text-green-400" />
+                      No alerts — all agents nominal
+                    </div>
+                  )}
+                </div>
+                <div className="px-3 py-1.5 border-t bg-gray-50 text-[10px] text-gray-400 text-center">
+                  {effectiveSummary.agents_completed} completed · {effectiveSummary.agents_in_progress} active
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
