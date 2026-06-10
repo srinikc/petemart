@@ -206,13 +206,13 @@ function transitionAgent(state, agentId, newStatus, extra = {}) {
 }
 
 function updateDashboardSummary(state) {
-  const agents = Object.values(state.agent_states).filter(a => a.agent_id !== '00_supervisor_agent');
+  const agents = Object.entries(state.agent_states).filter(([k]) => k !== '00_supervisor_agent');
   const total = agents.length;
-  const completed = agents.filter(a => a.status === 'approved' || a.status === 'completed').length;
-  const inProgress = agents.filter(a => a.status === 'in_progress' || a.status === 'active').length;
-  const pending = agents.filter(a => a.status === 'pending' || a.status === 'idle').length;
-  const awaitingReview = agents.filter(a => a.status === 'awaiting_approval').length;
-  const failed = agents.filter(a => a.status === 'failed').length;
+  const completed = agents.filter(([, a]) => a.status === 'approved' || a.status === 'completed').length;
+  const inProgress = agents.filter(([, a]) => a.status === 'in_progress' || a.status === 'active').length;
+  const pending = agents.filter(([, a]) => a.status === 'pending' || a.status === 'idle').length;
+  const awaitingReview = agents.filter(([, a]) => a.status === 'awaiting_approval').length;
+  const failed = agents.filter(([, a]) => a.status === 'failed' && !a.disabled).length;
   const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
 
   state.pipeline_control.dashboard_summary = {
