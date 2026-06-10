@@ -1,0 +1,168 @@
+{
+  "$schema": "https://opencode.ai",
+  "version": "1.0",
+  "description": "MCP (Model Context Protocol) servers and tools available to agents. Each entry declares the server name, transport type, available tools, and which agents consume them.",
+  "servers": [
+    {
+      "id": "filesystem",
+      "name": "Filesystem MCP",
+      "type": "local",
+      "status": "available",
+      "tools": [
+        { "name": "read_file", "description": "Read file contents from any accessible path" },
+        { "name": "write_file", "description": "Write content to files" },
+        { "name": "list_directory", "description": "List files in a directory" },
+        { "name": "search_files", "description": "Glob pattern file search" },
+        { "name": "grep_search", "description": "Regex content search across files" },
+        { "name": "get_file_info", "description": "Get file metadata (size, modified time)" },
+        { "name": "create_directory", "description": "Create new directories" },
+        { "name": "move_file", "description": "Rename or move files" }
+      ],
+      "used_by": ["all"],
+      "docs_url": "https://opencode.ai/docs/mcp/filesystem"
+    },
+    {
+      "id": "fetch",
+      "name": "Web Fetch MCP",
+      "type": "local",
+      "status": "available",
+      "tools": [
+        { "name": "fetch_url", "description": "HTTP GET a URL and return content as text/markdown" },
+        { "name": "fetch_url_json", "description": "HTTP GET a URL and return parsed JSON" },
+        { "name": "fetch_url_headers", "description": "Inspect response headers for a URL" }
+      ],
+      "used_by": ["01_ideation_agent", "12_marketing_agent"],
+      "docs_url": "https://opencode.ai/docs/mcp/fetch"
+    },
+    {
+      "id": "github",
+      "name": "GitHub MCP",
+      "type": "local",
+      "status": "available",
+      "tools": [
+        { "name": "create_or_update_file", "description": "Create or update a file in a GitHub repository" },
+        { "name": "push_files", "description": "Push multiple files in a single commit" },
+        { "name": "search_repositories", "description": "Search for GitHub repositories" },
+        { "name": "create_repository", "description": "Create a new GitHub repository" },
+        { "name": "get_issue", "description": "Get details of a specific issue" },
+        { "name": "create_issue", "description": "Create a new issue" },
+        { "name": "update_issue", "description": "Update an existing issue" },
+        { "name": "add_issue_comment", "description": "Add a comment to an issue" },
+        { "name": "search_code", "description": "Search code in GitHub repositories" },
+        { "name": "search_issues", "description": "Search issues and pull requests" },
+        { "name": "create_pull_request", "description": "Create a new pull request" },
+        { "name": "get_pull_request", "description": "Get details of a pull request" },
+        { "name": "list_pull_requests", "description": "List pull requests for a repository" },
+        { "name": "merge_pull_request", "description": "Merge a pull request" },
+        { "name": "get_pull_request_files", "description": "List files changed in a pull request" },
+        { "name": "list_commits", "description": "List commits in a branch" },
+        { "name": "get_commit", "description": "Get details of a specific commit" },
+        { "name": "list_branches", "description": "List branches in a repository" },
+        { "name": "get_workflow_run", "description": "Get details of a workflow run" },
+        { "name": "list_workflow_runs", "description": "List workflow runs for a workflow" },
+        { "name": "list_releases", "description": "List releases in a repository" },
+        { "name": "get_latest_release", "description": "Get the latest release" },
+        { "name": "download_artifact", "description": "Download a workflow artifact" }
+      ],
+      "used_by": ["06_infra_devops_agent", "08_qa_agent", "09_production_agent", "13_maintenance_agent"],
+      "source_repo": "https://github.com/github/github-mcp-server",
+      "docs_url": "https://opencode.ai/docs/mcp/github"
+    },
+    {
+      "id": "sonarqube",
+      "name": "SonarQube Cloud MCP",
+      "type": "remote",
+      "url": "https://mcp.sonarqube.com/mcp",
+      "status": "configured",
+      "oauth_required": true,
+      "tools": [
+        { "name": "analyze_code", "description": "Run static analysis on a codebase" },
+        { "name": "get_quality_gate", "description": "Check quality gate status" },
+        { "name": "list_issues", "description": "List code issues (bugs, vulnerabilities, code smells)" },
+        { "name": "get_metrics", "description": "Get analysis metrics (coverage, duplications, etc.)" },
+        { "name": "list_projects", "description": "List SonarQube projects" }
+      ],
+      "used_by": ["08_qa_agent", "15_secrets_compliance_agent"]
+    },
+    {
+      "id": "puppeteer",
+      "name": "Puppeteer Browser MCP",
+      "type": "local",
+      "status": "available",
+      "tools": [
+        { "name": "browser_navigate", "description": "Navigate to a URL in headless browser" },
+        { "name": "browser_screenshot", "description": "Take a screenshot of the current page" },
+        { "name": "browser_click", "description": "Click an element on the page" },
+        { "name": "browser_fill_form", "description": "Fill a form field" },
+        { "name": "browser_evaluate", "description": "Run JavaScript in the browser context" },
+        { "name": "browser_get_html", "description": "Get the HTML content of the current page" },
+        { "name": "browser_get_text", "description": "Get visible text content of the page" },
+        { "name": "browser_wait", "description": "Wait for a specified duration" }
+      ],
+      "used_by": ["07a_ui_agent", "08_qa_agent", "10_tech_pub_agent"],
+      "docs_url": "https://opencode.ai/docs/mcp/puppeteer"
+    },
+    {
+      "id": "playwright",
+      "name": "Playwright E2E MCP",
+      "type": "local",
+      "status": "available",
+      "tools": [
+        { "name": "run_test", "description": "Run Playwright tests" },
+        { "name": "capture_trace", "description": "Capture a Playwright trace for debugging" },
+        { "name": "visual_diff", "description": "Compare screenshots for visual regression" },
+        { "name": "run_spec_file", "description": "Run a specific spec file" }
+      ],
+      "used_by": ["07a_ui_agent", "07d_integration_agent", "08_qa_agent"],
+      "docs_url": "https://playwright.dev/docs/intro"
+    },
+    {
+      "id": "postgres",
+      "name": "PostgreSQL MCP",
+      "type": "local",
+      "status": "available",
+      "tools": [
+        { "name": "query", "description": "Execute a SQL query" },
+        { "name": "run_migration", "description": "Execute a database migration" },
+        { "name": "list_tables", "description": "List all tables in the database" },
+        { "name": "describe_table", "description": "Get schema of a specific table" },
+        { "name": "explain_query", "description": "Get query execution plan" }
+      ],
+      "used_by": ["07c_backend_db_agent"],
+      "docs_url": "https://opencode.ai/docs/mcp/postgres"
+    },
+    {
+      "id": "websearch",
+      "name": "Web Search MCP",
+      "type": "built-in",
+      "status": "available",
+      "tools": [
+        { "name": "search_web", "description": "Search the web for current information" },
+        { "name": "fetch_url", "description": "Fetch and parse content from a URL" }
+      ],
+      "used_by": ["01_ideation_agent", "12_marketing_agent"],
+      "docs_url": "https://opencode.ai/docs/mcp/websearch"
+    }
+  ],
+  "agent_to_mcp_mapping": {
+    "01_ideation_agent": ["fetch", "websearch"],
+    "02_requirement_agent": ["filesystem"],
+    "03_architect_agent": ["filesystem"],
+    "04_prototype_agent": ["filesystem"],
+    "05_program_mgmt_agent": ["filesystem", "github"],
+    "06_infra_devops_agent": ["filesystem", "github"],
+    "07a_ui_agent": ["filesystem", "puppeteer", "playwright"],
+    "07b_api_agent": ["filesystem"],
+    "07c_backend_db_agent": ["filesystem", "postgres"],
+    "07d_integration_agent": ["filesystem", "playwright"],
+    "08_qa_agent": ["filesystem", "github", "sonarqube", "puppeteer", "playwright"],
+    "09_production_agent": ["filesystem", "github"],
+    "10_tech_pub_agent": ["filesystem", "puppeteer"],
+    "11_customer_onboarding_agent": ["filesystem"],
+    "12_marketing_agent": ["fetch", "websearch"],
+    "13_maintenance_agent": ["filesystem", "github"],
+    "14_finops_agent": ["filesystem"],
+    "15_secrets_compliance_agent": ["filesystem", "sonarqube"],
+    "00_supervisor_agent": ["filesystem"]
+  }
+}

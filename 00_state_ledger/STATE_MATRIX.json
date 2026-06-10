@@ -177,6 +177,18 @@
             "violations": [
               "direct commit to develop"
             ]
+          },
+          {
+            "number": 13,
+            "title": "feat(agentic-console): agent detail page with guardrails, prompts, artifacts, run logs, A2A messages, MCP tools + MCP servers registry",
+            "branch": "feature/agent-detail-and-mcp-registry",
+            "merged_at": null,
+            "ai_assistant_compliant": true,
+            "violations": [],
+            "description": "Full agent detail page at /agentic-console/agents/[id] with 6 tabs (Overview, Prompts, Artifacts, Run Logs, Comm, MCP Tools). MCP servers registry at /agentic-console/mcp with 8 servers, 60+ tools, and agent-to-MCP mapping. A2A message bus in AGENT_MESSAGES.jsonl with send/receive API. API routes: agent-detail, mcp-servers, agent-messages. Nav updated with MCP Registry link.",
+            "files_changed": 11,
+            "additions": 900,
+            "deletions": 0
           }
         ]
       }

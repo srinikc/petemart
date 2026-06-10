@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import {
   CheckCircle, XCircle, AlertCircle, Clock, Loader2, Shield, Settings, Layout,
   Bot, GitMerge, Activity, ExternalLink, RefreshCw, Bookmark, FileText, GitBranch,
-  AlertTriangle, ArrowRight, Info,
+  AlertTriangle, ArrowRight, Info, Play, Pause, RotateCcw, Radio, Server,
 } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -229,7 +229,7 @@ export default function AgenticConsoleDashboard() {
           </div>
         </div>
         {/* Quick nav cards */}
-        <div className="grid grid-cols-3 gap-3 mt-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
           <button onClick={() => router.push('/agentic-console/agents')}
             className="border rounded-lg p-3 text-left hover:shadow-md transition-shadow hover:border-indigo-200">
             <Bot size={18} className="text-indigo-600 mb-1" />
@@ -247,6 +247,12 @@ export default function AgenticConsoleDashboard() {
             <Settings size={18} className="text-gray-600 mb-1" />
             <div className="text-sm font-medium">Operations</div>
             <div className="text-[10px] text-gray-500">Token usage, branches, PR history →</div>
+          </button>
+          <button onClick={() => router.push('/agentic-console/mcp')}
+            className="border rounded-lg p-3 text-left hover:shadow-md transition-shadow hover:border-indigo-200">
+            <Server size={18} className="text-purple-600 mb-1" />
+            <div className="text-sm font-medium">MCP Registry</div>
+            <div className="text-[10px] text-gray-500">MCP servers, tools, agent mapping →</div>
           </button>
         </div>
       </section>
