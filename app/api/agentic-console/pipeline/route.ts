@@ -4,31 +4,40 @@ import path from 'path';
 
 export const dynamic = 'force-dynamic';
 
-const STATE_PATH = path.join(process.cwd(), '00_state_ledger/STATE_MATRIX.json');
+const ROOT = process.cwd();
 
-function readState(): any {
-  return JSON.parse(fs.readFileSync(STATE_PATH, 'utf-8'));
+function statePath(project?: string | null): string {
+  if (project) {
+    const p = path.join(ROOT, `00_state_ledger/projects/${project}/STATE_MATRIX.json`);
+    if (fs.existsSync(p)) return p;
+  }
+  return path.join(ROOT, '00_state_ledger/STATE_MATRIX.json');
 }
 
-function writeState(data: any) {
-  fs.writeFileSync(STATE_PATH, JSON.stringify(data, null, 2), 'utf-8');
+function readState(project?: string | null): any {
+  return JSON.parse(fs.readFileSync(statePath(project), 'utf-8'));
+}
+
+function writeState(project: string | null | undefined, data: any) {
+  fs.writeFileSync(statePath(project), JSON.stringify(data, null, 2), 'utf-8');
 }
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { action } = body;
-    const state = readState();
+    const { action, project: projectParam } = body;
+    const project = projectParam || req.nextUrl.searchParams.get('project');
+    const state = readState(project);
 
     switch (action) {
       case 'pause':
         state.pipeline_control.is_pipeline_paused = true;
-        writeState(state);
+        writeState(project, state);
         return NextResponse.json({ success: true, paused: true });
 
       case 'resume':
         state.pipeline_control.is_pipeline_paused = false;
-        writeState(state);
+        writeState(project, state);
         return NextResponse.json({ success: true, paused: false });
 
       case 'reset_circuit_breaker':
@@ -36,7 +45,7 @@ export async function POST(req: NextRequest) {
           state.supervisor_control.loop_guardrails.circuit_breaker_tripped_at = null;
           state.supervisor_control.loop_guardrails.circuit_breaker_reason = null;
         }
-        writeState(state);
+        writeState(project, state);
         return NextResponse.json({ success: true, circuit_breaker_reset: true });
 
       case 'rerun_agent': {
@@ -59,7 +68,7 @@ export async function POST(req: NextRequest) {
           agent.expert_reviewer.reviewed_at = null;
           agent.expert_reviewer.sign_off_granted = false;
         }
-        writeState(state);
+        writeState(project, state);
         return NextResponse.json({ success: true, agentId: agentKey, newStatus: 'pending' });
       }
 

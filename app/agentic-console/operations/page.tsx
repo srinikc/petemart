@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
     DollarSign, GitBranch, GitMerge, Loader2, ExternalLink, CheckCircle, XCircle,
     ArrowLeft, Activity,
@@ -20,6 +20,7 @@ const OPS_TOC = [
 
 export default function OperationsPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [state, setState] = useState<any>(null);
     const [tokenData, setTokenData] = useState<any>(null);
     const [branches, setBranches] = useState<any[]>([]);
@@ -29,8 +30,10 @@ export default function OperationsPage() {
     const [tokenView, setTokenView] = useState<'agents' | 'sessions'>('agents');
 
     useEffect(() => {
+        const project = searchParams?.get('project') || '';
+        const stateUrl = project ? `/api/agentic-console/state?project=${encodeURIComponent(project)}` : '/api/agentic-console/state';
         Promise.all([
-            fetchWithTimeout('/api/agentic-console/state'),
+            fetchWithTimeout(stateUrl),
             fetchWithTimeout('/api/token-usage'),
             fetch('/api/agentic-console/branches').then(r => r.json().catch(() => null)),
             fetch('/api/agentic-console/pull-requests').then(r => r.json().catch(() => null)),

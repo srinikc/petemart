@@ -5,12 +5,22 @@ import path from 'path';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-const EVENTS_PATH = path.join(process.cwd(), '00_state_ledger/PIPELINE_EVENTS.jsonl');
-const STATE_PATH = path.join(process.cwd(), '00_state_ledger/STATE_MATRIX.json');
+const ROOT = process.cwd();
+const EVENTS_PATH = path.join(ROOT, '00_state_ledger/PIPELINE_EVENTS.jsonl');
+
+function statePath(project?: string | null): string {
+  if (project) {
+    const p = path.join(ROOT, `00_state_ledger/projects/${project}/STATE_MATRIX.json`);
+    if (fs.existsSync(p)) return p;
+  }
+  return path.join(ROOT, '00_state_ledger/STATE_MATRIX.json');
+}
 
 export async function GET(req: NextRequest) {
   const since = req.nextUrl.searchParams.get('since');
   const pollMs = parseInt(req.nextUrl.searchParams.get('poll') || '3000', 10);
+  const project = req.nextUrl.searchParams.get('project');
+  const STATE_PATH = statePath(project);
 
   const encoder = new TextEncoder();
   const stream = new ReadableStream({

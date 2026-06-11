@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
     Code, CheckCircle, XCircle, Loader2, Shield, GitBranch,
     AlertCircle, Clock, FileText, Layers as LayersIcon, Zap, ArrowLeft,
@@ -31,6 +31,7 @@ function ReqQualityBadge({ status }: { status: 'green' | 'yellow' | 'red' }) {
 
 export default function QualityPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [state, setState] = useState<any>(null);
     const [reviews, setReviews] = useState<any[]>([]);
     const [qaResults, setQaResults] = useState<any>(null);
@@ -39,8 +40,10 @@ export default function QualityPage() {
     const [activeTab, setActiveTab] = useState<TabId>('kpis');
 
     useEffect(() => {
+        const project = searchParams?.get('project') || '';
+        const stateUrl = project ? `/api/agentic-console/state?project=${encodeURIComponent(project)}` : '/api/agentic-console/state';
         Promise.all([
-            fetchWithTimeout('/api/agentic-console/state'),
+            fetchWithTimeout(stateUrl),
             fetch('/api/qa/reviews').then(r => r.json().catch(() => null)),
             fetch('/api/qa/results').then(r => r.json().catch(() => null)),
         ]).then(([stateRes, reviewData, qaData]) => {

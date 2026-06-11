@@ -269,6 +269,22 @@ export function formatETA(ms: number | null | undefined): string {
     return `~${min}m ${sec % 60}s`;
 }
 
+// ── Multi-Project Types ──
+export type ProjectInfo = {
+    id: string;
+    name: string;
+    description: string;
+    state_path: string;
+    created_at: string;
+    agent_count?: number;
+    completed_pct?: number;
+};
+
+export type ProjectsIndex = {
+    default_project: string;
+    projects: Record<string, ProjectInfo>;
+};
+
 // ── Data fetching helper ──
 export async function fetchWithTimeout(url: string, ms = 10000) {
     const ctrl = new AbortController();
@@ -276,4 +292,18 @@ export async function fetchWithTimeout(url: string, ms = 10000) {
         fetch(url, { signal: ctrl.signal }),
         new Promise<never>((_, reject) => setTimeout(() => { ctrl.abort(); reject('timeout'); }, ms)),
     ]);
+}
+
+export async function fetchProjectsIndex(): Promise<ProjectsIndex | null> {
+    try {
+        const res = await fetch('/api/agentic-console/projects');
+        if (!res.ok) return null;
+        return await res.json();
+    } catch { return null; }
+}
+
+export function withProject(url: string, project?: string | null): string {
+    if (!project) return url;
+    const sep = url.includes('?') ? '&' : '?';
+    return `${url}${sep}project=${encodeURIComponent(project)}`;
 }

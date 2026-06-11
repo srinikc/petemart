@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
     Bot, FileText, Loader2, Shield, Layout, Server, Monitor, Code, Database, Layers,
     Activity as ActivityIcon, Globe, BookOpen, UserCheck, Camera, Settings, Coins, Lock,
@@ -33,6 +33,7 @@ const AGENT_ICONS: Record<string, React.ElementType> = {
 
 export default function AgentsPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [state, setState] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [selectedAgent, setSelectedAgent] = useState<AgentState | null>(null);
@@ -40,7 +41,9 @@ export default function AgentsPage() {
     const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
-        fetchWithTimeout('/api/agentic-console/state')
+        const project = searchParams?.get('project') || '';
+        const url = project ? `/api/agentic-console/state?project=${encodeURIComponent(project)}` : '/api/agentic-console/state';
+        fetchWithTimeout(url)
             .then(r => r.ok ? r.json() : null)
             .then(d => { setState(d); setLoading(false); })
             .catch(() => setLoading(false));

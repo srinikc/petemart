@@ -1,7 +1,7 @@
 ﻿'use client';
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   CheckCircle, XCircle, AlertCircle, Loader2, Shield,
   Bot, Activity, ExternalLink, RefreshCw, FileText,
@@ -124,6 +124,8 @@ function AgentIcon({ agentId }: { agentId: string }) {
 
 export default function AgenticConsoleDashboard({ initialState }: { initialState?: any }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const project = searchParams?.get('project') || initialState?.activeProject || '';
   const [state, setState] = useState<any>(initialState || null);
   const [loading, setLoading] = useState(!initialState);
   const [selectedFlyoutAgent, setSelectedFlyoutAgent] = useState<string | null>(null);
@@ -290,11 +292,13 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
     if (activityRef.current) activityRef.current.scrollTop = 0;
   }, [activities]);
 
-  const loadState = useCallback(async () => {
+  const loadState = useCallback(async (proj?: string) => {
+    const p = proj || project;
     let done = false;
     setTimeout(() => { if (!done) { done = true; setLoading(false); } }, 10000);
     try {
-      const res = await fetchWithTimeout('/api/agentic-console/state');
+      const url = p ? `/api/agentic-console/state?project=${encodeURIComponent(p)}` : '/api/agentic-console/state';
+      const res = await fetchWithTimeout(url);
       if (!done) {
         const json = res.ok ? await res.json() : null;
         setState(json);
@@ -303,7 +307,7 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
     } catch { } finally {
       if (!done) { done = true; setLoading(false); }
     }
-  }, []);
+  }, [project]);
 
   useEffect(() => { loadState(); }, [loadState]);
 
@@ -570,7 +574,7 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
             <span className={`w-2 h-2 rounded-full ${liveConnected ? 'bg-green-500 pulse-dot' : 'bg-red-500'}`} />
             {liveConnected ? 'LIVE' : 'OFFLINE'}
           </span>
-          <button onClick={async () => { try { await fetch('/api/agentic-console/pipeline', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: isPaused ? 'resume' : 'pause' }) }); window.location.reload(); } catch {} } }
+          <button onClick={async () => { try { const body: any = { action: isPaused ? 'resume' : 'pause' }; if (project) body.project = project; await fetch('/api/agentic-console/pipeline', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); window.location.reload(); } catch {} } }
             className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition-all active:scale-[0.97] ${isPaused ? 'bg-amber-50 border-amber-300 text-amber-700 hover:bg-amber-100' : 'bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100'}`}>
             {isPaused ? <><Play size={12} /> Resume</> : <><Radio size={12} /> Pause</>}
           </button>
