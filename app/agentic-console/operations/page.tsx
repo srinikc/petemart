@@ -23,6 +23,8 @@ export default function OperationsPage() {
     const [state, setState] = useState<any>(null);
     const [tokenData, setTokenData] = useState<any>(null);
     const [branches, setBranches] = useState<any[]>([]);
+    const [prs, setPrs] = useState<any[]>([]);
+    const [prLoading, setPrLoading] = useState(true);
     const [loading, setLoading] = useState(true);
     const [tokenView, setTokenView] = useState<'agents' | 'sessions'>('agents');
 
@@ -31,12 +33,15 @@ export default function OperationsPage() {
             fetchWithTimeout('/api/agentic-console/state'),
             fetchWithTimeout('/api/token-usage'),
             fetch('/api/agentic-console/branches').then(r => r.json().catch(() => null)),
-        ]).then(([stateRes, tokenRes, branchData]) => {
+            fetch('/api/agentic-console/pull-requests').then(r => r.json().catch(() => null)),
+        ]).then(([stateRes, tokenRes, branchData, prData]) => {
             if (stateRes.ok) stateRes.json().then(d => setState(d));
             if (tokenRes.ok) tokenRes.json().then(d => setTokenData(d));
             if (branchData?.branches) setBranches(branchData.branches);
+            if (prData?.pull_requests) setPrs(prData.pull_requests);
+            setPrLoading(false);
             setLoading(false);
-        }).catch(() => setLoading(false));
+        }).catch(() => { setLoading(false); setPrLoading(false); });
     }, []);
 
     const workflowEnforcement = state?.stateMatrix?.supervisor_control?.workflow_enforcement || {};
@@ -173,17 +178,14 @@ export default function OperationsPage() {
                 )}
             </section>
 
-            {/* Pull Requests */}
+            {/* Pull Requests — Live from GitHub */}
             <section id="pr-tracking" className="bg-white rounded-xl shadow-sm border p-6">
                 <div className="flex items-center gap-2 mb-3">
                     <GitMerge size={20} className="text-indigo-600" />
-                    <h2 className="text-lg font-bold">Pull Request History ({fullPRList.length} total)</h2>
+                    <h2 className="text-lg font-bold">Pull Request History ({prs.length} total)</h2>
+                    {prLoading && <Loader2 size={14} className="animate-spin text-gray-400" />}
                 </div>
-                <p className="text-xs text-gray-500 mb-3">
-                    Compliance checked against AGENTS.md workflow rules: feature branch → PR → CI → merge cycle.
-                    Non-compliant PRs used <code className="bg-gray-100 px-1 rounded mx-0.5">--no-verify</code>, skipped PR template, or didn't update STATE_MATRIX.json.
-                </p>
-                {fullPRList.length > 0 ? (
+                {prs.length > 0 ? (
                     <div className="overflow-x-auto">
                         <table className="w-full text-xs">
                             <thead>
@@ -191,29 +193,45 @@ export default function OperationsPage() {
                                     <th className="pb-2 pr-3">#</th>
                                     <th className="pb-2 pr-3">Title</th>
                                     <th className="pb-2 pr-3">Branch</th>
+                                    <th className="pb-2 pr-3">State</th>
+                                    <th className="pb-2 pr-3">CI</th>
+                                    <th className="pb-2 pr-3">Review</th>
                                     <th className="pb-2 pr-3">Merged</th>
-                                    <th className="pb-2 pr-3">Compliant</th>
-                                    <th className="pb-2">Violations</th>
+                                    <th className="pb-2">Link</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {fullPRList.map((pr: any) => (
-                                    <tr key={pr.number} className={`border-b last:border-0 hover:bg-gray-50 ${pr.ai_assistant_compliant ? '' : 'bg-red-50'}`}>
+                                {prs.map((pr: any) => (
+                                    <tr key={pr.number} className="border-b last:border-0 hover:bg-gray-50">
                                         <td className="py-2 pr-3 font-mono text-[10px]">#{pr.number}</td>
-                                        <td className="py-2 pr-3 text-[10px]">
-                                            <a href={`https://github.com/srinikc/petemart/pull/${pr.number}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{pr.title}</a>
+                                        <td className="py-2 pr-3 text-[10px] max-w-[300px] truncate">{pr.title}</td>
+                                        <td className="py-2 pr-3 font-mono text-[9px] max-w-[180px] truncate">{pr.branch}</td>
+                                        <td className="py-2 pr-3">
+                                            <span className={`px-1.5 py-0.5 rounded text-[9px] font-medium ${
+                                                pr.state === 'MERGED' ? 'bg-purple-100 text-purple-700' :
+                                                pr.state === 'OPEN' ? 'bg-green-100 text-green-700' :
+                                                'bg-gray-100 text-gray-500'
+                                            }`}>
+                                                {pr.state}
+                                            </span>
                                         </td>
-                                        <td className="py-2 pr-3 font-mono text-[9px]">{pr.branch}</td>
+                                        <td className="py-2 pr-3">
+                                            {pr.ci_status === 'success' ? <CheckCircle size={12} className="text-green-500" /> :
+                                             pr.ci_status === 'failure' ? <XCircle size={12} className="text-red-500" /> :
+                                             <Loader2 size={12} className="animate-spin text-amber-500" />}
+                                        </td>
+                                        <td className="py-2 pr-3">
+                                            <span className={`text-[9px] ${
+                                                pr.review_status === 'approved' ? 'text-green-600' :
+                                                pr.review_status === 'changes_requested' ? 'text-red-500' :
+                                                'text-gray-400'
+                                            }`}>{pr.review_status}</span>
+                                        </td>
                                         <td className="py-2 pr-3 text-[10px]">{pr.merged_at ? new Date(pr.merged_at).toLocaleDateString() : '-'}</td>
                                         <td className="py-2">
-                                            {pr.ai_assistant_compliant
-                                                ? <span className="flex items-center gap-1 text-green-600"><CheckCircle size={11} /> Yes</span>
-                                                : <span className="flex items-center gap-1 text-red-500"><XCircle size={11} /> No</span>}
-                                        </td>
-                                        <td className="py-2 text-[10px]">
-                                            {pr.violations?.length > 0 ? (
-                                                <ul className="list-disc ml-3 space-y-0.5">{pr.violations.map((v: string, i: number) => <li key={i} className="text-red-500">{v}</li>)}</ul>
-                                            ) : <span className="text-green-600">None</span>}
+                                            <a href={pr.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1 text-[10px]">
+                                                Open <ExternalLink size={10} />
+                                            </a>
                                         </td>
                                     </tr>
                                 ))}
@@ -221,7 +239,10 @@ export default function OperationsPage() {
                         </table>
                     </div>
                 ) : (
-                    <p className="text-xs text-gray-400 text-center py-4">No PR history.</p>
+                    <div className="text-center py-6">
+                        <p className="text-xs text-gray-400">No PR data available.</p>
+                        <p className="text-[10px] text-gray-300 mt-1">Ensure GitHub CLI is authenticated: <code className="bg-gray-100 px-1 rounded">gh auth status</code></p>
+                    </div>
                 )}
             </section>
         </div>
