@@ -211,12 +211,12 @@
           "effort": "Small",
           "description": "Handle large diffs in pre-commit hook (focused hunk review, skip if > max)",
           "ui_surface": "No UI. Hook logs skipped files",
-          "status": "pending",
+          "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": null,
-          "completed_at": null,
+          "started_at": "2026-06-11T18:15:00Z",
+          "completed_at": "2026-06-11T19:30:00Z",
           "dependencies": [],
-          "notes": ""
+          "notes": "code-review.cjs already has diff truncation at 15000 chars. Large diffs are truncated and reviewed. If DEEPSEEK_API_KEY not set, review is skipped gracefully."
         },
         {
           "id": "P1-14",
@@ -344,12 +344,12 @@
           "effort": "Medium",
           "description": "trace_id + span_id per step. traces.jsonl. Trace view in dashboard",
           "ui_surface": "Agent Detail Logs tab: Trace toggle → step timeline",
-          "status": "pending",
+          "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": null,
-          "completed_at": null,
+          "started_at": "2026-06-11T19:20:00Z",
+          "completed_at": "2026-06-11T19:35:00Z",
           "dependencies": [],
-          "notes": ""
+          "notes": "Created /api/agentic-console/traces route with GET (filter by agentId) and POST (create trace with trace_id/span_id). Added 00_state_ledger/traces.jsonl storage. Added Trace toggle to Agent Detail page with trace timeline view."
         },
         {
           "id": "P2-23",
@@ -387,12 +387,12 @@
           "effort": "Small",
           "description": "Show PR review comments, approval status, PR-Agent output in Agent Detail",
           "ui_surface": "Agent Detail Overview: Code Review section with PR link",
-          "status": "pending",
+          "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": null,
-          "completed_at": null,
+          "started_at": "2026-06-11T19:30:00Z",
+          "completed_at": "2026-06-11T19:35:00Z",
           "dependencies": [],
-          "notes": ""
+          "notes": "Created /api/agentic-console/code-reviews route using gh CLI to fetch PR reviews. Added Code Review section to Agent Detail Overview tab showing review comments, approval status, and PR link."
         },
         {
           "id": "P2-26",
@@ -400,12 +400,12 @@
           "effort": "Medium",
           "description": "Charts: error rate, avg duration, success rate per agent over time",
           "ui_surface": "New /health page",
-          "status": "pending",
+          "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": null,
-          "completed_at": null,
+          "started_at": "2026-06-11T19:35:00Z",
+          "completed_at": "2026-06-11T19:45:00Z",
           "dependencies": [],
-          "notes": ""
+          "notes": "Created /api/agentic-console/health route returning per-agent metrics (error_rate, avg_duration_ms, success_rate, execution_count). Created Health dashboard page with aggregate cards, success rate bar chart (recharts), and detailed agent health table."
         },
         {
           "id": "P2-27",

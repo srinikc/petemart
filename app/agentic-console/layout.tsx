@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Shield, Menu, X, Activity, Bot, Settings, Server, ChevronDown, Globe } from 'lucide-react';
+import { Shield, Menu, X, Activity, Bot, Settings, Server, Radio, ChevronDown, Globe } from 'lucide-react';
 import { GLOBAL_NAV_ITEMS, fetchProjectsIndex, ProjectInfo, withProject } from './shared';
+import Breadcrumbs from './breadcrumbs';
 
 const ICON_MAP: Record<string, React.ElementType> = {
     Activity, Bot, Shield, Settings, Server, Radio,
@@ -114,8 +115,8 @@ export default function AgenticConsoleLayout({ children }: { children: React.Rea
                                     key={item.href}
                                     onClick={() => { router.push(href); setMobileOpen(false); }}
                                     className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md transition-colors ${active
-                                            ? 'bg-indigo-100 text-indigo-700 font-medium'
-                                            : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
+                                        ? 'bg-indigo-100 text-indigo-700 font-medium'
+                                        : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
                                         }`}
                                 >
                                     <Icon size={14} />
@@ -157,8 +158,8 @@ export default function AgenticConsoleLayout({ children }: { children: React.Rea
                                     key={item.href}
                                     onClick={() => { router.push(href); setMobileOpen(false); }}
                                     className={`flex items-center gap-2 px-3 py-2 text-sm rounded-md w-full text-left transition-colors ${active
-                                            ? 'bg-indigo-100 text-indigo-700 font-medium'
-                                            : 'text-gray-500 hover:bg-gray-100'
+                                        ? 'bg-indigo-100 text-indigo-700 font-medium'
+                                        : 'text-gray-500 hover:bg-gray-100'
                                         }`}
                                 >
                                     <Icon size={16} />
@@ -172,6 +173,7 @@ export default function AgenticConsoleLayout({ children }: { children: React.Rea
 
             {/* Page content */}
             <div className="max-w-7xl mx-auto px-4 py-6">
+                <Breadcrumbs />
                 {children}
             </div>
         </div>
