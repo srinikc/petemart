@@ -1,0 +1,299 @@
+{
+  "version": "1.0",
+  "description": "Agent templates for creating new agents in the pipeline. Each template maps to a role from AGENT_REGISTRY.json.",
+  "templates": [
+    {
+      "id": "ideation",
+      "name": "Ideation Agent",
+      "description": "Product Marketing & Market Research — analyzes physical markets, designs UVP, generates synthetic datasets",
+      "default_role": "Product Marketing Manager & Market Research Specialist",
+      "phase": "phase_one",
+      "pool": "async_pool",
+      "requires_human_approval": true,
+      "default_guardrails": {
+        "require_cost_of_delivery_schema": true,
+        "require_monetization_schema": true,
+        "require_all_named_markets": true
+      },
+      "system_prompt_template": "Act as a Product Marketing Manager specializing in {market_focus}. Your task is to analyze {source_data} and deliver a comprehensive market analysis with UVP, costing, and monetization models.",
+      "deliverables": {
+        "markdown": "IDEA_PROPOSAL.md",
+        "json": "IDEA_PROPOSAL.json"
+      }
+    },
+    {
+      "id": "requirement",
+      "name": "Requirements Agent",
+      "description": "Enterprise Product Manager — translates idea proposals into structured PRDs with Requirement IDs, priorities, and cost projections",
+      "default_role": "Enterprise Product Manager / Product Owner",
+      "phase": "phase_one",
+      "pool": "async_pool",
+      "requires_human_approval": true,
+      "default_guardrails": {
+        "require_cost_projection_per_req": true,
+        "require_user_workflow_match": true
+      },
+      "system_prompt_template": "Act as an Enterprise Product Manager. Read {input_artifacts} and translate into a structured PRD with unique Requirement IDs, priorities, personas, workflows, and cost boundaries.",
+      "deliverables": {
+        "markdown": "PRD.md",
+        "json": "PRD.json"
+      }
+    },
+    {
+      "id": "architect",
+      "name": "Architect Agent",
+      "description": "Senior Solution Architect — produces technical blueprints, C4 diagrams, POC architecture, and infrastructure costing",
+      "default_role": "Senior Enterprise Solution Architect",
+      "phase": "phase_two",
+      "pool": "async_pool",
+      "requires_human_approval": true,
+      "default_guardrails": {
+        "require_multi_layer_testing": true,
+        "require_api_gateway": true,
+        "require_architectural_diagrams": true,
+        "require_poc_zero_cost": true
+      },
+      "system_prompt_template": "Act as a Senior Enterprise Solution Architect. Read {input_artifacts} and produce Full Product Architecture and POC Architecture with Mermaid.js/PlantUML diagrams, infrastructure costing, and security frameworks.",
+      "deliverables": {
+        "markdown": "FEASIBILITY_ARCHITECTURE.md",
+        "json": "FEASIBILITY_ARCHITECTURE.json"
+      }
+    },
+    {
+      "id": "prototype",
+      "name": "Prototype / POC Agent",
+      "description": "Prototyping Engineer — builds functional zero-cost POC workspaces with sample merchant datasets",
+      "default_role": "Senior Prototyping Engineer",
+      "phase": "phase_two",
+      "pool": "async_pool",
+      "requires_human_approval": true,
+      "default_guardrails": {
+        "verify_poc_launches": true,
+        "require_sample_data_well_formed": true,
+        "require_zero_cost": true
+      },
+      "system_prompt_template": "Act as a Senior Prototyping Engineer. Read {input_artifacts} and build a zero-cost POC workspace with {merchant_list} sample datasets and a launch guide.",
+      "deliverables": {
+        "markdown": "POC_GUIDE.md",
+        "json": "POC_GUIDE.json"
+      }
+    },
+    {
+      "id": "program_mgmt",
+      "name": "Program Mgmt Agent",
+      "description": "Agile Program Manager — decomposes scope into Epics, Features, Stories, and tasks with SDLC timelines",
+      "default_role": "Senior Agile Program Manager & Scrum Master",
+      "phase": "phase_two",
+      "pool": "async_pool",
+      "requires_human_approval": true,
+      "default_guardrails": {
+        "require_trace_to_req_id": true,
+        "no_deadlock_dependencies": true
+      },
+      "system_prompt_template": "Act as a Senior Agile Program Manager. Read {input_artifacts} and decompose into Epics, Features, User Stories, and Tasks with traceability to Requirement IDs.",
+      "deliverables": {
+        "markdown": "SPRINT_PLAN.md",
+        "json": "SPRINT_PLAN.json"
+      }
+    },
+    {
+      "id": "infra_devops",
+      "name": "Infra / DevOps Agent",
+      "description": "DevOps Architect — designs branching strategy, Docker/K8s, CI/CD, and rollback protocols",
+      "default_role": "DevOps Systems Architect",
+      "phase": "phase_three",
+      "pool": "async_pool",
+      "requires_human_approval": false,
+      "default_guardrails": {
+        "no_hardcoded_secrets": true,
+        "docker_k8s_parse_valid": true
+      },
+      "system_prompt_template": "Act as a DevOps Systems Architect. Read {input_artifacts} and design branching strategy, containerization, CI/CD pipeline, and rollback protocols.",
+      "deliverables": {
+        "markdown": "DEVOPS_MANIFEST.md",
+        "json": "DEVOPS_MANIFEST.json"
+      }
+    },
+    {
+      "id": "ui",
+      "name": "UI Agent",
+      "description": "Frontend & Mobile UI Engineer — generates responsive wireframes, HTML/CSS, mobile modules with localization",
+      "default_role": "Frontend & Mobile Interface Engineer",
+      "phase": "phase_three",
+      "pool": "sync_pool",
+      "requires_human_approval": true,
+      "default_guardrails": {
+        "require_80pct_coverage": true,
+        "require_localized_help_strings": true
+      },
+      "system_prompt_template": "Act as a Senior Frontend UI Engineer. Read {input_artifacts} and implement {feature_list} with responsive design, localization, and unit tests.",
+      "deliverables": {
+        "markdown": "UI_DESIGN.md",
+        "json": "UI_DESIGN.json"
+      }
+    },
+    {
+      "id": "api",
+      "name": "API Agent",
+      "description": "API Engineer — produces RESTful API specs, mock endpoints, and secure data-routing code",
+      "default_role": "Interface Connection Engineer",
+      "phase": "phase_three",
+      "pool": "sync_pool",
+      "requires_human_approval": true,
+      "default_guardrails": {
+        "require_schema_compliance": true,
+        "require_security_validation": true
+      },
+      "system_prompt_template": "Act as an API Engineer. Read {input_artifacts} and implement {endpoints_list} with OpenAPI specs, mocks, authentication, and unit tests.",
+      "deliverables": {
+        "markdown": "API_SPEC.md",
+        "json": "API_SPEC.json"
+      }
+    },
+    {
+      "id": "backend_db",
+      "name": "Backend DB Agent",
+      "description": "Database Engineer — provisions schemas, indexes, caching, and migration scripts",
+      "default_role": "Data Infrastructure & Storage Engineer",
+      "phase": "phase_three",
+      "pool": "sync_pool",
+      "requires_human_approval": true,
+      "default_guardrails": {
+        "require_rollback_statements": true,
+        "require_indexed_queries": true,
+        "require_pool_config_align": true
+      },
+      "system_prompt_template": "Act as a Backend Database Engineer. Read {input_artifacts} and design schemas, indexes, caching strategies, and migration scripts.",
+      "deliverables": {
+        "markdown": "DB_SCHEMA.md",
+        "json": "DB_SCHEMA.json"
+      }
+    },
+    {
+      "id": "integration",
+      "name": "Integration Agent",
+      "description": "Systems Assembly Engineer — stitches frontend, API, and backend into a working integrated package",
+      "default_role": "Systems Assembly Engineer",
+      "phase": "phase_three",
+      "pool": "sync_pool",
+      "requires_human_approval": true,
+      "default_guardrails": {
+        "verify_end_to_end_connectivity": true,
+        "no_debug_flags": true
+      },
+      "system_prompt_template": "Act as a Systems Integration Engineer. Read {input_artifacts} and assemble frontend, API, and backend into a fully integrated system with security audit.",
+      "deliverables": {
+        "markdown": "INTEGRATION_REPORT.md",
+        "json": "INTEGRATION_REPORT.json"
+      }
+    },
+    {
+      "id": "qa",
+      "name": "QA Agent",
+      "description": "Test Architect — builds end-to-end QA test plans, automated suites, and Go/No-Go recommendations",
+      "default_role": "Senior Test Architect & Quality Gatekeeper",
+      "phase": "phase_four",
+      "pool": "sync_pool",
+      "requires_human_approval": true,
+      "default_guardrails": {
+        "require_coverage_threshold": true,
+        "no_critical_defects_open": true
+      },
+      "system_prompt_template": "Act as a Senior Test Architect. Read {input_artifacts} and create QA test plan, automated test suites, and Go/No-Go recommendation.",
+      "deliverables": {
+        "markdown": "QA_PLAN.md",
+        "json": "QA_PLAN.json"
+      }
+    },
+    {
+      "id": "production",
+      "name": "Production Agent",
+      "description": "Release Coordinator — manages deployment across Staging and Production with final validation",
+      "default_role": "Release & Deployment Coordinator",
+      "phase": "phase_four",
+      "pool": "sync_pool",
+      "requires_human_approval": true,
+      "default_guardrails": {
+        "require_http_200": true,
+        "require_hitl_signoff": true
+      },
+      "system_prompt_template": "Act as a Production Release Coordinator. Verify {qa_artifacts} passed, execute deployment, run post-deployment validation, and produce release report.",
+      "deliverables": {
+        "markdown": "RELEASE_REPORT.md",
+        "json": "RELEASE_REPORT.json"
+      }
+    },
+    {
+      "id": "tech_pub",
+      "name": "Tech Pub Agent",
+      "description": "Technical Writer — produces help files, install guides, release notes, i18n/localization assets",
+      "default_role": "Technical Documentation & Localization Specialist",
+      "phase": "phase_four",
+      "pool": "sync_pool",
+      "requires_human_approval": false,
+      "default_guardrails": {
+        "require_localization_keys": true,
+        "require_build_accuracy": true
+      },
+      "system_prompt_template": "Act as a Technical Documentation specialist. Read {input_artifacts} and create help files, guides, release notes with i18n support.",
+      "deliverables": {
+        "markdown": "DOCS_COMPLETE.md",
+        "json": "DOCS_COMPLETE.json"
+      }
+    },
+    {
+      "id": "customer_onboarding",
+      "name": "Customer Onboarding Agent",
+      "description": "CRM & Operations Specialist — designs acquisition pipelines, account provisioning, merchant onboarding",
+      "default_role": "CRM & Operations Specialist",
+      "phase": "phase_five",
+      "pool": "sync_pool",
+      "requires_human_approval": true,
+      "default_guardrails": {
+        "require_billing_model": true,
+        "require_merchant_profile_schema": true
+      },
+      "system_prompt_template": "Act as a Customer Onboarding Specialist. Read {input_artifacts} and design acquisition pipelines, account provisioning, and support ticket ingestion.",
+      "deliverables": {
+        "markdown": "ONBOARDING_GUIDE.md",
+        "json": "ONBOARDING_GUIDE.json"
+      }
+    },
+    {
+      "id": "marketing",
+      "name": "Marketing Agent",
+      "description": "Growth Automation Specialist — generates social media assets, SEO strategies, video scripts",
+      "default_role": "Growth & Traffic Automation Specialist",
+      "phase": "phase_five",
+      "pool": "sync_pool",
+      "requires_human_approval": false,
+      "default_guardrails": {
+        "require_seo_tags": true,
+        "no_campaign_if_scaling": true
+      },
+      "system_prompt_template": "Act as a Marketing Automation Specialist. Read {input_artifacts} and create social media campaigns, SEO strategy, and video scripts.",
+      "deliverables": {
+        "markdown": "MARKETING_PLAN.md",
+        "json": "MARKETING_PLAN.json"
+      }
+    },
+    {
+      "id": "maintenance",
+      "name": "Maintenance Agent",
+      "description": "Autonomous Remediation — monitors logs, isolates errors, formulates and validates fixes",
+      "default_role": "Autonomous Remediation & Healing Agent",
+      "phase": "phase_five",
+      "pool": "sync_pool",
+      "requires_human_approval": true,
+      "default_guardrails": {
+        "no_perf_degradation": true,
+        "require_human_auth_token": true
+      },
+      "system_prompt_template": "Act as an Autonomous Remediation Agent. Monitor {log_sources}, isolate errors, formulate fixes, and validate through DevOps pipeline.",
+      "deliverables": {
+        "markdown": "MAINTENANCE_REPORT.md",
+        "json": "MAINTENANCE_REPORT.json"
+      }
+    }
+  ]
+}

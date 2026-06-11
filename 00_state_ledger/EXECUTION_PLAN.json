@@ -155,14 +155,14 @@
           "effort": "Large",
           "description": "Add Agent modal → select template → pick deps → pick input/output artifacts → override guardrails → inject into state",
           "ui_surface": "Agent Grid page + Add Agent button",
-          "status": "pending",
+          "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": null,
-          "completed_at": null,
+          "started_at": "2026-06-11T19:20:00Z",
+          "completed_at": "2026-06-11T19:35:00Z",
           "dependencies": [
             "P0-1"
           ],
-          "notes": ""
+          "notes": "Created AGENT_TEMPLATES.json with 16 agent templates. Created POST /api/agentic-console/agents to inject into STATE_MATRIX.json + per-project copy. Added Add Agent modal to agents page with template picker, dependency multi-select, input/output artifact fields, and create button."
         },
         {
           "id": "P1-10",
