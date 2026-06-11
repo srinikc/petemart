@@ -16,7 +16,8 @@ function writeState(data: any) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { action } = await req.json();
+    const body = await req.json();
+    const { action } = body;
     const state = readState();
 
     switch (action) {
@@ -39,7 +40,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: true, circuit_breaker_reset: true });
 
       case 'rerun_agent': {
-        const { agentId } = await req.json();
+        const agentId = body.agentId;
         if (!agentId) {
           return NextResponse.json({ error: 'agentId required' }, { status: 400 });
         }
