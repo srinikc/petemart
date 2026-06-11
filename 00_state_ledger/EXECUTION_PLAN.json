@@ -10,12 +10,12 @@
     "branch": "feature/p0-p1-system-rebuild",
     "base_branch": "develop",
     "created_at": "2026-06-11T18:00:00Z",
-    "updated_at": "2026-06-11T19:05:00Z",
+    "updated_at": "2026-06-11T19:15:00Z",
     "stable_rollback_tag": "v2.5-agentic-console-stable",
     "total_items": 27,
-    "completed_count": 5,
+    "completed_count": 7,
     "in_progress_count": 0,
-    "pending_count": 22
+    "pending_count": 20
   },
   "phases": [
     {
@@ -106,12 +106,12 @@
           "effort": "Medium",
           "description": "Extend existing monitor route: stuck detection → RCA log → auto-relaunch (up to max_retries) → dependency cascade (downstream set to pending on breaking change) → escalate on exhaustion",
           "ui_surface": "AgentMiniCard attempt badge, Agent Detail cascade section, Bottom bar escalation alerts",
-          "status": "pending",
+          "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": null,
-          "completed_at": null,
+          "started_at": "2026-06-11T19:05:00Z",
+          "completed_at": "2026-06-11T19:15:00Z",
           "dependencies": [],
-          "notes": "Extends existing /api/agentic-console/monitor route and SSE events"
+          "notes": "Extended monitor/route.ts: detect-stuck now auto-relaunches up to max_retries with exponential backoff (30s*2^attempt), cascades downstream agents on exhaustion, writes DLQ entries. Added ?project= support. Added action=dlq endpoint. Enabled auto_relaunch_on_stuck=true. DLQ count shown in instrument bar."
         },
         {
           "id": "P0-7",
@@ -119,14 +119,14 @@
           "effort": "Medium",
           "description": "Per-agent retry_policy: { max_retries, backoff_s, multiplier }. Supervisor executes backoff, writes to DLQ on exhaustion. DLQ shows in Bottom bar",
           "ui_surface": "Agent Detail Logs tab retry timeline, Flyout Run Config retry badge, Bottom Bar DLQ section",
-          "status": "pending",
+          "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": null,
-          "completed_at": null,
+          "started_at": "2026-06-11T19:05:00Z",
+          "completed_at": "2026-06-11T19:15:00Z",
           "dependencies": [
             "P0-3"
           ],
-          "notes": ""
+          "notes": "DLQ implementation: agents with dlq_entry tracked in state, action=dlq endpoint returns DLQ list, DLQ count badge in instrument bar. Per-agent retry with exponential backoff (30s*2^attempt). Written to agent.dlq_entry on exhaustion."
         },
         {
           "id": "P0-8",

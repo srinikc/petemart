@@ -406,6 +406,7 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
     const awaiting = entries.filter(([, v]) => v.status === 'awaiting_approval').length;
     const needsInput = entries.filter(([, v]) => v.status === 'awaiting_input').length;
     const failed = entries.filter(([, v]) => (v.status === 'failed' || v.status === 'blocked') && !(v as any).disabled).length;
+    const dlq = entries.filter(([, v]) => (v as any).dlq_entry || (v.status === 'failed' && v.stuck_detected_at && (v.execution_count || 0) >= 2)).length;
     const pending = entries.filter(([, v]) => v.status === 'pending' || v.status === 'idle').length;
     const total = entries.length;
     const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
@@ -417,6 +418,7 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
       agents_awaiting_review: awaiting,
       agents_awaiting_input: needsInput,
       agents_failed: failed,
+      dlq_count: dlq,
       overall_progress_pct: pct,
       last_milestone: summary.last_milestone,
     };
@@ -611,6 +613,14 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
           <Shield size={13} />
           <span>{gates.filter(g => g.approved).length}/{gates.length} gates</span>
         </div>
+        {(effectiveSummary as any).dlq_count > 0 && (
+          <><div className="w-px h-7 bg-gray-200" />
+          <div className="flex items-center gap-1.5 text-[11px] px-2 py-0.5 rounded-full bg-orange-50 border border-orange-200">
+            <AlertCircle size={11} className="text-orange-500" />
+            <span className="font-bold text-orange-600">{(effectiveSummary as any).dlq_count}</span>
+            <span className="text-orange-500">DLQ</span>
+          </div></>
+        )}
         <div className="flex-1" />
         <div className="flex items-center gap-2.5 text-[11px]">
           <span className={`flex items-center gap-1.5 ${liveConnected ? 'text-green-600' : 'text-red-500'}`}>

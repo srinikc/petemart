@@ -104,6 +104,7 @@ export type DashboardSummary = {
     agents_awaiting_review: number;
     agents_awaiting_input: number;
     agents_failed: number;
+    dlq_count?: number;
     overall_progress_pct: number;
     last_milestone: string;
 };

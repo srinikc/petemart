@@ -5,36 +5,51 @@ import path from 'path';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-const STATE_PATH = path.join(process.cwd(), '00_state_ledger/STATE_MATRIX.json');
-const EVENTS_PATH = path.join(process.cwd(), '00_state_ledger/PIPELINE_EVENTS.jsonl');
+const ROOT = process.cwd();
+const STUCK_TIMEOUT_MS = 5 * 60 * 1000;
 
-const STUCK_TIMEOUT_MS = 5 * 60 * 1000; // 5 min default
-
-function readState(): any {
-    try {
-        return JSON.parse(fs.readFileSync(STATE_PATH, 'utf-8'));
-    } catch { return null; }
+function statePath(project?: string | null): string {
+  if (project) {
+    const p = path.join(ROOT, `00_state_ledger/projects/${project}/STATE_MATRIX.json`);
+    if (fs.existsSync(p)) return p;
+  }
+  return path.join(ROOT, '00_state_ledger/STATE_MATRIX.json');
 }
 
-function writeState(state: any): boolean {
-    try {
-        fs.writeFileSync(STATE_PATH, JSON.stringify(state, null, 2), 'utf-8');
-        return true;
-    } catch { return false; }
+function readState(project?: string | null): any {
+  try { return JSON.parse(fs.readFileSync(statePath(project), 'utf-8')); } catch { return null; }
+}
+
+function writeState(project: string | null | undefined, state: any): boolean {
+  try { fs.writeFileSync(statePath(project), JSON.stringify(state, null, 2), 'utf-8'); return true; } catch { return false; }
 }
 
 function appendEvent(event: any): void {
-    try {
-        event.timestamp = event.timestamp || new Date().toISOString();
-        fs.appendFileSync(EVENTS_PATH, JSON.stringify(event) + '\n', 'utf-8');
-    } catch { /* ignore */ }
+  try {
+    event.timestamp = event.timestamp || new Date().toISOString();
+    fs.appendFileSync(path.join(ROOT, '00_state_ledger/PIPELINE_EVENTS.jsonl'), JSON.stringify(event) + '\n', 'utf-8');
+  } catch { /* ignore */ }
+}
+
+function cascadeDownstream(agentId: string, state: any): string[] {
+  const cascaded: string[] = [];
+  const agents = state.agent_states || {};
+  for (const [id, a] of Object.entries(agents) as [string, any][]) {
+    if ((a.dependencies || []).includes(agentId) && a.status === 'pending') {
+      a.status = 'pending';
+      a.last_error = `DOWNSTREAM_CASCADE: Upstream ${agentId} failed — reset to pending`;
+      cascaded.push(id);
+    }
+  }
+  return cascaded;
 }
 
 export async function GET(req: NextRequest) {
     const action = req.nextUrl.searchParams.get('action') || 'status';
+    const project = req.nextUrl.searchParams.get('project') || null;
 
     if (action === 'status') {
-        const state = readState();
+        const state = readState(project);
         if (!state) return NextResponse.json({ error: 'Cannot read state' }, { status: 500 });
 
         const agentStates = state.agent_states || {};
@@ -97,7 +112,7 @@ export async function GET(req: NextRequest) {
     }
 
     if (action === 'detect-stuck') {
-        const state = readState();
+        const state = readState(project);
         if (!state) return NextResponse.json({ error: 'Cannot read state' }, { status: 500 });
 
         const agentStates = state.agent_states || {};
@@ -105,61 +120,90 @@ export async function GET(req: NextRequest) {
         const pipelineCtrl = state.pipeline_control || {};
         const now = Date.now();
         const stuckThreshold = pipelineCtrl.stuck_agent_timeout_ms || STUCK_TIMEOUT_MS;
-        const detected: any[] = [];
+        const monitorCfg = supervisorCtrl.stuck_agent_monitor || {};
+        const relayCounts: Record<string, number> = {};
+        const cascadedAgents: string[] = [];
+        const dlqEntries: any[] = [];
 
         for (const [id, agent] of Object.entries(agentStates) as [string, any][]) {
             if (agent.status === 'active' || agent.status === 'in_progress') {
                 const startedAt = agent.started_at ? new Date(agent.started_at).getTime() : null;
                 const durationMs = startedAt ? now - startedAt : 0;
                 if (startedAt && durationMs > (agent.timeout_threshold_ms || stuckThreshold)) {
-                    detected.push({
-                        agent_id: id,
-                        started_at: agent.started_at,
-                        duration_ms: durationMs,
-                        timeout_ms: agent.timeout_threshold_ms || stuckThreshold,
-                    });
+                    const execCount = agent.execution_count || 0;
+                    const maxRelay = monitorCfg.max_relaunch_attempts || 2;
+                    const shouldAutoRelay = monitorCfg.auto_relaunch_on_stuck && execCount < maxRelay;
+                    const backoffSec = Math.min(30 * Math.pow(2, execCount), 300);
 
-                    // Auto-mark as failed
-                    agent.status = 'failed';
-                    agent.stuck_detected_at = new Date().toISOString();
-                    agent.last_error = `STUCK_TIMEOUT: Agent stuck in ${agent.status} for ${formatDuration(durationMs)}. Auto-detected by monitor.`;
+                    // RCA log
+                    const rcaEntry = {
+                        agent_id: id, detected_at: new Date().toISOString(),
+                        duration_ms: durationMs, execution_count: execCount,
+                        action: shouldAutoRelay ? 'auto_relaunch' : 'marked_failed_with_dlq',
+                        backoff_seconds: shouldAutoRelay ? backoffSec : 0,
+                        reason: `Stuck for ${formatDuration(durationMs)} (timeout: ${formatDuration(agent.timeout_threshold_ms || stuckThreshold)})`,
+                    };
 
-                    appendEvent({
-                        type: 'stuck_agent_detected',
-                        agent_id: id,
-                        duration_ms: durationMs,
-                        action_taken: 'marked_failed',
-                        timestamp: new Date().toISOString(),
-                    });
+                    if (shouldAutoRelay) {
+                        agent.status = 'pending';
+                        agent.last_error = null;
+                        agent.stuck_detected_at = null;
+                        agent.started_at = null;
+                        agent.execution_count = execCount + 1;
+                        agent.estimated_remaining_ms = null;
+                        relayCounts[id] = execCount + 1;
+
+                        appendEvent({
+                            type: 'stuck_agent_auto_relaunched',
+                            agent_id: id, duration_ms: durationMs,
+                            attempt: execCount + 1, backoff_seconds: backoffSec,
+                            max_attempts: maxRelay, timestamp: new Date().toISOString(),
+                        });
+                    } else {
+                        // Mark failed, cascade downstream, write DLQ
+                        agent.status = 'failed';
+                        agent.stuck_detected_at = new Date().toISOString();
+                        agent.last_error = `STUCK_EXHAUSTED: Agent stuck for ${formatDuration(durationMs)} after ${execCount} attempt(s). Auto-detected by monitor.`;
+                        if (!agent.dlq_entry) {
+                            agent.dlq_entry = { failed_at: new Date().toISOString(), reason: agent.last_error, attempts: execCount, cascade_downstream: true };
+                        }
+                        dlqEntries.push(id);
+                        const cascaded = cascadeDownstream(id, state);
+                        cascadedAgents.push(...cascaded);
+
+                        appendEvent({
+                            type: 'stuck_agent_failed',
+                            agent_id: id, duration_ms: durationMs,
+                            attempts: execCount, cascaded_downstream: cascaded,
+                            dlq_written: true, timestamp: new Date().toISOString(),
+                        });
+                    }
+
+                    // Update stuck_agent_monitor history
+                    if (!supervisorCtrl.stuck_agent_monitor) {
+                        supervisorCtrl.stuck_agent_monitor = { enabled: true, timeout_threshold_ms: stuckThreshold, check_interval_ms: 15000, auto_kill_on_stuck: true, auto_relaunch_on_stuck: false, max_relaunch_attempts: 2, stuck_agents_detected: [] };
+                    }
+                    supervisorCtrl.stuck_agent_monitor.stuck_agents_detected.push(rcaEntry);
                 }
             }
         }
 
-        if (detected.length > 0) {
-            // Update stuck_agent_monitor history
-            if (!supervisorCtrl.stuck_agent_monitor) {
-                supervisorCtrl.stuck_agent_monitor = { enabled: true, timeout_threshold_ms: stuckThreshold, check_interval_ms: 15000, auto_kill_on_stuck: true, auto_relaunch_on_stuck: false, max_relaunch_attempts: 2, stuck_agents_detected: [] };
-            }
-            for (const d of detected) {
-                supervisorCtrl.stuck_agent_monitor.stuck_agents_detected.push({
-                    agent_id: d.agent_id,
-                    started_at: d.started_at,
-                    detected_at: new Date().toISOString(),
-                    action_taken: 'marked_failed',
-                    duration_ms: d.duration_ms,
-                });
-            }
-            // Update supervisor current_action
+        if (dlqEntries.length > 0 || Object.keys(relayCounts).length > 0) {
             if (supervisorCtrl.agent_00_supervisor) {
-                supervisorCtrl.agent_00_supervisor.current_action = `Detected ${detected.length} stuck agent(s): ${detected.map(d => d.agent_id).join(', ')} — marked as failed`;
+                const parts: string[] = [];
+                if (Object.keys(relayCounts).length > 0) parts.push(`Auto-relaunched: ${Object.entries(relayCounts).map(([k, v]) => `${k} (attempt ${v})`).join(', ')}`);
+                if (dlqEntries.length > 0) parts.push(`DLQ: ${dlqEntries.join(', ')}`);
+                if (cascadedAgents.length > 0) parts.push(`Cascaded: ${cascadedAgents.join(', ')}`);
+                supervisorCtrl.agent_00_supervisor.current_action = `Monitor — ${parts.join('; ')}`;
             }
-            writeState(state);
+            writeState(project, state);
         }
 
         return NextResponse.json({
-            detected,
-            count: detected.length,
-            message: detected.length > 0 ? `Marked ${detected.length} stuck agent(s) as failed` : 'No stuck agents detected',
+            auto_relaunched: Object.keys(relayCounts).length,
+            relaunch_details: relayCounts,
+            dlq_written: dlqEntries,
+            cascaded_downstream: cascadedAgents,
             timestamp: new Date().toISOString(),
         });
     }
@@ -168,13 +212,12 @@ export async function GET(req: NextRequest) {
         const agentId = req.nextUrl.searchParams.get('agent_id');
         if (!agentId) return NextResponse.json({ error: 'agent_id required' }, { status: 400 });
 
-        const state = readState();
+        const state = readState(project);
         if (!state) return NextResponse.json({ error: 'Cannot read state' }, { status: 500 });
 
         const agent = state.agent_states?.[agentId];
         if (!agent) return NextResponse.json({ error: `Agent ${agentId} not found` }, { status: 404 });
 
-        // Reset agent for relaunch
         agent.status = 'pending';
         agent.last_error = null;
         agent.stuck_detected_at = null;
@@ -188,7 +231,7 @@ export async function GET(req: NextRequest) {
             timestamp: new Date().toISOString(),
         });
 
-        writeState(state);
+        writeState(project, state);
 
         return NextResponse.json({
             success: true,
@@ -198,6 +241,20 @@ export async function GET(req: NextRequest) {
             message: `Agent ${agentId} reset and queued for relaunch`,
             timestamp: new Date().toISOString(),
         });
+    }
+
+    // DLQ list
+    if (action === 'dlq') {
+        const state = readState(project);
+        if (!state) return NextResponse.json({ error: 'Cannot read state' }, { status: 500 });
+        const agents = state.agent_states || {};
+        const dlq: any[] = [];
+        for (const [id, a] of Object.entries(agents) as [string, any][]) {
+            if (a.dlq_entry || (a.status === 'failed' && a.stuck_detected_at && (a.execution_count || 0) >= 2)) {
+                dlq.push({ agent_id: id, status: a.status, execution_count: a.execution_count, dlq_entry: a.dlq_entry, last_error: a.last_error, stuck_detected_at: a.stuck_detected_at });
+            }
+        }
+        return NextResponse.json({ dlq, count: dlq.length, timestamp: new Date().toISOString() });
     }
 
     return NextResponse.json({ error: `Unknown action: ${action}` }, { status: 400 });
