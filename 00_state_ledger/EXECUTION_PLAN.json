@@ -10,12 +10,12 @@
     "branch": "feature/p0-p1-system-rebuild",
     "base_branch": "develop",
     "created_at": "2026-06-11T18:00:00Z",
-    "updated_at": "2026-06-11T19:20:00Z",
+    "updated_at": "2026-06-11T19:40:00Z",
     "stable_rollback_tag": "v2.5-agentic-console-stable",
     "total_items": 27,
-    "completed_count": 8,
+    "completed_count": 14,
     "in_progress_count": 0,
-    "pending_count": 19
+    "pending_count": 13
   },
   "phases": [
     {
@@ -224,14 +224,14 @@
           "effort": "Small",
           "description": "Sticky breadcrumb, jump-to section pills on every page",
           "ui_surface": "All pages",
-          "status": "pending",
+          "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": null,
-          "completed_at": null,
+          "started_at": "2026-06-11T19:36:00Z",
+          "completed_at": "2026-06-11T19:37:00Z",
           "dependencies": [
             "P0-1"
           ],
-          "notes": ""
+          "notes": "Created Breadcrumbs component (app/agentic-console/breadcrumbs.tsx) with path-based crumbs, page labels map, and ?project= param passthrough. Integrated into layout.tsx to show on all pages."
         },
         {
           "id": "P1-15",
@@ -278,14 +278,14 @@
           "effort": "Medium",
           "description": "Per-agent expected_duration_ms. Alert on overdue. Dashboard shows Overdue vs On Track",
           "ui_surface": "AgentMiniCard SLA indicator, Supervisor banner SLA count",
-          "status": "pending",
+          "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": null,
-          "completed_at": null,
+          "started_at": "2026-06-11T19:38:00Z",
+          "completed_at": "2026-06-11T19:40:00Z",
           "dependencies": [
             "P0-3"
           ],
-          "notes": ""
+          "notes": "Created /api/agentic-console/sla route with per-agent default SLA targets (2m-10m based on agent role), calculates avg_duration from PIPELINE_EVENTS.jsonl, flags overdue agents (>100% of SLA). Added SLA indicator to dashboard instrument bar showing overdue count with pulse badge."
         }
       ]
     },

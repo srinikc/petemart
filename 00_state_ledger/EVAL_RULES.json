@@ -1,0 +1,528 @@
+{
+    "version": "1.0",
+    "description": "Output evaluation/regression rules per agent. Supervisor runs eval after compliance passes. Score evaluates output quality and regression.",
+    "rules": {
+        "01_ideation_agent": [
+            {
+                "id": "EVAL-IDE-001",
+                "check": "all_markets_represented",
+                "weight": 10,
+                "description": "All 8 named markets (Chickpet, Balepet, Mamulpet, Tharagpet, Cubbonpet, Avenue Road, Raja Market) are explicitly represented in inventory"
+            },
+            {
+                "id": "EVAL-IDE-002",
+                "check": "monetization_schema_present",
+                "weight": 10,
+                "description": "Platform monetization models (commission, subscription, listing fee) are defined with pricing"
+            },
+            {
+                "id": "EVAL-IDE-003",
+                "check": "cost_of_delivery_model",
+                "weight": 8,
+                "description": "Cost-of-delivery schema exists with last-mile logistics considerations"
+            },
+            {
+                "id": "EVAL-IDE-004",
+                "check": "merchant_tiers_defined",
+                "weight": 7,
+                "description": "Merchant tier classification (basic/premium/enterprise) with differentiated features"
+            },
+            {
+                "id": "EVAL-IDE-005",
+                "check": "data_completeness_400_plus",
+                "weight": 5,
+                "description": "Merchant dataset contains 400+ records with structured fields"
+            }
+        ],
+        "02_requirement_agent": [
+            {
+                "id": "EVAL-REQ-001",
+                "check": "requirement_ids_assigned",
+                "weight": 10,
+                "description": "Every feature has a unique alphanumeric Requirement ID (REQ-xxx format)"
+            },
+            {
+                "id": "EVAL-REQ-002",
+                "check": "priority_flags_assigned",
+                "weight": 8,
+                "description": "Clear P0/P1/P2 priority flags assigned to all requirements"
+            },
+            {
+                "id": "EVAL-REQ-003",
+                "check": "cost_projections_present",
+                "weight": 10,
+                "description": "Operational and deployment cost projections exist for each requirement"
+            },
+            {
+                "id": "EVAL-REQ-004",
+                "check": "user_personas_included",
+                "weight": 7,
+                "description": "Customer personas defined covering shopper, merchant, delivery partner"
+            },
+            {
+                "id": "EVAL-REQ-005",
+                "check": "channel_coverage",
+                "weight": 5,
+                "description": "Requirements span web e-commerce, mobile (Android,iOS), and WhatsApp channels"
+            }
+        ],
+        "03_architect_agent": [
+            {
+                "id": "EVAL-ARCH-001",
+                "check": "full_architecture_produced",
+                "weight": 10,
+                "description": "Full production architecture blueprint with all 103 requirements covered"
+            },
+            {
+                "id": "EVAL-ARCH-002",
+                "check": "poc_architecture_mapped",
+                "weight": 8,
+                "description": "POC path clearly maps to a subset of full architecture with zero-cost mandate"
+            },
+            {
+                "id": "EVAL-ARCH-003",
+                "check": "diagrams_generated",
+                "weight": 10,
+                "description": "Mermaid.js and/or PlantUML diagrams for system context, containers, data flow"
+            },
+            {
+                "id": "EVAL-ARCH-004",
+                "check": "api_gateway_defined",
+                "weight": 8,
+                "description": "API gateway with rate-limiting rules explicitly defined"
+            },
+            {
+                "id": "EVAL-ARCH-005",
+                "check": "testing_architecture",
+                "weight": 7,
+                "description": "Multi-layer testing architecture (unit, integration, E2E) defined"
+            },
+            {
+                "id": "EVAL-ARCH-006",
+                "check": "costing_models",
+                "weight": 7,
+                "description": "Infrastructure costing for POC (₹0) and production scale"
+            }
+        ],
+        "04_prototype_agent": [
+            {
+                "id": "EVAL-PROTO-001",
+                "check": "poc_launches_cleanly",
+                "weight": 10,
+                "description": "POC code runs without errors in local workspace"
+            },
+            {
+                "id": "EVAL-PROTO-002",
+                "check": "zero_cost_compliance",
+                "weight": 10,
+                "description": "Uses only free tiers (Supabase Free, Vercel Hobby, Railway $5 credit, GitHub Pages)"
+            },
+            {
+                "id": "EVAL-PROTO-003",
+                "check": "pilot_merchants_seeded",
+                "weight": 8,
+                "description": "8 pilot merchants from Balepet/Chickpet seeded as sample data"
+            },
+            {
+                "id": "EVAL-PROTO-004",
+                "check": "digital_readiness_field",
+                "weight": 5,
+                "description": "merchant_digital_readiness field with website/Instagram/online store check"
+            }
+        ],
+        "05_program_mgmt_agent": [
+            {
+                "id": "EVAL-PM-001",
+                "check": "epics_stories_tasks_decomposed",
+                "weight": 10,
+                "description": "Epics → Features → User Stories → Tasks hierarchy across UI/API/backend tiers"
+            },
+            {
+                "id": "EVAL-PM-002",
+                "check": "mvp_scope_defined",
+                "weight": 10,
+                "description": "Minimum Viable Product with customer-visible workflows clearly defined"
+            },
+            {
+                "id": "EVAL-PM-003",
+                "check": "sdlc_timeline",
+                "weight": 8,
+                "description": "Complete SDLC timeline with milestones and demo checkpoints"
+            },
+            {
+                "id": "EVAL-PM-004",
+                "check": "traceability_present",
+                "weight": 7,
+                "description": "Every user story traces back to a Requirement ID from PRD"
+            },
+            {
+                "id": "EVAL-PM-005",
+                "check": "dependency_map_acyclic",
+                "weight": 5,
+                "description": "Task dependency map has no deadlocks or unmapped dependencies"
+            }
+        ],
+        "06_infra_devops_agent": [
+            {
+                "id": "EVAL-INFRA-001",
+                "check": "branching_strategy_defined",
+                "weight": 10,
+                "description": "Git branching strategy with dev/qa/staging/production tracks defined"
+            },
+            {
+                "id": "EVAL-INFRA-002",
+                "check": "docker_compose_defined",
+                "weight": 8,
+                "description": "Docker Compose files for local development environment"
+            },
+            {
+                "id": "EVAL-INFRA-003",
+                "check": "no_hardcoded_secrets",
+                "weight": 10,
+                "description": "No access tokens, DB strings, or credentials hardcoded in plain text"
+            },
+            {
+                "id": "EVAL-INFRA-004",
+                "check": "ci_pipeline_defined",
+                "weight": 8,
+                "description": "Automated build/integration/deployment pipeline script"
+            },
+            {
+                "id": "EVAL-INFRA-005",
+                "check": "rollback_protocol",
+                "weight": 5,
+                "description": "One-click rollback protocol restoring previous stable container images"
+            }
+        ],
+        "07a_ui_agent": [
+            {
+                "id": "EVAL-UI-001",
+                "check": "component_coverage_80pct",
+                "weight": 10,
+                "description": "Frontend unit test coverage ≥ 80%"
+            },
+            {
+                "id": "EVAL-UI-002",
+                "check": "responsive_wireframes",
+                "weight": 8,
+                "description": "Responsive wireframes covering mobile, tablet, desktop breakpoints"
+            },
+            {
+                "id": "EVAL-UI-003",
+                "check": "i18n_strings_mapped",
+                "weight": 7,
+                "description": "All user-facing strings mapped to i18n translation keys"
+            },
+            {
+                "id": "EVAL-UI-004",
+                "check": "help_content_embedded",
+                "weight": 5,
+                "description": "Context-aware help documentation embedded in every screen"
+            },
+            {
+                "id": "EVAL-UI-005",
+                "check": "no_layout_overflow",
+                "weight": 5,
+                "description": "No layout element overlap during viewport simulation tests"
+            }
+        ],
+        "07b_api_agent": [
+            {
+                "id": "EVAL-API-001",
+                "check": "endpoint_signature_match",
+                "weight": 10,
+                "description": "API endpoint signatures match architecture contract schemas"
+            },
+            {
+                "id": "EVAL-API-002",
+                "check": "unit_tests_present",
+                "weight": 8,
+                "description": "Unit tests for every endpoint and route modification"
+            },
+            {
+                "id": "EVAL-API-003",
+                "check": "security_validation_pass",
+                "weight": 10,
+                "description": "Input sanitization and payload size limits on all routes"
+            },
+            {
+                "id": "EVAL-API-004",
+                "check": "auth_middleware_defined",
+                "weight": 7,
+                "description": "Authentication middleware on protected routes"
+            },
+            {
+                "id": "EVAL-API-005",
+                "check": "rate_limiting_configured",
+                "weight": 5,
+                "description": "Rate limiting configured per endpoint tier"
+            }
+        ],
+        "07c_backend_db_agent": [
+            {
+                "id": "EVAL-DB-001",
+                "check": "indexed_queries",
+                "weight": 10,
+                "description": "Primary table queries are indexed — no full table scans"
+            },
+            {
+                "id": "EVAL-DB-002",
+                "check": "migration_rollback",
+                "weight": 8,
+                "description": "All migration scripts include automated rollback statements"
+            },
+            {
+                "id": "EVAL-DB-003",
+                "check": "connection_pool_configured",
+                "weight": 8,
+                "description": "Connection pool parameters align with auto-scaling criteria"
+            },
+            {
+                "id": "EVAL-DB-004",
+                "check": "caching_strategy",
+                "weight": 7,
+                "description": "Caching strategy defined for high-concurrency data access"
+            },
+            {
+                "id": "EVAL-DB-005",
+                "check": "schema_normalized",
+                "weight": 7,
+                "description": "Database schemas normalized to at least 3NF"
+            }
+        ],
+        "07d_integration_agent": [
+            {
+                "id": "EVAL-INT-001",
+                "check": "e2e_flows_clean",
+                "weight": 10,
+                "description": "End-to-end data/auth/event flows execute without timeout errors"
+            },
+            {
+                "id": "EVAL-INT-002",
+                "check": "tls_enabled",
+                "weight": 10,
+                "description": "Cryptographic handshake (TLS) verified between all application layers"
+            },
+            {
+                "id": "EVAL-INT-003",
+                "check": "no_debug_flags",
+                "weight": 8,
+                "description": "No debugging flags or unencrypted connection vectors active in build"
+            },
+            {
+                "id": "EVAL-INT-004",
+                "check": "integration_tests_pass",
+                "weight": 7,
+                "description": "Integration test suite passes with zero failures"
+            }
+        ],
+        "08_qa_agent": [
+            {
+                "id": "EVAL-QA-001",
+                "check": "qa_test_plan_complete",
+                "weight": 10,
+                "description": "Comprehensive QA test plan covering functional, integration, regression, stress"
+            },
+            {
+                "id": "EVAL-QA-002",
+                "check": "automation_framework_built",
+                "weight": 10,
+                "description": "Automated testing framework deployed (Playwright/BackstopJS)"
+            },
+            {
+                "id": "EVAL-QA-003",
+                "check": "traceability_epic_feature_story",
+                "weight": 8,
+                "description": "Every test case linked to Epic/Feature/User Story in project management"
+            },
+            {
+                "id": "EVAL-QA-004",
+                "check": "defect_auto_tagging",
+                "weight": 7,
+                "description": "Defects auto-tagged and submitted to project management system"
+            },
+            {
+                "id": "EVAL-QA-005",
+                "check": "coverage_threshold_met",
+                "weight": 5,
+                "description": "Test coverage ≥ specified threshold on release branch"
+            }
+        ],
+        "09_production_agent": [
+            {
+                "id": "EVAL-PROD-001",
+                "check": "staging_cleared_qa",
+                "weight": 10,
+                "description": "Staging environment cleared all automated QA criteria"
+            },
+            {
+                "id": "EVAL-PROD-002",
+                "check": "deploy_script_executed",
+                "weight": 10,
+                "description": "Production deployment script executed successfully"
+            },
+            {
+                "id": "EVAL-PROD-003",
+                "check": "post_deploy_validation_pass",
+                "weight": 8,
+                "description": "Post-deployment smoke tests pass (HTTP 200 on all endpoints)"
+            },
+            {
+                "id": "EVAL-PROD-004",
+                "check": "release_notes_published",
+                "weight": 5,
+                "description": "Release notes published with system entry points and active links"
+            }
+        ],
+        "10_tech_pub_agent": [
+            {
+                "id": "EVAL-TP-001",
+                "check": "help_files_complete",
+                "weight": 10,
+                "description": "User-facing help files complete for all interface paths"
+            },
+            {
+                "id": "EVAL-TP-002",
+                "check": "i18n_keys_mapped",
+                "weight": 8,
+                "description": "All localization keys mapped in i18n configuration"
+            },
+            {
+                "id": "EVAL-TP-003",
+                "check": "install_guide_present",
+                "weight": 8,
+                "description": "Installation guide, setup manual, and user handbook published"
+            },
+            {
+                "id": "EVAL-TP-004",
+                "check": "links_match_build",
+                "weight": 7,
+                "description": "All embedded hyperlinks and screenshots match production build"
+            }
+        ],
+        "11_customer_onboarding_agent": [
+            {
+                "id": "EVAL-CO-001",
+                "check": "billing_model_attached",
+                "weight": 10,
+                "description": "New account has billing model and verified merchant profile attached"
+            },
+            {
+                "id": "EVAL-CO-002",
+                "check": "onboarding_guide",
+                "weight": 8,
+                "description": "Merchant onboarding guide with step-by-step workflow"
+            },
+            {
+                "id": "EVAL-CO-003",
+                "check": "support_interface_built",
+                "weight": 8,
+                "description": "Web-accessible support interface for defect reporting"
+            },
+            {
+                "id": "EVAL-CO-004",
+                "check": "logs_structure_match",
+                "weight": 7,
+                "description": "Support interface parses logs into structured JSON matching defect schema"
+            }
+        ],
+        "12_marketing_agent": [
+            {
+                "id": "EVAL-MKT-001",
+                "check": "seo_meta_tags_injected",
+                "weight": 10,
+                "description": "Meta-tag maps and indexing protocols injected into public web app"
+            },
+            {
+                "id": "EVAL-MKT-002",
+                "check": "social_media_assets",
+                "weight": 8,
+                "description": "Social media campaign assets (images, video scripts) generated"
+            },
+            {
+                "id": "EVAL-MKT-003",
+                "check": "analytics_trackers_present",
+                "weight": 8,
+                "description": "Web routing tags and analytics trackers present in build config"
+            },
+            {
+                "id": "EVAL-MKT-004",
+                "check": "webhook_safety",
+                "weight": 6,
+                "description": "Marketing webhooks blocked when system monitoring reports scaling bottleneck"
+            }
+        ],
+        "13_maintenance_agent": [
+            {
+                "id": "EVAL-MAINT-001",
+                "check": "self_diagnostics_run",
+                "weight": 10,
+                "description": "Autonomous diagnostics framework runs and isolates code errors"
+            },
+            {
+                "id": "EVAL-MAINT-002",
+                "check": "patch_validated_in_sandbox",
+                "weight": 10,
+                "description": "Proposed patches validated in sandbox before deployment"
+            },
+            {
+                "id": "EVAL-MAINT-003",
+                "check": "ci_pipeline_not_bypassed",
+                "weight": 8,
+                "description": "Patches pass through CI pipeline and QA suite"
+            },
+            {
+                "id": "EVAL-MAINT-004",
+                "check": "human_authorization_required",
+                "weight": 8,
+                "description": "Valid signed human authorization token required before production merge"
+            },
+            {
+                "id": "EVAL-MAINT-005",
+                "check": "performance_not_degraded",
+                "weight": 6,
+                "description": "Patch does not degrade system performance metrics"
+            }
+        ],
+        "14_finops_agent": [
+            {
+                "id": "EVAL-FIN-001",
+                "check": "budget_tracking_active",
+                "weight": 10,
+                "description": "Real-time cost tracking against budget boundaries"
+            },
+            {
+                "id": "EVAL-FIN-002",
+                "check": "overspend_flag_triggered",
+                "weight": 10,
+                "description": "Spend >115% budget triggers freeze flag in state ledger"
+            },
+            {
+                "id": "EVAL-FIN-003",
+                "check": "resource_ids_match",
+                "weight": 7,
+                "description": "Cost tracking ledger matches billing metrics with active resource IDs"
+            }
+        ],
+        "15_secrets_compliance_agent": [
+            {
+                "id": "EVAL-SEC-001",
+                "check": "no_exposed_credentials",
+                "weight": 10,
+                "description": "No exposed API keys, DB strings, tokens in any commit or config file"
+            },
+            {
+                "id": "EVAL-SEC-002",
+                "check": "secrets_in_vault",
+                "weight": 10,
+                "description": "All active credentials reside in isolated secrets manager or encrypted vault"
+            },
+            {
+                "id": "EVAL-SEC-003",
+                "check": "encryption_receipts_logged",
+                "weight": 8,
+                "description": "Encryption receipts maintained under agents/03_execution_workspace/15_secrets_compliance_agent/"
+            }
+        ]
+    }
+}
