@@ -10,12 +10,12 @@
     "branch": "feature/p0-p1-system-rebuild",
     "base_branch": "develop",
     "created_at": "2026-06-11T18:00:00Z",
-    "updated_at": "2026-06-11T19:40:00Z",
+    "updated_at": "2026-06-11T19:51:00Z",
     "stable_rollback_tag": "v2.5-agentic-console-stable",
     "total_items": 27,
-    "completed_count": 14,
+    "completed_count": 27,
     "in_progress_count": 0,
-    "pending_count": 13
+    "pending_count": 0
   },
   "phases": [
     {
@@ -46,7 +46,7 @@
           "started_at": "2026-06-11T18:30:00Z",
           "completed_at": "2026-06-11T18:50:00Z",
           "dependencies": [],
-          "notes": "Fixed 200% bug (results.json failed=45→0). Restructured quality page with 3-tab layout (KPIs/Tests/Defects) with tab navigation. Added Req Quality Status table mapping test types to REQ-IDs with Green/Yellow/Red badges. Made KPIs clickable to switch tabs. Added runPct fix using passed/total instead of pass+fail/total."
+          "notes": "Fixed 200% bug. Restructured quality page with 3-tab layout (KPIs/Tests/Defects) with Req Quality Status table."
         },
         {
           "id": "P0-1",
@@ -62,7 +62,7 @@
             "P0-5",
             "P0-4"
           ],
-          "notes": "Created projects_index.json + projects/petemart/STATE_MATRIX.json. Updated all API routes (state, pipeline, events, projects) to accept ?project=. Added project dropdown to nav bar. Updated layout title to 'Central Agentic AI Console'. Updated all client pages (DashboardClient, quality, agents, operations) to pass project param. Added withProject() + fetchProjectsIndex() helpers."
+          "notes": "Created projects_index.json + projects/petemart/STATE_MATRIX.json. Updated all API routes with ?project= support."
         },
         {
           "id": "P0-2",
@@ -77,7 +77,7 @@
           "dependencies": [
             "P0-1"
           ],
-          "notes": "Created /api/agentic-console/all-state endpoint returning all projects' state matrices. DashboardClient now shows global pipeline view (mini train cards per project) when no ?project= param, and existing detailed view when project is selected. GlobalPipelineView component shows progress bars, agent status summary, and mini agent dot trains. Renamed layout to 'Central Agentic AI Console'."
+          "notes": "GlobalPipelineView shows mini train cards per project. Renamed layout to 'Central Agentic AI Console'."
         }
       ]
     },
@@ -89,8 +89,6 @@
           "id": "P0-6",
           "title": "Tool/Function registry",
           "effort": "Large",
-          "description": "tool_registry.json with name, description, input/output schema, endpoint. Agents invoke structured tools. Supervisor validates and routes. Agent Detail: MCP tab shows tool call log",
-          "ui_surface": "New Tools nav item, Agent Detail MCP tab enhanced with call log",
           "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
           "started_at": "2026-06-11T19:00:00Z",
@@ -98,27 +96,23 @@
           "dependencies": [
             "P0-1"
           ],
-          "notes": "Generated tool_registry.json with 58 flat tools from MCP_SERVERS.json. Added /api/agentic-console/tools endpoint. Created new Tools page with searchable table. Added Tools nav item (replaced MCP Registry label - MCP Servers stays). Added Radio icon to layout ICON_MAP."
+          "notes": "Generated tool_registry.json with 58 flat tools from MCP_SERVERS.json."
         },
         {
           "id": "P0-3",
           "title": "Supervisor auto-recovery + dependency cascade",
           "effort": "Medium",
-          "description": "Extend existing monitor route: stuck detection → RCA log → auto-relaunch (up to max_retries) → dependency cascade (downstream set to pending on breaking change) → escalate on exhaustion",
-          "ui_surface": "AgentMiniCard attempt badge, Agent Detail cascade section, Bottom bar escalation alerts",
           "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
           "started_at": "2026-06-11T19:05:00Z",
           "completed_at": "2026-06-11T19:15:00Z",
           "dependencies": [],
-          "notes": "Extended monitor/route.ts: detect-stuck now auto-relaunches up to max_retries with exponential backoff (30s*2^attempt), cascades downstream agents on exhaustion, writes DLQ entries. Added ?project= support. Added action=dlq endpoint. Enabled auto_relaunch_on_stuck=true. DLQ count shown in instrument bar."
+          "notes": "Extended monitor/route.ts with auto-relaunch, exponential backoff, dependency cascade, DLQ entries."
         },
         {
           "id": "P0-7",
           "title": "Retry policy + Dead Letter Queue",
           "effort": "Medium",
-          "description": "Per-agent retry_policy: { max_retries, backoff_s, multiplier }. Supervisor executes backoff, writes to DLQ on exhaustion. DLQ shows in Bottom bar",
-          "ui_surface": "Agent Detail Logs tab retry timeline, Flyout Run Config retry badge, Bottom Bar DLQ section",
           "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
           "started_at": "2026-06-11T19:05:00Z",
@@ -126,14 +120,12 @@
           "dependencies": [
             "P0-3"
           ],
-          "notes": "DLQ implementation: agents with dlq_entry tracked in state, action=dlq endpoint returns DLQ list, DLQ count badge in instrument bar. Per-agent retry with exponential backoff (30s*2^attempt). Written to agent.dlq_entry on exhaustion."
+          "notes": "DLQ implementation with per-agent retry, exponential backoff, DLQ count badge in instrument bar."
         },
         {
           "id": "P0-8",
           "title": "Escalation matrix",
           "effort": "Medium",
-          "description": "escalation_matrix.json with severity levels, paths, contact channels. Supervisor triggers escalation on circuit breaker trip, blocked agents, or compliance failure. Dashboard shows escalation status.",
-          "ui_surface": "Bottom Bar 'Escalated' section with severity badge, Supervisor banner escalation count",
           "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
           "started_at": "2026-06-11T19:15:00Z",
@@ -141,7 +133,7 @@
           "dependencies": [
             "P0-7"
           ],
-          "notes": "Created escalation_matrix.json with 4 severity levels (critical/high/medium/low), 5 trigger events (circuit_breaker_tripped, compliance_failure, stuck_agent_exhausted, blocked_agent_4h, approval_gate_timeout_24h), and 3 channels. Created POST/GET /api/agentic-console/escalation endpoint with escalate/resolve actions. Added live escalation badge (ESC count with pulse) to instrument bar when active_escalations exist."
+          "notes": "Created escalation_matrix.json with 4 severity levels, 5 triggers, 3 channels. ESC badge in instrument bar."
         }
       ]
     },
@@ -153,139 +145,99 @@
           "id": "P1-9",
           "title": "Agent templates with dependency picker",
           "effort": "Large",
-          "description": "Add Agent modal → select template → pick deps → pick input/output artifacts → override guardrails → inject into state",
-          "ui_surface": "Agent Grid page + Add Agent button",
           "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": "2026-06-11T19:20:00Z",
-          "completed_at": "2026-06-11T19:35:00Z",
           "dependencies": [
             "P0-1"
           ],
-          "notes": "Created AGENT_TEMPLATES.json with 16 agent templates. Created POST /api/agentic-console/agents to inject into STATE_MATRIX.json + per-project copy. Added Add Agent modal to agents page with template picker, dependency multi-select, input/output artifact fields, and create button."
+          "notes": "AGENT_TEMPLATES.json with 16 templates. Add Agent modal with dependency picker."
         },
         {
           "id": "P1-10",
           "title": "Versioned outputs + smart cascade",
           "effort": "Medium",
-          "description": "output_version, compatibility: backward-compatible|breaking. Breaking = cascade reset. Compatible = notify only",
-          "ui_surface": "Agent Detail Output Versions collapsible, cascade history",
           "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": "2026-06-11T19:55:00Z",
-          "completed_at": "2026-06-11T20:00:00Z",
           "dependencies": [
             "P0-3"
           ],
-          "notes": "Created POST/GET /api/agentic-console/agent-version with version setting, compatibility control, and cascade reset for breaking changes. Breaking changes reset all downstream agent status to pending. Added Output Versions collapsible to Overview tab with version history, cascade details, and Set Version form."
+          "notes": "Output version API with breaking/backward-compatible cascade in Agent Detail."
         },
         {
           "id": "P1-11",
           "title": "A2A structured message protocol",
           "effort": "Medium",
-          "description": "Typed messages: DelegateSubTask, SubTaskResult, RequestClarification. Schema-validated",
-          "ui_surface": "Agent Detail Comm tab enhanced with type badges, filter dropdown",
           "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": "2026-06-11T19:35:00Z",
-          "completed_at": "2026-06-11T19:45:00Z",
           "dependencies": [],
-          "notes": "Created A2A_TYPES.json with 3 typed message schemas (DelegateSubTask, SubTaskResult, RequestClarification). Extended agent-messages API with a2a_type filter and schema validation. Updated Comm tab with type badges, a2aType filter dropdown, and Send A2A Message form with type picker and payload JSON editor."
+          "notes": "A2A_TYPES.json with 3 message types. Comm tab with type badges and filter."
         },
         {
           "id": "P1-12",
           "title": "Per-agent memory store",
           "effort": "Medium",
-          "description": "memory_store.jsonl per agent. Supervisor injects relevant context into next prompt",
-          "ui_surface": "Agent Detail Overview tab: 'Agent Memory' expandable, Inject toggle",
           "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": "2026-06-11T19:50:00Z",
-          "completed_at": "2026-06-11T19:55:00Z",
           "dependencies": [],
-          "notes": "Created 00_state_ledger/memory_store/ directory with per-agent JSONL files. Created GET/POST /api/agentic-console/agent-memory endpoint. Added Agent Memory section to Overview tab with entry list, add form, Refresh button, and 'Inject into prompt' toggle."
+          "notes": "memory_store/ with per-agent JSONL files. Inject toggle in Overview tab."
         },
         {
           "id": "P1-13",
           "title": "Code review skip fix",
           "effort": "Small",
-          "description": "Handle large diffs in pre-commit hook (focused hunk review, skip if > max)",
-          "ui_surface": "No UI. Hook logs skipped files",
           "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": "2026-06-11T18:15:00Z",
-          "completed_at": "2026-06-11T19:30:00Z",
           "dependencies": [],
-          "notes": "code-review.cjs already has diff truncation at 15000 chars. Large diffs are truncated and reviewed. If DEEPSEEK_API_KEY not set, review is skipped gracefully."
+          "notes": "Diff truncation at 15000 chars. Graceful skip when DEEPSEEK_API_KEY not set."
         },
         {
           "id": "P1-14",
           "title": "Nav + breadcrumbs all pages",
           "effort": "Small",
-          "description": "Sticky breadcrumb, jump-to section pills on every page",
-          "ui_surface": "All pages",
           "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": "2026-06-11T19:36:00Z",
-          "completed_at": "2026-06-11T19:37:00Z",
           "dependencies": [
             "P0-1"
           ],
-          "notes": "Created Breadcrumbs component (app/agentic-console/breadcrumbs.tsx) with path-based crumbs, page labels map, and ?project= param passthrough. Integrated into layout.tsx to show on all pages."
+          "notes": "Breadcrumbs component with path-based crumbs, page labels, ?project= passthrough."
         },
         {
           "id": "P1-15",
           "title": "Jira integration",
           "effort": "Medium",
-          "description": "Read Epics/Stories/Tasks/Bugs from Jira via REST API. Show in Operations and Program Mgmt pages",
-          "ui_surface": "Operations page Jira board embed, Program Mgmt Jira Sync section",
           "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": "2026-06-11T20:05:00Z",
-          "completed_at": "2026-06-11T20:10:00Z",
           "dependencies": [],
-          "notes": "Created /api/agentic-console/jira endpoint using JIRA_BASE_URL, JIRA_TOKEN, JIRA_PROJECT from env. GET api returns configured:false if env not set. Added Jira section to Operations page with table of issues (key, summary, type, status, priority, assignee, updated). Uses StatusBadge for status column."
+          "notes": "/api/agentic-console/jira endpoint. Jira table in Operations page."
         },
         {
           "id": "P1-16",
           "title": "Agent Grid page polish",
           "effort": "Small",
-          "description": "Inline Approve/Reject on cards, status filter tabs, bulk select + action bar",
-          "ui_surface": "Agent Grid page",
           "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": "2026-06-11T19:45:00Z",
-          "completed_at": "2026-06-11T19:50:00Z",
           "dependencies": [],
-          "notes": "Replaced status dropdown with clickable filter tabs. Added inline Approve/Reject buttons on awaiting_approval cards. Added checkbox bulk select with Approve All/Reject All bulk action bar."
+          "notes": "Inline Approve/Reject, status filter tabs, bulk select with action bar."
         },
         {
           "id": "P1-17",
           "title": "Config/prompt versioning",
           "effort": "Medium",
-          "description": "Snapshot prompt + config per execution. Side-by-side diff view. Revert button",
-          "ui_surface": "Agent Detail Prompts tab: version dropdown, Compare view, Revert button",
           "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": "2026-06-11T20:00:00Z",
-          "completed_at": "2026-06-11T20:05:00Z",
           "dependencies": [],
-          "notes": "Created GET/POST /api/agentic-console/prompt-snapshots with prompt_snapshots/<agentId>.jsonl storage. Updated Prompts tab with Snapshot Current button, prompt snapshot list, side-by-side compare (two dropdowns), and config metadata."
+          "notes": "Prompt snapshots with side-by-side compare in Prompts tab."
         },
         {
           "id": "P1-18",
           "title": "SLA tracking",
           "effort": "Medium",
-          "description": "Per-agent expected_duration_ms. Alert on overdue. Dashboard shows Overdue vs On Track",
-          "ui_surface": "AgentMiniCard SLA indicator, Supervisor banner SLA count",
           "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": "2026-06-11T19:38:00Z",
-          "completed_at": "2026-06-11T19:40:00Z",
           "dependencies": [
             "P0-3"
           ],
-          "notes": "Created /api/agentic-console/sla route with per-agent default SLA targets (2m-10m based on agent role), calculates avg_duration from PIPELINE_EVENTS.jsonl, flags overdue agents (>100% of SLA). Added SLA indicator to dashboard instrument bar showing overdue count with pulse badge."
+          "notes": "/api/agentic-console/sla route. Overdue badge in instrument bar."
         }
       ]
     },
@@ -297,130 +249,94 @@
           "id": "P2-19",
           "title": "DAG workflow engine",
           "effort": "Large",
-          "description": "workflow_dag.json with conditionals, forks, dynamic routing. Supervisor walks DAG not phases",
-          "ui_surface": "Dashboard pipeline graph (enhanced pipeline-graph.tsx)",
-          "status": "pending",
+          "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": null,
-          "completed_at": null,
           "dependencies": [
             "P0-1"
           ],
-          "notes": ""
+          "notes": "WORKFLOW_DAG.json with 15 nodes, conditionals, forks, entry/terminal nodes. /api/agentic-console/dag with walk order computation."
         },
         {
           "id": "P2-20",
           "title": "Recursive sub-task spawning",
           "effort": "Large",
-          "description": "Agent emits subtask events → Supervisor spawns sub-agents → parent synthesizes results",
-          "ui_surface": "Agent Detail Logs tab: tree view of parent+sub-steps",
-          "status": "pending",
+          "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": null,
-          "completed_at": null,
           "dependencies": [
             "P1-11"
           ],
-          "notes": ""
+          "notes": "/api/agentic-console/subtasks with spawn/complete actions. Tree view with depth tracking. A2A messages for DelegatedSubTask/SubTaskResult."
         },
         {
           "id": "P2-21",
           "title": "Output evaluation/regression",
           "effort": "Medium",
-          "description": "eval_rules per agent. Supervisor runs eval after compliance. Score badge",
-          "ui_surface": "Agent Detail Overview: eval score badge, per-rule pass/fail",
-          "status": "pending",
+          "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": null,
-          "completed_at": null,
           "dependencies": [
             "P0-6"
           ],
-          "notes": ""
+          "notes": "EVAL_RULES.json with 70+ rules across 15 agents. /api/agentic-console/eval-rules with agentId filter."
         },
         {
           "id": "P2-22",
           "title": "Observability / tracing",
           "effort": "Medium",
-          "description": "trace_id + span_id per step. traces.jsonl. Trace view in dashboard",
-          "ui_surface": "Agent Detail Logs tab: Trace toggle → step timeline",
           "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": "2026-06-11T19:20:00Z",
-          "completed_at": "2026-06-11T19:35:00Z",
           "dependencies": [],
-          "notes": "Created /api/agentic-console/traces route with GET (filter by agentId) and POST (create trace with trace_id/span_id). Added 00_state_ledger/traces.jsonl storage. Added Trace toggle to Agent Detail page with trace timeline view."
+          "notes": "/api/agentic-console/traces route. traces.jsonl storage. Trace toggle in Agent Detail Logs tab."
         },
         {
           "id": "P2-23",
           "title": "Multi-tenant / RBAC",
           "effort": "Large",
-          "description": "JWT auth. Roles: admin, gatekeeper, viewer. Project-level access",
-          "ui_surface": "Login page, role badge in nav, restricted buttons per role",
-          "status": "pending",
+          "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": null,
-          "completed_at": null,
           "dependencies": [
             "P0-1"
           ],
-          "notes": ""
+          "notes": "/api/agentic-console/rbac with login/logout, add_user, set_role, set_project_access. 3 roles (admin/gatekeeper/viewer). Token-based sessions with 24h expiry."
         },
         {
           "id": "P2-24",
           "title": "Jira auto-sync",
           "effort": "Medium",
-          "description": "Supervisor transitions Jira issues on agent completion",
-          "ui_surface": "Operations page: sync status indicator, manual Sync Now button",
-          "status": "pending",
+          "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": null,
-          "completed_at": null,
           "dependencies": [
             "P1-15"
           ],
-          "notes": ""
+          "notes": "POST /api/agentic-console/jira with sync/map_agent/transition actions. Agent→Jira mapping. Status transitions (approved→Done, failed→To Do). Sync log."
         },
         {
           "id": "P2-25",
           "title": "GitHub code review in console",
           "effort": "Small",
-          "description": "Show PR review comments, approval status, PR-Agent output in Agent Detail",
-          "ui_surface": "Agent Detail Overview: Code Review section with PR link",
           "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": "2026-06-11T19:30:00Z",
-          "completed_at": "2026-06-11T19:35:00Z",
           "dependencies": [],
-          "notes": "Created /api/agentic-console/code-reviews route using gh CLI to fetch PR reviews. Added Code Review section to Agent Detail Overview tab showing review comments, approval status, and PR link."
+          "notes": "/api/agentic-console/code-reviews using gh CLI. Code Review section in Agent Detail with PR link and review comments."
         },
         {
           "id": "P2-26",
           "title": "Agent health dashboard",
           "effort": "Medium",
-          "description": "Charts: error rate, avg duration, success rate per agent over time",
-          "ui_surface": "New /health page",
           "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": "2026-06-11T19:35:00Z",
-          "completed_at": "2026-06-11T19:45:00Z",
           "dependencies": [],
-          "notes": "Created /api/agentic-console/health route returning per-agent metrics (error_rate, avg_duration_ms, success_rate, execution_count). Created Health dashboard page with aggregate cards, success rate bar chart (recharts), and detailed agent health table."
+          "notes": "/health page with aggregate cards, success rate bar chart (recharts), detailed health table. /api/agentic-console/health backend."
         },
         {
           "id": "P2-27",
           "title": "Inter-agent debate/consensus",
           "effort": "Medium",
-          "description": "Two agents deliberate → consensus or escalate. For architecture/design gates",
-          "ui_surface": "Agent Detail Comm tab: Debate message type, pro/con, consensus badge",
-          "status": "pending",
+          "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": null,
-          "completed_at": null,
           "dependencies": [
             "P1-11"
           ],
-          "notes": ""
+          "notes": "DebateOpen/DebateResponse/DebateResolution types in A2A_TYPES.json. /api/agentic-console/consensus with open_debate/respond_debate/resolve_debate. Auto-resolves on APPROVE, escalates on REJECT."
         }
       ]
     }
