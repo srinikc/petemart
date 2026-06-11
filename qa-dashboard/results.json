@@ -27,7 +27,7 @@
       "status": "implemented",
       "total": 45,
       "passed": 45,
-      "failed": 45,
+      "failed": 0,
       "blocked": 0,
       "coverageTarget": 90,
       "coverageActual": 95,
