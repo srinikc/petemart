@@ -192,7 +192,8 @@ export const GLOBAL_NAV_ITEMS = [
     { href: '/agentic-console/agents', label: 'Agent Pipeline', icon: 'Bot' },
     { href: '/agentic-console/quality', label: 'Quality', icon: 'Shield' },
     { href: '/agentic-console/operations', label: 'Operations', icon: 'Settings' },
-    { href: '/agentic-console/mcp', label: 'MCP Registry', icon: 'Server' },
+    { href: '/agentic-console/tools', label: 'Tools', icon: 'Radio' },
+    { href: '/agentic-console/mcp', label: 'MCP Servers', icon: 'Server' },
 ];
 
 // ── Helper Components ──

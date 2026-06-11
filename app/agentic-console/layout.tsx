@@ -6,7 +6,7 @@ import { Shield, Menu, X, Activity, Bot, Settings, Server, ChevronDown, Globe } 
 import { GLOBAL_NAV_ITEMS, fetchProjectsIndex, ProjectInfo, withProject } from './shared';
 
 const ICON_MAP: Record<string, React.ElementType> = {
-    Activity, Bot, Shield, Settings, Server,
+    Activity, Bot, Shield, Settings, Server, Radio,
 };
 
 function isActivePath(pathname: string, href: string) {
