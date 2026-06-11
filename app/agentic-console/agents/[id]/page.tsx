@@ -6,6 +6,7 @@ import {
   ArrowLeft, Loader2, CheckCircle, XCircle, AlertTriangle, RefreshCw,
   Send, FileText, MessageSquare, Server, Shield, Bot, Play, Clock,
   Radio, Download, Eye, BookOpen, Code, Terminal, Users, Activity,
+  Database,
 } from 'lucide-react';
 import { StatusBadge, fetchWithTimeout, PHASE_LABELS } from '../../shared';
 
@@ -36,6 +37,9 @@ export default function AgentDetailPage() {
   const [composingA2aType, setComposingA2aType] = useState('');
   const [composingPayload, setComposingPayload] = useState('');
   const [a2aTo, setA2aTo] = useState('');
+  const [memoryEntries, setMemoryEntries] = useState<any[]>([]);
+  const [injectMemory, setInjectMemory] = useState(false);
+  const [newMemory, setNewMemory] = useState('');
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
 
@@ -143,6 +147,26 @@ export default function AgentDetailPage() {
       }
     } catch { showToast('Failed to send A2A message'); }
   };
+
+  const loadMemory = useCallback(async () => {
+    try {
+      const r = await fetch(`/api/agentic-console/agent-memory?agentId=${agentId}`);
+      if (r.ok) { const d = await r.json(); setMemoryEntries(d.entries || []); }
+    } catch {}
+  }, [agentId]);
+
+  const addMemory = async () => {
+    if (!newMemory.trim()) return;
+    try {
+      const r = await fetch('/api/agentic-console/agent-memory', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ agentId, content: newMemory, source: 'human_gatekeeper' }),
+      });
+      if (r.ok) { setNewMemory(''); loadMemory(); showToast('Memory added'); }
+    } catch { showToast('Failed to add memory'); }
+  };
+
+  useEffect(() => { if (agentId) loadMemory(); }, [agentId, loadMemory]);
 
   if (loading) {
     return <div className="text-center py-20"><Loader2 size={32} className="animate-spin text-blue-600 mx-auto mb-4" /><p className="text-gray-500">Loading agent detail...</p></div>;
@@ -336,6 +360,42 @@ export default function AgentDetailPage() {
                       <div className="font-medium text-gray-700 text-[11px]">{g.value}</div>
                     </div>
                   ))}
+                </div>
+              </div>
+
+              {/* Agent Memory */}
+              <div>
+                <h3 className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1.5">
+                  <Database size={12} /> Agent Memory
+                  <label className="ml-auto flex items-center gap-1 text-[9px] text-gray-400 cursor-pointer">
+                    <input type="checkbox" checked={injectMemory} onChange={e => setInjectMemory(e.target.checked)} className="w-3 h-3" />
+                    Inject into prompt
+                  </label>
+                </h3>
+                <div className="border rounded-lg overflow-hidden">
+                  <div className="bg-gray-50 px-3 py-1.5 flex items-center gap-2 border-b">
+                    <span className="text-[10px] text-gray-500">{memoryEntries.length} entries</span>
+                    <button onClick={loadMemory} className="ml-auto text-[9px] text-indigo-600 hover:underline">Refresh</button>
+                  </div>
+                  <div className="max-h-48 overflow-y-auto divide-y">
+                    {memoryEntries.length === 0 ? (
+                      <p className="text-[10px] text-gray-400 text-center py-4">No memory entries yet.</p>
+                    ) : memoryEntries.map((e: any) => (
+                      <div key={e.id} className="px-3 py-2">
+                        <div className="flex items-center gap-1.5 mb-0.5">
+                          <Database size={10} className="text-gray-400" />
+                          <span className="text-[9px] font-medium text-gray-600">{e.source}</span>
+                          <span className="text-[8px] text-gray-400 ml-auto">{new Date(e.timestamp).toLocaleString()}</span>
+                        </div>
+                        <p className="text-[10px] text-gray-700">{e.content}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="border-t flex gap-1 p-2">
+                    <input type="text" className="border rounded text-[10px] px-2 py-1 flex-1" placeholder="Add memory entry..." value={newMemory} onChange={e => setNewMemory(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') addMemory(); }} />
+                    <button onClick={addMemory} className="text-[10px] px-2 py-1 rounded bg-indigo-600 text-white hover:bg-indigo-700">Add</button>
+                  </div>
                 </div>
               </div>
 

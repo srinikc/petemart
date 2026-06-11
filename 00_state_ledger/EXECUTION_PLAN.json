@@ -198,12 +198,12 @@
           "effort": "Medium",
           "description": "memory_store.jsonl per agent. Supervisor injects relevant context into next prompt",
           "ui_surface": "Agent Detail Overview tab: 'Agent Memory' expandable, Inject toggle",
-          "status": "pending",
+          "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": null,
-          "completed_at": null,
+          "started_at": "2026-06-11T19:50:00Z",
+          "completed_at": "2026-06-11T19:55:00Z",
           "dependencies": [],
-          "notes": ""
+          "notes": "Created 00_state_ledger/memory_store/ directory with per-agent JSONL files. Created GET/POST /api/agentic-console/agent-memory endpoint. Added Agent Memory section to Overview tab with entry list, add form, Refresh button, and 'Inject into prompt' toggle."
         },
         {
           "id": "P1-13",
