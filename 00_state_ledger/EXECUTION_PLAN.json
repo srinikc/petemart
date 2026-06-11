@@ -252,12 +252,12 @@
           "effort": "Small",
           "description": "Inline Approve/Reject on cards, status filter tabs, bulk select + action bar",
           "ui_surface": "Agent Grid page",
-          "status": "pending",
+          "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": null,
-          "completed_at": null,
+          "started_at": "2026-06-11T19:45:00Z",
+          "completed_at": "2026-06-11T19:50:00Z",
           "dependencies": [],
-          "notes": ""
+          "notes": "Replaced status dropdown with clickable filter tabs. Added inline Approve/Reject buttons on awaiting_approval cards. Added checkbox bulk select with Approve All/Reject All bulk action bar."
         },
         {
           "id": "P1-17",

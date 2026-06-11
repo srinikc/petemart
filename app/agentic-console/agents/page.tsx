@@ -48,6 +48,10 @@ export default function AgentsPage() {
     const [outputArtifacts, setOutputArtifacts] = useState<string[]>(['']);
     const [creating, setCreating] = useState(false);
     const [createResult, setCreateResult] = useState<string | null>(null);
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
+    const [toast, setToast] = useState<string | null>(null);
+
+    const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
 
     useEffect(() => {
         const project = searchParams?.get('project') || '';
@@ -117,6 +121,27 @@ export default function AgentsPage() {
         } finally { setCreating(false); }
     }, [selectedTemplate, agentName, deps, inputArtifacts, outputArtifacts]);
 
+    const handleQuickApprove = useCallback(async (agentId: string, action: string) => {
+        try {
+            const res = await fetch('/api/agentic-console/approve', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ agentId, action, feedback: `${action} via inline button` }),
+            });
+            if (res.ok) { window.location.reload(); }
+        } catch { showToast('Action failed'); }
+    }, []);
+
+    const handleBulkAction = useCallback(async (action: string) => {
+        for (const id of selectedIds) {
+            await fetch('/api/agentic-console/approve', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ agentId: id, action, feedback: `${action} via bulk action` }),
+            });
+        }
+        setSelectedIds([]);
+        window.location.reload();
+    }, [selectedIds]);
+
     if (loading) {
         return <div className="text-center py-20"><Loader2 size={32} className="animate-spin text-blue-600 mx-auto mb-4" /><p>Loading...</p></div>;
     }
@@ -136,20 +161,34 @@ export default function AgentsPage() {
             <div className="flex items-center gap-2">
                 <input type="text" placeholder="Search agents..." className="border rounded-lg text-xs px-2.5 py-1.5 w-36"
                     value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
-                <select className="border rounded-lg text-xs px-2 py-1.5" value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
-                    <option value="all">All Status</option>
-                    <option value="approved">Approved</option>
-                    <option value="completed">Completed</option>
-                    <option value="awaiting_approval">Awaiting</option>
-                    <option value="pending">Pending</option>
-                    <option value="failed">Failed</option>
-                    <option value="active">Active</option>
-                </select>
-                <button onClick={openAddModal} className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded bg-indigo-600 text-white hover:bg-indigo-700 ml-auto">
+                <div className="flex items-center gap-0.5 bg-gray-100 rounded-lg p-0.5">
+                    {['all','approved','completed','awaiting_approval','pending','failed','active'].map(s => (
+                        <button key={s} onClick={() => setFilterStatus(s)}
+                            className={`text-[10px] px-2 py-1 rounded-md font-medium transition-colors ${filterStatus === s ? 'bg-white shadow-sm text-gray-800' : 'text-gray-500 hover:text-gray-700'}`}>
+                            {s === 'all' ? 'All' : s === 'awaiting_approval' ? 'Awaiting' : s.charAt(0).toUpperCase() + s.slice(1)}
+                        </button>
+                    ))}
+                </div>
+                <button onClick={openAddModal} className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded bg-indigo-600 text-white hover:bg-indigo-700">
                     <Plus size={12} /> Add Agent
                 </button>
-                <span className="text-[10px] text-gray-400">{filteredAgents.length}/{sortedAgentEntries.length} agents</span>
+                <span className="text-[10px] text-gray-400 ml-auto">{filteredAgents.length}/{sortedAgentEntries.length} agents</span>
             </div>
+
+            {/* Bulk action bar */}
+            {selectedIds.length > 0 && (
+                <div className="bg-indigo-50 border border-indigo-200 rounded-lg px-3 py-2 flex items-center gap-2">
+                    <span className="text-[10px] font-medium text-indigo-700">{selectedIds.length} selected</span>
+                    <button onClick={() => handleBulkAction('approve')} className="text-[10px] px-2 py-1 rounded bg-green-600 text-white hover:bg-green-700">Approve All</button>
+                    <button onClick={() => handleBulkAction('reject')} className="text-[10px] px-2 py-1 rounded bg-red-500 text-white hover:bg-red-600">Reject All</button>
+                    <button onClick={() => setSelectedIds([])} className="text-[10px] px-2 py-1 rounded bg-gray-200 text-gray-600 hover:bg-gray-300 ml-auto">Clear</button>
+                </div>
+            )}
+
+            {/* Toast */}
+            {toast && (
+                <div className="fixed top-4 right-4 z-50 bg-gray-800 text-white text-xs px-4 py-2 rounded-lg shadow-lg">{toast}</div>
+            )}
 
             {/* Phase frames */}
             {PHASE_ORDER.filter(p => p !== 'system').map(phase => {
@@ -172,16 +211,19 @@ export default function AgentsPage() {
                                 const passed = a.compliance_checklist?.filter(c => c.passed).length || 0;
                                 const total = a.compliance_checklist?.length || 0;
                                 const AgentIcon = AGENT_ICONS[a.agent_id] || Bot;
+                                const isSelected = selectedIds.includes(a.agent_id);
                                 return (
                                     <div key={a.agent_id}
-                                        className={`border rounded-lg hover:shadow-md transition-shadow cursor-pointer bg-white ${a.status === 'awaiting_approval' ? 'border-amber-300 ring-1 ring-amber-200' : a.status === 'failed' ? 'border-red-300' : ''}`}
-                                        onClick={() => setSelectedAgent(a)}>
+                                        className={`border rounded-lg hover:shadow-md transition-shadow bg-white ${a.status === 'awaiting_approval' ? 'border-amber-300 ring-1 ring-amber-200' : a.status === 'failed' ? 'border-red-300' : ''} ${isSelected ? 'ring-2 ring-indigo-400' : ''}`}>
                                         <div className="p-3">
                                             <div className="flex items-center gap-2 mb-1">
+                                                <input type="checkbox" checked={isSelected}
+                                                    onChange={e => { e.stopPropagation(); setSelectedIds(prev => isSelected ? prev.filter(id => id !== a.agent_id) : [...prev, a.agent_id]); }}
+                                                    className="w-3 h-3 rounded border-gray-300 text-indigo-600" onClick={e => e.stopPropagation()} />
                                                 <AgentIcon size={15} className="text-gray-500 shrink-0" />
-                                                <span className="font-medium text-[11px]">{a.agent_id}</span>
+                                                <span className="font-medium text-[11px] cursor-pointer" onClick={() => setSelectedAgent(a)}>{a.agent_id}</span>
                                             </div>
-                                            <p className="text-[9px] text-gray-500 line-clamp-1 mb-1.5">{a.role}</p>
+                                            <p className="text-[9px] text-gray-500 line-clamp-1 mb-1.5 cursor-pointer" onClick={() => setSelectedAgent(a)}>{a.role}</p>
                                             <div className="flex items-center gap-1.5 flex-wrap">
                                                 <StatusBadge status={a.status} />
                                                 {total > 0 && (
@@ -191,7 +233,12 @@ export default function AgentsPage() {
                                                 )}
                                             </div>
                                             {a.requires_human_approval && a.status === 'awaiting_approval' && (
-                                                <span className="mt-1 inline-block bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded text-[8px] font-medium">HITL</span>
+                                                <div className="mt-1.5 flex items-center gap-1">
+                                                    <button onClick={e => { e.stopPropagation(); handleQuickApprove(a.agent_id, 'approve'); }}
+                                                        className="text-[9px] px-1.5 py-0.5 rounded bg-green-600 text-white hover:bg-green-700">Approve</button>
+                                                    <button onClick={e => { e.stopPropagation(); handleQuickApprove(a.agent_id, 'reject'); }}
+                                                        className="text-[9px] px-1.5 py-0.5 rounded bg-red-500 text-white hover:bg-red-600">Reject</button>
+                                                </div>
                                             )}
                                         </div>
                                     </div>
