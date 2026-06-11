@@ -8,6 +8,7 @@ import {
   AlertTriangle, ArrowRight, X, Radio, Monitor, Code, Database,
   Layers, Server, Globe, BookOpen, UserCheck, Camera, Settings,
   Coins, Lock, Lightbulb, Layout, Truck, GitMerge, Bell, Play,
+  ChevronRight, Clock, BarChart3,
 } from 'lucide-react';
 
 import {
@@ -125,9 +126,12 @@ function AgentIcon({ agentId }: { agentId: string }) {
 export default function AgenticConsoleDashboard({ initialState }: { initialState?: any }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const project = searchParams?.get('project') || initialState?.activeProject || '';
+  const project = searchParams?.get('project') || '';
+  const isGlobal = !project;
   const [state, setState] = useState<any>(initialState || null);
-  const [loading, setLoading] = useState(!initialState);
+  const [allProjects, setAllProjects] = useState<Record<string, any> | null>(null);
+  const [loading, setLoading] = useState(!initialState && !isGlobal);
+  const [globalLoading, setGlobalLoading] = useState(isGlobal);
   const [selectedFlyoutAgent, setSelectedFlyoutAgent] = useState<string | null>(null);
   const [flyoutInstruction, setFlyoutInstruction] = useState('');
   const [flyoutInputs, setFlyoutInputs] = useState<Record<string, string>>({});
@@ -162,7 +166,9 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
 
   // SSE connection for live updates
   useEffect(() => {
-    const es = new EventSource('/api/agentic-console/events?poll=4000');
+    if (isGlobal) return; // SSE only for per-project mode
+    const esUrl = project ? `/api/agentic-console/events?poll=4000&project=${encodeURIComponent(project)}` : '/api/agentic-console/events?poll=4000';
+    const es = new EventSource(esUrl);
     let reconnectTimer: ReturnType<typeof setTimeout>;
 
     es.addEventListener('state_snapshot', (e: MessageEvent) => {
@@ -294,6 +300,23 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
 
   const loadState = useCallback(async (proj?: string) => {
     const p = proj || project;
+    if (isGlobal) {
+      // Global mode: fetch all projects
+      let done = false;
+      setTimeout(() => { if (!done) { done = true; setGlobalLoading(false); } }, 8000);
+      try {
+        const res = await fetchWithTimeout('/api/agentic-console/all-state');
+        if (!done) {
+          const json = res.ok ? await res.json() : null;
+          if (json?.projects) setAllProjects(json.projects);
+          setLiveConnected(true);
+        }
+      } catch { } finally {
+        if (!done) { done = true; setGlobalLoading(false); }
+      }
+      return;
+    }
+    // Per-project mode
     let done = false;
     setTimeout(() => { if (!done) { done = true; setLoading(false); } }, 10000);
     try {
@@ -307,7 +330,7 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
     } catch { } finally {
       if (!done) { done = true; setLoading(false); }
     }
-  }, [project]);
+  }, [project, isGlobal]);
 
   useEffect(() => { loadState(); }, [loadState]);
 
@@ -520,6 +543,26 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
     }
     return PHASE_ORDER[1];
   }, [phaseStats]);
+
+  if (isGlobal) {
+    if (globalLoading) {
+      return (
+        <div className="text-center py-20">
+          <Loader2 size={40} className="animate-spin text-blue-600 mx-auto mb-4" />
+          <p className="text-base text-gray-500">Loading Global Pipeline View...</p>
+        </div>
+      );
+    }
+    if (!allProjects || Object.keys(allProjects).length === 0) {
+      return (
+        <div className="text-center py-20 text-gray-400">
+          <Globe size={48} className="mx-auto mb-2 opacity-50" />
+          <p className="text-sm">No projects found.</p>
+        </div>
+      );
+    }
+    return <GlobalPipelineView projects={allProjects} router={router} />;
+  }
 
   if (loading) {
     return (
@@ -1067,6 +1110,78 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
           </>
         );
       })()}
+    </div>
+  );
+}
+
+// ── Global Pipeline View ──
+function GlobalPipelineView({ projects, router }: { projects: Record<string, any>; router: ReturnType<typeof useRouter> }) {
+  const projectEntries = Object.entries(projects);
+  return (
+    <div className="p-2 space-y-4">
+      <div className="flex items-center gap-2 mb-2">
+        <Globe size={22} className="text-indigo-600" />
+        <h2 className="text-lg font-bold">Global Pipeline View</h2>
+        <span className="text-[11px] text-gray-400 ml-auto">{projectEntries.length} project(s)</span>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        {projectEntries.map(([id, data]) => {
+          const info = data.info || {};
+          const stateMatrix = data.stateMatrix || {};
+          const agents = stateMatrix.agent_states || {};
+          const agentEntries = Object.entries(agents);
+          const total = agentEntries.length;
+          const done = agentEntries.filter(([, a]: any) => a.status === 'approved' || a.status === 'completed').length;
+          const active = agentEntries.filter(([, a]: any) => a.status === 'active' || a.status === 'in_progress').length;
+          const failed = agentEntries.filter(([, a]: any) => a.status === 'failed').length;
+          const awaiting = agentEntries.filter(([, a]: any) => a.status === 'awaiting_approval').length;
+          const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+          return (
+            <button key={id} onClick={() => router.push(`/agentic-console?project=${encodeURIComponent(id)}`)}
+              className="bg-white rounded-xl border shadow-sm p-4 text-left hover:shadow-md hover:border-indigo-300 transition-all active:scale-[0.98]">
+              <div className="flex items-start justify-between mb-3">
+                <div className="min-w-0">
+                  <div className="text-sm font-bold truncate">{info.name || id}</div>
+                  {info.description && <div className="text-[11px] text-gray-400 truncate mt-0.5">{info.description}</div>}
+                </div>
+                <Shield size={18} className="text-indigo-500 shrink-0 ml-2" />
+              </div>
+              {/* Mini progress bar */}
+              <div className="flex items-center gap-2 mb-3">
+                <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="h-full rounded-full transition-all" style={{
+                    width: `${pct}%`,
+                    backgroundColor: pct >= 80 ? '#16A34A' : pct >= 50 ? '#F59E0B' : '#DC2626',
+                  }} />
+                </div>
+                <span className="text-xs font-mono font-bold">{pct}%</span>
+              </div>
+              {/* Agent status summary */}
+              <div className="flex items-center gap-3 text-[11px]">
+                <span className="flex items-center gap-1"><CheckCircle size={11} className="text-green-500" /><span className="font-medium">{done}</span><span className="text-gray-400">done</span></span>
+                {active > 0 && <span className="flex items-center gap-1"><Loader2 size={11} className="text-blue-500 animate-spin" /><span className="font-medium text-blue-600">{active}</span><span className="text-gray-400">active</span></span>}
+                {awaiting > 0 && <span className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-50 border border-amber-200"><Clock size={11} className="text-amber-500" /><span className="font-bold text-amber-600">{awaiting}</span></span>}
+                {failed > 0 && <span className="flex items-center gap-1"><XCircle size={11} className="text-red-500" /><span className="font-medium text-red-600">{failed}</span><span className="text-gray-400">failed</span></span>}
+              </div>
+              {/* Mini agent train — show first 8 in a row */}
+              <div className="flex items-center gap-1 mt-3 flex-wrap">
+                {agentEntries.slice(0, 8).map(([agentId, a]: any) => {
+                  const dotColor = a.status === 'approved' || a.status === 'completed' ? 'bg-green-500'
+                    : a.status === 'active' || a.status === 'in_progress' ? 'bg-blue-500'
+                    : a.status === 'failed' ? 'bg-red-500'
+                    : a.status === 'awaiting_approval' ? 'bg-amber-500'
+                    : 'bg-gray-300';
+                  return <span key={agentId} className={`w-2.5 h-2.5 rounded-full ${dotColor} ${a.status === 'active' || a.status === 'in_progress' ? 'animate-pulse' : ''}`} title={`${agentId}: ${a.status}`} />;
+                })}
+                {agentEntries.length > 8 && <span className="text-[9px] text-gray-400 ml-1">+{agentEntries.length - 8}</span>}
+              </div>
+              <div className="flex items-center justify-end mt-2 text-[10px] text-indigo-500 font-medium">
+                View Details <ChevronRight size={10} className="ml-0.5" />
+              </div>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }

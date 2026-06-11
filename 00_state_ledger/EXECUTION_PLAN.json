@@ -10,12 +10,12 @@
     "branch": "feature/p0-p1-system-rebuild",
     "base_branch": "develop",
     "created_at": "2026-06-11T18:00:00Z",
-    "updated_at": "2026-06-11T18:55:00Z",
+    "updated_at": "2026-06-11T19:00:00Z",
     "stable_rollback_tag": "v2.5-agentic-console-stable",
     "total_items": 27,
-    "completed_count": 3,
+    "completed_count": 4,
     "in_progress_count": 0,
-    "pending_count": 24
+    "pending_count": 23
   },
   "phases": [
     {
@@ -70,14 +70,14 @@
           "effort": "Large",
           "description": "Global pipeline view (all projects as mini trains) + per-project dashboard. Project selector. Rename to 'Central Agentic AI Console'",
           "ui_surface": "/ global train view, /project/[id] per-project",
-          "status": "pending",
+          "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": null,
-          "completed_at": null,
+          "started_at": "2026-06-11T18:55:00Z",
+          "completed_at": "2026-06-11T19:00:00Z",
           "dependencies": [
             "P0-1"
           ],
-          "notes": ""
+          "notes": "Created /api/agentic-console/all-state endpoint returning all projects' state matrices. DashboardClient now shows global pipeline view (mini train cards per project) when no ?project= param, and existing detailed view when project is selected. GlobalPipelineView component shows progress bars, agent status summary, and mini agent dot trains. Renamed layout to 'Central Agentic AI Console'."
         }
       ]
     },
