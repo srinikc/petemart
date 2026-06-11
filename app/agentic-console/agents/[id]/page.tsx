@@ -6,7 +6,7 @@ import {
   ArrowLeft, Loader2, CheckCircle, XCircle, AlertTriangle, RefreshCw,
   Send, FileText, MessageSquare, Server, Shield, Bot, Play, Clock,
   Radio, Download, Eye, BookOpen, Code, Terminal, Users, Activity,
-  Database,
+  Database, ExternalLink, GitPullRequest,
 } from 'lucide-react';
 import { StatusBadge, fetchWithTimeout, PHASE_LABELS } from '../../shared';
 
@@ -46,6 +46,18 @@ export default function AgentDetailPage() {
   const [snapshots, setSnapshots] = useState<any[]>([]);
   const [compareA, setCompareA] = useState('');
   const [compareB, setCompareB] = useState('');
+  const [codeReviews, setCodeReviews] = useState<any[]>([]);
+  const [prLink, setPrLink] = useState<string | null>(null);
+  const [codeReviewLoading, setCodeReviewLoading] = useState(true);
+  const [showTrace, setShowTrace] = useState(false);
+  const [traces, setTraces] = useState<any[]>([]);
+
+  const loadTraces = useCallback(async () => {
+    try {
+      const r = await fetch(`/api/agentic-console/traces?agentId=${agentId}`);
+      if (r.ok) { const d = await r.json(); setTraces(d.traces || []); }
+    } catch {}
+  }, [agentId]);
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
 
@@ -68,6 +80,22 @@ export default function AgentDetailPage() {
       setLoading(false);
     };
     load();
+
+    const loadCodeReviews = async () => {
+      try {
+        const prRes = await fetch('/api/agentic-console/pull-requests');
+        const prData = await prRes.json();
+        const pr = (prData.pull_requests || []).find((p: any) => agentId && p.branch?.includes(agentId.replace(/_/g, '-')));
+        if (pr) {
+          setPrLink(pr.url);
+          const reviewRes = await fetch(`/api/agentic-console/code-reviews?pr_number=${pr.number}`);
+          const reviewData = await reviewRes.json();
+          setCodeReviews(reviewData.reviews || []);
+        }
+      } catch { /* no code review data */ }
+      setCodeReviewLoading(false);
+    };
+    loadCodeReviews();
 
     es.addEventListener('state_snapshot', (e: MessageEvent) => {
       const sd = JSON.parse(e.data);
@@ -484,6 +512,48 @@ export default function AgentDetailPage() {
                       </select>
                       <button onClick={updateVersion} className="text-[10px] px-2 py-1 rounded bg-indigo-600 text-white hover:bg-indigo-700">Set Version</button>
                     </div>
+                  </div>
+                </details>
+              </div>
+
+              {/* Code Review */}
+              <div>
+                <h3 className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1.5">
+                  <GitPullRequest size={12} /> Code Review
+                </h3>
+                <details className="border rounded-lg">
+                  <summary className="px-3 py-2 text-xs font-medium cursor-pointer hover:bg-gray-50 flex items-center gap-2">
+                    <Radio size={10} className="text-gray-400" />
+                    {codeReviewLoading ? 'Loading...' : prLink ? `${codeReviews.length} review${codeReviews.length !== 1 ? 's' : ''}` : 'No code review data'}
+                  </summary>
+                  <div className="px-3 pb-2 space-y-1.5">
+                    {codeReviewLoading ? (
+                      <div className="flex items-center gap-2 py-2 text-[10px] text-gray-400">
+                        <Loader2 size={10} className="animate-spin" /> Loading code review data...
+                      </div>
+                    ) : !prLink ? (
+                      <p className="text-[10px] text-gray-400 py-1">No code review data</p>
+                    ) : (
+                      <>
+                        {prLink && (
+                          <a href={prLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[10px] text-indigo-600 hover:underline mb-2">
+                            <ExternalLink size={10} /> View Pull Request
+                          </a>
+                        )}
+                        {codeReviews.length === 0 ? (
+                          <p className="text-[10px] text-gray-400 py-1">No reviews submitted yet.</p>
+                        ) : codeReviews.map((r: any, i: number) => (
+                          <div key={i} className="border rounded p-2 text-[10px]">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">{r.reviewer}</span>
+                              <span className={`text-[9px] px-1.5 py-0.5 rounded ${r.state === 'APPROVED' ? 'bg-green-100 text-green-700' : r.state === 'CHANGES_REQUESTED' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}`}>{r.state}</span>
+                              {r.submitted_at && <span className="text-gray-400 ml-auto">{new Date(r.submitted_at).toLocaleDateString()}</span>}
+                            </div>
+                            {r.body && <p className="text-[9px] text-gray-600 mt-1 whitespace-pre-wrap">{r.body}</p>}
+                          </div>
+                        ))}
+                      </>
+                    )}
                   </div>
                 </details>
               </div>

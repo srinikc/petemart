@@ -16,9 +16,9 @@ const { execSync } = require('child_process');
   }
 
   if (diff.length > 15000) {
-    console.log('\n  Code review skipped: diff too large (' + diff.length + ' chars, max 15000)');
-    process.exitCode = 0;
-    return;
+    console.log('\n  ⚠ Diff is large (' + diff.length + ' chars, max 15000) — truncating to first 15000 chars for review');
+    console.log('  Files beyond first ~300 lines will not be reviewed in this pass');
+    diff = diff.slice(0, 15000) + '\n\n... [diff truncated due to size]';
   }
 
   const apiKey = process.env.DEEPSEEK_API_KEY;
