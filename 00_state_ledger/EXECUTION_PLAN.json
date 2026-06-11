@@ -265,12 +265,12 @@
           "effort": "Medium",
           "description": "Snapshot prompt + config per execution. Side-by-side diff view. Revert button",
           "ui_surface": "Agent Detail Prompts tab: version dropdown, Compare view, Revert button",
-          "status": "pending",
+          "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": null,
-          "completed_at": null,
+          "started_at": "2026-06-11T20:00:00Z",
+          "completed_at": "2026-06-11T20:05:00Z",
           "dependencies": [],
-          "notes": ""
+          "notes": "Created GET/POST /api/agentic-console/prompt-snapshots with prompt_snapshots/<agentId>.jsonl storage. Updated Prompts tab with Snapshot Current button, prompt snapshot list, side-by-side compare (two dropdowns), and config metadata."
         },
         {
           "id": "P1-18",

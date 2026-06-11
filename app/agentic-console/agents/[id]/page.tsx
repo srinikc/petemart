@@ -43,6 +43,9 @@ export default function AgentDetailPage() {
   const [versionInfo, setVersionInfo] = useState<any>(null);
   const [newVersion, setNewVersion] = useState('');
   const [versionCompatibility, setVersionCompatibility] = useState('backward-compatible');
+  const [snapshots, setSnapshots] = useState<any[]>([]);
+  const [compareA, setCompareA] = useState('');
+  const [compareB, setCompareB] = useState('');
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
 
@@ -190,6 +193,26 @@ export default function AgentDetailPage() {
   };
 
   useEffect(() => { if (agentId) loadVersion(); }, [agentId, loadVersion]);
+
+  const loadSnapshots = useCallback(async () => {
+    try {
+      const r = await fetch(`/api/agentic-console/prompt-snapshots?agentId=${agentId}`);
+      if (r.ok) { const d = await r.json(); setSnapshots(d.snapshots || []); }
+    } catch {}
+  }, [agentId]);
+
+  const saveSnapshot = async () => {
+    try {
+      await fetch('/api/agentic-console/prompt-snapshots', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ agentId, system_prompt: systemPrompt, config: { role: agent?.role, pool: agent?.pool, phase: agent?.phase } }),
+      });
+      showToast('Snapshot saved');
+      loadSnapshots();
+    } catch { showToast('Failed to save snapshot'); }
+  };
+
+  useEffect(() => { if (agentId) loadSnapshots(); }, [agentId, loadSnapshots]);
 
   if (loading) {
     return <div className="text-center py-20"><Loader2 size={32} className="animate-spin text-blue-600 mx-auto mb-4" /><p className="text-gray-500">Loading agent detail...</p></div>;
@@ -478,13 +501,14 @@ export default function AgentDetailPage() {
           {/* ═══ PROMPTS TAB ═══ */}
           {activeTab === 'prompts' && (
             <div className="space-y-5">
-              <div>
-                <h3 className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1.5">
+              <div className="flex items-center gap-2">
+                <h3 className="text-xs font-semibold text-gray-500 flex items-center gap-1.5">
                   <BookOpen size={12} /> System Prompt
                 </h3>
-                <div className="bg-gray-900 text-gray-100 rounded-lg p-3 text-[11px] font-mono whitespace-pre-wrap max-h-80 overflow-y-auto leading-relaxed">
-                  {systemPrompt || 'No system prompt found in registry.'}
-                </div>
+                <button onClick={saveSnapshot} className="ml-auto text-[9px] px-2 py-1 rounded bg-indigo-600 text-white hover:bg-indigo-700">Snapshot Current</button>
+              </div>
+              <div className="bg-gray-900 text-gray-100 rounded-lg p-3 text-[11px] font-mono whitespace-pre-wrap max-h-80 overflow-y-auto leading-relaxed">
+                {systemPrompt || 'No system prompt found in registry.'}
               </div>
 
               {/* User Instruction */}
@@ -499,28 +523,56 @@ export default function AgentDetailPage() {
                 </div>
               )}
 
+              {/* Prompt Snapshots */}
               <div>
                 <h3 className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1.5">
-                  <Code size={12} /> Prompt History
+                  <Code size={12} /> Prompt Snapshots ({snapshots.length})
                 </h3>
-                <div className="space-y-2">
-                  {[...Array(Math.max(1, agent.execution_count))].map((_, i) => (
-                    <details key={i} className="border rounded-lg" open={i === agent.execution_count - 1}>
+
+                {/* Side-by-side compare */}
+                {snapshots.length >= 2 && (
+                  <div className="flex items-center gap-2 mb-2">
+                    <select className="border rounded text-[10px] px-2 py-1 flex-1" value={compareA} onChange={e => setCompareA(e.target.value)}>
+                      <option value="">Compare A</option>
+                      {snapshots.map((s, i) => <option key={s.id} value={i}>{new Date(s.timestamp).toLocaleDateString()} #{snapshots.length - i}</option>)}
+                    </select>
+                    <span className="text-[9px] text-gray-400">vs</span>
+                    <select className="border rounded text-[10px] px-2 py-1 flex-1" value={compareB} onChange={e => setCompareB(e.target.value)}>
+                      <option value="">Compare B</option>
+                      {snapshots.map((s, i) => <option key={s.id} value={i}>{new Date(s.timestamp).toLocaleDateString()} #{snapshots.length - i}</option>)}
+                    </select>
+                  </div>
+                )}
+
+                {compareA !== '' && compareB !== '' && compareA !== compareB && (
+                  <div className="grid grid-cols-2 gap-2 mb-2">
+                    <div className="bg-gray-50 rounded p-2 text-[9px] font-mono whitespace-pre-wrap max-h-48 overflow-y-auto border">
+                      <div className="text-[8px] text-gray-400 mb-1">Snapshot #{snapshots.length - parseInt(compareA)}</div>
+                      {snapshots[parseInt(compareA)]?.system_prompt || '(empty)'}
+                    </div>
+                    <div className="bg-gray-50 rounded p-2 text-[9px] font-mono whitespace-pre-wrap max-h-48 overflow-y-auto border">
+                      <div className="text-[8px] text-gray-400 mb-1">Snapshot #{snapshots.length - parseInt(compareB)}</div>
+                      {snapshots[parseInt(compareB)]?.system_prompt || '(empty)'}
+                    </div>
+                  </div>
+                )}
+
+                <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                  {snapshots.length === 0 ? (
+                    <p className="text-[10px] text-gray-400">No snapshots yet. Click 'Snapshot Current' to save one.</p>
+                  ) : snapshots.map((s, i) => (
+                    <details key={s.id} className="border rounded-lg" open={i === 0}>
                       <summary className="px-3 py-2 text-xs font-medium cursor-pointer hover:bg-gray-50 flex items-center gap-2">
-                        <Play size={10} className="text-gray-400" />
-                        Execution #{i + 1} — {agent.last_activity_timestamp ? new Date(agent.last_activity_timestamp).toLocaleDateString() : 'N/A'}
+                        <Clock size={10} className="text-gray-400" />
+                        #{snapshots.length - i} — {new Date(s.timestamp).toLocaleString()}
                       </summary>
-                      <div className="px-3 pb-2">
-                        <div className="bg-gray-50 rounded p-2.5 text-[10px] text-gray-600 font-mono whitespace-pre-wrap">
-                          Act as an {agent.role}. {systemPrompt ? systemPrompt.substring(0, 200) + '...' : 'See system prompt above.'}
+                      <div className="px-3 pb-2 space-y-1.5">
+                        <div className="bg-gray-50 rounded p-2 text-[10px] text-gray-600 font-mono whitespace-pre-wrap max-h-40 overflow-y-auto">
+                          {s.system_prompt || '(empty)'}
                         </div>
-                        <div className="mt-1 flex items-center gap-2 text-[9px] text-gray-400">
-                          <span>Execution #{i + 1}</span>
-                          <span>·</span>
-                          <span>Status: {agent.status}</span>
-                          <span>·</span>
-                          <span>Artifacts: {agent.artifacts_emitted?.length || 0}</span>
-                        </div>
+                        {s.config && Object.keys(s.config).length > 0 && (
+                          <div className="text-[9px] text-gray-400">Config: {JSON.stringify(s.config)}</div>
+                        )}
                       </div>
                     </details>
                   ))}
