@@ -1,0 +1,44 @@
+{
+  "version": "1.0",
+  "description": "A2A (Agent-to-Agent) structured message protocol type definitions",
+  "types": [
+    {
+      "id": "DelegateSubTask",
+      "display_name": "Delegate Subtask",
+      "description": "Agent A delegates a subtask to Agent B to execute on its behalf",
+      "color": "blue",
+      "fields": {
+        "task_id": { "type": "string", "required": true, "description": "Unique identifier for the subtask" },
+        "task_description": { "type": "string", "required": true, "description": "Description of the subtask to execute" },
+        "input_artifacts": { "type": "array", "required": false, "description": "Artifact references the delegate needs" },
+        "expected_output": { "type": "string", "required": false, "description": "Description of expected output format" },
+        "deadline": { "type": "string", "required": false, "description": "Expected completion timestamp" }
+      }
+    },
+    {
+      "id": "SubTaskResult",
+      "display_name": "Subtask Result",
+      "description": "Agent B returns results of a delegated subtask to Agent A",
+      "color": "green",
+      "fields": {
+        "task_id": { "type": "string", "required": true, "description": "Reference to the original task_id from DelegateSubTask" },
+        "status": { "type": "string", "required": true, "description": "completed, failed, or partial" },
+        "result_summary": { "type": "string", "required": true, "description": "Summary of what was accomplished" },
+        "output_artifacts": { "type": "array", "required": false, "description": "Artifact references produced" },
+        "error_details": { "type": "string", "required": false, "description": "Error details if status is failed" },
+        "duration_ms": { "type": "number", "required": false, "description": "Milliseconds taken to complete" }
+      }
+    },
+    {
+      "id": "RequestClarification",
+      "display_name": "Request Clarification",
+      "description": "Any agent requests clarification or additional information from another agent",
+      "color": "amber",
+      "fields": {
+        "query": { "type": "string", "required": true, "description": "The clarification question or request" },
+        "context": { "type": "string", "required": false, "description": "Additional context for the request" },
+        "priority": { "type": "string", "required": false, "description": "high, medium, or low" }
+      }
+    }
+  ]
+}

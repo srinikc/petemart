@@ -185,12 +185,12 @@
           "effort": "Medium",
           "description": "Typed messages: DelegateSubTask, SubTaskResult, RequestClarification. Schema-validated",
           "ui_surface": "Agent Detail Comm tab enhanced with type badges, filter dropdown",
-          "status": "pending",
+          "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": null,
-          "completed_at": null,
+          "started_at": "2026-06-11T19:35:00Z",
+          "completed_at": "2026-06-11T19:45:00Z",
           "dependencies": [],
-          "notes": ""
+          "notes": "Created A2A_TYPES.json with 3 typed message schemas (DelegateSubTask, SubTaskResult, RequestClarification). Extended agent-messages API with a2a_type filter and schema validation. Updated Comm tab with type badges, a2aType filter dropdown, and Send A2A Message form with type picker and payload JSON editor."
         },
         {
           "id": "P1-12",

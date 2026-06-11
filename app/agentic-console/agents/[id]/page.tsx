@@ -32,6 +32,10 @@ export default function AgentDetailPage() {
   const [toast, setToast] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [instruction, setInstruction] = useState('');
+  const [a2aTypeFilter, setA2aTypeFilter] = useState('all');
+  const [composingA2aType, setComposingA2aType] = useState('');
+  const [composingPayload, setComposingPayload] = useState('');
+  const [a2aTo, setA2aTo] = useState('');
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
 
@@ -42,7 +46,7 @@ export default function AgentDetailPage() {
       try {
         const [detailRes, msgRes] = await Promise.all([
           fetchWithTimeout(`/api/agentic-console/agent-detail?agentId=${agentId}`, 10000),
-          fetch(`/api/agentic-console/agent-messages?agentId=${agentId}`),
+          fetch(`/api/agentic-console/agent-messages?agentId=${agentId}&a2aType=${a2aTypeFilter}`),
         ]);
         const detail = await detailRes.json();
         setData(detail);
@@ -76,6 +80,7 @@ export default function AgentDetailPage() {
   const consumedArtifacts = data?.consumedArtifacts || [];
   const agentMcpServers = data?.agentMcpServers || [];
   const lastError = data?.lastError;
+  const agentStates: Record<string, any> = data?.stateMatrix?.agent_states || {};
 
   const handleAction = async (action: string) => {
     setActionLoading(action);
@@ -111,6 +116,32 @@ export default function AgentDetailPage() {
         setInstruction('');
       }
     } catch { showToast('Failed to send'); }
+  };
+
+  const sendA2aMessage = async () => {
+    if (!a2aTo || !composingA2aType || !instruction.trim()) return;
+    try {
+      let payload: any = {};
+      try { payload = composingPayload ? JSON.parse(composingPayload) : {}; } catch { payload = { body: composingPayload }; }
+      const res = await fetch('/api/agentic-console/agent-messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from_agent: agentId,
+          to_agent: a2aTo,
+          subject: instruction,
+          body: composingPayload,
+          a2a_type: composingA2aType,
+          a2a_payload: payload,
+        }),
+      });
+      if (res.ok) {
+        showToast(`A2A ${composingA2aType} sent to ${a2aTo}`);
+        setInstruction(''); setComposingPayload(''); setComposingA2aType(''); setA2aTo('');
+        const msgRes = await fetch(`/api/agentic-console/agent-messages?agentId=${agentId}&a2aType=${a2aTypeFilter}`);
+        if (msgRes.ok) { const d = await msgRes.json(); setMessages(d.messages || []); }
+      }
+    } catch { showToast('Failed to send A2A message'); }
   };
 
   if (loading) {
@@ -561,22 +592,36 @@ export default function AgentDetailPage() {
           {/* ═══ COMMUNICATION TAB ═══ */}
           {activeTab === 'comm' && (
             <div className="space-y-4">
-              <h3 className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1.5">
-                <MessageSquare size={12} /> Agent-to-Agent Messages
-              </h3>
+              <div className="flex items-center gap-2 mb-2">
+                <h3 className="text-xs font-semibold text-gray-500 flex items-center gap-1.5">
+                  <MessageSquare size={12} /> Agent-to-Agent Messages
+                </h3>
+                <select className="ml-auto border rounded text-[10px] px-2 py-1" value={a2aTypeFilter} onChange={e => setA2aTypeFilter(e.target.value)}>
+                  <option value="all">All Types</option>
+                  <option value="DelegateSubTask">Delegate Subtask</option>
+                  <option value="SubTaskResult">Subtask Result</option>
+                  <option value="RequestClarification">Request Clarification</option>
+                </select>
+              </div>
 
               {/* Message List */}
               <div className="space-y-2 max-h-72 overflow-y-auto">
                 {messages.length === 0 ? (
                   <p className="text-xs text-gray-400 text-center py-4">No messages yet.</p>
-                ) : messages.map((msg: any) => (
+                ) : messages.map((msg: any) => {
+                  const a2aType = msg.a2a_type || null;
+                  const typeColor = a2aType === 'DelegateSubTask' ? 'bg-blue-100 text-blue-700' :
+                    a2aType === 'SubTaskResult' ? 'bg-green-100 text-green-700' :
+                    a2aType === 'RequestClarification' ? 'bg-amber-100 text-amber-700' : '';
+                  return (
                   <div key={msg.message_id} className={`border rounded-lg p-3 text-xs ${
                     msg.from_agent === agentId ? 'bg-blue-50 border-blue-200' :
                     msg.to_agent === agentId ? 'bg-green-50 border-green-200' : ''
                   }`}>
                     <div className="flex items-center gap-2 mb-1">
+                      {a2aType && <span className={`text-[9px] px-1.5 py-0.5 rounded font-medium ${typeColor}`}>{a2aType}</span>}
                       <span className="font-mono text-[10px] font-semibold text-gray-700">{msg.from_agent}</span>
-                      <span className="text-gray-400 text-[9px]">→</span>
+                      <span className="text-gray-400 text-[9px]">&rarr;</span>
                       <span className="font-mono text-[10px] font-semibold text-gray-700">{msg.to_agent}</span>
                       <span className={`ml-auto text-[9px] px-1.5 py-0.5 rounded ${
                         msg.status === 'delivered' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
@@ -584,6 +629,9 @@ export default function AgentDetailPage() {
                     </div>
                     <p className="font-medium text-[11px] text-gray-800 mb-0.5">{msg.subject}</p>
                     <p className="text-[10px] text-gray-600">{msg.body}</p>
+                    {msg.a2a_payload && Object.keys(msg.a2a_payload).length > 0 && (
+                      <pre className="mt-1 text-[8px] text-gray-500 bg-gray-50 p-1.5 rounded overflow-x-auto">{JSON.stringify(msg.a2a_payload, null, 2)}</pre>
+                    )}
                     {msg.artifact_ref && (
                       <div className="mt-1 flex items-center gap-1 text-[9px] text-indigo-600">
                         <FileText size={9} />
@@ -592,7 +640,32 @@ export default function AgentDetailPage() {
                     )}
                     <p className="text-[8px] text-gray-400 mt-1">{new Date(msg.timestamp).toLocaleString()}</p>
                   </div>
-                ))}
+                )})}
+              </div>
+
+              {/* Send A2A Message Form */}
+              <div className="border rounded-lg p-3 space-y-2">
+                <h4 className="text-[10px] font-semibold text-gray-500">Send A2A Message</h4>
+                <div className="flex gap-2">
+                  <select className="border rounded text-[10px] px-2 py-1 flex-1" value={a2aTo} onChange={e => setA2aTo(e.target.value)}>
+                    <option value="">To agent...</option>
+                    {Object.keys(agentStates).filter(id => id !== agentId).map(id => (
+                      <option key={id} value={id}>{id}</option>
+                    ))}
+                  </select>
+                  <select className="border rounded text-[10px] px-2 py-1" value={composingA2aType} onChange={e => setComposingA2aType(e.target.value)}>
+                    <option value="">Type</option>
+                    <option value="DelegateSubTask">Delegate Subtask</option>
+                    <option value="SubTaskResult">Subtask Result</option>
+                    <option value="RequestClarification">Clarification</option>
+                  </select>
+                </div>
+                <input type="text" className="border rounded text-[10px] px-2 py-1 w-full" placeholder="Subject" value={instruction} onChange={e => setInstruction(e.target.value)} />
+                <textarea className="border rounded text-[10px] px-2 py-1 w-full" rows={2} placeholder="Body or payload JSON" value={composingPayload} onChange={e => setComposingPayload(e.target.value)} />
+                <button onClick={sendA2aMessage} disabled={!a2aTo || !composingA2aType || !instruction}
+                  className="text-[10px] px-2.5 py-1.5 rounded bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 flex items-center gap-1">
+                  <Send size={10} /> Send {composingA2aType}
+                </button>
               </div>
 
               {/* Debug: Show raw message format if empty */}
