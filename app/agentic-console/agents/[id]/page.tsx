@@ -40,6 +40,9 @@ export default function AgentDetailPage() {
   const [memoryEntries, setMemoryEntries] = useState<any[]>([]);
   const [injectMemory, setInjectMemory] = useState(false);
   const [newMemory, setNewMemory] = useState('');
+  const [versionInfo, setVersionInfo] = useState<any>(null);
+  const [newVersion, setNewVersion] = useState('');
+  const [versionCompatibility, setVersionCompatibility] = useState('backward-compatible');
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
 
@@ -167,6 +170,26 @@ export default function AgentDetailPage() {
   };
 
   useEffect(() => { if (agentId) loadMemory(); }, [agentId, loadMemory]);
+
+  const loadVersion = useCallback(async () => {
+    try {
+      const r = await fetch(`/api/agentic-console/agent-version?agentId=${agentId}`);
+      if (r.ok) setVersionInfo(await r.json());
+    } catch {}
+  }, [agentId]);
+
+  const updateVersion = async () => {
+    if (!newVersion.trim()) return;
+    try {
+      const r = await fetch('/api/agentic-console/agent-version', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ agentId, output_version: parseInt(newVersion) || newVersion, compatibility: versionCompatibility }),
+      });
+      if (r.ok) { showToast(`Version updated`); setNewVersion(''); loadVersion(); }
+    } catch { showToast('Failed to update version'); }
+  };
+
+  useEffect(() => { if (agentId) loadVersion(); }, [agentId, loadVersion]);
 
   if (loading) {
     return <div className="text-center py-20"><Loader2 size={32} className="animate-spin text-blue-600 mx-auto mb-4" /><p className="text-gray-500">Loading agent detail...</p></div>;
@@ -397,6 +420,49 @@ export default function AgentDetailPage() {
                     <button onClick={addMemory} className="text-[10px] px-2 py-1 rounded bg-indigo-600 text-white hover:bg-indigo-700">Add</button>
                   </div>
                 </div>
+              </div>
+
+              {/* Output Versions */}
+              <div>
+                <h3 className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1.5">
+                  <Clock size={12} /> Output Versions
+                  <span className="ml-2 text-[9px] text-gray-400">v{versionInfo?.output_version ?? agent.execution_count ?? 0}</span>
+                  <span className={`text-[9px] px-1.5 py-0.5 rounded ${versionInfo?.compatibility === 'breaking' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                    {versionInfo?.compatibility || 'backward-compatible'}
+                  </span>
+                </h3>
+                <details className="border rounded-lg">
+                  <summary className="px-3 py-2 text-xs font-medium cursor-pointer hover:bg-gray-50 flex items-center gap-2">
+                    <Play size={10} className="text-gray-400" />
+                    Version History ({(versionInfo?.cascade_history || []).length})
+                  </summary>
+                  <div className="px-3 pb-2 space-y-1.5">
+                    {(versionInfo?.cascade_history || []).length === 0 ? (
+                      <p className="text-[10px] text-gray-400 py-1">No version changes recorded.</p>
+                    ) : (versionInfo?.cascade_history || []).map((h: any, i: number) => (
+                      <div key={i} className="border rounded p-2 text-[10px]">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">v{h.version}</span>
+                          <span className={`text-[9px] px-1 rounded ${h.compatibility === 'breaking' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>{h.compatibility}</span>
+                          <span className="text-gray-400 ml-auto">{new Date(h.timestamp).toLocaleString()}</span>
+                        </div>
+                        {h.cascaded?.length > 0 && (
+                          <div className="mt-1 text-[9px] text-gray-500">
+                            Cascaded: {h.cascaded.map((c: any) => `${c.agentId} (${c.action})`).join(', ')}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                    <div className="flex gap-1 pt-1">
+                      <input type="text" className="border rounded text-[10px] px-2 py-1 w-16" placeholder="v" value={newVersion} onChange={e => setNewVersion(e.target.value)} />
+                      <select className="border rounded text-[10px] px-2 py-1" value={versionCompatibility} onChange={e => setVersionCompatibility(e.target.value)}>
+                        <option value="backward-compatible">Backward Compatible</option>
+                        <option value="breaking">Breaking Change</option>
+                      </select>
+                      <button onClick={updateVersion} className="text-[10px] px-2 py-1 rounded bg-indigo-600 text-white hover:bg-indigo-700">Set Version</button>
+                    </div>
+                  </div>
+                </details>
               </div>
 
               {/* Notes */}

@@ -170,14 +170,14 @@
           "effort": "Medium",
           "description": "output_version, compatibility: backward-compatible|breaking. Breaking = cascade reset. Compatible = notify only",
           "ui_surface": "Agent Detail Output Versions collapsible, cascade history",
-          "status": "pending",
+          "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": null,
-          "completed_at": null,
+          "started_at": "2026-06-11T19:55:00Z",
+          "completed_at": "2026-06-11T20:00:00Z",
           "dependencies": [
             "P0-3"
           ],
-          "notes": ""
+          "notes": "Created POST/GET /api/agentic-console/agent-version with version setting, compatibility control, and cascade reset for breaking changes. Breaking changes reset all downstream agent status to pending. Added Output Versions collapsible to Overview tab with version history, cascade details, and Set Version form."
         },
         {
           "id": "P1-11",
