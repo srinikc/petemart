@@ -16,9 +16,41 @@ export async function GET(req: NextRequest) {
   const stream = new ReadableStream({
     async start(controller) {
       let lastRead = since || new Date(0).toISOString();
+      let lastStuckCheck = 0;
 
       const sendEvent = (event: string, data: any) => {
         controller.enqueue(encoder.encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`));
+      };
+
+      // Detect stuck agents
+      const checkStuckAgents = () => {
+        try {
+          const stateRaw = fs.readFileSync(STATE_PATH, 'utf-8');
+          const state = JSON.parse(stateRaw);
+          const now = Date.now();
+          const threshold = state.pipeline_control?.stuck_agent_timeout_ms || 300000;
+          const stuck: any[] = [];
+          const agents = state.agent_states || {};
+
+          for (const [id, a] of Object.entries(agents) as [string, any][]) {
+            if ((a.status === 'active' || a.status === 'in_progress') && a.started_at) {
+              const elapsed = now - new Date(a.started_at).getTime();
+              const timeout = a.timeout_threshold_ms || threshold;
+              if (elapsed > timeout) {
+                stuck.push({
+                  agent_id: id,
+                  elapsed_ms: elapsed,
+                  timeout_ms: timeout,
+                  step_label: a.step_label || null,
+                });
+              }
+            }
+          }
+
+          if (stuck.length > 0) {
+            sendEvent('stuck_agents', stuck);
+          }
+        } catch { /* ignore */ }
       };
 
       // Send initial state snapshot
@@ -53,6 +85,12 @@ export async function GET(req: NextRequest) {
             stateMatrix: state,
             timestamp: new Date().toISOString(),
           });
+
+          // Check for stuck agents every 15s
+          if (Date.now() - lastStuckCheck > 15000) {
+            lastStuckCheck = Date.now();
+            checkStuckAgents();
+          }
         } catch { /* ignore */ }
       };
 

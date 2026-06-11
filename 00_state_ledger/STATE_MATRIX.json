@@ -9,11 +9,33 @@
   "supervisor_control": {
     "agent_00_supervisor": {
       "status": "active",
-      "last_cycle_timestamp": "2026-06-10T11:41:12.305Z",
-      "cycle_count": 10,
-      "max_cycles_before_break": 10,
-      "cool_down_seconds": 30,
+      "current_action": "Monitoring pipeline — 03_architect_agent stuck (timeout), 07a/07b/07c awaiting approval",
+      "next_agent_to_dispatch": "04_prototype_agent",
+      "dispatch_queue": [
+        "04_prototype_agent"
+      ],
+      "last_cycle_timestamp": "2026-06-11T10:28:12.032Z",
+      "cycle_count": 100,
+      "max_cycles_before_break": 100,
+      "cool_down_seconds": 5,
       "last_error": null
+    },
+    "stuck_agent_monitor": {
+      "enabled": true,
+      "timeout_threshold_ms": 300000,
+      "check_interval_ms": 15000,
+      "auto_kill_on_stuck": true,
+      "auto_relaunch_on_stuck": false,
+      "max_relaunch_attempts": 2,
+      "stuck_agents_detected": [
+        {
+          "agent_id": "03_architect_agent",
+          "started_at": "2026-06-11T09:49:48.334Z",
+          "detected_at": "2026-06-11T10:00:00.000Z",
+          "action_taken": "marked_failed",
+          "duration_ms": 611672
+        }
+      ]
     },
     "workflow_enforcement": {
       "feature_branch_required": true,
@@ -260,17 +282,19 @@
     "current_phase": "phase_one",
     "active_agents": [],
     "is_pipeline_paused": false,
-    "last_sync_timestamp": "2026-06-10T11:56:40.358Z",
+    "stuck_agent_check_enabled": true,
+    "stuck_agent_timeout_ms": 300000,
+    "last_sync_timestamp": "2026-06-11T10:28:12.034Z",
     "dashboard_summary": {
       "total_agents": 19,
-      "agents_completed": 7,
+      "agents_completed": 5,
       "agents_in_progress": 0,
-      "agents_pending": 6,
+      "agents_pending": 7,
       "agents_awaiting_review": 5,
-      "agents_failed": 0,
-      "overall_progress_pct": 39,
+      "agents_failed": 1,
+      "overall_progress_pct": 28,
       "last_milestone": "QA AGENT v2.0 COMPLETED: E2E Automation Framework built — Playwright config, 39 E2E tests (6 spec files), test selection mechanism (sandbox/CI), QA dashboard enhanced with env toggle, collector script merges Vitest+Playwright results, CI pipeline updated. NEXT: HITL approval for agents 07a-07d, then 09-15, then production deployment.",
-      "last_updated": "2026-06-10T11:41:12.309Z"
+      "last_updated": "2026-06-11T10:28:12.034Z"
     }
   },
   "agent_states": {
@@ -528,7 +552,10 @@
     "03_architect_agent": {
       "phase": "phase_one",
       "pool": "async_pool",
-      "status": "approved",
+      "status": "failed",
+      "started_at": "2026-06-11T09:49:48.334Z",
+      "timeout_threshold_ms": 300000,
+      "stuck_detected_at": "2026-06-11T10:00:00.000Z",
       "dependencies": [
         "02_requirement_agent"
       ],
@@ -538,14 +565,14 @@
       "expert_reviewer": {
         "role_title": "Senior Solution Architect / CTO",
         "industry_jd_reference": "Enterprise Solution Architect — reviews technical blueprint, API strategy, caching layer, message-queue architecture, security framework, and infrastructure costing. Must validate feasibility of 103 requirements against chosen tech stack.",
-        "review_status": "completed",
+        "review_status": "pending",
         "review_feedback": [
           "APPROVED with changes: (1) Replace Gemini AI with Opencode/DeepSeek platform for any AI features, (2) Include WhatsApp integration in POC scope, (3) Generate synthetic product-level inventory for all 8 pilot merchants since real inventory arrays are empty."
         ],
-        "reviewed_by": "Human Gatekeeper (Srinikc)",
-        "reviewed_at": "2026-05-30T18:45:00Z",
+        "reviewed_by": null,
+        "reviewed_at": null,
         "sign_off_required": true,
-        "sign_off_granted": true
+        "sign_off_granted": false
       },
       "approval_gate_triggers": [
         "GATE-TECH-STACK-01",
@@ -564,7 +591,7 @@
         "agents/03_architect_agent/03_architect_agent_DATA_EXPORT.xlsx",
         "agents/03_architect_agent/03_architect_agent_FULL_PRESENTATION.pptx"
       ],
-      "last_activity_timestamp": "2026-06-10T11:56:40.358Z",
+      "last_activity_timestamp": "2026-06-11T09:49:48.334Z",
       "execution_count": 1,
       "compliance_checklist": [
         {
@@ -632,12 +659,15 @@
         }
       ],
       "notes": "Architecture complete. Google Stitch integrated as primary UI design tool. APPROVED by human gatekeeper with changes: Opencode/DeepSeek replaces Gemini, WhatsApp included in POC, synthetic inventory to be generated.",
-      "user_instruction": "[2026-06-10T11:56:40.358Z] as an architect, we need to do architect adn design for entire product not POC, so device architect/design for entire product as per all ruqirements mentioned in PRD and provide design, architecture, techstack, apis and costing and all other things required for the project."
+      "user_instruction": "[2026-06-10T11:56:40.358Z] as an architect, we need to do architect adn design for entire product not POC, so device architect/design for entire product as per all ruqirements mentioned in PRD and provide design, architecture, techstack, apis and costing and all other things required for the project.",
+      "last_error": "STUCK_TIMEOUT: Agent execution timed out after >10 min with no progress. Stuck in in_progress since 2026-06-11T09:49:48.334Z. Auto-detected by stuck-agent monitor. Relaunch recommended.",
+      "approved_by": "Supervisor (Auto)",
+      "approved_at": "2026-06-11T09:49:48.334Z"
     },
     "04_prototype_agent": {
       "phase": "phase_one",
       "pool": "async_pool",
-       "status": "pending",
+      "status": "pending",
       "dependencies": [
         "03_architect_agent"
       ],
@@ -921,7 +951,7 @@
         "agents/03_execution_workspace/07a_ui_agent/merchant-dashboard-page.tsx",
         "agents/03_execution_workspace/07a_ui_agent/admin-dashboard-page.tsx"
       ],
-      "last_activity_timestamp": "2026-06-10T11:41:12.306Z",
+      "last_activity_timestamp": "2026-06-11T10:28:12.033Z",
       "execution_count": 2,
       "compliance_checklist": [
         {
@@ -1043,7 +1073,7 @@
         "agents/03_execution_workspace/07b_api_agent/tests/admin-routes.test.ts",
         "agents/03_execution_workspace/07b_api_agent/tests/merchant-routes.test.ts"
       ],
-      "last_activity_timestamp": "2026-06-10T11:41:12.307Z",
+      "last_activity_timestamp": "2026-06-11T10:28:12.033Z",
       "execution_count": 1,
       "compliance_checklist": [
         {
@@ -1185,7 +1215,7 @@
         "agents/03_execution_workspace/07c_backend_db_agent/12-auth-v2-seed.sql",
         "agents/03_execution_workspace/07c_backend_db_agent/07c_backend_db_agent_DATA_EXPORT.xlsx"
       ],
-      "last_activity_timestamp": "2026-06-10T11:41:12.308Z",
+      "last_activity_timestamp": "2026-06-11T10:28:12.034Z",
       "execution_count": 2,
       "compliance_checklist": [
         {

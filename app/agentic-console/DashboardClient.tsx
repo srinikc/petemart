@@ -12,7 +12,8 @@ import {
 
 import {
   AgentState, ApprovalGate, DashboardSummary, ComplianceCheck,
-  ProgressRing, fetchWithTimeout,
+  SupervisorControl, StuckAgentEntry,
+  ProgressRing, fetchWithTimeout, timeAgo, formatETA,
   PHASE_ORDER, PHASE_COLORS, PHASE_LABELS,
   CHECK_TYPE_COLORS, COMPLIANCE_TYPE_INFO,
   AGENT_ICONS as AGENT_ICONS_MAP,
@@ -68,6 +69,9 @@ function AgentMiniCard({
   const active = agent.status === 'active' || agent.status === 'in_progress';
   const done = agent.status === 'approved' || agent.status === 'completed';
   const skipped = (agent as any).disabled;
+  const step = agent.current_step && agent.steps_total ? `${agent.current_step}/${agent.steps_total}` : null;
+  const eta = agent.estimated_remaining_ms ? formatETA(agent.estimated_remaining_ms) : null;
+  const stuck = agent.stuck_detected_at ? true : false;
 
   return (
     <button
@@ -76,6 +80,7 @@ function AgentMiniCard({
         }         ${awaiting ? 'border-amber-200 bg-amber-50/40 live-glow-amber' :
           needsInput ? 'border-purple-200 bg-purple-50/40 live-glow-amber' :
           failed ? 'border-red-200 bg-red-50/40 live-glow-red' :
+          stuck ? 'border-orange-300 bg-orange-50/50 ring-1 ring-orange-300 animate-pulse' :
           skipped ? 'border-gray-200 bg-gray-100/60 opacity-60' :
             active ? 'border-blue-200 bg-blue-50/30 live-pulse-blue' :
               done ? 'border-green-200 bg-green-50/40' :
@@ -92,9 +97,18 @@ function AgentMiniCard({
         {active && <span className="ml-auto flex items-center gap-1 text-[9px] text-green-600 font-bold shrink-0"><span className="w-2 h-2 rounded-full bg-green-500 running-dot" /> RUNNING</span>}
         {done && <span className="ml-auto text-[9px] text-green-600 shrink-0">✓ Done</span>}
         {skipped && <span className="ml-auto text-[9px] text-gray-400 shrink-0">⊘ Skipped</span>}
-        {!awaiting && !needsInput && !active && !done && !skipped && <span className="ml-auto text-[9px] text-gray-400 shrink-0">{STATUS_DOT[agent.status]?.label || agent.status}</span>}
+        {stuck && <span className="ml-auto text-[9px] text-orange-500 font-bold shrink-0 animate-pulse">⚠ STUCK</span>}
+        {!awaiting && !needsInput && !active && !done && !skipped && !stuck && <span className="ml-auto text-[9px] text-gray-400 shrink-0">{STATUS_DOT[agent.status]?.label || agent.status}</span>}
       </div>
       <div className="text-[10px] text-gray-500 leading-tight mt-0.5 pl-[22px] break-words">{shortRole}</div>
+      {/* Step + ETA bar for running agents */}
+      {(active || stuck) && (
+        <div className="flex items-center gap-2 mt-1 pl-[22px]">
+          {step && <span className="text-[8px] font-mono text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">{step}</span>}
+          {agent.step_label && <span className="text-[8px] text-gray-500 truncate">{agent.step_label}</span>}
+          {eta && <span className="text-[8px] text-emerald-600 font-medium ml-auto">{eta}</span>}
+        </div>
+      )}
     </button>
   );
 }
@@ -214,7 +228,35 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
             } else if (evt.type === 'compliance_failed') {
               addActivity(evt.agent_id, `${short} compliance failed`, evt.notes?.slice(0, 80) || '', 'error', 'error');
               flashAgent(evt.agent_id);
+            } else if (evt.type === 'stuck_agent_detected') {
+              addActivity(evt.agent_id, `${short} STUCK (${Math.floor(evt.duration_ms / 1000)}s)`, `Auto-marked as failed`, 'error', 'error');
+              flashAgent(evt.agent_id);
+            } else if (evt.type === 'step_update') {
+              addActivity(evt.agent_id, `${short} step ${evt.step_number}/${evt.steps_total}`, evt.step_label || '', 'info', 'info');
+            } else if (evt.type === 'agent_relaunched') {
+              addActivity(evt.agent_id, `${short} relaunched`, evt.reason || '', 'state_change', 'info');
+              flashAgent(evt.agent_id);
             }
+          });
+        }
+      } catch { }
+    });
+
+    es.addEventListener('stuck_agents', (e: MessageEvent) => {
+      try {
+        const data = JSON.parse(e.data);
+        if (Array.isArray(data)) {
+          data.forEach((stuck: any) => {
+            const short = stuck.agent_id.replace('_agent', '').replace(/^0+/, '');
+            addActivity(stuck.agent_id, `${short} ⚠ STUCK`, `Running for ${Math.floor(stuck.elapsed_ms / 1000)}s (timeout: ${Math.floor(stuck.timeout_ms / 1000)}s)`, 'error', 'error');
+            flashAgent(stuck.agent_id);
+            setState((prev: any) => {
+              const agents = prev?.stateMatrix?.agent_states || prev?.agent_states || {};
+              if (agents[stuck.agent_id]) {
+                agents[stuck.agent_id] = { ...agents[stuck.agent_id], stuck_detected_at: new Date().toISOString() };
+              }
+              return prev;
+            });
           });
         }
       } catch { }
@@ -600,18 +642,36 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
             <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center shrink-0 border border-indigo-200">
               <Shield size={16} className="text-indigo-600" />
             </div>
-            <div className="flex-1 min-w-0 flex items-center gap-3 flex-wrap">
-              <span className="text-[12px] font-bold text-indigo-900">Agent 00 — Supervisor / Orchestrator</span>
-              <span className="text-[10px] text-indigo-700 bg-indigo-100 px-2 py-0.5 rounded-full">Sr. Program Manager</span>
-              <StatusDot status={supervisor?.status || 'idle'} size={7} />
-              <span className="text-[10px] text-indigo-600 font-medium capitalize">{supervisor?.status || 'idle'}</span>
-              <span className="text-[9px] text-indigo-400">· Cycles: {supervisor?.execution_count || 0}/3</span>
-              <span className={`text-[9px] ${circuitBreaker?.circuit_breaker_tripped_at ? 'text-red-500 font-bold' : 'text-green-600'}`}>
-                Circuit: {circuitBreaker?.circuit_breaker_tripped_at ? 'TRIPPED' : 'Closed'}
-              </span>
-              <span className="text-[9px] text-indigo-400">· {Math.floor((Date.now() - lastHeartbeat) / 1000)}s ago</span>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-3 flex-wrap">
+                <span className="text-[12px] font-bold text-indigo-900">Agent 00 — Supervisor / Orchestrator</span>
+                <span className="text-[10px] text-indigo-700 bg-indigo-100 px-2 py-0.5 rounded-full">Sr. Program Manager</span>
+                <StatusDot status={supervisor?.status || 'idle'} size={7} />
+                <span className="text-[10px] text-indigo-600 font-medium capitalize">{supervisor?.status || 'idle'}</span>
+                <span className="text-[9px] text-indigo-400">· Cycles: {(supervisorControl as any)?.agent_00_supervisor?.cycle_count || 0}/{(supervisorControl as any)?.agent_00_supervisor?.max_cycles_before_break || 100}</span>
+                <span className={`text-[9px] ${circuitBreaker?.circuit_breaker_tripped_at ? 'text-red-500 font-bold' : 'text-green-600'}`}>
+                  Circuit: {circuitBreaker?.circuit_breaker_tripped_at ? 'TRIPPED' : 'Closed'}
+                </span>
+                <span className="text-[9px] text-indigo-400">· {timeAgo((supervisorControl as any)?.agent_00_supervisor?.last_cycle_timestamp)}</span>
+              </div>
+              {/* Supervisor current action */}
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className="text-[9px] text-indigo-500 truncate max-w-[420px]">
+                  {(supervisorControl as any)?.agent_00_supervisor?.current_action || 'Pipeline orchestrator standby'}
+                </span>
+                {(supervisorControl as any)?.agent_00_supervisor?.next_agent_to_dispatch && (
+                  <span className="text-[8px] text-indigo-400 bg-indigo-100/50 px-1.5 py-0.5 rounded-full font-mono">
+                    Next: {(supervisorControl as any).agent_00_supervisor.next_agent_to_dispatch}
+                  </span>
+                )}
+                {(supervisorControl as any)?.agent_00_supervisor?.dispatch_queue?.length > 0 && (
+                  <span className="text-[8px] text-indigo-300">
+                    Queue: {(supervisorControl as any).agent_00_supervisor.dispatch_queue.join(', ')}
+                  </span>
+                )}
+              </div>
             </div>
-            <div className="flex items-center gap-2 text-[10px]">
+            <div className="flex items-center gap-2 text-[10px] shrink-0">
               <span className={`flex items-center gap-1 ${liveConnected ? 'text-green-600' : 'text-red-500'}`}>
                 <span className={`w-1.5 h-1.5 rounded-full ${liveConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
                 {liveConnected ? 'Connected' : 'Offline'}
@@ -639,9 +699,11 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
                       backgroundColor: a.severity === 'error' ? '#FEF2F2' : a.severity === 'warning' ? '#FFFBEB' : a.severity === 'success' ? '#F0FDF4' : '#EFF6FF',
                       borderColor: a.severity === 'error' ? '#FECACA' : a.severity === 'warning' ? '#FDE68A' : a.severity === 'success' ? '#BBF7D0' : '#BFDBFE',
                     }}>
-                      <span className="font-medium truncate max-w-[140px]" style={{
+                      {a.agentId && <span className="text-[8px] font-mono text-gray-400 shrink-0">{a.agentId.replace('_agent', '').split('_')[0]}</span>}
+                      <span className="font-medium truncate max-w-[120px]" style={{
                         color: a.severity === 'error' ? '#DC2626' : a.severity === 'warning' ? '#F59E0B' : a.severity === 'success' ? '#16A34A' : '#3B82F6',
                       }}>{a.action}</span>
+                      <span className="text-[8px] text-gray-400 shrink-0">{timeAgo(a.timestamp)}</span>
                     </div>
                   ))
                 )}
@@ -650,7 +712,7 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
             </div>
 
             {/* Right: NOW box */}
-            <div className="w-[340px] shrink-0 border-l-2 border-indigo-100 bg-indigo-50/20 px-3.5 py-2.5">
+            <div className="w-[360px] shrink-0 border-l-2 border-indigo-100 bg-indigo-50/20 px-3.5 py-2.5">
               <div className="flex items-start gap-2.5">
                 <div className={`flex items-center gap-1.5 text-[12px] font-bold uppercase tracking-wider shrink-0 ${activities.length > 0 ? 'text-indigo-700' : 'text-gray-400'}`}>
                   <span className={`w-2.5 h-2.5 rounded-full ${activities.length > 0 ? 'bg-indigo-500 animate-pulse' : 'bg-gray-300'}`} />
@@ -659,8 +721,33 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
                 <div className="flex-1 min-w-0">
                   {activities.length > 0 ? (
                     <>
-                      <div className="text-[12px] font-semibold text-indigo-800 truncate activity-enter">{activities[0].action}</div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[12px] font-semibold text-indigo-800 truncate activity-enter">{activities[0].action}</span>
+                        {activities[0].agentId && (
+                          <span className="text-[8px] font-mono text-indigo-400 bg-indigo-100 px-1.5 py-0.5 rounded-full shrink-0">
+                            {activities[0].agentId.replace('_agent', '')}
+                          </span>
+                        )}
+                      </div>
                       <div className="text-[11px] text-indigo-600 line-clamp-2 leading-snug mt-0.5">{activities[0].detail}</div>
+                      {/* Show ETA + step for running agent from state */}
+                      {(() => {
+                        const runningAgent = Object.values(agentStates).find(a =>
+                          (a.status === 'active' || a.status === 'in_progress') && a.estimated_remaining_ms
+                        );
+                        if (!runningAgent) return null;
+                        const eta2 = formatETA(runningAgent.estimated_remaining_ms);
+                        const step2 = runningAgent.current_step && runningAgent.steps_total
+                          ? `${runningAgent.current_step}/${runningAgent.steps_total}`
+                          : null;
+                        return (
+                          <div className="flex items-center gap-2 mt-1 pt-1 border-t border-indigo-100">
+                            {step2 && <span className="text-[9px] font-mono text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">{step2}</span>}
+                            <span className="text-[9px] text-emerald-600">{eta2} remaining</span>
+                            {runningAgent.step_label && <span className="text-[8px] text-gray-500 truncate">{runningAgent.step_label}</span>}
+                          </div>
+                        );
+                      })()}
                     </>
                   ) : (
                     <div className="text-[11px] text-gray-500">
@@ -671,7 +758,8 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
                   {activities.length > 1 && (
                     <div className="text-[10px] text-gray-500 mt-1 pt-1 border-t border-indigo-100 flex items-start gap-1.5">
                       <span className="w-1 h-1 rounded-full bg-gray-300 mt-1.5 shrink-0" />
-                      <span className="truncate">{activities[1].action} — {activities[1].detail.slice(0, 60)}</span>
+                      <span className="truncate flex-1">{activities[1].action} — {activities[1].detail.slice(0, 50)}</span>
+                      <span className="text-[8px] text-gray-400 shrink-0">{timeAgo(activities[1].timestamp)}</span>
                     </div>
                   )}
                 </div>
@@ -824,7 +912,10 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="font-medium text-gray-700 truncate">{c.check}</div>
-                          <div className={`text-[8px] ${c.passed ? 'text-green-500' : 'text-red-400'}`}>{c.passed ? 'PASS' : 'FAIL'}</div>
+                          <div className={`text-[8px] ${c.passed ? 'text-green-500' : 'text-red-400'}`}>
+                            {c.passed ? 'PASS' : 'FAIL'}
+                            {c.passed_at && <span className="ml-1 text-gray-400">· {timeAgo(c.passed_at)}</span>}
+                          </div>
                         </div>
                       </div>
                     ))}

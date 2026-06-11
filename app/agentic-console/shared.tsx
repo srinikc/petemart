@@ -24,6 +24,15 @@ export type AgentState = {
     provided_inputs?: Record<string, string>;
     disabled?: boolean;
     user_instruction?: string;
+    /** Runtime monitoring fields */
+    current_step?: number;
+    steps_total?: number;
+    step_label?: string;
+    step_descriptions?: string[];
+    estimated_remaining_ms?: number;
+    started_at?: string | null;
+    timeout_threshold_ms?: number;
+    stuck_detected_at?: string | null;
 };
 
 export type ComplianceCheck = {
@@ -32,6 +41,8 @@ export type ComplianceCheck = {
     type: string;
     required: boolean;
     passed: boolean;
+    passed_at?: string | null;
+    checked_by?: string | null;
 };
 
 export type ExpertReview = {
@@ -42,6 +53,35 @@ export type ExpertReview = {
     reviewed_at: string | null;
     sign_off_required: boolean;
     sign_off_granted: boolean;
+};
+
+export type StuckAgentEntry = {
+    agent_id: string;
+    started_at: string;
+    detected_at: string;
+    action_taken: string;
+    duration_ms: number;
+};
+
+export type SupervisorControl = {
+    status: string;
+    current_action?: string;
+    next_agent_to_dispatch?: string;
+    dispatch_queue?: string[];
+    last_cycle_timestamp?: string;
+    cycle_count?: number;
+    max_cycles_before_break?: number;
+    cool_down_seconds?: number;
+    last_error?: string | null;
+    stuck_agent_monitor?: {
+        enabled: boolean;
+        timeout_threshold_ms: number;
+        check_interval_ms: number;
+        auto_kill_on_stuck: boolean;
+        auto_relaunch_on_stuck: boolean;
+        max_relaunch_attempts: number;
+        stuck_agents_detected: StuckAgentEntry[];
+    };
 };
 
 export type ApprovalGate = {
@@ -202,6 +242,31 @@ export function PageTOC({ sections, currentPage }: { sections: { id: string; lab
             ))}
         </nav>
     );
+}
+
+// ── Relative time helper ──
+export function timeAgo(ts: number | string | null | undefined): string {
+    if (!ts) return '';
+    const ms = typeof ts === 'number' ? ts : new Date(ts).getTime();
+    const diff = Date.now() - ms;
+    if (diff < 0) return 'now';
+    const sec = Math.floor(diff / 1000);
+    if (sec < 10) return 'now';
+    if (sec < 60) return `${sec}s ago`;
+    const min = Math.floor(sec / 60);
+    if (min < 60) return `${min}m ago`;
+    const hrs = Math.floor(min / 60);
+    if (hrs < 24) return `${hrs}h ago`;
+    const days = Math.floor(hrs / 24);
+    return `${days}d ago`;
+}
+
+export function formatETA(ms: number | null | undefined): string {
+    if (!ms || ms <= 0) return '';
+    const sec = Math.ceil(ms / 1000);
+    if (sec < 60) return `~${sec}s`;
+    const min = Math.ceil(sec / 60);
+    return `~${min}m ${sec % 60}s`;
 }
 
 // ── Data fetching helper ──

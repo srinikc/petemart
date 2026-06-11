@@ -8,7 +8,7 @@ import {
     Lightbulb, GitMerge, Truck, ArrowLeft, ExternalLink,
 } from 'lucide-react';
 import {
-    AgentState, StatusBadge, PageTOC, fetchWithTimeout,
+    AgentState, StatusBadge, PageTOC, fetchWithTimeout, timeAgo,
     PHASE_ORDER, PHASE_COLORS, PHASE_LABELS, PHASE_DESCRIPTIONS,
 } from '../shared';
 
@@ -194,6 +194,44 @@ export default function AgentsPage() {
                                 <div><span className="text-gray-400">HITL:</span> {selectedAgent.requires_human_approval ? 'Yes' : 'No'}</div>
                                 <div><span className="text-gray-400">Last Active:</span> {selectedAgent.last_activity_timestamp ? new Date(selectedAgent.last_activity_timestamp).toLocaleDateString() : 'Never'}</div>
                             </div>
+                            {/* Pre-approval summary: what was done + when */}
+                            {selectedAgent.status === 'awaiting_approval' && (
+                                <div className="bg-amber-50 border border-amber-200 rounded-lg p-2.5">
+                                    <h3 className="text-[10px] font-bold text-amber-700 uppercase tracking-wider mb-1.5">Pre-Approval Summary</h3>
+                                    <div className="space-y-1 text-[9px]">
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-500">Status:</span>
+                                            <span className="font-medium text-amber-700">Awaiting Human Review</span>
+                                        </div>
+                                        {selectedAgent.last_activity_timestamp && (
+                                            <div className="flex justify-between">
+                                                <span className="text-gray-500">Last Activity:</span>
+                                                <span className="font-medium">{timeAgo(selectedAgent.last_activity_timestamp)}</span>
+                                            </div>
+                                        )}
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-500">Compliance:</span>
+                                            <span className={selectedAgent.compliance_checklist.filter(c => c.passed).length === selectedAgent.compliance_checklist.length ? 'text-green-600 font-medium' : 'text-amber-600 font-medium'}>
+                                                {selectedAgent.compliance_checklist.filter(c => c.passed).length}/{selectedAgent.compliance_checklist.length} passed
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-500">Executions:</span>
+                                            <span className="font-medium">{selectedAgent.execution_count}/3</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-500">Artifacts:</span>
+                                            <span className="font-medium">{selectedAgent.artifacts_emitted.length} files</span>
+                                        </div>
+                                        {selectedAgent.execution_count > 1 && (
+                                            <div className="mt-1 pt-1 border-t border-amber-200 text-amber-600">
+                                                <span className="font-medium">⤾ Re-run #{selectedAgent.execution_count}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
                             <div>
                                 <h3 className="text-xs font-semibold mb-1.5">Compliance ({selectedAgent.compliance_checklist.filter(c => c.passed).length}/{selectedAgent.compliance_checklist.length})</h3>
                                 <div className="max-h-40 overflow-y-auto space-y-0.5 text-xs">
@@ -202,6 +240,7 @@ export default function AgentsPage() {
                                             {c.passed ? <span className="text-green-500 text-[10px]">✓</span> : <span className="text-red-400 text-[10px]">✗</span>}
                                             <span className="text-[9px] text-gray-400 font-mono">{c.id}</span>
                                             <span className="text-[9px]">{c.check.split('—')[0].trim()}</span>
+                                            {c.passed_at && <span className="text-[8px] text-gray-400 ml-auto">{timeAgo(c.passed_at)}</span>}
                                         </div>
                                     ))}
                                 </div>
