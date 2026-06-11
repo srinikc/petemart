@@ -132,6 +132,7 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
   const [allProjects, setAllProjects] = useState<Record<string, any> | null>(null);
   const [loading, setLoading] = useState(!initialState && !isGlobal);
   const [globalLoading, setGlobalLoading] = useState(isGlobal);
+  const [escalations, setEscalations] = useState<any[]>([]);
   const [selectedFlyoutAgent, setSelectedFlyoutAgent] = useState<string | null>(null);
   const [flyoutInstruction, setFlyoutInstruction] = useState('');
   const [flyoutInputs, setFlyoutInputs] = useState<Record<string, string>>({});
@@ -331,6 +332,13 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
       if (!done) { done = true; setLoading(false); }
     }
   }, [project, isGlobal]);
+
+  // Fetch active escalations
+  useEffect(() => {
+    fetch('/api/agentic-console/escalation').then(r => r.json()).then(d => {
+      if (d?.active_escalations) setEscalations(d.active_escalations.filter((e: any) => !e.resolved_at));
+    }).catch(() => {});
+  }, []);
 
   useEffect(() => { loadState(); }, [loadState]);
 
@@ -619,6 +627,14 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
             <AlertCircle size={11} className="text-orange-500" />
             <span className="font-bold text-orange-600">{(effectiveSummary as any).dlq_count}</span>
             <span className="text-orange-500">DLQ</span>
+          </div></>
+        )}
+        {escalations.length > 0 && (
+          <><div className="w-px h-7 bg-gray-200" />
+          <div className="flex items-center gap-1.5 text-[11px] px-2 py-0.5 rounded-full bg-red-50 border border-red-300 animate-pulse">
+            <AlertTriangle size={11} className="text-red-500" />
+            <span className="font-bold text-red-600">{escalations.length}</span>
+            <span className="text-red-500">ESC</span>
           </div></>
         )}
         <div className="flex-1" />
