@@ -239,12 +239,12 @@
           "effort": "Medium",
           "description": "Read Epics/Stories/Tasks/Bugs from Jira via REST API. Show in Operations and Program Mgmt pages",
           "ui_surface": "Operations page Jira board embed, Program Mgmt Jira Sync section",
-          "status": "pending",
+          "status": "completed",
           "branch": "feature/p0-p1-system-rebuild",
-          "started_at": null,
-          "completed_at": null,
+          "started_at": "2026-06-11T20:05:00Z",
+          "completed_at": "2026-06-11T20:10:00Z",
           "dependencies": [],
-          "notes": "Uses JIRA_TOKEN from env.local"
+          "notes": "Created /api/agentic-console/jira endpoint using JIRA_BASE_URL, JIRA_TOKEN, JIRA_PROJECT from env. GET api returns configured:false if env not set. Added Jira section to Operations page with table of issues (key, summary, type, status, priority, assignee, updated). Uses StatusBadge for status column."
         },
         {
           "id": "P1-16",

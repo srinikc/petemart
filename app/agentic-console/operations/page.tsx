@@ -10,12 +10,13 @@ import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     AreaChart, Area,
 } from 'recharts';
-import { PageTOC, fetchWithTimeout } from '../shared';
+import { PageTOC, fetchWithTimeout, StatusBadge } from '../shared';
 
 const OPS_TOC = [
     { id: 'token-usage', label: 'Token Usage' },
     { id: 'branches', label: 'Branches' },
     { id: 'pr-tracking', label: 'Pull Requests' },
+    { id: 'jira', label: 'Jira' },
 ];
 
 export default function OperationsPage() {
@@ -28,6 +29,7 @@ export default function OperationsPage() {
     const [prLoading, setPrLoading] = useState(true);
     const [loading, setLoading] = useState(true);
     const [tokenView, setTokenView] = useState<'agents' | 'sessions'>('agents');
+    const [jiraData, setJiraData] = useState<any>(null);
 
     useEffect(() => {
         const project = searchParams?.get('project') || '';
@@ -37,11 +39,13 @@ export default function OperationsPage() {
             fetchWithTimeout('/api/token-usage'),
             fetch('/api/agentic-console/branches').then(r => r.json().catch(() => null)),
             fetch('/api/agentic-console/pull-requests').then(r => r.json().catch(() => null)),
-        ]).then(([stateRes, tokenRes, branchData, prData]) => {
+            fetch('/api/agentic-console/jira').then(r => r.json().catch(() => null)),
+        ]).then(([stateRes, tokenRes, branchData, prData, jiraRes]) => {
             if (stateRes.ok) stateRes.json().then(d => setState(d));
             if (tokenRes.ok) tokenRes.json().then(d => setTokenData(d));
             if (branchData?.branches) setBranches(branchData.branches);
             if (prData?.pull_requests) setPrs(prData.pull_requests);
+            if (jiraRes?.issues) setJiraData(jiraRes);
             setPrLoading(false);
             setLoading(false);
         }).catch(() => { setLoading(false); setPrLoading(false); });
@@ -245,6 +249,65 @@ export default function OperationsPage() {
                     <div className="text-center py-6">
                         <p className="text-xs text-gray-400">No PR data available.</p>
                         <p className="text-[10px] text-gray-300 mt-1">Ensure GitHub CLI is authenticated: <code className="bg-gray-100 px-1 rounded">gh auth status</code></p>
+                    </div>
+                )}
+            </section>
+
+            {/* Jira */}
+            <section id="jira" className="bg-white rounded-xl shadow-sm border p-6">
+                <div className="flex items-center gap-2 mb-3">
+                    <Activity size={20} className="text-blue-600" />
+                    <h2 className="text-lg font-bold">Jira Issues{jiraData ? ` (${jiraData.total})` : ''}</h2>
+                </div>
+                {!jiraData ? (
+                    <div className="text-center py-6"><Loader2 size={16} className="animate-spin text-gray-400 mx-auto mb-2" /><p className="text-xs text-gray-400">Loading Jira data...</p></div>
+                ) : !jiraData.configured ? (
+                    <div className="text-center py-6">
+                        <p className="text-xs text-gray-400">Jira not configured.</p>
+                        <p className="text-[10px] text-gray-300 mt-1">Set JIRA_BASE_URL and JIRA_TOKEN in .env.local</p>
+                    </div>
+                ) : jiraData.error ? (
+                    <div className="text-center py-6">
+                        <XCircle size={16} className="text-red-400 mx-auto mb-2" />
+                        <p className="text-xs text-red-400">{jiraData.error}</p>
+                    </div>
+                ) : jiraData.issues.length === 0 ? (
+                    <p className="text-xs text-gray-400 text-center py-4">No Jira issues found.</p>
+                ) : (
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-xs">
+                            <thead>
+                                <tr className="border-b text-left text-gray-500">
+                                    <th className="pb-2 pr-3">Key</th>
+                                    <th className="pb-2 pr-3">Summary</th>
+                                    <th className="pb-2 pr-3">Type</th>
+                                    <th className="pb-2 pr-3">Status</th>
+                                    <th className="pb-2 pr-3">Priority</th>
+                                    <th className="pb-2 pr-3">Assignee</th>
+                                    <th className="pb-2 pr-3">Updated</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {jiraData.issues.map((issue: any) => (
+                                    <tr key={issue.id} className="border-b last:border-0 hover:bg-gray-50">
+                                        <td className="py-2 pr-3 font-mono text-[10px]">
+                                            <a href={issue.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{issue.id}</a>
+                                        </td>
+                                        <td className="py-2 pr-3 text-[10px] max-w-[250px] truncate">{issue.summary}</td>
+                                        <td className="py-2 pr-3 text-[10px]">{issue.type}</td>
+                                        <td className="py-2 pr-3"><StatusBadge status={issue.status.toLowerCase()} /></td>
+                                        <td className="py-2 pr-3">
+                                            <span className={`px-1.5 py-0.5 rounded text-[9px] font-medium ${
+                                                issue.priority === 'Highest' || issue.priority === 'High' ? 'bg-red-100 text-red-700' :
+                                                issue.priority === 'Medium' ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-500'
+                                            }`}>{issue.priority}</span>
+                                        </td>
+                                        <td className="py-2 pr-3 text-[10px]">{issue.assignee}</td>
+                                        <td className="py-2 text-[10px]">{new Date(issue.updated).toLocaleDateString()}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 )}
             </section>
