@@ -1,0 +1,159 @@
+{
+  "agentId": "test_compliance_agent",
+  "history": [
+    {
+      "runId": "test-run-002",
+      "timestamp": "2026-06-17T08:32:22.500Z",
+      "status": "approved",
+      "duration": 67890,
+      "artifacts": [
+        "good_output.md"
+      ],
+      "contentPreview": "All good",
+      "usage": {
+        "prompt_tokens": 5,
+        "completion_tokens": 3
+      }
+    },
+    {
+      "runId": "test-run-002",
+      "timestamp": "2026-06-17T08:39:53.460Z",
+      "status": "approved",
+      "duration": 67890,
+      "artifacts": [
+        "good_output.md"
+      ],
+      "contentPreview": "All good",
+      "usage": {
+        "prompt_tokens": 5,
+        "completion_tokens": 3
+      }
+    },
+    {
+      "runId": "test-run-002",
+      "timestamp": "2026-06-17T08:45:29.173Z",
+      "status": "approved",
+      "duration": 67890,
+      "artifacts": [
+        "good_output.md"
+      ],
+      "contentPreview": "All good",
+      "usage": {
+        "prompt_tokens": 5,
+        "completion_tokens": 3
+      }
+    },
+    {
+      "runId": "test-run-002",
+      "timestamp": "2026-06-17T09:06:16.755Z",
+      "status": "approved",
+      "duration": 67890,
+      "artifacts": [
+        "good_output.md"
+      ],
+      "contentPreview": "All good",
+      "usage": {
+        "prompt_tokens": 5,
+        "completion_tokens": 3
+      }
+    },
+    {
+      "runId": "test-run-002",
+      "timestamp": "2026-06-17T09:09:01.687Z",
+      "status": "approved",
+      "duration": 67890,
+      "artifacts": [
+        "good_output.md"
+      ],
+      "contentPreview": "All good",
+      "usage": {
+        "prompt_tokens": 5,
+        "completion_tokens": 3
+      }
+    },
+    {
+      "runId": "test-run-002",
+      "timestamp": "2026-06-17T09:36:51.785Z",
+      "status": "approved",
+      "duration": 67890,
+      "artifacts": [
+        "good_output.md"
+      ],
+      "contentPreview": "All good",
+      "usage": {
+        "prompt_tokens": 5,
+        "completion_tokens": 3
+      }
+    },
+    {
+      "runId": "test-run-002",
+      "timestamp": "2026-06-17T09:37:08.178Z",
+      "status": "approved",
+      "duration": 67890,
+      "artifacts": [
+        "good_output.md"
+      ],
+      "contentPreview": "All good",
+      "usage": {
+        "prompt_tokens": 5,
+        "completion_tokens": 3
+      }
+    },
+    {
+      "runId": "test-run-002",
+      "timestamp": "2026-06-17T09:37:47.017Z",
+      "status": "approved",
+      "duration": 67890,
+      "artifacts": [
+        "good_output.md"
+      ],
+      "contentPreview": "All good",
+      "usage": {
+        "prompt_tokens": 5,
+        "completion_tokens": 3
+      }
+    },
+    {
+      "runId": "test-run-002",
+      "timestamp": "2026-06-17T09:38:39.350Z",
+      "status": "approved",
+      "duration": 67890,
+      "artifacts": [
+        "good_output.md"
+      ],
+      "contentPreview": "All good",
+      "usage": {
+        "prompt_tokens": 5,
+        "completion_tokens": 3
+      }
+    },
+    {
+      "runId": "test-run-002",
+      "timestamp": "2026-06-17T09:38:57.619Z",
+      "status": "approved",
+      "duration": 67890,
+      "artifacts": [
+        "good_output.md"
+      ],
+      "contentPreview": "All good",
+      "usage": {
+        "prompt_tokens": 5,
+        "completion_tokens": 3
+      }
+    },
+    {
+      "runId": "test-run-002",
+      "timestamp": "2026-06-17T10:08:57.294Z",
+      "status": "approved",
+      "duration": 67890,
+      "artifacts": [
+        "good_output.md"
+      ],
+      "contentPreview": "All good",
+      "usage": {
+        "prompt_tokens": 5,
+        "completion_tokens": 3
+      }
+    }
+  ]
+}

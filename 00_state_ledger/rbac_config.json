@@ -1,0 +1,355 @@
+{
+  "version": "1.0",
+  "description": "Multi-tenant RBAC configuration. Controls access per role and per project.",
+  "roles": {
+    "admin": {
+      "label": "Administrator",
+      "color": "#DC2626",
+      "description": "Full access to all projects. Can manage agents, approve/reject, configure system, and view all data.",
+      "permissions": {
+        "all_projects": {
+          "actions": [
+            "read",
+            "write",
+            "approve",
+            "reject",
+            "rerun",
+            "configure",
+            "manage_users",
+            "delete"
+          ],
+          "projects": [
+            "*"
+          ]
+        }
+      },
+      "max_sessions": 10
+    },
+    "gatekeeper": {
+      "label": "Gatekeeper",
+      "color": "#F59E0B",
+      "description": "Can approve/reject agents, view state, provide inputs. Cannot configure system or manage users.",
+      "permissions": {
+        "default": {
+          "actions": [
+            "read",
+            "approve",
+            "reject",
+            "rerun",
+            "provide_input"
+          ],
+          "projects": [
+            "*"
+          ]
+        }
+      },
+      "max_sessions": 5
+    },
+    "viewer": {
+      "label": "Viewer",
+      "color": "#3B82F6",
+      "description": "Read-only access. Can view dashboard, agent states, and logs. Cannot make any changes.",
+      "permissions": {
+        "default": {
+          "actions": [
+            "read"
+          ],
+          "projects": [
+            "*"
+          ]
+        }
+      },
+      "max_sessions": 20
+    }
+  },
+  "users": {
+    "new_user": {
+      "role": "viewer",
+      "projects": [
+        "petemart"
+      ],
+      "display_name": "new_user",
+      "email": "new_user@example.com",
+      "last_login": "2026-06-17T08:51:45.291Z"
+    },
+    "u1": {
+      "role": "admin",
+      "projects": [
+        "petemart",
+        "other"
+      ],
+      "display_name": "u1",
+      "email": "u1@example.com",
+      "last_login": "2026-06-17T08:51:45.355Z"
+    },
+    "newbie": {
+      "role": "admin",
+      "projects": [
+        "petemart"
+      ],
+      "display_name": "newbie",
+      "email": "",
+      "last_login": null
+    },
+    "existing": {
+      "role": "admin",
+      "projects": [
+        "petemart"
+      ],
+      "display_name": "existing",
+      "email": "",
+      "last_login": null
+    }
+  },
+  "session_store": {
+    "rbac-l4KlIosv5CHOUbQSAyTrfy9ZrWREypUmEnLnykEPJ1vIekp2": {
+      "user_id": "new_user",
+      "role": "viewer",
+      "projects": [
+        "petemart"
+      ],
+      "created_at": "2026-06-17T03:22:52.713Z",
+      "expires_at": "2026-06-18T03:22:52.713Z"
+    },
+    "rbac-kbEfqCNRKrrJPPJNwGjGyVFZCOHGxdYhFa4jFMorzbHpW547": {
+      "user_id": "u1",
+      "role": "viewer",
+      "projects": [
+        "petemart"
+      ],
+      "created_at": "2026-06-17T03:22:52.782Z",
+      "expires_at": "2026-06-18T03:22:52.782Z"
+    },
+    "rbac-8qMIu4Ds1EiowahHQogaV31a4vkDl0VzneG8PElNvNQ8a52j": {
+      "user_id": "new_user",
+      "role": "viewer",
+      "projects": [
+        "petemart"
+      ],
+      "created_at": "2026-06-17T03:24:19.843Z",
+      "expires_at": "2026-06-18T03:24:19.843Z"
+    },
+    "rbac-fkZI21D5roSEZebZWmvEoP2oORYoG0UdQmsjf7Vtnby3eWkP": {
+      "user_id": "u1",
+      "role": "admin",
+      "projects": [
+        "petemart",
+        "other"
+      ],
+      "created_at": "2026-06-17T03:24:19.894Z",
+      "expires_at": "2026-06-18T03:24:19.894Z"
+    },
+    "rbac-no54QLg5AK4H0SuWFBo0kp8jf8dHQLBqp8geVFVRd9QxRrYh": {
+      "user_id": "new_user",
+      "role": "viewer",
+      "projects": [
+        "petemart"
+      ],
+      "created_at": "2026-06-17T03:39:45.913Z",
+      "expires_at": "2026-06-18T03:39:45.913Z"
+    },
+    "rbac-bwX11DXgn2PmzBRWJ4QD9amXhug9FIFzN2Ck5wYUxxj3epMn": {
+      "user_id": "u1",
+      "role": "admin",
+      "projects": [
+        "petemart",
+        "other"
+      ],
+      "created_at": "2026-06-17T03:39:45.996Z",
+      "expires_at": "2026-06-18T03:39:45.996Z"
+    },
+    "rbac-71XIa8k2oAbpZ0Q8DGgtxKaVM3CHrgj0vDscgbTyXyWRFiaq": {
+      "user_id": "new_user",
+      "role": "viewer",
+      "projects": [
+        "petemart"
+      ],
+      "created_at": "2026-06-17T07:21:10.270Z",
+      "expires_at": "2026-06-18T07:21:10.270Z"
+    },
+    "rbac-homlCpd8ZkwxU6Qye82PwDucto08WGCC10hd9laqkFN4713Z": {
+      "user_id": "u1",
+      "role": "admin",
+      "projects": [
+        "petemart",
+        "other"
+      ],
+      "created_at": "2026-06-17T07:21:10.357Z",
+      "expires_at": "2026-06-18T07:21:10.357Z"
+    },
+    "rbac-y770OtokG5wyaQzjaIfULe7RR3ilZx1egfvcASc7k1OWIhOE": {
+      "user_id": "new_user",
+      "role": "viewer",
+      "projects": [
+        "petemart"
+      ],
+      "created_at": "2026-06-17T08:51:45.291Z",
+      "expires_at": "2026-06-18T08:51:45.291Z"
+    },
+    "rbac-jjbd666KvahOkm4qy0RDxsNQPO0W96pv3asr2iO2YXyC4qOB": {
+      "user_id": "u1",
+      "role": "admin",
+      "projects": [
+        "petemart",
+        "other"
+      ],
+      "created_at": "2026-06-17T08:51:45.355Z",
+      "expires_at": "2026-06-18T08:51:45.355Z"
+    }
+  },
+  "project_access": {
+    "u1": [
+      "petemart",
+      "other"
+    ]
+  },
+  "audit_log": [
+    {
+      "action": "login",
+      "user_id": "new_user",
+      "role": "viewer",
+      "timestamp": "2026-06-17T03:22:52.713Z"
+    },
+    {
+      "action": "login",
+      "user_id": "u1",
+      "role": "viewer",
+      "timestamp": "2026-06-17T03:22:52.782Z"
+    },
+    {
+      "action": "set_role",
+      "user_id": "u1",
+      "new_role": "admin",
+      "timestamp": "2026-06-17T03:22:52.846Z"
+    },
+    {
+      "action": "add_user",
+      "user_id": "newbie",
+      "role": "admin",
+      "timestamp": "2026-06-17T03:22:52.981Z"
+    },
+    {
+      "action": "add_user",
+      "user_id": "existing",
+      "role": "admin",
+      "timestamp": "2026-06-17T03:22:53.005Z"
+    },
+    {
+      "action": "set_project_access",
+      "user_id": "u1",
+      "projects": [
+        "petemart",
+        "other"
+      ],
+      "timestamp": "2026-06-17T03:22:53.032Z"
+    },
+    {
+      "action": "login",
+      "user_id": "new_user",
+      "role": "viewer",
+      "timestamp": "2026-06-17T03:24:19.843Z"
+    },
+    {
+      "action": "login",
+      "user_id": "u1",
+      "role": "admin",
+      "timestamp": "2026-06-17T03:24:19.894Z"
+    },
+    {
+      "action": "set_role",
+      "user_id": "u1",
+      "new_role": "admin",
+      "timestamp": "2026-06-17T03:24:19.955Z"
+    },
+    {
+      "action": "set_project_access",
+      "user_id": "u1",
+      "projects": [
+        "petemart",
+        "other"
+      ],
+      "timestamp": "2026-06-17T03:24:20.138Z"
+    },
+    {
+      "action": "login",
+      "user_id": "new_user",
+      "role": "viewer",
+      "timestamp": "2026-06-17T03:39:45.913Z"
+    },
+    {
+      "action": "login",
+      "user_id": "u1",
+      "role": "admin",
+      "timestamp": "2026-06-17T03:39:45.996Z"
+    },
+    {
+      "action": "set_role",
+      "user_id": "u1",
+      "new_role": "admin",
+      "timestamp": "2026-06-17T03:39:46.075Z"
+    },
+    {
+      "action": "set_project_access",
+      "user_id": "u1",
+      "projects": [
+        "petemart",
+        "other"
+      ],
+      "timestamp": "2026-06-17T03:39:46.274Z"
+    },
+    {
+      "action": "login",
+      "user_id": "new_user",
+      "role": "viewer",
+      "timestamp": "2026-06-17T07:21:10.270Z"
+    },
+    {
+      "action": "login",
+      "user_id": "u1",
+      "role": "admin",
+      "timestamp": "2026-06-17T07:21:10.357Z"
+    },
+    {
+      "action": "set_role",
+      "user_id": "u1",
+      "new_role": "admin",
+      "timestamp": "2026-06-17T07:21:10.423Z"
+    },
+    {
+      "action": "set_project_access",
+      "user_id": "u1",
+      "projects": [
+        "petemart",
+        "other"
+      ],
+      "timestamp": "2026-06-17T07:21:10.610Z"
+    },
+    {
+      "action": "login",
+      "user_id": "new_user",
+      "role": "viewer",
+      "timestamp": "2026-06-17T08:51:45.291Z"
+    },
+    {
+      "action": "login",
+      "user_id": "u1",
+      "role": "admin",
+      "timestamp": "2026-06-17T08:51:45.355Z"
+    },
+    {
+      "action": "set_role",
+      "user_id": "u1",
+      "new_role": "admin",
+      "timestamp": "2026-06-17T08:51:45.424Z"
+    },
+    {
+      "action": "set_project_access",
+      "user_id": "u1",
+      "projects": [
+        "petemart",
+        "other"
+      ],
+      "timestamp": "2026-06-17T08:51:45.638Z"
+    }
+  ]
+}

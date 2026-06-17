@@ -1,0 +1,494 @@
+Evaluate the PRD_ENTERPRISE.json metadata. Conduct a detailed end-to-end technical feasibility study covering building, deployment, infrastructure scaling, maintenance, patch upgrades, and security profiles. Recommend a robust, high-performance UI stack for web and mobile frameworks that outperforms market competitors. Define an API-first implementation strategy integrated with explicit caching, message queue mechanisms, event hooks, and a centralized unit-testing suite framework.
+
+You are Agent 03_architect_agent: Senior Enterprise Solutions Architect.
+Workspace: agents/02_engineering_specs/03_architect_agent/
+
+## Previous Output (your last run — for reference only; rewrite as needed)
+### CODE_REVIEW_LOG.json
+{
+  "agent_id": "03_architect_agent",
+  "review_log": [
+    {
+      "review_id": "R-ARCH-001",
+      "reviewer_role": "Senior Solution Architect / CTO",
+      "reviewed_by": "Human Gatekeeper (Srinikc)",
+      "reviewed_at": "2026-05-30T18:45:00Z",
+      "pr_number": null,
+      "status": "approved",
+      "findings": [
+        {
+          "finding_id": "F-001",
+          "category": "security",
+          "description": "Architecture proposed Gemini AI which was rejected in favor of Opencode/DeepSeek platform",
+          "file_path": "agents/02_engineering_specs/03_architect_agent/FEASIBILITY_ARCHITECTURE.md",
+          "line_numbers": "AI/ML section",
+          "severity": "high"
+        },
+        {
+          "finding_id": "F-002",
+          "category": "completeness",
+          "description": "WhatsApp integration was not included in POC scope",
+          "file_path": "agents/02_engineering_specs/03_architect_agent/POC_SCOPE.md",
+          "line_numbers": "scope definition",
+          "severity": "medium"
+        },
+        {
+          "finding_id": "F-003",
+          "category": "completeness",
+          "description": "Synthetic product-level inventory needed for all 8 pilot merchants",
+          "file_path": "agents/02_engineering_specs/03_architect_agent/COST_MODELS.md",
+          "line_numbers": "data section",
+          "severity": "medium"
+        }
+      ],
+      "fixes": [
+        {
+          "finding_id": "F-001",
+          "fix_description": "Replaced Gemini AI with Opencode/DeepSeek platform across all architecture documents",
+          "fix_commit": "history",
+          "fix_timestamp": "2026-05-30T18:45:00Z",
+          "fix_status": "verified",
+          "verified_by": "Human Gatekeeper (Srinikc)"
+        },
+        {
+          "finding_id": "F-002",
+          "fix_description": "WhatsApp integration included in POC scope definition",
+          "fix_commit": "history",
+          "fix_timestamp": "2026-05-30T18:45:00Z",
+          "fix_status": "verified",
+          "verified_by": "Human Gatekeeper (Srinikc)"
+        },
+        {
+          "finding_id": "F-003",
+          "fix_description": "Synthetic product inventory generated for all 8 pilot merchants",
+          "fix_commit": "history",
+          "fix_timestamp": "2026-05-30T18:45:00Z",
+          "fix_status": "verified",
+          "verified_by": "Human Gatekeeper (Srinikc)"
+        }
+      ]
+    }
+  ],
+  "agent_0_verification": {
+    "review_gate_passed": true,
+    "fix_gate_passed": true,
+    "verified_at": "2026-05-30T18:45:00Z",
+    "notes": "Architecture approved with 3 findings. All fixes applied and verified."
+  }
+}
+
+
+### COMPLETION_SLIDE_slide.json
+{
+  "slide_title": "03_architect_agent Completion Summary",
+  "agent_id": "03_architect_agent",
+  "role": "Senior Enterprise Solution Architect",
+  "generated_at": "2026-06-12T03:48:03.322Z",
+  "deliverables": [
+    "artifact_exists(FEASIBILITY_ARCHITECTURE.md) â€” architecture document present",
+    "artifact_exists(FEASIBILITY_ARCHITECTURE.json) â€” structured architecture present",
+    "Mermaid/PlantUML architectural diagrams produced (DIAGRAMS.md)",
+    "POC scope clearly maps to subset of full architecture (POC_SCOPE.md)",
+    "infrastructure cost model accounts for scaling thresholds (COST_MODELS.md)",
+    "COMPLETION_SLIDE.pptx generated",
+    "DATA_EXPORT.xlsx generated (cost models, resource estimates)"
+  ],
+  "status": "awaiting_approval"
+}
+
+### COST_MODELS.md
+# Infrastructure Cost Models
+
+**Generated**: 2026-06-12T03:48:03.321Z
+**Version**: 2026-06-12T03-48-03
+
+## POC Phase (₹0/month)
+| Service | Tier | Cost |
+|---------|------|------|
+| Vercel | Hobby | Free |
+| Supabase | Free | Free |
+| Railway | $5 Credit | Free |
+| GitHub | Free | Free |
+
+## Full Production (Estimated)
+| Service | Tier | Monthly Cost |
+|---------|------|-------------|
+| Vercel | Pro | $20 |
+| Supabase | Pro | $25 |
+| Railway | Pro | $20 |
+| Sentry | Team | $26 |
+| DeepSeek API | Pay-per-token | ~$50 |
+
+### DIAGRAMS.md
+# Architectural Diagrams
+
+**Generated**: 2026-06-12T03:48:03.320Z
+
+## 1. System Context Diagram (C4)
+```mermaid
+C4Context
+  Person(customer, "Customer", "Shoppers in Pete markets")
+  Person(merchant, "Merchant", "Store owners")
+  System(petemart, "PeteMart Platform", "E-commerce for traditional markets")
+  System_Ext(payment, "Payment Gateway", "Razorpay/Stripe")
+  System_Ext(whatsapp, "WhatsApp", "Order notifications")
+  System_Ext(delivery, "Delivery Partners", "ShipRocket")
+  
+  Rel(customer, petemart, "Browse, order, pay")
+  Rel(merchant, petemart, "Manage store, inventory, orders")
+  Rel(petemart, payment, "Process payments")
+  Rel(petemart, whatsapp, "Send notifications")
+  Rel(petemart, delivery, "Ship orders")
+```
+
+## 2. Container Diagram
+```mermaid
+C4Container
+  System_Boundary(petemart, "PeteMart") {
+    Container(web, "Web App", "Next.js", "Customer & merchant portal")
+    Container(mobile, "Mobile App", "React Native", "Customer shopping")
+    Container(api, "API Gateway", "Next.js API", "REST endpoints")
+    ContainerDb(db, "Database", "PostgreSQL", "Supabase")
+    Container(queue, "Message Queue", "pgmq", "Async processing")
+  }
+  Rel(web, api, "API calls")
+  Rel(mobile, api, "API calls")
+  Rel(api, db, "Read/write")
+  Rel(api, queue, "Enqueue jobs")
+```
+
+## 3. Data Flow Diagram
+```mermaid
+sequenceDiagram
+  Customer->>Web: Browse products
+  Web->>API: GET /api/products
+  API->>DB: Query products
+  DB-->>API: Product list
+  API-->>Web: JSON response
+  Web-->>Customer: Display products
+  Customer->>Web: Place order
+  Web->>API: POST /api/orders
+  API->>DB: Create order
+  API->>WhatsApp: Notify merchant
+  API->>Delivery: Schedule pickup
+```
+
+## 4. Deployment Diagram
+```mermaid
+graph TD
+  subgraph Vercel
+    Web[Next.js Web]
+    API[API Routes]
+  end
+  subgraph Supabase
+    DB[(PostgreSQL)]
+    Auth[Auth Service]
+    Storage[File Storage]
+  end
+  subgraph Expo
+    Mobile[React Native]
+  end
+  Web --> API
+  API --> DB
+  API --> Auth
+  Mobile --> API
+```
+
+## 5. POC Scope Diagram
+```mermaid
+graph LR
+  subgraph POC
+    Web
+    API
+    DB
+    Auth
+  end
+  subgraph Deferred
+    Mobile
+    WhatsApp
+    Delivery
+    AI
+  end
+  Web --> API --> DB
+  Web --> Auth
+```
+
+
+### FEASIBILITY_ARCHITECTURE.json
+{
+  "project": "PeteMart",
+  "version": "2.0",
+  "generated_by": "03_architect_agent",
+  "requirement_count": 11,
+  "categories": [
+    {
+      "name": "General",
+      "count": 11,
+      "requirements": []
+    }
+  ],
+  "tech_stack": {
+    "frontend": {
+      "web": "React 18 / Next.js 14",
+      "mobile": "React Native / Expo"
+    },
+    "backend": "Next.js API Routes",
+    "database": "PostgreSQL (Supabase)",
+    "auth": "Supabase Auth (Email + OTP)",
+    "deployment": {
+      "web": "Vercel",
+      "mobile": "Expo / App Store",
+      "db": "Supabase"
+    },
+    "ai": "OpenCode / DeepSeek",
+    "ci_cd": "GitHub Actions"
+  },
+  "architecture": {
+    "pattern": "API-First, Monorepo (Next.js)",
+    "api_gateway": "Next.js API Routes with rate limiting",
+    "caching": "SWR (stale-while-revalidate) + Supabase Realtime",
+    "message_queue": "pgmq (PostgreSQL message queue)",
+    "event_driven": "Supabase webhooks + pgmq",
+    "testing": "Vitest (unit) + Playwright (E2E) + k6 (load)"
+  },
+  "poc": {
+    "merchants": 8,
+    "markets": [
+      "Balepet",
+      "Chickpet"
+    ],
+    "cost_per_month": 0,
+    "free_tiers": [
+      "Vercel Hobby",
+      "Supabase Free"
+    ],
+    "subdomains": [
+      "*.vercel.app",
+      "*.supabase.co",
+      "*.railway.app"
+    ]
+  }
+}
+
+### FEASIBILITY_ARCHITECTURE.md
+# PeteMart Full Product Architecture
+
+**Agent**: 03_architect_agent
+**Role**: Senior Enterprise Solution Architect
+**PRD Requirements**: 11
+**Generated**: 2026-06-12T03:48:03.318Z
+**Version**: 2026-06-12T03-48-03
+
+## Tech Stack
+- Frontend: React 18 / Next.js 14 (Vercel)
+- Mobile: React Native / Expo
+- Backend: Next.js API Routes + Supabase
+- Database: PostgreSQL (Supabase)
+- Auth: Supabase Auth (Email + OTP)
+- Cache: Supabase Realtime + SWR
+- Queue: In-memory / pgmq
+- AI: Opencode / DeepSeek
+- CI/CD: GitHub Actions
+- Monitoring: Sentry + OpenCode
+
+## Architecture Overview
+System context, containers, components, deployment topology documented in DIAGRAMS.md
+
+### GUARDRAIL_VERIFICATION.md
+# PeteMart — Quality Guardrail Verification Checklist
+
+**Date:** 2026-05-30 | **Agent:** 03 — Senior Enterprise Solution Architect
+
+---
+
+## Mandatory Guardrails
+
+### Fail State 1: Multi-Layer Testing Architecture
+
+**Requirement:** System design MUST include an explicit multi-layer testing architecture.
+
+**Verification:**
+- [x] Layer 1: Unit Tests (Vitest + RTL, 80%+ coverage)
+- [x] Layer 2: Integration Tests (Supertest + MSW)
+- [x] Layer 3: End-to-End Tests (Playwright/Cypress + Detox)
+- [x] Layer 4: Performance Tests (k6 + Lighthouse CI)
+- [x] Layer 5: Security Tests (OWASP ZAP + Snyk + Dependabot)
+- [x] CI/CD gates defined with blocker criteria
+
+**Location:** `FEASIBILITY_ARCHITECTURE.md §9` and `FEASIBILITY_ARCHITECTURE.json → .testing_architecture`
+
+**Status:** ✅ **PASS**
+
+---
+
+### Fail State 2: API Gateway with Rate Limiting Rules
+
+**Requirement:** System design MUST define an API gateway with rate-limiting rules.
+
+**Verification:**
+- [x] Rate limiting algorithm specified: Token Bucket
+- [x] `/api/v1/products` — 100 req/min per IP (public)
+- [x] `/api/v1/auth/*` — 10 req/min per phone (OTP)
+- [x] `/api/v1/orders` — 60 req/min per user
+- [x] `/api/v1/checkout` — 30 req/min per user
+- [x] `/api/v1/tracking` — 300 req/min per courier (GPS)
+- [x] `/api/v1/admin/*` — 60 req/min per admin
+- [x] `/api/v1/bullion` — 60 req/min per IP (cached)
+- [x] Implementation: Next.js middleware + Zod validation
+
+**Location:** `FEASIBILITY_ARCHITECTURE.md §8.2` and `FEASIBILITY_ARCHITECTURE.json → .full_product_architecture.api_specification.rate_limiting`
+
+**Status:** ✅ **PASS**
+
+---
+
+### Validation Rule 1: Infrastructure Cost Dynamic Scaling
+
+**Requirement:** Infrastructure cost configuration must dynamically account for scaling thresholds defined in the JSON file.
+
+**Verification:**
+- [x] 5 scaling thresholds defined (8→50→500→2,000→5,000+ merchants)
+- [x] Each threshold has corresponding infra tier, cost, and services
+- [x] Auto-scaling triggers defined (CPU > 70%, Memory > 70%, Latency > 500ms)
+- [x] Cost scales progressively from ₹0 → ₹2,50,000+ per month
+- [x] Scaling rules reference REQ-PERF-001 and REQ-PERF-002 requirements
+
+**Location:** `FEASIBILITY_ARCHITECTURE.md §7.3`, `COST_MODELS.md §5`, `FEASIBILITY_ARCHITECTURE.json → .cost_models.production_phase.scaling_thresholds`
+
+**Status:** ✅ **PASS**
+
+---
+
+### Validation Rule 2: POC Path Clearly Mapped to Full Architecture
+
+**Requirement:** POC path must clearly map to a subset of the full architecture.
+
+**Verification:**
+- [x] POC scope explicitly documented: 48 out of 103 requirements (47%)
+- [x] Each built component linked to full-architecture container
+- [x] Each deferred component noted with deferral reason and target tier
+- [x] POC deployment topology built from same components as full architecture
+- [x] 9 pilot merchants with digital readiness assessments
+- [x] POC cost = ₹0/month (all free tiers)
+
+**Location:** `FEASIBILITY_ARCHITECTURE.md §5, §6`, `POC_SCOPE.md`, `FEASIBILITY_ARCHITECTURE.json →
+
+### POC_SCOPE.md
+# POC Architecture (8-Merchant Pilot)
+
+**Scope**: 8 pilot merchants in Balepet and Chickpet markets.
+**Cost**: ₹0/month (Free Tiers)
+**Generated**: 2026-06-12T03:48:03.321Z
+**Version**: 2026-06-12T03-48-03
+
+## POC Components
+- Web: Vercel Hobby (pilot-*.vercel.app)
+- DB: Supabase Free (pilot-*.supabase.co)
+- Mobile: Expo (development builds)
+- Auth: Supabase Auth (email + OTP)
+
+## Out of Scope (Deferred to Full Build)
+- WhatsApp integration
+- Multi-store consolidated cart
+- AI features
+- Multi-city expansion
+
+### STITCH_INTEGRATION_GUIDE.md
+# Google Stitch Integration Guide — PeteMart UI Generation Pipeline
+
+**Document for:** Agent 07a (UI Agent) | **Version:** 1.0 | **Date:** 2026-05-30
+
+---
+
+## 1. Overview
+
+Google Stitch (`stitch.withgoogle.com`) is designated as the **PRIMARY UI design and prototyping tool** for PeteMart. The UI Agent (07a) uses the MCP SDK (`@google/stitch-sdk`) to programmatically generate all merchant-facing and admin-facing screens.
+
+### SDK Installation
+```bash
+npm install @google/stitch-sdk
+```
+
+### Authentication
+```typescript
+import { Stitch } from '@google/stitch-sdk';
+
+const stitch = new Stitch({
+  apiKey: process.env.STITCH_API_KEY,
+  project: 'petemart-poc'
+});
+```
+
+---
+
+## 2. Stitch API Methods
+
+### 2.1 `stitch.design()` — Design System Generation
+
+Generates a complete design system from natural language description:
+
+```typescript
+const designSystem = await stitch.design({
+  prompt: `PeteMart design system for a hyperlocal Indian e-commerce marketplace.
+    Colors: Indian Gold (#C8A45C), Deep Burgundy (#6B1D3A), Cream (#FFF8EE)
+    Typography: Inter font family, 4px base grid system
+    Mode indicators: Green (#2E7D32) for Buy Now, WhatsApp Green (#25D366) for Enquire,
+    Blue (#1976D2) for Visit Store
+    Theme: Warm, traditional Indian aesthetic with modern UX patterns`,
+  tokens: ['colors', 'typography', 'spacing', 'breakpoints']
+});
+
+// Output: DESIGN.md, Tailwind config, CSS variables
+```
+
+### 2.2 `stitch.generate()` — Screen Component Generation
+
+Generates React/HTML components from natural language prompts:
+
+```typescript
+const landingPage = await stitch.generate({
+  prompt: `PeteMart landing page with:
+    - Header: logo, city selector dropdown (Bangalore), search bar, login button
+    - Hero section: "Pete Tapestry" interactive carousel showing Chickpet, Balepet, 
+      Raja Market with historical descriptions
+    - "Shop by Market" grid: card-based market listings with specialization badges
+    - "Featured Merchants" horizontal scroll section
+    - Footer with links, social media, QR code download
+    Mobile-responsive, Kannada/Hindi/English language toggle placeholder`,
+  format: 'react-tsx',
+  screens: ['mobile', 'tablet', 'desktop'],
+  theme: 'petemart-design-system' // Reference to design() output
+});
+
+// Output: LandingPage.tsx, LandingPage.png (screenshot), DESIGN.md snippet
+```
+
+### 2.3 `stitch.export()` — Full Export
+
+```typescript
+const exportResult = await stitch.export({
+  screens: [landingPage.id, merchantMicrosite.id, cartPage.id, checkoutPage.id],
+  formats: ['react-tsx', 'html-css', 'design-tokens', 'screenshots'],
+  accessibilityReport: true
+});
+
+// Output:
+// - /stitch-exports/components/*.tsx  (React components)
+// - /stitch-exports/design/DESIGN.md  (Design tokens)
+// - /stitch-exports/screenshots/*.png (Visual review)
+// - /stitch-exports/accessibility.json (A11y audit)
+```
+
+### 2.4 `stitch.prototype()` — Interactive Prototype
+
+```typescript
+const prototype = await stitch.prototype({
+  name: 'PeteMart Customer Flow',
+ 
+
+## User Instruction
+rerun_agent via Cockpit
+
+## Required Deliverables
+- Human-readable: agents/02_engineering_specs/03_architect_agent/FEASIBILITY_ARCHITECTURE.md
+- Structured data: agents/02_engineering_specs/03_architect_agent/FEASIBILITY_ARCHITECTURE.json
