@@ -12,6 +12,32 @@ class SupervisorAgent {
     this._agentId = '00_supervisor_agent';
   }
 
+  /**
+   * Run startup health check - pings LLM connectivity for the supervisor agent.
+   * Called during supervisor initialization.
+   */
+  async _runAgentPings() {
+    const results = [];
+    try {
+      const { LLMProvider } = require('./LLMProvider');
+      const llm = LLMProvider.fromEnv();
+      const initResult = await llm.initialize();
+      results.push({
+        agent_id: this._agentId,
+        provider: initResult.provider,
+        model: initResult.model,
+        healthy: !initResult.error,
+        context_window: initResult.contextWindow,
+        error: initResult.error || null,
+      });
+      vlog.write('SUPERVISOR', this._agentId, `Health check: ${initResult.provider}/${initResult.model} - ${initResult.error ? 'FAILED: ' + initResult.error : 'OK'}`);
+    } catch (err) {
+      results.push({ agent_id: this._agentId, provider: 'unknown', model: 'unknown', healthy: false, error: err.message });
+      vlog.write('SUPERVISOR', this._agentId, `Health check error: ${err.message}`);
+    }
+    return results;
+  }
+
   // ── Compliance Audit ──
 
   runComplianceAudit(state) {

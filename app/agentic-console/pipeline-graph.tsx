@@ -18,7 +18,7 @@ const AGENT_SHORT: Record<string, string> = {
 const STATUS_DOT: Record<string, string> = {
   approved: '#16A34A', completed: '#16A34A', awaiting_approval: '#F59E0B',
   active: '#3B82F6', in_progress: '#3B82F6', pending: '#9CA3AF', idle: '#9CA3AF',
-  failed: '#DC2626', blocked: '#DC2626',
+  failed: '#DC2626', blocked: '#DC2626', cancelled: '#DC2626',
 };
 
 const STATUS_PULSE: Record<string, boolean> = {
