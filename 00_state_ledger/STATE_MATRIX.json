@@ -216,13 +216,13 @@
       }
     },
     "loop_guardrails": {
-      "max_sequential_executions_per_agent": 3,
+      "max_sequential_executions_per_agent": 10,
       "max_total_cycles_lifetime": 100,
       "circuit_breaker_threshold": 5,
       "circuit_breaker_reason": null,
       "circuit_breaker_tripped_at": null,
       "token_budget_per_cycle_est": 100000,
-      "cooldown_between_cycles_s": 5,
+      "cooldown_between_cycles_s": 2,
       "max_concurrent_agents": 3
     },
     "pipeline_strategy": {
@@ -552,10 +552,9 @@
     "03_architect_agent": {
       "phase": "phase_one",
       "pool": "async_pool",
-      "status": "failed",
-      "started_at": "2026-06-11T09:49:48.334Z",
+      "status": "pending", "started_at": null,
       "timeout_threshold_ms": 300000,
-      "stuck_detected_at": "2026-06-11T10:00:00.000Z",
+      "stuck_detected_at": null,
       "dependencies": [
         "02_requirement_agent"
       ],

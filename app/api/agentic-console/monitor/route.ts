@@ -58,7 +58,8 @@ export async function GET(req: NextRequest) {
 
         // Detect stuck agents
         const now = Date.now();
-        const stuckThreshold = pipelineCtrl.stuck_agent_timeout_ms || STUCK_TIMEOUT_MS;
+        const monitorCfg = supervisorCtrl?.stuck_agent_monitor || {};
+        const stuckThreshold = monitorCfg.timeout_threshold_ms || pipelineCtrl.stuck_agent_timeout_ms || STUCK_TIMEOUT_MS;
         const stuck: any[] = [];
         const running: any[] = [];
 
@@ -97,11 +98,11 @@ export async function GET(req: NextRequest) {
                 last_cycle: supervisorCtrl?.agent_00_supervisor?.last_cycle_timestamp || null,
             },
             stuck_monitor: {
-                enabled: !!pipelineCtrl.stuck_agent_check_enabled,
+                enabled: !!monitorCfg.enabled,
                 timeout_ms: stuckThreshold,
                 stuck_agents: stuck,
                 running_agents: running,
-                detected_history: supervisorCtrl?.stuck_agent_monitor?.stuck_agents_detected || [],
+                detected_history: monitorCfg.stuck_agents_detected || [],
             },
             pipeline: {
                 paused: !!pipelineCtrl.is_pipeline_paused,
@@ -119,8 +120,8 @@ export async function GET(req: NextRequest) {
         const supervisorCtrl = state.supervisor_control || {};
         const pipelineCtrl = state.pipeline_control || {};
         const now = Date.now();
-        const stuckThreshold = pipelineCtrl.stuck_agent_timeout_ms || STUCK_TIMEOUT_MS;
-        const monitorCfg = supervisorCtrl.stuck_agent_monitor || {};
+        const monitorCfg = supervisorCtrl?.stuck_agent_monitor || {};
+        const stuckThreshold = monitorCfg.timeout_threshold_ms || pipelineCtrl.stuck_agent_timeout_ms || STUCK_TIMEOUT_MS;
         const relayCounts: Record<string, number> = {};
         const cascadedAgents: string[] = [];
         const dlqEntries: any[] = [];
