@@ -1,0 +1,330 @@
+{
+  "pipeline_phase": "idle",
+  "pipeline_paused": false,
+  "cycle_count": 0,
+  "circuit_breaker": "CLOSED",
+  "summary": {
+    "total_agents": 19,
+    "agents_completed": 2,
+    "agents_in_progress": 0,
+    "agents_pending": 15,
+    "agents_awaiting_approval": 1,
+    "agents_failed": 0,
+    "pct": 11
+  },
+  "eligible_agents": [
+    {
+      "id": "05_program_mgmt_agent",
+      "role": "Senior Agile Program Manager & Scrum Master",
+      "phase": "phase_two"
+    }
+  ],
+  "agents": [
+    {
+      "id": "00_supervisor_agent",
+      "status": "idle",
+      "role": "Senior Program Manager / Pipeline Orchestrator & Compliance Auditor",
+      "phase": "system",
+      "execution_count": 0,
+      "artifacts": []
+    },
+    {
+      "id": "01_ideation_agent",
+      "status": "approved",
+      "role": "Product Marketing Manager & Hyper-Local Retail Economics Specialist",
+      "phase": "phase_one",
+      "execution_count": 2,
+      "artifacts": [
+        "01_front_office/01_ideation_agent/idea_proposal.md",
+        "01_front_office/01_ideation_agent/business_revenue_model.json",
+        "01_front_office/01_ideation_agent/store_inventory_datasets.json",
+        "01_front_office/01_ideation_agent/estimated_merchants.json",
+        "01_front_office/01_ideation_agent/01_ideation_agent_COMPLETION_SLIDE.pptx",
+        "01_front_office/01_ideation_agent/01_ideation_agent_DATA_EXPORT.xlsx",
+        "01_front_office/01_ideation_agent/01_ideation_agent_FULL_PRESENTATION.pptx"
+      ]
+    },
+    {
+      "id": "02_requirement_agent",
+      "status": "approved",
+      "role": "Enterprise Product Manager / Product Owner",
+      "phase": "phase_one",
+      "execution_count": 3,
+      "artifacts": [
+        "agents/01_front_office/02_requirement_agent/prd.md",
+        "agents/01_front_office/02_requirement_agent/prd_config.json",
+        "agents/01_front_office/02_requirement_agent/prd.json",
+        "agents/02_requirement_agent/02_requirement_agent_COMPLETION_SLIDE.pptx",
+        "agents/02_requirement_agent/02_requirement_agent_DATA_EXPORT.xlsx"
+      ]
+    },
+    {
+      "id": "03_architect_agent",
+      "status": "awaiting_approval",
+      "role": "Senior Enterprise Solution Architect",
+      "phase": "phase_one",
+      "execution_count": 23,
+      "artifacts": [
+        "agents/02_engineering_specs/03_architect_agent/FEASIBILITY_ARCHITECTURE.md",
+        "agents/02_engineering_specs/03_architect_agent/FEASIBILITY_ARCHITECTURE.json",
+        "agents/02_engineering_specs/03_architect_agent/DIAGRAMS.md",
+        "agents/02_engineering_specs/03_architect_agent/POC_SCOPE.md",
+        "agents/02_engineering_specs/03_architect_agent/STITCH_INTEGRATION_GUIDE.md",
+        "agents/02_engineering_specs/03_architect_agent/COST_MODELS.md",
+        "agents/02_engineering_specs/03_architect_agent/GUARDRAIL_VERIFICATION.md",
+        "agents/03_architect_agent/03_architect_agent_COMPLETION_SLIDE.pptx",
+        "agents/03_architect_agent/03_architect_agent_DATA_EXPORT.xlsx",
+        "agents/03_architect_agent/03_architect_agent_FULL_PRESENTATION.pptx",
+        "FEASIBILITY_ARCHITECTURE.md",
+        "FEASIBILITY_ARCHITECTURE.json",
+        "DIAGRAMS.md",
+        "COST_MODELS.md",
+        "POC_SCOPE.md"
+      ]
+    },
+    {
+      "id": "04_prototype_agent",
+      "status": "pending",
+      "role": "Senior Prototyping Engineer / Concept Verification Engine",
+      "phase": "phase_one",
+      "execution_count": 1,
+      "artifacts": [
+        "agents/02_engineering_specs/04_prototype_agent/LAUNCH_GUIDE.md",
+        "agents/02_engineering_specs/04_prototype_agent/data/merchants.json",
+        "agents/02_engineering_specs/04_prototype_agent/data/products-combined.json",
+        "agents/04_prototype_agent/04_prototype_agent_COMPLETION_SLIDE.pptx"
+      ]
+    },
+    {
+      "id": "05_program_mgmt_agent",
+      "status": "pending",
+      "role": "Senior Agile Program Manager & Scrum Master",
+      "phase": "phase_two",
+      "execution_count": 1,
+      "artifacts": [
+        "agents/02_engineering_specs/05_program_mgmt_agent/01_EPIC_FEATURE_STORY_MAP.md",
+        "agents/02_engineering_specs/05_program_mgmt_agent/02_SPRINT_TIMELINE_MILESTONES.md",
+        "agents/02_engineering_specs/05_program_mgmt_agent/03_MVP_SCOPE_DEFINITION.md",
+        "agents/02_engineering_specs/05_program_mgmt_agent/04_WORKFLOW_MAPS.md",
+        "agents/02_engineering_specs/05_program_mgmt_agent/05_ACCEPTANCE_CRITERIA_REVIEW_GATES.md",
+        "agents/02_engineering_specs/05_program_mgmt_agent/06_PROGRAM_DASHBOARD.json",
+        "agents/02_engineering_specs/05_program_mgmt_agent/README.md",
+        "agents/05_program_mgmt_agent/05_program_mgmt_agent_COMPLETION_SLIDE.pptx",
+        "agents/05_program_mgmt_agent/05_program_mgmt_agent_DATA_EXPORT.xlsx",
+        "agents/05_program_mgmt_agent/05_program_mgmt_agent_FULL_PRESENTATION.pptx"
+      ]
+    },
+    {
+      "id": "06_infra_devops_agent",
+      "status": "pending",
+      "role": "DevOps Systems Architect & Core Supply Chain Automation Engine",
+      "phase": "phase_two",
+      "execution_count": 2,
+      "artifacts": [
+        "agents/03_execution_workspace/06_infra_devops_agent/BRANCHING_STRATEGY.md",
+        "agents/03_execution_workspace/06_infra_devops_agent/.github/workflows/ci.yml",
+        "agents/03_execution_workspace/06_infra_devops_agent/.github/workflows/deploy.yml",
+        "agents/03_execution_workspace/06_infra_devops_agent/.github/workflows/rollback.yml",
+        "agents/03_execution_workspace/06_infra_devops_agent/.github/workflows/security-scan.yml",
+        "agents/03_execution_workspace/06_infra_devops_agent/.github/workflows/pr-agent.yml",
+        "agents/03_execution_workspace/06_infra_devops_agent/.github/workflows/code-review.yml",
+        "agents/03_execution_workspace/06_infra_devops_agent/docker/docker-compose.yml",
+        "agents/03_execution_workspace/06_infra_devops_agent/supabase/migrations/001_initial_schema.sql",
+        "agents/06_infra_devops_agent/06_infra_devops_agent_COMPLETION_SLIDE.pptx"
+      ]
+    },
+    {
+      "id": "07a_ui_agent",
+      "status": "pending",
+      "role": "Frontend & Mobile Interface Engineer",
+      "phase": "phase_three",
+      "execution_count": 2,
+      "artifacts": [
+        "agents/03_execution_workspace/07a_ui_agent/output/UI_MAP.md",
+        "agents/03_execution_workspace/07a_ui_agent/output/UI_MAP.json",
+        "agents/03_execution_workspace/07a_ui_agent/design-system/DESIGN.md",
+        "agents/03_execution_workspace/07a_ui_agent/petemart-web/package.json",
+        "agents/03_execution_workspace/07a_ui_agent/07a_ui_agent_COMPLETION_SLIDE.pptx",
+        "agents/03_execution_workspace/07a_ui_agent/UI_AGENT_REPORT.md",
+        "agents/03_execution_workspace/07a_ui_agent/UI_INTERFACE_MAP.json",
+        "agents/03_execution_workspace/07a_ui_agent/auth-page.tsx",
+        "agents/03_execution_workspace/07a_ui_agent/merchant-dashboard-page.tsx",
+        "agents/03_execution_workspace/07a_ui_agent/admin-dashboard-page.tsx"
+      ]
+    },
+    {
+      "id": "07b_api_agent",
+      "status": "pending",
+      "role": "Interface Connection Engineer",
+      "phase": "phase_three",
+      "execution_count": 1,
+      "artifacts": [
+        "agents/03_execution_workspace/07b_api_agent/API_SPECIFICATION.md",
+        "agents/03_execution_workspace/07b_api_agent/API_SPECIFICATION.json",
+        "agents/03_execution_workspace/07b_api_agent/tests/auth.test.ts",
+        "agents/03_execution_workspace/07b_api_agent/tests/merchants.test.ts",
+        "agents/03_execution_workspace/07b_api_agent/tests/products.test.ts",
+        "agents/03_execution_workspace/07b_api_agent/tests/orders.test.ts",
+        "agents/03_execution_workspace/07b_api_agent/tests/admin-routes.test.ts",
+        "agents/03_execution_workspace/07b_api_agent/tests/merchant-routes.test.ts"
+      ]
+    },
+    {
+      "id": "07c_backend_db_agent",
+      "status": "pending",
+      "role": "Data Infrastructure & Storage Engineer",
+      "phase": "phase_three",
+      "execution_count": 2,
+      "artifacts": [
+        "agents/03_execution_workspace/07c_backend_db_agent/01-complete-schema.sql",
+        "agents/03_execution_workspace/07c_backend_db_agent/02-rls-policies.sql",
+        "agents/03_execution_workspace/07c_backend_db_agent/03-index-definitions.sql",
+        "agents/03_execution_workspace/07c_backend_db_agent/04-seed-part1-auth-profiles-stores.sql",
+        "agents/03_execution_workspace/07c_backend_db_agent/05-seed-part2-products-stores1-3.sql",
+        "agents/03_execution_workspace/07c_backend_db_agent/06-seed-part3-products-stores4-6.sql",
+        "agents/03_execution_workspace/07c_backend_db_agent/07-seed-part4-products-stores7-9.sql",
+        "agents/03_execution_workspace/07c_backend_db_agent/08-migration-script.sql",
+        "agents/03_execution_workspace/07c_backend_db_agent/09-data-model.md",
+        "agents/03_execution_workspace/07c_backend_db_agent/10-data-model.json",
+        "agents/03_execution_workspace/07c_backend_db_agent/11-supplemental-products.sql",
+        "agents/03_execution_workspace/07c_backend_db_agent/09-auth-v2.sql",
+        "agents/03_execution_workspace/07c_backend_db_agent/12-auth-v2-seed.sql",
+        "agents/03_execution_workspace/07c_backend_db_agent/07c_backend_db_agent_DATA_EXPORT.xlsx"
+      ]
+    },
+    {
+      "id": "07d_integration_agent",
+      "status": "pending",
+      "role": "Systems Assembly Engineer",
+      "phase": "phase_three",
+      "execution_count": 2,
+      "artifacts": [
+        "agents/03_execution_workspace/07d_integration_agent/INTEGRATION_REPORT.md",
+        "agents/03_execution_workspace/07d_integration_agent/petemart-unified/package.json",
+        "agents/03_execution_workspace/07d_integration_agent/petemart-unified/middleware.ts",
+        "agents/03_execution_workspace/07d_integration_agent/petemart-unified/types/index.ts",
+        "agents/03_execution_workspace/07d_integration_agent/petemart-unified/lib/api-client.ts",
+        "agents/03_execution_workspace/07d_integration_agent/petemart-unified/lib/api-helpers.ts",
+        "agents/03_execution_workspace/07d_integration_agent/petemart-unified/lib/data.ts"
+      ]
+    },
+    {
+      "id": "08_qa_agent",
+      "status": "pending",
+      "role": "Senior Test Architect & Quality Gatekeeper",
+      "phase": "phase_four",
+      "execution_count": 2,
+      "artifacts": [
+        "agents/03_execution_workspace/08_qa_agent/01_QA_TEST_PLAN.md",
+        "agents/03_execution_workspace/08_qa_agent/02_DEFECT_LOG.md",
+        "agents/03_execution_workspace/08_qa_agent/03_GO_NOGO_RECOMMENDATION.md",
+        "agents/03_execution_workspace/08_qa_agent/04_RISK_ASSESSMENT.md",
+        "agents/03_execution_workspace/08_qa_agent/05_QA_DASHBOARD_SUMMARY.md",
+        "agents/03_execution_workspace/08_qa_agent/TEST_AUTOMATION_FRAMEWORK_ARCHITECTURE.md",
+        "agents/03_execution_workspace/08_qa_agent/test-results.json",
+        "agents/08_qa_agent/08_qa_agent_COMPLETION_SLIDE.pptx",
+        "agents/08_qa_agent/08_qa_agent_DATA_EXPORT.xlsx",
+        "playwright.config.ts",
+        "e2e/home-page.spec.ts",
+        "e2e/auth-flow.spec.ts",
+        "e2e/customer-journey.spec.ts",
+        "e2e/merchant-flow.spec.ts",
+        "e2e/admin-flow.spec.ts",
+        "e2e/api-health.spec.ts",
+        "e2e/accessibility.spec.ts",
+        "e2e/visual-regression.spec.ts",
+        "qa-dashboard/test-run-config.json",
+        "qa-dashboard/results.json",
+        "qa-dashboard/history.json",
+        "qa-dashboard/test-types.json",
+        "scripts/collect-test-results.js",
+        "scripts/run-tests.js",
+        "scripts/k6-loadtest.js",
+        "scripts/disaster-recovery-test.js",
+        "scripts/track_usage.py",
+        "lighthouse.config.js",
+        "vitest.config.ts",
+        "__tests__/setup.ts",
+        "__tests__/api-contract.test.ts",
+        "__tests__/integration-payment.test.ts",
+        "__tests__/integration-whatsapp.test.ts",
+        "__tests__/multi-tenant.test.ts",
+        "__tests__/migration.test.ts",
+        "__tests__/security-headers.test.ts",
+        "__tests__/components/badge.test.tsx",
+        "__tests__/components/avatar.test.tsx",
+        "__tests__/components/input.test.tsx",
+        "__tests__/components/tabs.test.tsx",
+        "__tests__/components/separator.test.tsx",
+        "__tests__/components/header.test.tsx",
+        "__tests__/components/button.test.tsx",
+        "qa-dashboard/results.json",
+        "app/qa-dashboard/page.tsx",
+        ".github/workflows/ci.yml"
+      ]
+    },
+    {
+      "id": "09_production_agent",
+      "status": "pending",
+      "role": "Release & Deployment Coordinator",
+      "phase": "phase_four",
+      "execution_count": 1,
+      "artifacts": [
+        "agents/03_execution_workspace/09_production_agent/01_DEPLOYMENT_REPORT.md",
+        "agents/03_execution_workspace/09_production_agent/02_RELEASE_NOTES.md",
+        "agents/03_execution_workspace/09_production_agent/03_DEMO_ACCOUNTS_TEST_SCENARIOS.md",
+        "agents/03_execution_workspace/09_production_agent/04_KNOWN_LIMITATIONS.md",
+        "agents/03_execution_workspace/09_production_agent/05_LAUNCH_CHECKLIST.md",
+        "agents/03_execution_workspace/09_production_agent/06_USER_GUIDE.md"
+      ]
+    },
+    {
+      "id": "10_tech_pub_agent",
+      "status": "pending",
+      "role": "Technical Documentation & Localization Specialist",
+      "phase": "phase_four",
+      "execution_count": 0,
+      "artifacts": []
+    },
+    {
+      "id": "11_customer_onboarding_agent",
+      "status": "pending",
+      "role": "CRM & Operations Specialist",
+      "phase": "phase_five",
+      "execution_count": 0,
+      "artifacts": []
+    },
+    {
+      "id": "12_marketing_agent",
+      "status": "pending",
+      "role": "Growth & Traffic Automation Specialist",
+      "phase": "phase_five",
+      "execution_count": 0,
+      "artifacts": []
+    },
+    {
+      "id": "13_maintenance_agent",
+      "status": "pending",
+      "role": "Autonomous Remediation & Healing Agent",
+      "phase": "phase_five",
+      "execution_count": 0,
+      "artifacts": []
+    },
+    {
+      "id": "14_finops_agent",
+      "status": "pending",
+      "role": "Cloud Cost Optimization Guardrail",
+      "phase": "phase_five",
+      "execution_count": 0,
+      "artifacts": []
+    },
+    {
+      "id": "15_secrets_compliance_agent",
+      "status": "pending",
+      "role": "Security Guardrail",
+      "phase": "phase_five",
+      "execution_count": 0,
+      "artifacts": []
+    }
+  ]
+}

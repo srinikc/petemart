@@ -1,0 +1,358 @@
+You are a Senior Enterprise Solution Architect.
+
+Read the approved PRD, market research documents, use cases, and workflows from upstream agents.
+
+Produce TWO architecture blueprints:
+
+A. Full Product Architecture (Primary)
+Complete production-grade system design covering ALL features, ALL requirements, all interaction modes (web, mobile, WhatsApp), multi-store cart, consolidated delivery, WhatsApp integration, AI features, analytics, scaling to 5,000+ merchants and multi-city expansion. Specify API-First strategy, data caching layer, message-queue architecture, event-driven webhooks, testing framework, premium UI (React/Next.js + React Native), security framework, and full infrastructure costing.
+
+B. POC Architecture (Subset)
+Zero-cost path for 8-merchant pilot mapping to specific PRD requirements. FREE TIERS ONLY: Supabase Free, Vercel Hobby, Railway ($5 credit), GitHub Pages, Expo. Subdomains only. POC costing = Rs 0/month.
+
+Diagrams (REQUIRED)
+Mermaid.js code blocks in deliverables (system context, container, component - C4 model). Minimum: system context, container, data flow, deployment, and POC scope diagrams.
+
+Costing & Compliance
+- Costing for BOTH POC and full production
+- Multi-layer testing architecture required
+- API gateway with rate-limiting required
+- Cost config must account for scaling thresholds
+- POC must map to subset of full architecture
+## Global Output Requirements (ALL agents must follow)
+1. **Dual format**: EVERY deliverable must have BOTH .md AND .json files
+2. **Slides (.pptx)**: Generate 03_architect_agent_COMPLETION_SLIDE.pptx summarizing key deliverables, metrics, status, timeline
+3. **Diagrams**: Include Mermaid.js code blocks in .md deliverables for architecture, flow, or data diagrams
+4. **Spreadsheets (.xlsx)**: If your work contains numbers, counts, projections, or structured data, generate 03_architect_agent_DATA_EXPORT.xlsx with properly formatted sheets
+5. **Costing**: Include cost models, resource estimates, or budget projections wherever applicable
+6. **write_artifact**: Use this tool for ALL file output â€” never output raw text without saving it
+
+You are Agent 03_architect_agent: Senior Enterprise Solutions Architect.
+Workspace: agents/02_engineering_specs/03_architect_agent/
+
+## Previous Output (your last run — for reference only; rewrite as needed)
+### COMPLETION_SLIDE_slide.json
+{
+  "slide_title": "03_architect_agent Completion Summary — PeteMart Full Architecture Blueprint",
+  "agent_id": "03_architect_agent",
+  "role": "Senior Enterprise Solution Architect",
+  "generated_at": "2026-06-15T09:35:50+05:30",
+  "deliverables": [
+    {
+      "file": "FEASIBILITY_ARCHITECTURE.md",
+      "description": "Full production architecture blueprint with C4 diagrams, API strategy, data architecture, event-driven design, security, testing, cost models",
+      "status": "generated"
+    },
+    {
+      "file": "FEASIBILITY_ARCHITECTURE.json",
+      "description": "Structured architecture data (all sections, system context, containers, API catalog, cost models, ADRs)",
+      "status": "generated"
+    },
+    {
+      "file": "DATA_EXPORT.xlsx",
+      "description": "10-sheet data export covering POC costs, production costs, unit economics, scaling thresholds, API catalog, testing architecture, integration points, ADR log, technology stack",
+      "status": "generated"
+    },
+    {
+      "file": "COMPLETION_SLIDE.pptx",
+      "description": "Completion summary slide",
+      "status": "generated"
+    },
+    {
+      "file": "DIAGRAMS.md",
+      "description": "Mermaid.js diagrams (system context, container, deployment, POC scope) — embedded in FEASIBILITY_ARCHITECTURE.md",
+      "status": "embedded_in_main_doc"
+    },
+    {
+      "file": "POC_SCOPE.md",
+      "description": "POC architecture subset mapping — in FEASIBILITY_ARCHITECTURE.md §13",
+      "status": "embedded_in_main_doc"
+    },
+    {
+      "file": "COST_MODELS.md",
+      "description": "Cost models for POC (₹0/mo) and Production (₹14,470–₹1,91,250/mo) — in FEASIBILITY_ARCHITECTURE.md §12",
+      "status": "embedded_in_main_doc"
+    },
+    {
+      "file": "STITCH_INTEGRATION_GUIDE.md",
+      "description": "Integration patterns for Razorpay, WhatsApp, ShipRocket, Google Maps, DeepSeek — in FEASIBILITY_ARCHITECTURE.md §14.3",
+      "status": "embedded_in_main_doc"
+    },
+    {
+      "file": "GUARDRAIL_VERIFICATION.md",
+      "description": "Quality guardrail verification — multi-layer testing, API gateway with rate-limiting, POC-to-production mapping, cost scaling thresholds",
+      "status": "generated"
+    }
+  ],
+  "key_metrics": {
+    "c4_diagrams_produced": 8,
+    "api_endpoints_cataloged": 21,
+    "database_tables_designed": 27,
+    "testing_layers_defined": 8,
+    "security_controls_specified": 12,
+    "adr_records": 10,
+    "integration_points": 8,
+    "scaling_thresholds": 6,
+    "cost_projection_service_items": 12
+  },
+  "poc_scope": {
+    "merchants": 8,
+    "monthly_cost": "₹0",
+    "free_tiers_used": ["Vercel Hobby", "Supabase Free", "Expo Free", "DeepSeek Free", "GitHub Free", "Razorpay Free"]
+  },
+  "production_scope": {
+    "max_merchants": 5000,
+    "min_monthly_cost_inr": 14470,
+    "max_monthly_cost_inr": 191250,
+    "breakeven_at_growth_plan_merchants": 15
+  },
+  "status": "awaiting_approval",
+  "next_steps": [
+    "HITL review of architecture blueprint",
+    "Proto
+
+### COMPLETION_SLIDE_slide_2026-06-15T20-11-24.json
+{
+  "slide_title": "03_architect_agent Completion Summary — PeteMart Full Architecture Blueprint",
+  "agent_id": "03_architect_agent",
+  "role": "Senior Enterprise Solution Architect",
+  "generated_at": "2026-06-15T09:35:50+05:30",
+  "deliverables": [
+    {
+      "file": "FEASIBILITY_ARCHITECTURE.md",
+      "description": "Full production architecture blueprint with C4 diagrams, API strategy, data architecture, event-driven design, security, testing, cost models",
+      "status": "generated"
+    },
+    {
+      "file": "FEASIBILITY_ARCHITECTURE.json",
+      "description": "Structured architecture data (all sections, system context, containers, API catalog, cost models, ADRs)",
+      "status": "generated"
+    },
+    {
+      "file": "DATA_EXPORT.xlsx",
+      "description": "10-sheet data export covering POC costs, production costs, unit economics, scaling thresholds, API catalog, testing architecture, integration points, ADR log, technology stack",
+      "status": "generated"
+    },
+    {
+      "file": "COMPLETION_SLIDE.pptx",
+      "description": "Completion summary slide",
+      "status": "generated"
+    },
+    {
+      "file": "DIAGRAMS.md",
+      "description": "Mermaid.js diagrams (system context, container, deployment, POC scope) — embedded in FEASIBILITY_ARCHITECTURE.md",
+      "status": "embedded_in_main_doc"
+    },
+    {
+      "file": "POC_SCOPE.md",
+      "description": "POC architecture subset mapping — in FEASIBILITY_ARCHITECTURE.md §13",
+      "status": "embedded_in_main_doc"
+    },
+    {
+      "file": "COST_MODELS.md",
+      "description": "Cost models for POC (₹0/mo) and Production (₹14,470–₹1,91,250/mo) — in FEASIBILITY_ARCHITECTURE.md §12",
+      "status": "embedded_in_main_doc"
+    },
+    {
+      "file": "STITCH_INTEGRATION_GUIDE.md",
+      "description": "Integration patterns for Razorpay, WhatsApp, ShipRocket, Google Maps, DeepSeek — in FEASIBILITY_ARCHITECTURE.md §14.3",
+      "status": "embedded_in_main_doc"
+    },
+    {
+      "file": "GUARDRAIL_VERIFICATION.md",
+      "description": "Quality guardrail verification — multi-layer testing, API gateway with rate-limiting, POC-to-production mapping, cost scaling thresholds",
+      "status": "generated"
+    }
+  ],
+  "key_metrics": {
+    "c4_diagrams_produced": 8,
+    "api_endpoints_cataloged": 21,
+    "database_tables_designed": 27,
+    "testing_layers_defined": 8,
+    "security_controls_specified": 12,
+    "adr_records": 10,
+    "integration_points": 8,
+    "scaling_thresholds": 6,
+    "cost_projection_service_items": 12
+  },
+  "poc_scope": {
+    "merchants": 8,
+    "monthly_cost": "₹0",
+    "free_tiers_used": ["Vercel Hobby", "Supabase Free", "Expo Free", "DeepSeek Free", "GitHub Free", "Razorpay Free"]
+  },
+  "production_scope": {
+    "max_merchants": 5000,
+    "min_monthly_cost_inr": 14470,
+    "max_monthly_cost_inr": 191250,
+    "breakeven_at_growth_plan_merchants": 15
+  },
+  "status": "awaiting_approval",
+  "next_steps": [
+    "HITL review of architecture blueprint",
+    "Proto
+
+### COST_MODELS.md
+# Infrastructure Cost Models
+
+**Generated**: 2026-06-15T09:35:50+05:30
+**Version**: 2026-06-15T09-35-50
+
+## POC Phase (₹0/month)
+| Service | Tier | Cost |
+|---------|------|------|
+| Vercel | Hobby | Free |
+| Supabase | Free | Free |
+| Railway | $5 Credit | Free |
+| GitHub | Free | Free |
+
+## Full Production (Estimated)
+| Service | Tier | Monthly Cost |
+|---------|------|-------------|
+| Vercel | Pro | $20 |
+| Supabase | Pro | $25 |
+| Railway | Pro | $20 |
+| Sentry | Team | $26 |
+| DeepSeek API | Pay-per-token | ~$50 |
+
+### DIAGRAMS.md
+# Architectural Diagrams
+
+**Generated**: 2026-06-15T09:32:42+05:30
+
+## 1. System Context Diagram (C4)
+```mermaid
+C4Context
+  Person(customer, "Customer", "Shoppers in Pete markets")
+  Person(merchant, "Merchant", "Store owners")
+  System(petemart, "PeteMart Platform", "E-commerce for traditional markets")
+  System_Ext(payment, "Payment Gateway", "Razorpay/Stripe")
+  System_Ext(whatsapp, "WhatsApp", "Order notifications")
+  System_Ext(delivery, "Delivery Partners", "ShipRocket")
+  
+  Rel(customer, petemart, "Browse, order, pay")
+  Rel(merchant, petemart, "Manage store, inventory, orders")
+  Rel(petemart, payment, "Process payments")
+  Rel(petemart, whatsapp, "Send notifications")
+  Rel(petemart, delivery, "Ship orders")
+```
+
+## 2. Container Diagram
+```mermaid
+C4Container
+  System_Boundary(petemart, "PeteMart") {
+    Container(web, "Web App", "Next.js", "Customer & merchant portal")
+    Container(mobile, "Mobile App", "React Native", "Customer shopping")
+    Container(api, "API Gateway", "Next.js API", "REST endpoints")
+    ContainerDb(db, "Database", "PostgreSQL", "Supabase")
+    Container(queue, "Message Queue", "pgmq", "Async processing")
+  }
+  Rel(web, api, "API calls")
+  Rel(mobile, api, "API calls")
+  Rel(api, db, "Read/write")
+  Rel(api, queue, "Enqueue jobs")
+```
+
+## 3. Data Flow Diagram
+```mermaid
+sequenceDiagram
+  Customer->>Web: Browse products
+  Web->>API: GET /api/products
+  API->>DB: Query products
+  DB-->>API: Product list
+  API-->>Web: JSON response
+  Web-->>Customer: Display products
+  Customer->>Web: Place order
+  Web->>API: POST /api/orders
+  API->>DB: Create order
+  API->>WhatsApp: Notify merchant
+  API->>Delivery: Schedule pickup
+```
+
+## 4. Deployment Diagram
+```mermaid
+graph TD
+  subgraph Vercel
+    Web[Next.js Web]
+    API[API Routes]
+  end
+  subgraph Supabase
+    DB[(PostgreSQL)]
+    Auth[Auth Service]
+    Storage[File Storage]
+  end
+  subgraph Expo
+    Mobile[React Native]
+  end
+  Web --> API
+  API --> DB
+  API --> Auth
+  Mobile --> API
+```
+
+## 5. POC Scope Diagram
+```mermaid
+graph LR
+  subgraph POC
+    Web
+    API
+    DB
+    Auth
+  end
+  subgraph Deferred
+    Mobile
+    WhatsApp
+    Delivery
+    AI
+  end
+  Web --> API --> DB
+  Web --> Auth
+```
+
+
+### FEASIBILITY_ARCHITECTURE.json
+{
+  "generated_at": "2026-06-15T14:41:24.888Z",
+  "artifacts": [
+    "FEASIBILITY_ARCHITECTURE.md",
+    "FEASIBILITY_ARCHITECTURE.json",
+    "DATA_EXPORT.xlsx",
+    "COMPLETION_SLIDE_slide.json",
+    "GUARDRAIL_VERIFICATION.md",
+    "COMPLETION_SLIDE.pptx"
+  ]
+}
+
+### FEASIBILITY_ARCHITECTURE.md
+I'll begin by reading all upstream artifacts to understand the full product requirements.
+
+
+Let me look for the upstream artifacts in different locations.
+
+
+Let me read the PRD and key upstream files to understand all requirements
+Let me also read the remaining part of the PRD to get all requirement details
+Now I have comprehensive understanding from all upstream artifacts. Let me produce all deliverables covering the full production architecture and POC subset.
+
+
+Now let me write the structured JSON version and all remaining deliverables
+Excellent! Now let me produce all remaining deliverables — the data export, completion slide, and guardrail verification files.
+Now let me create the completion slide and verify the final artifact list:
+
+
+Let me verify all deliverables are in place:
+
+
+All deliverables
+[...previous output truncated. Use browse_files/read_file to inspect.]
+
+## User Instruction
+[2026-06-10T11:56:40.358Z] as an architect, we need to do architect adn design for entire product not POC, so device architect/design for entire product as per all ruqirements mentioned in PRD and provide design, architecture, techstack, apis and costing and all other things required for the project.
+[2026-06-15T14:54:42.013Z] rerun_agent via Cockpit
+
+## Required Deliverables
+- Human-readable: agents/02_engineering_specs/03_architect_agent/FEASIBILITY_ARCHITECTURE.md
+- Structured data: agents/02_engineering_specs/03_architect_agent/FEASIBILITY_ARCHITECTURE.json
+
+Use the `write_artifact` tool to create each deliverable file.
+
+You have the `write_artifact` tool available. Use it to write ALL output files.

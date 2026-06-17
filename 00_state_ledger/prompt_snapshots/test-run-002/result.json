@@ -1,0 +1,21 @@
+{
+  "agentId": "test_compliance_agent",
+  "runId": "test-run-002",
+  "status": "approved",
+  "content": "All good",
+  "artifacts": [
+    {
+      "name": "good_output.md",
+      "path": "__tests__\\runtime\\_test_tmp\\good_output.md"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 5,
+    "completion_tokens": 3
+  },
+  "duration": 67890,
+  "compliance": {
+    "allPassed": true,
+    "items": []
+  }
+}
