@@ -176,6 +176,7 @@ export const STATUS_CONFIG: Record<string, { color: string; bg: string }> = {
     active: { color: '#3B82F6', bg: 'bg-blue-100 text-blue-700' },
     failed: { color: '#DC2626', bg: 'bg-red-100 text-red-700' },
     in_progress: { color: '#3B82F6', bg: 'bg-blue-100 text-blue-700' },
+    cancelled: { color: '#DC2626', bg: 'bg-red-100 text-red-700' },
 };
 
 export const AGENT_ICONS: Record<string, string> = {

@@ -110,4 +110,27 @@ class SupervisorSingleton {
   }
 }
 
-module.exports = { SupervisorSingleton };
+// ── Singleton instance + exported functions ──
+const instance = new SupervisorSingleton();
+
+function startSupervisor() {
+  if (instance.isRunning()) return { alreadyRunning: true };
+  instance.claim();
+  // Start daemon loop in background (fire-and-forget)
+  const { daemonLoop } = require('./supervisorDaemon');
+  daemonLoop().catch(err => {
+    vlog.write('DAEMON', '00_supervisor_agent', `Daemon loop error: ${err.message}`);
+  });
+  return { started: true, pid: process.pid };
+}
+
+function stopSupervisor() {
+  instance.release();
+  return { stopped: true };
+}
+
+function isRunning() {
+  return instance.isRunning();
+}
+
+module.exports = { SupervisorSingleton, startSupervisor, stopSupervisor, isRunning };
