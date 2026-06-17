@@ -1,0 +1,244 @@
+{
+  "version": "1.1",
+  "description": "A2A (Agent-to-Agent) structured message protocol type definitions — including debate/consensus types",
+  "types": [
+    {
+      "id": "DelegateSubTask",
+      "display_name": "Delegate Subtask",
+      "description": "Agent A delegates a subtask to Agent B to execute on its behalf",
+      "color": "blue",
+      "fields": {
+        "task_id": {
+          "type": "string",
+          "required": true,
+          "description": "Unique identifier for the subtask"
+        },
+        "task_description": {
+          "type": "string",
+          "required": true,
+          "description": "Description of the subtask to execute"
+        },
+        "input_artifacts": {
+          "type": "array",
+          "required": false,
+          "description": "Artifact references the delegate needs"
+        },
+        "expected_output": {
+          "type": "string",
+          "required": false,
+          "description": "Description of expected output format"
+        },
+        "deadline": {
+          "type": "string",
+          "required": false,
+          "description": "Expected completion timestamp"
+        }
+      }
+    },
+    {
+      "id": "SubTaskResult",
+      "display_name": "Subtask Result",
+      "description": "Agent B returns results of a delegated subtask to Agent A",
+      "color": "green",
+      "fields": {
+        "task_id": {
+          "type": "string",
+          "required": true,
+          "description": "Reference to the original task_id from DelegateSubTask"
+        },
+        "status": {
+          "type": "string",
+          "required": true,
+          "description": "completed, failed, or partial"
+        },
+        "result_summary": {
+          "type": "string",
+          "required": true,
+          "description": "Summary of what was accomplished"
+        },
+        "output_artifacts": {
+          "type": "array",
+          "required": false,
+          "description": "Artifact references produced"
+        },
+        "error_details": {
+          "type": "string",
+          "required": false,
+          "description": "Error details if status is failed"
+        },
+        "duration_ms": {
+          "type": "number",
+          "required": false,
+          "description": "Milliseconds taken to complete"
+        }
+      }
+    },
+    {
+      "id": "RequestClarification",
+      "display_name": "Request Clarification",
+      "description": "Any agent requests clarification or additional information from another agent",
+      "color": "amber",
+      "fields": {
+        "query": {
+          "type": "string",
+          "required": true,
+          "description": "The clarification question or request"
+        },
+        "context": {
+          "type": "string",
+          "required": false,
+          "description": "Additional context for the request"
+        },
+        "priority": {
+          "type": "string",
+          "required": false,
+          "description": "high, medium, or low"
+        }
+      }
+    },
+    {
+      "id": "DebateOpen",
+      "display_name": "Open Debate",
+      "description": "Agent A opens a structured debate with Agent B on a specific topic. Each side presents pro/con positions and votes for consensus.",
+      "color": "purple",
+      "fields": {
+        "debate_id": {
+          "type": "string",
+          "required": true,
+          "description": "Unique identifier for this debate session"
+        },
+        "topic": {
+          "type": "string",
+          "required": true,
+          "description": "The topic or proposal under debate"
+        },
+        "position": {
+          "type": "string",
+          "required": true,
+          "description": "FOR, AGAINST, or NEUTRAL — the opening agent's stance"
+        },
+        "arguments": {
+          "type": "string",
+          "required": true,
+          "description": "Supporting arguments for the position"
+        },
+        "stake": {
+          "type": "string",
+          "required": false,
+          "description": "What depends on the outcome (e.g., architecture decision)"
+        },
+        "deadline": {
+          "type": "string",
+          "required": false,
+          "description": "Expected debate close timestamp"
+        },
+        "requires_consensus": {
+          "type": "boolean",
+          "required": false,
+          "description": "Whether full consensus is required to proceed"
+        }
+      }
+    },
+    {
+      "id": "DebateResponse",
+      "display_name": "Debate Response",
+      "description": "Agent B responds to an open debate, presenting counter-arguments or agreeing",
+      "color": "violet",
+      "fields": {
+        "debate_id": {
+          "type": "string",
+          "required": true,
+          "description": "Reference to the original debate_id from DebateOpen"
+        },
+        "position": {
+          "type": "string",
+          "required": true,
+          "description": "FOR, AGAINST, or NEUTRAL — the responding agent's stance"
+        },
+        "counter_arguments": {
+          "type": "string",
+          "required": false,
+          "description": "Counter-arguments to the opening position"
+        },
+        "agreed_points": {
+          "type": "string",
+          "required": false,
+          "description": "Points where the responding agent agrees"
+        },
+        "vote": {
+          "type": "string",
+          "required": true,
+          "description": "APPROVE, REJECT, or ABSTAIN"
+        },
+        "vote_reason": {
+          "type": "string",
+          "required": false,
+          "description": "Reasoning behind the vote"
+        },
+        "suggested_compromise": {
+          "type": "string",
+          "required": false,
+          "description": "Alternative proposal if rejecting"
+        }
+      }
+    },
+    {
+      "id": "DebateResolution",
+      "display_name": "Debate Resolution",
+      "description": "Final resolution of a debate session — consensus reached or escalated",
+      "color": "emerald",
+      "fields": {
+        "debate_id": {
+          "type": "string",
+          "required": true,
+          "description": "Reference to the original debate_id"
+        },
+        "outcome": {
+          "type": "string",
+          "required": true,
+          "description": "CONSENSUS_REACHED, CONSENSUS_FAILED, or ESCALATED"
+        },
+        "final_position": {
+          "type": "string",
+          "required": true,
+          "description": "The final agreed position or result"
+        },
+        "consensus_score": {
+          "type": "number",
+          "required": false,
+          "description": "0-100 score representing level of agreement"
+        },
+        "participants": {
+          "type": "array",
+          "required": false,
+          "description": "List of agent IDs that participated"
+        },
+        "votes_for": {
+          "type": "number",
+          "required": false,
+          "description": "Number of approve votes"
+        },
+        "votes_against": {
+          "type": "number",
+          "required": false,
+          "description": "Number of reject votes"
+        },
+        "abstentions": {
+          "type": "number",
+          "required": false,
+          "description": "Number of abstain votes"
+        },
+        "resolution_summary": {
+          "type": "string",
+          "required": true,
+          "description": "Summary of the debate outcome"
+        },
+        "escalated_to": {
+          "type": "string",
+          "required": false,
+          "description": "Agent ID or human_gatekeeper if escalated"
+        }
+      }
+    }
+  ]
+}

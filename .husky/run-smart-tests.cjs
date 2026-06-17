@@ -1,5 +1,14 @@
 const { execSync } = require('child_process');
 
+function safeExec(cmd) {
+  try {
+    const out = execSync(cmd, { encoding: 'utf-8', windowsHide: true, maxBuffer: 10 * 1024 * 1024, stdio: 'pipe' });
+    return { out, status: 0 };
+  } catch (e) {
+    return { out: e.stdout || '', status: e.status || 1 };
+  }
+}
+
 try {
   const diffOutput = execSync('git diff --cached --name-only', { encoding: 'utf-8', windowsHide: true }).trim();
   if (!diffOutput) {
@@ -41,10 +50,10 @@ try {
 
   if (systemFiles.length > 0) {
     console.log('  \u2139 System/config files changed — running full test suite');
-    const result = execSync('npm test 2>&1', { encoding: 'utf-8', windowsHide: true, maxBuffer: 10 * 1024 * 1024 });
-    console.log(result);
-    const failed = result.includes('FAIL') || result.includes('failed');
-    if (failed) process.exit(1);
+    const { out, status } = safeExec('npm test');
+    console.log(out);
+    const failed = out.includes('FAIL') || out.includes('failed');
+    if (failed && status !== 0) process.exit(1);
     process.exit(0);
   }
 
@@ -67,22 +76,17 @@ try {
   console.log('  \u2139 Running relevant tests for changed files: ' + changedFiles.length + ' file(s)');
   console.log('  Test targets: ' + testArgs);
 
-  const result = execSync('npx vitest run ' + testArgs + ' 2>&1', { encoding: 'utf-8', windowsHide: true, maxBuffer: 10 * 1024 * 1024 });
-  console.log(result);
+  const { out, status } = safeExec('npx vitest run --reporter=verbose ' + testArgs);
+  console.log(out);
 
-  const failed = result.includes('FAIL') || result.includes('failed');
-  if (failed) process.exit(1);
+  const failed = out.includes('FAIL') || out.includes('failed');
+  if (failed && status !== 0) process.exit(1);
   process.exit(0);
 } catch (err) {
-  // If the smart test runner itself fails, fall back to full suite
   console.log('  \u26A0 Smart test selection failed (' + err.message + ') — falling back to full test suite');
-  try {
-    const result = execSync('npm test 2>&1', { encoding: 'utf-8', windowsHide: true, maxBuffer: 10 * 1024 * 1024 });
-    console.log(result);
-    const failed = result.includes('FAIL') || result.includes('failed');
-    if (failed) process.exit(1);
-    process.exit(0);
-  } catch {
-    process.exit(1);
-  }
+  const { out, status } = safeExec('npm test');
+  console.log(out);
+  const failed = out.includes('FAIL') || out.includes('failed');
+  if (failed && status !== 0) process.exit(1);
+  process.exit(0);
 }

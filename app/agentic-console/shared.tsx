@@ -20,6 +20,19 @@ export type AgentState = {
     last_error: string | null;
     expert_reviewer: ExpertReview | null;
     approval_gate_triggers?: string[];
+    pending_inputs?: { key: string; description: string; secret?: boolean }[];
+    provided_inputs?: Record<string, string>;
+    disabled?: boolean;
+    user_instruction?: string;
+    /** Runtime monitoring fields */
+    current_step?: number;
+    steps_total?: number;
+    step_label?: string;
+    step_descriptions?: string[];
+    estimated_remaining_ms?: number;
+    started_at?: string | null;
+    timeout_threshold_ms?: number;
+    stuck_detected_at?: string | null;
 };
 
 export type ComplianceCheck = {
@@ -28,6 +41,8 @@ export type ComplianceCheck = {
     type: string;
     required: boolean;
     passed: boolean;
+    passed_at?: string | null;
+    checked_by?: string | null;
 };
 
 export type ExpertReview = {
@@ -38,6 +53,35 @@ export type ExpertReview = {
     reviewed_at: string | null;
     sign_off_required: boolean;
     sign_off_granted: boolean;
+};
+
+export type StuckAgentEntry = {
+    agent_id: string;
+    started_at: string;
+    detected_at: string;
+    action_taken: string;
+    duration_ms: number;
+};
+
+export type SupervisorControl = {
+    status: string;
+    current_action?: string;
+    next_agent_to_dispatch?: string;
+    dispatch_queue?: string[];
+    last_cycle_timestamp?: string;
+    cycle_count?: number;
+    max_cycles_before_break?: number;
+    cool_down_seconds?: number;
+    last_error?: string | null;
+    stuck_agent_monitor?: {
+        enabled: boolean;
+        timeout_threshold_ms: number;
+        check_interval_ms: number;
+        auto_kill_on_stuck: boolean;
+        auto_relaunch_on_stuck: boolean;
+        max_relaunch_attempts: number;
+        stuck_agents_detected: StuckAgentEntry[];
+    };
 };
 
 export type ApprovalGate = {
@@ -58,7 +102,9 @@ export type DashboardSummary = {
     agents_in_progress: number;
     agents_pending: number;
     agents_awaiting_review: number;
+    agents_awaiting_input: number;
     agents_failed: number;
+    dlq_count?: number;
     overall_progress_pct: number;
     last_milestone: string;
 };
@@ -146,8 +192,10 @@ export const GLOBAL_NAV_ITEMS = [
     { href: '/agentic-console', label: 'Dashboard', icon: 'Activity' },
     { href: '/agentic-console/agents', label: 'Agent Pipeline', icon: 'Bot' },
     { href: '/agentic-console/quality', label: 'Quality', icon: 'Shield' },
+    { href: '/agentic-console/health', label: 'Health', icon: 'Activity' },
     { href: '/agentic-console/operations', label: 'Operations', icon: 'Settings' },
-    { href: '/agentic-console/mcp', label: 'MCP Registry', icon: 'Server' },
+    { href: '/agentic-console/tools', label: 'Tools', icon: 'Radio' },
+    { href: '/agentic-console/mcp', label: 'MCP Servers', icon: 'Server' },
 ];
 
 // ── Helper Components ──
@@ -199,6 +247,47 @@ export function PageTOC({ sections, currentPage }: { sections: { id: string; lab
     );
 }
 
+// ── Relative time helper ──
+export function timeAgo(ts: number | string | null | undefined): string {
+    if (!ts) return '';
+    const ms = typeof ts === 'number' ? ts : new Date(ts).getTime();
+    const diff = Date.now() - ms;
+    if (diff < 0) return 'now';
+    const sec = Math.floor(diff / 1000);
+    if (sec < 10) return 'now';
+    if (sec < 60) return `${sec}s ago`;
+    const min = Math.floor(sec / 60);
+    if (min < 60) return `${min}m ago`;
+    const hrs = Math.floor(min / 60);
+    if (hrs < 24) return `${hrs}h ago`;
+    const days = Math.floor(hrs / 24);
+    return `${days}d ago`;
+}
+
+export function formatETA(ms: number | null | undefined): string {
+    if (!ms || ms <= 0) return '';
+    const sec = Math.ceil(ms / 1000);
+    if (sec < 60) return `~${sec}s`;
+    const min = Math.ceil(sec / 60);
+    return `~${min}m ${sec % 60}s`;
+}
+
+// ── Multi-Project Types ──
+export type ProjectInfo = {
+    id: string;
+    name: string;
+    description: string;
+    state_path: string;
+    created_at: string;
+    agent_count?: number;
+    completed_pct?: number;
+};
+
+export type ProjectsIndex = {
+    default_project: string;
+    projects: Record<string, ProjectInfo>;
+};
+
 // ── Data fetching helper ──
 export async function fetchWithTimeout(url: string, ms = 10000) {
     const ctrl = new AbortController();
@@ -206,4 +295,18 @@ export async function fetchWithTimeout(url: string, ms = 10000) {
         fetch(url, { signal: ctrl.signal }),
         new Promise<never>((_, reject) => setTimeout(() => { ctrl.abort(); reject('timeout'); }, ms)),
     ]);
+}
+
+export async function fetchProjectsIndex(): Promise<ProjectsIndex | null> {
+    try {
+        const res = await fetch('/api/agentic-console/projects');
+        if (!res.ok) return null;
+        return await res.json();
+    } catch { return null; }
+}
+
+export function withProject(url: string, project?: string | null): string {
+    if (!project) return url;
+    const sep = url.includes('?') ? '&' : '?';
+    return `${url}${sep}project=${encodeURIComponent(project)}`;
 }

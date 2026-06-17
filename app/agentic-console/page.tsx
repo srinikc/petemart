@@ -11,8 +11,22 @@ function safeReadJSON(relPath: string) {
   } catch { return null; }
 }
 
-export default function AgenticConsolePage() {
-  const stateMatrix = safeReadJSON('00_state_ledger/STATE_MATRIX.json');
+export default function AgenticConsolePage({
+  searchParams,
+}: {
+  searchParams?: { project?: string };
+}) {
+  const project = searchParams?.project || null;
+  const projectsIndex = safeReadJSON('00_state_ledger/projects_index.json');
+
+  // Global mode: no project selected — show mini trains for all projects
+  if (!project) {
+    return <DashboardClient initialState={null} />;
+  }
+
+  // Per-project mode: show detailed view
+  const stateFile = `00_state_ledger/projects/${project}/STATE_MATRIX.json`;
+  const stateMatrix = safeReadJSON(stateFile) || safeReadJSON('00_state_ledger/STATE_MATRIX.json');
   const agentRegistry = safeReadJSON('00_state_ledger/AGENT_REGISTRY.json');
   const traceability = safeReadJSON('00_state_ledger/TRACEABILITY_MATRIX.json');
   const changeRequest = safeReadJSON('00_state_ledger/CHANGE_REQUEST.json');
@@ -22,6 +36,8 @@ export default function AgenticConsolePage() {
     agentRegistry,
     traceability,
     changeRequest,
+    projectsIndex,
+    activeProject: project,
     timestamp: new Date().toISOString(),
   } : null;
 

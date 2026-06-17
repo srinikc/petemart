@@ -1,0 +1,347 @@
+{
+    "version": "1.0",
+    "description": "DAG (Directed Acyclic Graph) workflow engine definition. Supervisor walks DAG nodes instead of static phases for dynamic routing, conditionals, and forks.",
+    "nodes": {
+        "01_ideation_agent": {
+            "id": "01_ideation_agent",
+            "phase": "phase_one",
+            "pool": "async_pool",
+            "dependencies": [],
+            "conditionals": [],
+            "forks": [],
+            "next_on_success": [
+                "02_requirement_agent"
+            ],
+            "next_on_failure": [],
+            "allow_skip": false,
+            "max_retries": 2
+        },
+        "02_requirement_agent": {
+            "id": "02_requirement_agent",
+            "phase": "phase_one",
+            "pool": "async_pool",
+            "dependencies": [
+                "01_ideation_agent"
+            ],
+            "conditionals": [],
+            "forks": [],
+            "next_on_success": [
+                "03_architect_agent"
+            ],
+            "next_on_failure": [
+                "01_ideation_agent"
+            ],
+            "allow_skip": false,
+            "max_retries": 2
+        },
+        "03_architect_agent": {
+            "id": "03_architect_agent",
+            "phase": "phase_one",
+            "pool": "sync_pool",
+            "dependencies": [
+                "02_requirement_agent"
+            ],
+            "conditionals": [
+                {
+                    "check": "poc_only_mode",
+                    "if_true": [
+                        "04_prototype_agent"
+                    ],
+                    "if_false": [
+                        "04_prototype_agent",
+                        "05_program_mgmt_agent"
+                    ]
+                }
+            ],
+            "forks": [],
+            "next_on_success": [],
+            "next_on_failure": [
+                "02_requirement_agent"
+            ],
+            "allow_skip": false,
+            "max_retries": 2
+        },
+        "04_prototype_agent": {
+            "id": "04_prototype_agent",
+            "phase": "phase_one",
+            "pool": "async_pool",
+            "dependencies": [
+                "03_architect_agent"
+            ],
+            "conditionals": [],
+            "forks": [],
+            "next_on_success": [
+                "05_program_mgmt_agent"
+            ],
+            "next_on_failure": [],
+            "allow_skip": true,
+            "max_retries": 2
+        },
+        "05_program_mgmt_agent": {
+            "id": "05_program_mgmt_agent",
+            "phase": "phase_two",
+            "pool": "async_pool",
+            "dependencies": [
+                "03_architect_agent"
+            ],
+            "conditionals": [],
+            "forks": [],
+            "next_on_success": [
+                "06_infra_devops_agent"
+            ],
+            "next_on_failure": [
+                "03_architect_agent"
+            ],
+            "allow_skip": false,
+            "max_retries": 2
+        },
+        "06_infra_devops_agent": {
+            "id": "06_infra_devops_agent",
+            "phase": "phase_two",
+            "pool": "async_pool",
+            "dependencies": [
+                "05_program_mgmt_agent"
+            ],
+            "conditionals": [],
+            "forks": [],
+            "next_on_success": [
+                "07a_ui_agent",
+                "07b_api_agent",
+                "07c_backend_db_agent"
+            ],
+            "next_on_failure": [
+                "05_program_mgmt_agent"
+            ],
+            "allow_skip": false,
+            "max_retries": 2
+        },
+        "07a_ui_agent": {
+            "id": "07a_ui_agent",
+            "phase": "phase_three",
+            "pool": "sync_pool",
+            "dependencies": [
+                "06_infra_devops_agent"
+            ],
+            "conditionals": [],
+            "forks": [],
+            "next_on_success": [
+                "07d_integration_agent"
+            ],
+            "next_on_failure": [],
+            "allow_skip": false,
+            "max_retries": 3
+        },
+        "07b_api_agent": {
+            "id": "07b_api_agent",
+            "phase": "phase_three",
+            "pool": "sync_pool",
+            "dependencies": [
+                "06_infra_devops_agent"
+            ],
+            "conditionals": [],
+            "forks": [],
+            "next_on_success": [
+                "07d_integration_agent"
+            ],
+            "next_on_failure": [],
+            "allow_skip": false,
+            "max_retries": 3
+        },
+        "07c_backend_db_agent": {
+            "id": "07c_backend_db_agent",
+            "phase": "phase_three",
+            "pool": "sync_pool",
+            "dependencies": [
+                "06_infra_devops_agent"
+            ],
+            "conditionals": [],
+            "forks": [],
+            "next_on_success": [
+                "07d_integration_agent"
+            ],
+            "next_on_failure": [],
+            "allow_skip": false,
+            "max_retries": 3
+        },
+        "07d_integration_agent": {
+            "id": "07d_integration_agent",
+            "phase": "phase_three",
+            "pool": "sync_pool",
+            "dependencies": [
+                "07a_ui_agent",
+                "07b_api_agent",
+                "07c_backend_db_agent"
+            ],
+            "conditionals": [],
+            "forks": [],
+            "next_on_success": [
+                "08_qa_agent"
+            ],
+            "next_on_failure": [
+                "07a_ui_agent",
+                "07b_api_agent",
+                "07c_backend_db_agent"
+            ],
+            "allow_skip": false,
+            "max_retries": 2
+        },
+        "08_qa_agent": {
+            "id": "08_qa_agent",
+            "phase": "phase_four",
+            "pool": "sync_pool",
+            "dependencies": [
+                "07d_integration_agent"
+            ],
+            "conditionals": [],
+            "forks": [],
+            "next_on_success": [
+                "09_production_agent"
+            ],
+            "next_on_failure": [
+                "07d_integration_agent"
+            ],
+            "allow_skip": false,
+            "max_retries": 2
+        },
+        "09_production_agent": {
+            "id": "09_production_agent",
+            "phase": "phase_four",
+            "pool": "sync_pool",
+            "dependencies": [
+                "08_qa_agent"
+            ],
+            "conditionals": [
+                {
+                    "check": "qa_gate_passed",
+                    "if_true": [
+                        "10_tech_pub_agent"
+                    ],
+                    "if_false": [
+                        "08_qa_agent"
+                    ]
+                }
+            ],
+            "forks": [],
+            "next_on_success": [],
+            "next_on_failure": [
+                "08_qa_agent"
+            ],
+            "allow_skip": false,
+            "max_retries": 2
+        },
+        "10_tech_pub_agent": {
+            "id": "10_tech_pub_agent",
+            "phase": "phase_five",
+            "pool": "async_pool",
+            "dependencies": [
+                "09_production_agent"
+            ],
+            "conditionals": [],
+            "forks": [
+                "11_customer_onboarding_agent",
+                "12_marketing_agent",
+                "13_maintenance_agent",
+                "14_finops_agent",
+                "15_secrets_compliance_agent"
+            ],
+            "next_on_success": [],
+            "next_on_failure": [],
+            "allow_skip": false,
+            "max_retries": 2
+        },
+        "11_customer_onboarding_agent": {
+            "id": "11_customer_onboarding_agent",
+            "phase": "phase_five",
+            "pool": "async_pool",
+            "dependencies": [
+                "10_tech_pub_agent"
+            ],
+            "conditionals": [],
+            "forks": [],
+            "next_on_success": [],
+            "next_on_failure": [],
+            "allow_skip": true,
+            "max_retries": 2
+        },
+        "12_marketing_agent": {
+            "id": "12_marketing_agent",
+            "phase": "phase_five",
+            "pool": "async_pool",
+            "dependencies": [
+                "10_tech_pub_agent"
+            ],
+            "conditionals": [],
+            "forks": [],
+            "next_on_success": [],
+            "next_on_failure": [],
+            "allow_skip": true,
+            "max_retries": 2
+        },
+        "13_maintenance_agent": {
+            "id": "13_maintenance_agent",
+            "phase": "phase_five",
+            "pool": "async_pool",
+            "dependencies": [
+                "10_tech_pub_agent"
+            ],
+            "conditionals": [],
+            "forks": [],
+            "next_on_success": [],
+            "next_on_failure": [],
+            "allow_skip": true,
+            "max_retries": 2
+        },
+        "14_finops_agent": {
+            "id": "14_finops_agent",
+            "phase": "phase_five",
+            "pool": "async_pool",
+            "dependencies": [
+                "10_tech_pub_agent"
+            ],
+            "conditionals": [],
+            "forks": [],
+            "next_on_success": [],
+            "next_on_failure": [],
+            "allow_skip": true,
+            "max_retries": 2
+        },
+        "15_secrets_compliance_agent": {
+            "id": "15_secrets_compliance_agent",
+            "phase": "phase_five",
+            "pool": "async_pool",
+            "dependencies": [
+                "10_tech_pub_agent"
+            ],
+            "conditionals": [],
+            "forks": [],
+            "next_on_success": [],
+            "next_on_failure": [],
+            "allow_skip": true,
+            "max_retries": 2
+        }
+    },
+    "edges": {
+        "type": "dependency_graph",
+        "validation": {
+            "acyclic": true,
+            "entry_nodes": [
+                "01_ideation_agent"
+            ],
+            "terminal_nodes": [
+                "11_customer_onboarding_agent",
+                "12_marketing_agent",
+                "13_maintenance_agent",
+                "14_finops_agent",
+                "15_secrets_compliance_agent"
+            ],
+            "fork_points": [
+                "06_infra_devops_agent",
+                "10_tech_pub_agent"
+            ],
+            "conditional_points": [
+                "03_architect_agent",
+                "09_production_agent"
+            ]
+        }
+    }
+}

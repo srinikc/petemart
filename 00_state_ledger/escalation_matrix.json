@@ -1,0 +1,24 @@
+{
+  "version": "1.0",
+  "description": "Escalation matrix defining severity levels, paths, and contact channels. Supervisor triggers escalation on circuit breaker trip, blocked agents, or compliance failure.",
+  "severity_levels": [
+    { "level": "critical", "label": "Critical", "color": "red", "response_sla_minutes": 15, "paths": ["agent_00_supervisor", "slack_channel", "pagerduty", "human_gatekeeper"] },
+    { "level": "high", "label": "High", "color": "orange", "response_sla_minutes": 60, "paths": ["agent_00_supervisor", "slack_channel", "human_gatekeeper"] },
+    { "level": "medium", "label": "Medium", "color": "amber", "response_sla_minutes": 240, "paths": ["agent_00_supervisor", "slack_channel"] },
+    { "level": "low", "label": "Low", "color": "blue", "response_sla_minutes": 1440, "paths": ["agent_00_supervisor"] }
+  ],
+  "triggers": [
+    { "event": "circuit_breaker_tripped", "severity": "critical", "escalate_to": "human_gatekeeper", "auto_notify": true },
+    { "event": "compliance_failure", "severity": "high", "escalate_to": "human_gatekeeper", "auto_notify": true },
+    { "event": "stuck_agent_exhausted", "severity": "high", "escalate_to": "human_gatekeeper", "auto_notify": true },
+    { "event": "blocked_agent_4h", "severity": "medium", "escalate_to": "supervisor", "auto_notify": true },
+    { "event": "approval_gate_timeout_24h", "severity": "medium", "escalate_to": "human_gatekeeper", "auto_notify": false }
+  ],
+  "active_escalations": [],
+  "channels": {
+    "human_gatekeeper": { "type": "in_app", "description": "In-app notification + state ledger flag" },
+    "slack_channel": { "type": "webhook", "description": "#petemart-alerts channel" },
+    "pagerduty": { "type": "api", "description": "PagerDuty integration (future)" }
+  },
+  "last_updated": "2026-06-11T19:15:00Z"
+}

@@ -1,12 +1,13 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const historyPath = path.join(process.cwd(), 'qa-dashboard', 'run-history.json');
+    const project = req.nextUrl.searchParams.get('project') || 'agentic-console';
+    const historyPath = path.join(process.cwd(), 'qa-dashboard', 'projects', project, 'run-history.json');
     if (!fs.existsSync(historyPath)) {
       return NextResponse.json([]);
     }

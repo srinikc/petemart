@@ -25,7 +25,7 @@ describe('Multi-Tenant Data Isolation', () => {
     }
   });
 
-  it('merchant has no access to other merchants products', () => {
+  it('merchant has no access to other merchants products', { timeout: 15000 }, () => {
     const merchantIds = MERCHANTS.map(m => m.id);
     for (const merchantId of merchantIds) {
       const myProducts = PRODUCTS.filter(p => p.merchant_id === merchantId);

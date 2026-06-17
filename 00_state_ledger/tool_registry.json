@@ -1,0 +1,587 @@
+{
+  "version": "1.0",
+  "generated_at": "2026-06-11T18:38:30Z",
+  "tool_count": 58,
+  "tools": [
+    {
+      "id": "filesystem/read_file",
+      "name": "read_file",
+      "server_id": "filesystem",
+      "server_name": "Filesystem MCP",
+      "description": "Read file contents from any accessible path",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "filesystem/write_file",
+      "name": "write_file",
+      "server_id": "filesystem",
+      "server_name": "Filesystem MCP",
+      "description": "Write content to files",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "filesystem/list_directory",
+      "name": "list_directory",
+      "server_id": "filesystem",
+      "server_name": "Filesystem MCP",
+      "description": "List files in a directory",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "filesystem/search_files",
+      "name": "search_files",
+      "server_id": "filesystem",
+      "server_name": "Filesystem MCP",
+      "description": "Glob pattern file search",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "filesystem/grep_search",
+      "name": "grep_search",
+      "server_id": "filesystem",
+      "server_name": "Filesystem MCP",
+      "description": "Regex content search across files",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "filesystem/get_file_info",
+      "name": "get_file_info",
+      "server_id": "filesystem",
+      "server_name": "Filesystem MCP",
+      "description": "Get file metadata (size, modified time)",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "filesystem/create_directory",
+      "name": "create_directory",
+      "server_id": "filesystem",
+      "server_name": "Filesystem MCP",
+      "description": "Create new directories",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "filesystem/move_file",
+      "name": "move_file",
+      "server_id": "filesystem",
+      "server_name": "Filesystem MCP",
+      "description": "Rename or move files",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "fetch/fetch_url",
+      "name": "fetch_url",
+      "server_id": "fetch",
+      "server_name": "Web Fetch MCP",
+      "description": "HTTP GET a URL and return content as text/markdown",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "fetch/fetch_url_json",
+      "name": "fetch_url_json",
+      "server_id": "fetch",
+      "server_name": "Web Fetch MCP",
+      "description": "HTTP GET a URL and return parsed JSON",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "fetch/fetch_url_headers",
+      "name": "fetch_url_headers",
+      "server_id": "fetch",
+      "server_name": "Web Fetch MCP",
+      "description": "Inspect response headers for a URL",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "github/create_or_update_file",
+      "name": "create_or_update_file",
+      "server_id": "github",
+      "server_name": "GitHub MCP",
+      "description": "Create or update a file in a GitHub repository",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "github/push_files",
+      "name": "push_files",
+      "server_id": "github",
+      "server_name": "GitHub MCP",
+      "description": "Push multiple files in a single commit",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "github/search_repositories",
+      "name": "search_repositories",
+      "server_id": "github",
+      "server_name": "GitHub MCP",
+      "description": "Search for GitHub repositories",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "github/create_repository",
+      "name": "create_repository",
+      "server_id": "github",
+      "server_name": "GitHub MCP",
+      "description": "Create a new GitHub repository",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "github/get_issue",
+      "name": "get_issue",
+      "server_id": "github",
+      "server_name": "GitHub MCP",
+      "description": "Get details of a specific issue",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "github/create_issue",
+      "name": "create_issue",
+      "server_id": "github",
+      "server_name": "GitHub MCP",
+      "description": "Create a new issue",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "github/update_issue",
+      "name": "update_issue",
+      "server_id": "github",
+      "server_name": "GitHub MCP",
+      "description": "Update an existing issue",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "github/add_issue_comment",
+      "name": "add_issue_comment",
+      "server_id": "github",
+      "server_name": "GitHub MCP",
+      "description": "Add a comment to an issue",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "github/search_code",
+      "name": "search_code",
+      "server_id": "github",
+      "server_name": "GitHub MCP",
+      "description": "Search code in GitHub repositories",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "github/search_issues",
+      "name": "search_issues",
+      "server_id": "github",
+      "server_name": "GitHub MCP",
+      "description": "Search issues and pull requests",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "github/create_pull_request",
+      "name": "create_pull_request",
+      "server_id": "github",
+      "server_name": "GitHub MCP",
+      "description": "Create a new pull request",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "github/get_pull_request",
+      "name": "get_pull_request",
+      "server_id": "github",
+      "server_name": "GitHub MCP",
+      "description": "Get details of a pull request",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "github/list_pull_requests",
+      "name": "list_pull_requests",
+      "server_id": "github",
+      "server_name": "GitHub MCP",
+      "description": "List pull requests for a repository",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "github/merge_pull_request",
+      "name": "merge_pull_request",
+      "server_id": "github",
+      "server_name": "GitHub MCP",
+      "description": "Merge a pull request",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "github/get_pull_request_files",
+      "name": "get_pull_request_files",
+      "server_id": "github",
+      "server_name": "GitHub MCP",
+      "description": "List files changed in a pull request",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "github/list_commits",
+      "name": "list_commits",
+      "server_id": "github",
+      "server_name": "GitHub MCP",
+      "description": "List commits in a branch",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "github/get_commit",
+      "name": "get_commit",
+      "server_id": "github",
+      "server_name": "GitHub MCP",
+      "description": "Get details of a specific commit",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "github/list_branches",
+      "name": "list_branches",
+      "server_id": "github",
+      "server_name": "GitHub MCP",
+      "description": "List branches in a repository",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "github/get_workflow_run",
+      "name": "get_workflow_run",
+      "server_id": "github",
+      "server_name": "GitHub MCP",
+      "description": "Get details of a workflow run",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "github/list_workflow_runs",
+      "name": "list_workflow_runs",
+      "server_id": "github",
+      "server_name": "GitHub MCP",
+      "description": "List workflow runs for a workflow",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "github/list_releases",
+      "name": "list_releases",
+      "server_id": "github",
+      "server_name": "GitHub MCP",
+      "description": "List releases in a repository",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "github/get_latest_release",
+      "name": "get_latest_release",
+      "server_id": "github",
+      "server_name": "GitHub MCP",
+      "description": "Get the latest release",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "github/download_artifact",
+      "name": "download_artifact",
+      "server_id": "github",
+      "server_name": "GitHub MCP",
+      "description": "Download a workflow artifact",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "sonarqube/analyze_code",
+      "name": "analyze_code",
+      "server_id": "sonarqube",
+      "server_name": "SonarQube Cloud MCP",
+      "description": "Run static analysis on a codebase",
+      "type": "remote",
+      "status": "configured",
+      "agents": []
+    },
+    {
+      "id": "sonarqube/get_quality_gate",
+      "name": "get_quality_gate",
+      "server_id": "sonarqube",
+      "server_name": "SonarQube Cloud MCP",
+      "description": "Check quality gate status",
+      "type": "remote",
+      "status": "configured",
+      "agents": []
+    },
+    {
+      "id": "sonarqube/list_issues",
+      "name": "list_issues",
+      "server_id": "sonarqube",
+      "server_name": "SonarQube Cloud MCP",
+      "description": "List code issues (bugs, vulnerabilities, code smells)",
+      "type": "remote",
+      "status": "configured",
+      "agents": []
+    },
+    {
+      "id": "sonarqube/get_metrics",
+      "name": "get_metrics",
+      "server_id": "sonarqube",
+      "server_name": "SonarQube Cloud MCP",
+      "description": "Get analysis metrics (coverage, duplications, etc.)",
+      "type": "remote",
+      "status": "configured",
+      "agents": []
+    },
+    {
+      "id": "sonarqube/list_projects",
+      "name": "list_projects",
+      "server_id": "sonarqube",
+      "server_name": "SonarQube Cloud MCP",
+      "description": "List SonarQube projects",
+      "type": "remote",
+      "status": "configured",
+      "agents": []
+    },
+    {
+      "id": "puppeteer/browser_navigate",
+      "name": "browser_navigate",
+      "server_id": "puppeteer",
+      "server_name": "Puppeteer Browser MCP",
+      "description": "Navigate to a URL in headless browser",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "puppeteer/browser_screenshot",
+      "name": "browser_screenshot",
+      "server_id": "puppeteer",
+      "server_name": "Puppeteer Browser MCP",
+      "description": "Take a screenshot of the current page",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "puppeteer/browser_click",
+      "name": "browser_click",
+      "server_id": "puppeteer",
+      "server_name": "Puppeteer Browser MCP",
+      "description": "Click an element on the page",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "puppeteer/browser_fill_form",
+      "name": "browser_fill_form",
+      "server_id": "puppeteer",
+      "server_name": "Puppeteer Browser MCP",
+      "description": "Fill a form field",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "puppeteer/browser_evaluate",
+      "name": "browser_evaluate",
+      "server_id": "puppeteer",
+      "server_name": "Puppeteer Browser MCP",
+      "description": "Run JavaScript in the browser context",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "puppeteer/browser_get_html",
+      "name": "browser_get_html",
+      "server_id": "puppeteer",
+      "server_name": "Puppeteer Browser MCP",
+      "description": "Get the HTML content of the current page",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "puppeteer/browser_get_text",
+      "name": "browser_get_text",
+      "server_id": "puppeteer",
+      "server_name": "Puppeteer Browser MCP",
+      "description": "Get visible text content of the page",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "puppeteer/browser_wait",
+      "name": "browser_wait",
+      "server_id": "puppeteer",
+      "server_name": "Puppeteer Browser MCP",
+      "description": "Wait for a specified duration",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "playwright/run_test",
+      "name": "run_test",
+      "server_id": "playwright",
+      "server_name": "Playwright E2E MCP",
+      "description": "Run Playwright tests",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "playwright/capture_trace",
+      "name": "capture_trace",
+      "server_id": "playwright",
+      "server_name": "Playwright E2E MCP",
+      "description": "Capture a Playwright trace for debugging",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "playwright/visual_diff",
+      "name": "visual_diff",
+      "server_id": "playwright",
+      "server_name": "Playwright E2E MCP",
+      "description": "Compare screenshots for visual regression",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "playwright/run_spec_file",
+      "name": "run_spec_file",
+      "server_id": "playwright",
+      "server_name": "Playwright E2E MCP",
+      "description": "Run a specific spec file",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "postgres/query",
+      "name": "query",
+      "server_id": "postgres",
+      "server_name": "PostgreSQL MCP",
+      "description": "Execute a SQL query",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "postgres/run_migration",
+      "name": "run_migration",
+      "server_id": "postgres",
+      "server_name": "PostgreSQL MCP",
+      "description": "Execute a database migration",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "postgres/list_tables",
+      "name": "list_tables",
+      "server_id": "postgres",
+      "server_name": "PostgreSQL MCP",
+      "description": "List all tables in the database",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "postgres/describe_table",
+      "name": "describe_table",
+      "server_id": "postgres",
+      "server_name": "PostgreSQL MCP",
+      "description": "Get schema of a specific table",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "postgres/explain_query",
+      "name": "explain_query",
+      "server_id": "postgres",
+      "server_name": "PostgreSQL MCP",
+      "description": "Get query execution plan",
+      "type": "local",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "websearch/search_web",
+      "name": "search_web",
+      "server_id": "websearch",
+      "server_name": "Web Search MCP",
+      "description": "Search the web for current information",
+      "type": "built-in",
+      "status": "available",
+      "agents": []
+    },
+    {
+      "id": "websearch/fetch_url",
+      "name": "fetch_url",
+      "server_id": "websearch",
+      "server_name": "Web Search MCP",
+      "description": "Fetch and parse content from a URL",
+      "type": "built-in",
+      "status": "available",
+      "agents": []
+    }
+  ]
+}

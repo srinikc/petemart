@@ -1,0 +1,83 @@
+{
+  "agent_id": "03_architect_agent",
+  "role": "Senior Enterprise Solution Architect",
+  "phase": "phase_one",
+  "dependencies_artifacts": [
+    "agents/01_front_office/02_requirement_agent/prd.md",
+    "agents/01_front_office/02_requirement_agent/prd_config.json",
+    "agents/01_front_office/02_requirement_agent/prd.json",
+    "agents/02_requirement_agent/02_requirement_agent_COMPLETION_SLIDE.pptx",
+    "agents/02_requirement_agent/02_requirement_agent_DATA_EXPORT.xlsx"
+  ],
+  "deliverables": {},
+  "sandbox_dir": "agents/03_execution_workspace/03_architect_agent/",
+  "prompt_source": ".opencode/agents/03_architect_agent.md",
+  "user_instruction": "[2026-06-10T11:56:40.358Z] as an architect, we need to do architect adn design for entire product not POC, so device architect/design for entire product as per all ruqirements mentioned in PRD and provide design, architecture, techstack, apis and costing and all other things required for the project.",
+  "compliance_checks": [
+    {
+      "id": "ARCH-001",
+      "check": "artifact_exists(FEASIBILITY_ARCHITECTURE.md) — architecture document present",
+      "type": "artifact",
+      "required": true,
+      "passed": true
+    },
+    {
+      "id": "ARCH-002",
+      "check": "artifact_exists(FEASIBILITY_ARCHITECTURE.json) — structured architecture present",
+      "type": "artifact",
+      "required": true,
+      "passed": true
+    },
+    {
+      "id": "ARCH-003",
+      "check": "Mermaid/PlantUML architectural diagrams produced (DIAGRAMS.md)",
+      "type": "artifact",
+      "required": true,
+      "passed": true
+    },
+    {
+      "id": "ARCH-004",
+      "check": "multi-layer testing architecture defined",
+      "type": "architecture",
+      "required": true,
+      "passed": true
+    },
+    {
+      "id": "ARCH-005",
+      "check": "API gateway with rate-limiting rules defined",
+      "type": "architecture",
+      "required": true,
+      "passed": true
+    },
+    {
+      "id": "ARCH-006",
+      "check": "POC scope clearly maps to subset of full architecture (POC_SCOPE.md)",
+      "type": "artifact",
+      "required": true,
+      "passed": true
+    },
+    {
+      "id": "ARCH-007",
+      "check": "infrastructure cost model accounts for scaling thresholds (COST_MODELS.md)",
+      "type": "artifact",
+      "required": true,
+      "passed": true
+    },
+    {
+      "id": "ARCH-008",
+      "check": "COMPLETION_SLIDE.pptx generated",
+      "type": "artifact",
+      "required": true,
+      "passed": true
+    },
+    {
+      "id": "ARCH-009",
+      "check": "DATA_EXPORT.xlsx generated (cost models, resource estimates)",
+      "type": "artifact",
+      "required": true,
+      "passed": true
+    }
+  ],
+  "launched_at": "2026-06-11T09:49:48.335Z",
+  "status": "launched"
+}

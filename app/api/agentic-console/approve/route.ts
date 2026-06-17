@@ -16,7 +16,7 @@ function writeState(data: any) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { agentId, action, feedback } = await req.json();
+    const { agentId, action, feedback, inputs } = await req.json();
     if (!agentId || !action) {
       return NextResponse.json({ error: 'agentId and action required' }, { status: 400 });
     }
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
 
     if (action === 'approve') {
       agent.approved = true;
-      agent.status = 'approved';
+      agent.status = 'pending';
       agent.approved_by = 'Human Gatekeeper (via Agentic Console)';
       agent.approved_at = new Date().toISOString();
       if (agent.expert_reviewer) {
@@ -77,6 +77,29 @@ export async function POST(req: NextRequest) {
       gate.approved_by = 'Human Gatekeeper (via Agentic Console)';
       gate.approved_at = new Date().toISOString();
       gate.notes = feedback || gate.notes;
+    } else if (action === 'provide-input') {
+      agent.pending_inputs = [];
+      agent.provided_inputs = { ...(agent.provided_inputs || {}), ...(inputs || {}) };
+      agent.status = 'pending';
+      agent.last_error = null;
+      agent.last_activity_timestamp = new Date().toISOString();
+      agent.inputs_provided_at = new Date().toISOString();
+    } else if (action === 'disable') {
+      agent.disabled = true;
+      agent.disabled_at = new Date().toISOString();
+      agent.last_error = 'Disabled by human gatekeeper via Dashboard';
+      agent.last_activity_timestamp = new Date().toISOString();
+    } else if (action === 'enable') {
+      agent.disabled = false;
+      agent.disabled_at = null;
+      agent.last_error = null;
+      agent.last_activity_timestamp = new Date().toISOString();
+    } else if (action === 'add_instruction') {
+      const existing = agent.user_instruction || '';
+      const timestamp = new Date().toISOString();
+      const newEntry = `[${timestamp}] ${feedback}`;
+      agent.user_instruction = existing ? `${existing}\n${newEntry}` : newEntry;
+      agent.last_activity_timestamp = timestamp;
     } else {
       return NextResponse.json({ error: `Unknown action: ${action}` }, { status: 400 });
     }

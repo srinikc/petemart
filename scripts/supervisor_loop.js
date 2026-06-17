@@ -84,7 +84,10 @@ function dependenciesMet(state, agentState) {
   if (!agentState.dependencies || agentState.dependencies.length === 0) return true;
   return agentState.dependencies.every(depId => {
     const dep = state.agent_states[depId];
-    return dep && (dep.status === 'approved' || dep.status === 'completed');
+    if (!dep) return false;
+    // Disabled/blocked deps count as met (they're skipped, not blockers)
+    if (dep.disabled || dep.status === 'blocked') return true;
+    return dep.status === 'approved' || dep.status === 'completed';
   });
 }
 
@@ -104,6 +107,7 @@ function getEligibleAgents(state) {
 
   for (const [id, agent] of Object.entries(agents)) {
     if (id === '00_supervisor_agent') continue;
+    if (agent.disabled) continue; // Skip disabled agents
     if (agent.status === 'approved' || agent.status === 'completed') continue;
     if (agent.status === 'failed') continue;
     if (agent.status === 'in_progress') continue;
@@ -178,6 +182,7 @@ function launchAgentTask(agentId, state) {
     deliverables: registryDef?.deliverables || {},
     sandbox_dir: registryDef?.workspace_root || `agents/03_execution_workspace/${agentId}/`,
     prompt_source: `.opencode/agents/${agentId}.md`,
+    user_instruction: agent.user_instruction || null,
     compliance_checks: agent.compliance_checklist || [],
     launched_at: new Date().toISOString(),
     status: 'launched',
@@ -201,13 +206,13 @@ function transitionAgent(state, agentId, newStatus, extra = {}) {
 }
 
 function updateDashboardSummary(state) {
-  const agents = Object.values(state.agent_states).filter(a => a.agent_id !== '00_supervisor_agent');
+  const agents = Object.entries(state.agent_states).filter(([k]) => k !== '00_supervisor_agent');
   const total = agents.length;
-  const completed = agents.filter(a => a.status === 'approved' || a.status === 'completed').length;
-  const inProgress = agents.filter(a => a.status === 'in_progress' || a.status === 'active').length;
-  const pending = agents.filter(a => a.status === 'pending' || a.status === 'idle').length;
-  const awaitingReview = agents.filter(a => a.status === 'awaiting_approval').length;
-  const failed = agents.filter(a => a.status === 'failed').length;
+  const completed = agents.filter(([, a]) => a.status === 'approved' || a.status === 'completed').length;
+  const inProgress = agents.filter(([, a]) => a.status === 'in_progress' || a.status === 'active').length;
+  const pending = agents.filter(([, a]) => a.status === 'pending' || a.status === 'idle').length;
+  const awaitingReview = agents.filter(([, a]) => a.status === 'awaiting_approval').length;
+  const failed = agents.filter(([, a]) => a.status === 'failed' && !a.disabled).length;
   const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
 
   state.pipeline_control.dashboard_summary = {
@@ -248,6 +253,23 @@ async function runCycle(state) {
   state.supervisor_control.agent_00_supervisor.cycle_count = cycleCount;
   state.supervisor_control.agent_00_supervisor.last_cycle_timestamp = new Date().toISOString();
 
+  const launched = [];
+
+  // Auto-approve awaiting_approval agents that pass compliance — then launch immediately
+  for (const [id, agent] of Object.entries(state.agent_states)) {
+    if (id === '00_supervisor_agent') continue;
+    if (agent.status !== 'awaiting_approval') continue;
+    if (agent.disabled) continue;
+    const audit = runComplianceAudit(state);
+    const agentAudit = audit[id];
+    if (agentAudit?.allPassed) {
+      transitionAgent(state, id, 'in_progress', { approved: true, approved_by: 'Supervisor (Auto)', approved_at: new Date().toISOString() });
+      const manifest = launchAgentTask(id, state);
+      launched.push({ id, manifest });
+      logEvent({ type: 'auto_launched', agent_id: id, reason: 'Compliance audit passed, auto-launched' });
+    }
+  }
+
   const { eligible, circuitBreakerTripped } = getEligibleAgents(state);
 
   if (circuitBreakerTripped) {
@@ -256,18 +278,16 @@ async function runCycle(state) {
   }
 
   if (eligible.length === 0) {
-    const allDone = Object.values(state.agent_states).every(a =>
-      a.agent_id === '00_supervisor_agent' || a.status === 'approved' || a.status === 'completed' || a.status === 'failed'
+    const allDone = Object.entries(state.agent_states).every(([k, a]) =>
+      k === '00_supervisor_agent' || a.status === 'approved' || a.status === 'completed' || a.status === 'failed' || a.disabled
     );
     if (allDone) {
       logEvent({ type: 'pipeline_complete', cycle_count: cycleCount });
       return { skipped: true, reason: 'All agents processed', complete: true };
     }
-    logEvent({ type: 'no_eligible_agents', cycle_count: cycleCount, pending: Object.values(state.agent_states).filter(a => a.status !== 'approved' && a.status !== 'completed' && a.status !== 'failed').map(a => a.agent_id) });
+    logEvent({ type: 'no_eligible_agents', cycle_count: cycleCount, pending: Object.entries(state.agent_states).filter(([k, a]) => k !== '00_supervisor_agent' && a.status !== 'approved' && a.status !== 'completed' && a.status !== 'failed' && !a.disabled).map(([k]) => k) });
     return { skipped: true, reason: 'No eligible agents (probably waiting on dependencies or HITL)' };
   }
-
-  const launched = [];
 
   for (const agent of eligible.slice(0, maxConcurrent)) {
     const needsApproval = agent.requires_human_approval;

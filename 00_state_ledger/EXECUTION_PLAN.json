@@ -1,0 +1,344 @@
+{
+  "_help": {
+    "purpose": "Tracks all 27 enterprise agentic system items across sessions and tools (opencode, cline, etc.).",
+    "how_to_resume": "Read this file. Find first item with status 'pending' or 'in_progress'. Check branch field and checkout. Continue work.",
+    "status_values": "pending | in_progress | completed | blocked | skipped",
+    "progress": "Calculate: completed / total * 100"
+  },
+  "metadata": {
+    "project": "Central Agentic AI Console",
+    "branch": "feature/p0-p1-system-rebuild",
+    "base_branch": "develop",
+    "created_at": "2026-06-11T18:00:00Z",
+    "updated_at": "2026-06-11T19:51:00Z",
+    "stable_rollback_tag": "v2.5-agentic-console-stable",
+    "total_items": 27,
+    "completed_count": 27,
+    "in_progress_count": 0,
+    "pending_count": 0
+  },
+  "phases": [
+    {
+      "name": "Phase 1: Quick Wins + Foundation",
+      "order": 1,
+      "items": [
+        {
+          "id": "P0-5",
+          "title": "Operations PR fix",
+          "effort": "Small",
+          "description": "Show all PRs (closed + open), CI status badges, branch links in Operations page",
+          "ui_surface": "Operations page PR table",
+          "status": "completed",
+          "branch": "feature/p0-p1-system-rebuild",
+          "started_at": "2026-06-11T18:15:00Z",
+          "completed_at": "2026-06-11T18:20:00Z",
+          "dependencies": [],
+          "notes": "Created /api/agentic-console/pull-requests route using gh CLI. Enhanced PR table with CI status, review status, state badge, and GitHub link."
+        },
+        {
+          "id": "P0-4",
+          "title": "QA dashboard split + Req Quality",
+          "effort": "Medium",
+          "description": "Fix 200% bug, split into 3 sub-pages (KPIs, Tests, Defects), add Req Quality Status table Green/Yellow/Red per REQ-ID, clickable % → traceability",
+          "ui_surface": "3 sub-pages under /quality/ with tab nav",
+          "status": "completed",
+          "branch": "feature/p0-p1-system-rebuild",
+          "started_at": "2026-06-11T18:30:00Z",
+          "completed_at": "2026-06-11T18:50:00Z",
+          "dependencies": [],
+          "notes": "Fixed 200% bug. Restructured quality page with 3-tab layout (KPIs/Tests/Defects) with Req Quality Status table."
+        },
+        {
+          "id": "P0-1",
+          "title": "Multi-project state directory",
+          "effort": "Large",
+          "description": "00_state_ledger/projects/{id}/ per project, projects_index.json, all API routes accept ?project= param",
+          "ui_surface": "Nav bar project dropdown, / route global train view, ?project=X routing",
+          "status": "completed",
+          "branch": "feature/p0-p1-system-rebuild",
+          "started_at": "2026-06-11T18:50:00Z",
+          "completed_at": "2026-06-11T18:55:00Z",
+          "dependencies": [
+            "P0-5",
+            "P0-4"
+          ],
+          "notes": "Created projects_index.json + projects/petemart/STATE_MATRIX.json. Updated all API routes with ?project= support."
+        },
+        {
+          "id": "P0-2",
+          "title": "Dashboard restructure",
+          "effort": "Large",
+          "description": "Global pipeline view (all projects as mini trains) + per-project dashboard. Project selector. Rename to 'Central Agentic AI Console'",
+          "ui_surface": "/ global train view, /project/[id] per-project",
+          "status": "completed",
+          "branch": "feature/p0-p1-system-rebuild",
+          "started_at": "2026-06-11T18:55:00Z",
+          "completed_at": "2026-06-11T19:00:00Z",
+          "dependencies": [
+            "P0-1"
+          ],
+          "notes": "GlobalPipelineView shows mini train cards per project. Renamed layout to 'Central Agentic AI Console'."
+        }
+      ]
+    },
+    {
+      "name": "Phase 2: Core Infrastructure",
+      "order": 2,
+      "items": [
+        {
+          "id": "P0-6",
+          "title": "Tool/Function registry",
+          "effort": "Large",
+          "status": "completed",
+          "branch": "feature/p0-p1-system-rebuild",
+          "started_at": "2026-06-11T19:00:00Z",
+          "completed_at": "2026-06-11T19:05:00Z",
+          "dependencies": [
+            "P0-1"
+          ],
+          "notes": "Generated tool_registry.json with 58 flat tools from MCP_SERVERS.json."
+        },
+        {
+          "id": "P0-3",
+          "title": "Supervisor auto-recovery + dependency cascade",
+          "effort": "Medium",
+          "status": "completed",
+          "branch": "feature/p0-p1-system-rebuild",
+          "started_at": "2026-06-11T19:05:00Z",
+          "completed_at": "2026-06-11T19:15:00Z",
+          "dependencies": [],
+          "notes": "Extended monitor/route.ts with auto-relaunch, exponential backoff, dependency cascade, DLQ entries."
+        },
+        {
+          "id": "P0-7",
+          "title": "Retry policy + Dead Letter Queue",
+          "effort": "Medium",
+          "status": "completed",
+          "branch": "feature/p0-p1-system-rebuild",
+          "started_at": "2026-06-11T19:05:00Z",
+          "completed_at": "2026-06-11T19:15:00Z",
+          "dependencies": [
+            "P0-3"
+          ],
+          "notes": "DLQ implementation with per-agent retry, exponential backoff, DLQ count badge in instrument bar."
+        },
+        {
+          "id": "P0-8",
+          "title": "Escalation matrix",
+          "effort": "Medium",
+          "status": "completed",
+          "branch": "feature/p0-p1-system-rebuild",
+          "started_at": "2026-06-11T19:15:00Z",
+          "completed_at": "2026-06-11T19:20:00Z",
+          "dependencies": [
+            "P0-7"
+          ],
+          "notes": "Created escalation_matrix.json with 4 severity levels, 5 triggers, 3 channels. ESC badge in instrument bar."
+        }
+      ]
+    },
+    {
+      "name": "Phase 3: P1 Enhancements",
+      "order": 3,
+      "items": [
+        {
+          "id": "P1-9",
+          "title": "Agent templates with dependency picker",
+          "effort": "Large",
+          "status": "completed",
+          "branch": "feature/p0-p1-system-rebuild",
+          "dependencies": [
+            "P0-1"
+          ],
+          "notes": "AGENT_TEMPLATES.json with 16 templates. Add Agent modal with dependency picker."
+        },
+        {
+          "id": "P1-10",
+          "title": "Versioned outputs + smart cascade",
+          "effort": "Medium",
+          "status": "completed",
+          "branch": "feature/p0-p1-system-rebuild",
+          "dependencies": [
+            "P0-3"
+          ],
+          "notes": "Output version API with breaking/backward-compatible cascade in Agent Detail."
+        },
+        {
+          "id": "P1-11",
+          "title": "A2A structured message protocol",
+          "effort": "Medium",
+          "status": "completed",
+          "branch": "feature/p0-p1-system-rebuild",
+          "dependencies": [],
+          "notes": "A2A_TYPES.json with 3 message types. Comm tab with type badges and filter."
+        },
+        {
+          "id": "P1-12",
+          "title": "Per-agent memory store",
+          "effort": "Medium",
+          "status": "completed",
+          "branch": "feature/p0-p1-system-rebuild",
+          "dependencies": [],
+          "notes": "memory_store/ with per-agent JSONL files. Inject toggle in Overview tab."
+        },
+        {
+          "id": "P1-13",
+          "title": "Code review skip fix",
+          "effort": "Small",
+          "status": "completed",
+          "branch": "feature/p0-p1-system-rebuild",
+          "dependencies": [],
+          "notes": "Diff truncation at 15000 chars. Graceful skip when DEEPSEEK_API_KEY not set."
+        },
+        {
+          "id": "P1-14",
+          "title": "Nav + breadcrumbs all pages",
+          "effort": "Small",
+          "status": "completed",
+          "branch": "feature/p0-p1-system-rebuild",
+          "dependencies": [
+            "P0-1"
+          ],
+          "notes": "Breadcrumbs component with path-based crumbs, page labels, ?project= passthrough."
+        },
+        {
+          "id": "P1-15",
+          "title": "Jira integration",
+          "effort": "Medium",
+          "status": "completed",
+          "branch": "feature/p0-p1-system-rebuild",
+          "dependencies": [],
+          "notes": "/api/agentic-console/jira endpoint. Jira table in Operations page."
+        },
+        {
+          "id": "P1-16",
+          "title": "Agent Grid page polish",
+          "effort": "Small",
+          "status": "completed",
+          "branch": "feature/p0-p1-system-rebuild",
+          "dependencies": [],
+          "notes": "Inline Approve/Reject, status filter tabs, bulk select with action bar."
+        },
+        {
+          "id": "P1-17",
+          "title": "Config/prompt versioning",
+          "effort": "Medium",
+          "status": "completed",
+          "branch": "feature/p0-p1-system-rebuild",
+          "dependencies": [],
+          "notes": "Prompt snapshots with side-by-side compare in Prompts tab."
+        },
+        {
+          "id": "P1-18",
+          "title": "SLA tracking",
+          "effort": "Medium",
+          "status": "completed",
+          "branch": "feature/p0-p1-system-rebuild",
+          "dependencies": [
+            "P0-3"
+          ],
+          "notes": "/api/agentic-console/sla route. Overdue badge in instrument bar."
+        }
+      ]
+    },
+    {
+      "name": "Phase 4: P2 Nice-to-Have",
+      "order": 4,
+      "items": [
+        {
+          "id": "P2-19",
+          "title": "DAG workflow engine",
+          "effort": "Large",
+          "status": "completed",
+          "branch": "feature/p0-p1-system-rebuild",
+          "dependencies": [
+            "P0-1"
+          ],
+          "notes": "WORKFLOW_DAG.json with 15 nodes, conditionals, forks, entry/terminal nodes. /api/agentic-console/dag with walk order computation."
+        },
+        {
+          "id": "P2-20",
+          "title": "Recursive sub-task spawning",
+          "effort": "Large",
+          "status": "completed",
+          "branch": "feature/p0-p1-system-rebuild",
+          "dependencies": [
+            "P1-11"
+          ],
+          "notes": "/api/agentic-console/subtasks with spawn/complete actions. Tree view with depth tracking. A2A messages for DelegatedSubTask/SubTaskResult."
+        },
+        {
+          "id": "P2-21",
+          "title": "Output evaluation/regression",
+          "effort": "Medium",
+          "status": "completed",
+          "branch": "feature/p0-p1-system-rebuild",
+          "dependencies": [
+            "P0-6"
+          ],
+          "notes": "EVAL_RULES.json with 70+ rules across 15 agents. /api/agentic-console/eval-rules with agentId filter."
+        },
+        {
+          "id": "P2-22",
+          "title": "Observability / tracing",
+          "effort": "Medium",
+          "status": "completed",
+          "branch": "feature/p0-p1-system-rebuild",
+          "dependencies": [],
+          "notes": "/api/agentic-console/traces route. traces.jsonl storage. Trace toggle in Agent Detail Logs tab."
+        },
+        {
+          "id": "P2-23",
+          "title": "Multi-tenant / RBAC",
+          "effort": "Large",
+          "status": "completed",
+          "branch": "feature/p0-p1-system-rebuild",
+          "dependencies": [
+            "P0-1"
+          ],
+          "notes": "/api/agentic-console/rbac with login/logout, add_user, set_role, set_project_access. 3 roles (admin/gatekeeper/viewer). Token-based sessions with 24h expiry."
+        },
+        {
+          "id": "P2-24",
+          "title": "Jira auto-sync",
+          "effort": "Medium",
+          "status": "completed",
+          "branch": "feature/p0-p1-system-rebuild",
+          "dependencies": [
+            "P1-15"
+          ],
+          "notes": "POST /api/agentic-console/jira with sync/map_agent/transition actions. Agent→Jira mapping. Status transitions (approved→Done, failed→To Do). Sync log."
+        },
+        {
+          "id": "P2-25",
+          "title": "GitHub code review in console",
+          "effort": "Small",
+          "status": "completed",
+          "branch": "feature/p0-p1-system-rebuild",
+          "dependencies": [],
+          "notes": "/api/agentic-console/code-reviews using gh CLI. Code Review section in Agent Detail with PR link and review comments."
+        },
+        {
+          "id": "P2-26",
+          "title": "Agent health dashboard",
+          "effort": "Medium",
+          "status": "completed",
+          "branch": "feature/p0-p1-system-rebuild",
+          "dependencies": [],
+          "notes": "/health page with aggregate cards, success rate bar chart (recharts), detailed health table. /api/agentic-console/health backend."
+        },
+        {
+          "id": "P2-27",
+          "title": "Inter-agent debate/consensus",
+          "effort": "Medium",
+          "status": "completed",
+          "branch": "feature/p0-p1-system-rebuild",
+          "dependencies": [
+            "P1-11"
+          ],
+          "notes": "DebateOpen/DebateResponse/DebateResolution types in A2A_TYPES.json. /api/agentic-console/consensus with open_debate/respond_debate/resolve_debate. Auto-resolves on APPROVE, escalates on REJECT."
+        }
+      ]
+    }
+  ]
+}

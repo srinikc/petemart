@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import {
   ArrowLeft, Loader2, CheckCircle, XCircle, AlertTriangle, RefreshCw,
   Send, FileText, MessageSquare, Server, Shield, Bot, Play, Clock,
   Radio, Download, Eye, BookOpen, Code, Terminal, Users, Activity,
+  Database, ExternalLink, GitPullRequest,
 } from 'lucide-react';
 import { StatusBadge, fetchWithTimeout, PHASE_LABELS } from '../../shared';
 
@@ -32,6 +33,31 @@ export default function AgentDetailPage() {
   const [toast, setToast] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [instruction, setInstruction] = useState('');
+  const [a2aTypeFilter, setA2aTypeFilter] = useState('all');
+  const [composingA2aType, setComposingA2aType] = useState('');
+  const [composingPayload, setComposingPayload] = useState('');
+  const [a2aTo, setA2aTo] = useState('');
+  const [memoryEntries, setMemoryEntries] = useState<any[]>([]);
+  const [injectMemory, setInjectMemory] = useState(false);
+  const [newMemory, setNewMemory] = useState('');
+  const [versionInfo, setVersionInfo] = useState<any>(null);
+  const [newVersion, setNewVersion] = useState('');
+  const [versionCompatibility, setVersionCompatibility] = useState('backward-compatible');
+  const [snapshots, setSnapshots] = useState<any[]>([]);
+  const [compareA, setCompareA] = useState('');
+  const [compareB, setCompareB] = useState('');
+  const [codeReviews, setCodeReviews] = useState<any[]>([]);
+  const [prLink, setPrLink] = useState<string | null>(null);
+  const [codeReviewLoading, setCodeReviewLoading] = useState(true);
+  const [showTrace, setShowTrace] = useState(false);
+  const [traces, setTraces] = useState<any[]>([]);
+
+  const loadTraces = useCallback(async () => {
+    try {
+      const r = await fetch(`/api/agentic-console/traces?agentId=${agentId}`);
+      if (r.ok) { const d = await r.json(); setTraces(d.traces || []); }
+    } catch {}
+  }, [agentId]);
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
 
@@ -42,7 +68,7 @@ export default function AgentDetailPage() {
       try {
         const [detailRes, msgRes] = await Promise.all([
           fetchWithTimeout(`/api/agentic-console/agent-detail?agentId=${agentId}`, 10000),
-          fetch(`/api/agentic-console/agent-messages?agentId=${agentId}`),
+          fetch(`/api/agentic-console/agent-messages?agentId=${agentId}&a2aType=${a2aTypeFilter}`),
         ]);
         const detail = await detailRes.json();
         setData(detail);
@@ -54,6 +80,22 @@ export default function AgentDetailPage() {
       setLoading(false);
     };
     load();
+
+    const loadCodeReviews = async () => {
+      try {
+        const prRes = await fetch('/api/agentic-console/pull-requests');
+        const prData = await prRes.json();
+        const pr = (prData.pull_requests || []).find((p: any) => agentId && p.branch?.includes(agentId.replace(/_/g, '-')));
+        if (pr) {
+          setPrLink(pr.url);
+          const reviewRes = await fetch(`/api/agentic-console/code-reviews?pr_number=${pr.number}`);
+          const reviewData = await reviewRes.json();
+          setCodeReviews(reviewData.reviews || []);
+        }
+      } catch { /* no code review data */ }
+      setCodeReviewLoading(false);
+    };
+    loadCodeReviews();
 
     es.addEventListener('state_snapshot', (e: MessageEvent) => {
       const sd = JSON.parse(e.data);
@@ -76,6 +118,7 @@ export default function AgentDetailPage() {
   const consumedArtifacts = data?.consumedArtifacts || [];
   const agentMcpServers = data?.agentMcpServers || [];
   const lastError = data?.lastError;
+  const agentStates: Record<string, any> = data?.stateMatrix?.agent_states || {};
 
   const handleAction = async (action: string) => {
     setActionLoading(action);
@@ -101,12 +144,103 @@ export default function AgentDetailPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ from_agent: 'human_gatekeeper', to_agent: agentId, subject: 'Instruction from Console', body: instruction }),
       });
+      // Also append to agent's user_instruction in state
+      await fetch('/api/agentic-console/approve', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ agentId, action: 'add_instruction', feedback: instruction }),
+      });
       if (res.ok) {
-        showToast('Instruction sent');
+        showToast('Instruction sent and attached to agent');
         setInstruction('');
       }
     } catch { showToast('Failed to send'); }
   };
+
+  const sendA2aMessage = async () => {
+    if (!a2aTo || !composingA2aType || !instruction.trim()) return;
+    try {
+      let payload: any = {};
+      try { payload = composingPayload ? JSON.parse(composingPayload) : {}; } catch { payload = { body: composingPayload }; }
+      const res = await fetch('/api/agentic-console/agent-messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from_agent: agentId,
+          to_agent: a2aTo,
+          subject: instruction,
+          body: composingPayload,
+          a2a_type: composingA2aType,
+          a2a_payload: payload,
+        }),
+      });
+      if (res.ok) {
+        showToast(`A2A ${composingA2aType} sent to ${a2aTo}`);
+        setInstruction(''); setComposingPayload(''); setComposingA2aType(''); setA2aTo('');
+        const msgRes = await fetch(`/api/agentic-console/agent-messages?agentId=${agentId}&a2aType=${a2aTypeFilter}`);
+        if (msgRes.ok) { const d = await msgRes.json(); setMessages(d.messages || []); }
+      }
+    } catch { showToast('Failed to send A2A message'); }
+  };
+
+  const loadMemory = useCallback(async () => {
+    try {
+      const r = await fetch(`/api/agentic-console/agent-memory?agentId=${agentId}`);
+      if (r.ok) { const d = await r.json(); setMemoryEntries(d.entries || []); }
+    } catch {}
+  }, [agentId]);
+
+  const addMemory = async () => {
+    if (!newMemory.trim()) return;
+    try {
+      const r = await fetch('/api/agentic-console/agent-memory', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ agentId, content: newMemory, source: 'human_gatekeeper' }),
+      });
+      if (r.ok) { setNewMemory(''); loadMemory(); showToast('Memory added'); }
+    } catch { showToast('Failed to add memory'); }
+  };
+
+  useEffect(() => { if (agentId) loadMemory(); }, [agentId, loadMemory]);
+
+  const loadVersion = useCallback(async () => {
+    try {
+      const r = await fetch(`/api/agentic-console/agent-version?agentId=${agentId}`);
+      if (r.ok) setVersionInfo(await r.json());
+    } catch {}
+  }, [agentId]);
+
+  const updateVersion = async () => {
+    if (!newVersion.trim()) return;
+    try {
+      const r = await fetch('/api/agentic-console/agent-version', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ agentId, output_version: parseInt(newVersion) || newVersion, compatibility: versionCompatibility }),
+      });
+      if (r.ok) { showToast(`Version updated`); setNewVersion(''); loadVersion(); }
+    } catch { showToast('Failed to update version'); }
+  };
+
+  useEffect(() => { if (agentId) loadVersion(); }, [agentId, loadVersion]);
+
+  const loadSnapshots = useCallback(async () => {
+    try {
+      const r = await fetch(`/api/agentic-console/prompt-snapshots?agentId=${agentId}`);
+      if (r.ok) { const d = await r.json(); setSnapshots(d.snapshots || []); }
+    } catch {}
+  }, [agentId]);
+
+  const saveSnapshot = async () => {
+    try {
+      await fetch('/api/agentic-console/prompt-snapshots', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ agentId, system_prompt: systemPrompt, config: { role: agent?.role, pool: agent?.pool, phase: agent?.phase } }),
+      });
+      showToast('Snapshot saved');
+      loadSnapshots();
+    } catch { showToast('Failed to save snapshot'); }
+  };
+
+  useEffect(() => { if (agentId) loadSnapshots(); }, [agentId, loadSnapshots]);
 
   if (loading) {
     return <div className="text-center py-20"><Loader2 size={32} className="animate-spin text-blue-600 mx-auto mb-4" /><p className="text-gray-500">Loading agent detail...</p></div>;
@@ -303,6 +437,127 @@ export default function AgentDetailPage() {
                 </div>
               </div>
 
+              {/* Agent Memory */}
+              <div>
+                <h3 className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1.5">
+                  <Database size={12} /> Agent Memory
+                  <label className="ml-auto flex items-center gap-1 text-[9px] text-gray-400 cursor-pointer">
+                    <input type="checkbox" checked={injectMemory} onChange={e => setInjectMemory(e.target.checked)} className="w-3 h-3" />
+                    Inject into prompt
+                  </label>
+                </h3>
+                <div className="border rounded-lg overflow-hidden">
+                  <div className="bg-gray-50 px-3 py-1.5 flex items-center gap-2 border-b">
+                    <span className="text-[10px] text-gray-500">{memoryEntries.length} entries</span>
+                    <button onClick={loadMemory} className="ml-auto text-[9px] text-indigo-600 hover:underline">Refresh</button>
+                  </div>
+                  <div className="max-h-48 overflow-y-auto divide-y">
+                    {memoryEntries.length === 0 ? (
+                      <p className="text-[10px] text-gray-400 text-center py-4">No memory entries yet.</p>
+                    ) : memoryEntries.map((e: any) => (
+                      <div key={e.id} className="px-3 py-2">
+                        <div className="flex items-center gap-1.5 mb-0.5">
+                          <Database size={10} className="text-gray-400" />
+                          <span className="text-[9px] font-medium text-gray-600">{e.source}</span>
+                          <span className="text-[8px] text-gray-400 ml-auto">{new Date(e.timestamp).toLocaleString()}</span>
+                        </div>
+                        <p className="text-[10px] text-gray-700">{e.content}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="border-t flex gap-1 p-2">
+                    <input type="text" className="border rounded text-[10px] px-2 py-1 flex-1" placeholder="Add memory entry..." value={newMemory} onChange={e => setNewMemory(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') addMemory(); }} />
+                    <button onClick={addMemory} className="text-[10px] px-2 py-1 rounded bg-indigo-600 text-white hover:bg-indigo-700">Add</button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Output Versions */}
+              <div>
+                <h3 className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1.5">
+                  <Clock size={12} /> Output Versions
+                  <span className="ml-2 text-[9px] text-gray-400">v{versionInfo?.output_version ?? agent.execution_count ?? 0}</span>
+                  <span className={`text-[9px] px-1.5 py-0.5 rounded ${versionInfo?.compatibility === 'breaking' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                    {versionInfo?.compatibility || 'backward-compatible'}
+                  </span>
+                </h3>
+                <details className="border rounded-lg">
+                  <summary className="px-3 py-2 text-xs font-medium cursor-pointer hover:bg-gray-50 flex items-center gap-2">
+                    <Play size={10} className="text-gray-400" />
+                    Version History ({(versionInfo?.cascade_history || []).length})
+                  </summary>
+                  <div className="px-3 pb-2 space-y-1.5">
+                    {(versionInfo?.cascade_history || []).length === 0 ? (
+                      <p className="text-[10px] text-gray-400 py-1">No version changes recorded.</p>
+                    ) : (versionInfo?.cascade_history || []).map((h: any, i: number) => (
+                      <div key={i} className="border rounded p-2 text-[10px]">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">v{h.version}</span>
+                          <span className={`text-[9px] px-1 rounded ${h.compatibility === 'breaking' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>{h.compatibility}</span>
+                          <span className="text-gray-400 ml-auto">{new Date(h.timestamp).toLocaleString()}</span>
+                        </div>
+                        {h.cascaded?.length > 0 && (
+                          <div className="mt-1 text-[9px] text-gray-500">
+                            Cascaded: {h.cascaded.map((c: any) => `${c.agentId} (${c.action})`).join(', ')}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                    <div className="flex gap-1 pt-1">
+                      <input type="text" className="border rounded text-[10px] px-2 py-1 w-16" placeholder="v" value={newVersion} onChange={e => setNewVersion(e.target.value)} />
+                      <select className="border rounded text-[10px] px-2 py-1" value={versionCompatibility} onChange={e => setVersionCompatibility(e.target.value)}>
+                        <option value="backward-compatible">Backward Compatible</option>
+                        <option value="breaking">Breaking Change</option>
+                      </select>
+                      <button onClick={updateVersion} className="text-[10px] px-2 py-1 rounded bg-indigo-600 text-white hover:bg-indigo-700">Set Version</button>
+                    </div>
+                  </div>
+                </details>
+              </div>
+
+              {/* Code Review */}
+              <div>
+                <h3 className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1.5">
+                  <GitPullRequest size={12} /> Code Review
+                </h3>
+                <details className="border rounded-lg">
+                  <summary className="px-3 py-2 text-xs font-medium cursor-pointer hover:bg-gray-50 flex items-center gap-2">
+                    <Radio size={10} className="text-gray-400" />
+                    {codeReviewLoading ? 'Loading...' : prLink ? `${codeReviews.length} review${codeReviews.length !== 1 ? 's' : ''}` : 'No code review data'}
+                  </summary>
+                  <div className="px-3 pb-2 space-y-1.5">
+                    {codeReviewLoading ? (
+                      <div className="flex items-center gap-2 py-2 text-[10px] text-gray-400">
+                        <Loader2 size={10} className="animate-spin" /> Loading code review data...
+                      </div>
+                    ) : !prLink ? (
+                      <p className="text-[10px] text-gray-400 py-1">No code review data</p>
+                    ) : (
+                      <>
+                        {prLink && (
+                          <a href={prLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[10px] text-indigo-600 hover:underline mb-2">
+                            <ExternalLink size={10} /> View Pull Request
+                          </a>
+                        )}
+                        {codeReviews.length === 0 ? (
+                          <p className="text-[10px] text-gray-400 py-1">No reviews submitted yet.</p>
+                        ) : codeReviews.map((r: any, i: number) => (
+                          <div key={i} className="border rounded p-2 text-[10px]">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">{r.reviewer}</span>
+                              <span className={`text-[9px] px-1.5 py-0.5 rounded ${r.state === 'APPROVED' ? 'bg-green-100 text-green-700' : r.state === 'CHANGES_REQUESTED' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}`}>{r.state}</span>
+                              {r.submitted_at && <span className="text-gray-400 ml-auto">{new Date(r.submitted_at).toLocaleDateString()}</span>}
+                            </div>
+                            {r.body && <p className="text-[9px] text-gray-600 mt-1 whitespace-pre-wrap">{r.body}</p>}
+                          </div>
+                        ))}
+                      </>
+                    )}
+                  </div>
+                </details>
+              </div>
+
               {/* Notes */}
               {agent.notes && (
                 <div>
@@ -316,37 +571,78 @@ export default function AgentDetailPage() {
           {/* ═══ PROMPTS TAB ═══ */}
           {activeTab === 'prompts' && (
             <div className="space-y-5">
-              <div>
-                <h3 className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1.5">
+              <div className="flex items-center gap-2">
+                <h3 className="text-xs font-semibold text-gray-500 flex items-center gap-1.5">
                   <BookOpen size={12} /> System Prompt
                 </h3>
-                <div className="bg-gray-900 text-gray-100 rounded-lg p-3 text-[11px] font-mono whitespace-pre-wrap max-h-80 overflow-y-auto leading-relaxed">
-                  {systemPrompt || 'No system prompt found in registry.'}
-                </div>
+                <button onClick={saveSnapshot} className="ml-auto text-[9px] px-2 py-1 rounded bg-indigo-600 text-white hover:bg-indigo-700">Snapshot Current</button>
+              </div>
+              <div className="bg-gray-900 text-gray-100 rounded-lg p-3 text-[11px] font-mono whitespace-pre-wrap max-h-80 overflow-y-auto leading-relaxed">
+                {systemPrompt || 'No system prompt found in registry.'}
               </div>
 
+              {/* User Instruction */}
+              {agent.user_instruction && (
+                <div>
+                  <h3 className="text-xs font-semibold text-amber-600 mb-2 flex items-center gap-1.5">
+                    <MessageSquare size={12} /> User Instruction <span className="text-[9px] text-amber-400 font-normal">(appended at runtime)</span>
+                  </h3>
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-[11px] font-mono whitespace-pre-wrap max-h-40 overflow-y-auto leading-relaxed text-amber-900">
+                    {agent.user_instruction}
+                  </div>
+                </div>
+              )}
+
+              {/* Prompt Snapshots */}
               <div>
                 <h3 className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1.5">
-                  <Code size={12} /> Prompt History
+                  <Code size={12} /> Prompt Snapshots ({snapshots.length})
                 </h3>
-                <div className="space-y-2">
-                  {[...Array(Math.max(1, agent.execution_count))].map((_, i) => (
-                    <details key={i} className="border rounded-lg" open={i === agent.execution_count - 1}>
+
+                {/* Side-by-side compare */}
+                {snapshots.length >= 2 && (
+                  <div className="flex items-center gap-2 mb-2">
+                    <select className="border rounded text-[10px] px-2 py-1 flex-1" value={compareA} onChange={e => setCompareA(e.target.value)}>
+                      <option value="">Compare A</option>
+                      {snapshots.map((s, i) => <option key={s.id} value={i}>{new Date(s.timestamp).toLocaleDateString()} #{snapshots.length - i}</option>)}
+                    </select>
+                    <span className="text-[9px] text-gray-400">vs</span>
+                    <select className="border rounded text-[10px] px-2 py-1 flex-1" value={compareB} onChange={e => setCompareB(e.target.value)}>
+                      <option value="">Compare B</option>
+                      {snapshots.map((s, i) => <option key={s.id} value={i}>{new Date(s.timestamp).toLocaleDateString()} #{snapshots.length - i}</option>)}
+                    </select>
+                  </div>
+                )}
+
+                {compareA !== '' && compareB !== '' && compareA !== compareB && (
+                  <div className="grid grid-cols-2 gap-2 mb-2">
+                    <div className="bg-gray-50 rounded p-2 text-[9px] font-mono whitespace-pre-wrap max-h-48 overflow-y-auto border">
+                      <div className="text-[8px] text-gray-400 mb-1">Snapshot #{snapshots.length - parseInt(compareA)}</div>
+                      {snapshots[parseInt(compareA)]?.system_prompt || '(empty)'}
+                    </div>
+                    <div className="bg-gray-50 rounded p-2 text-[9px] font-mono whitespace-pre-wrap max-h-48 overflow-y-auto border">
+                      <div className="text-[8px] text-gray-400 mb-1">Snapshot #{snapshots.length - parseInt(compareB)}</div>
+                      {snapshots[parseInt(compareB)]?.system_prompt || '(empty)'}
+                    </div>
+                  </div>
+                )}
+
+                <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                  {snapshots.length === 0 ? (
+                    <p className="text-[10px] text-gray-400">No snapshots yet. Click 'Snapshot Current' to save one.</p>
+                  ) : snapshots.map((s, i) => (
+                    <details key={s.id} className="border rounded-lg" open={i === 0}>
                       <summary className="px-3 py-2 text-xs font-medium cursor-pointer hover:bg-gray-50 flex items-center gap-2">
-                        <Play size={10} className="text-gray-400" />
-                        Execution #{i + 1} — {agent.last_activity_timestamp ? new Date(agent.last_activity_timestamp).toLocaleDateString() : 'N/A'}
+                        <Clock size={10} className="text-gray-400" />
+                        #{snapshots.length - i} — {new Date(s.timestamp).toLocaleString()}
                       </summary>
-                      <div className="px-3 pb-2">
-                        <div className="bg-gray-50 rounded p-2.5 text-[10px] text-gray-600 font-mono whitespace-pre-wrap">
-                          Act as an {agent.role}. {systemPrompt ? systemPrompt.substring(0, 200) + '...' : 'See system prompt above.'}
+                      <div className="px-3 pb-2 space-y-1.5">
+                        <div className="bg-gray-50 rounded p-2 text-[10px] text-gray-600 font-mono whitespace-pre-wrap max-h-40 overflow-y-auto">
+                          {s.system_prompt || '(empty)'}
                         </div>
-                        <div className="mt-1 flex items-center gap-2 text-[9px] text-gray-400">
-                          <span>Execution #{i + 1}</span>
-                          <span>·</span>
-                          <span>Status: {agent.status}</span>
-                          <span>·</span>
-                          <span>Artifacts: {agent.artifacts_emitted?.length || 0}</span>
-                        </div>
+                        {s.config && Object.keys(s.config).length > 0 && (
+                          <div className="text-[9px] text-gray-400">Config: {JSON.stringify(s.config)}</div>
+                        )}
                       </div>
                     </details>
                   ))}
@@ -407,6 +703,71 @@ export default function AgentDetailPage() {
                           </div>
                         ))}
                       </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ═══ PROMPTS TAB ═══ */}
+          {activeTab === 'prompts' && (
+            <div className="space-y-4">
+              <h3 className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1.5">
+                <BookOpen size={12} /> System Prompt
+              </h3>
+              {systemPrompt ? (
+                <div className="bg-gray-50 border rounded-xl p-4 max-h-96 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
+                  <pre className="text-[10px] text-gray-700 whitespace-pre-wrap font-sans leading-relaxed">{systemPrompt}</pre>
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <BookOpen size={24} className="text-gray-300 mx-auto mb-2" />
+                  <p className="text-xs text-gray-400">No system prompt found in registry.</p>
+                  <p className="text-[9px] text-gray-400 mt-1">Agent prompts are stored in <code className="bg-gray-100 px-1 rounded">00_state_ledger/AGENT_REGISTRY.json</code></p>
+                </div>
+              )}
+              {systemPrompt && (
+                <div className="flex items-center gap-2 text-[10px] text-gray-400">
+                  <Code size={10} />
+                  <span className="font-mono">system_prompt</span>
+                  <span className="ml-auto">{systemPrompt.length.toLocaleString()} chars</span>
+                </div>
+              )}
+
+              {/* User Instruction */}
+              {agent.user_instruction && (
+                <div className="space-y-2">
+                  <h3 className="text-xs font-semibold text-amber-600 flex items-center gap-1.5">
+                    <MessageSquare size={12} /> User Instruction <span className="text-[9px] text-amber-400 font-normal">(appended at runtime)</span>
+                  </h3>
+                  <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                    <pre className="text-[10px] text-amber-900 whitespace-pre-wrap font-sans leading-relaxed">{agent.user_instruction}</pre>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ═══ ARTIFACTS TAB ═══ */}
+          {activeTab === 'artifacts' && (
+            <div className="space-y-4">
+              <h3 className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1.5">
+                <FileText size={12} /> Artifact Status
+              </h3>
+              {artifactStatus.length === 0 ? (
+                <p className="text-xs text-gray-400 text-center py-4">No artifacts emitted yet.</p>
+              ) : (
+                <div className="space-y-1">
+                  {artifactStatus.map((a: any, i: number) => (
+                    <div key={i} className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-[11px] ${
+                      a.exists ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
+                    }`}>
+                      {a.exists ? <CheckCircle size={12} className="text-green-500 shrink-0" /> : <XCircle size={12} className="text-red-500 shrink-0" />}
+                      <span className="font-mono text-[10px] truncate flex-1">{a.file}</span>
+                      <span className={`text-[9px] ${a.exists ? 'text-green-600' : 'text-red-500'}`}>
+                        {a.exists ? `${a.size > 1024 ? `${(a.size / 1024).toFixed(1)} KB` : `${a.size} B`}` : 'MISSING'}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -479,22 +840,36 @@ export default function AgentDetailPage() {
           {/* ═══ COMMUNICATION TAB ═══ */}
           {activeTab === 'comm' && (
             <div className="space-y-4">
-              <h3 className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1.5">
-                <MessageSquare size={12} /> Agent-to-Agent Messages
-              </h3>
+              <div className="flex items-center gap-2 mb-2">
+                <h3 className="text-xs font-semibold text-gray-500 flex items-center gap-1.5">
+                  <MessageSquare size={12} /> Agent-to-Agent Messages
+                </h3>
+                <select className="ml-auto border rounded text-[10px] px-2 py-1" value={a2aTypeFilter} onChange={e => setA2aTypeFilter(e.target.value)}>
+                  <option value="all">All Types</option>
+                  <option value="DelegateSubTask">Delegate Subtask</option>
+                  <option value="SubTaskResult">Subtask Result</option>
+                  <option value="RequestClarification">Request Clarification</option>
+                </select>
+              </div>
 
               {/* Message List */}
               <div className="space-y-2 max-h-72 overflow-y-auto">
                 {messages.length === 0 ? (
                   <p className="text-xs text-gray-400 text-center py-4">No messages yet.</p>
-                ) : messages.map((msg: any) => (
+                ) : messages.map((msg: any) => {
+                  const a2aType = msg.a2a_type || null;
+                  const typeColor = a2aType === 'DelegateSubTask' ? 'bg-blue-100 text-blue-700' :
+                    a2aType === 'SubTaskResult' ? 'bg-green-100 text-green-700' :
+                    a2aType === 'RequestClarification' ? 'bg-amber-100 text-amber-700' : '';
+                  return (
                   <div key={msg.message_id} className={`border rounded-lg p-3 text-xs ${
                     msg.from_agent === agentId ? 'bg-blue-50 border-blue-200' :
                     msg.to_agent === agentId ? 'bg-green-50 border-green-200' : ''
                   }`}>
                     <div className="flex items-center gap-2 mb-1">
+                      {a2aType && <span className={`text-[9px] px-1.5 py-0.5 rounded font-medium ${typeColor}`}>{a2aType}</span>}
                       <span className="font-mono text-[10px] font-semibold text-gray-700">{msg.from_agent}</span>
-                      <span className="text-gray-400 text-[9px]">→</span>
+                      <span className="text-gray-400 text-[9px]">&rarr;</span>
                       <span className="font-mono text-[10px] font-semibold text-gray-700">{msg.to_agent}</span>
                       <span className={`ml-auto text-[9px] px-1.5 py-0.5 rounded ${
                         msg.status === 'delivered' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
@@ -502,6 +877,9 @@ export default function AgentDetailPage() {
                     </div>
                     <p className="font-medium text-[11px] text-gray-800 mb-0.5">{msg.subject}</p>
                     <p className="text-[10px] text-gray-600">{msg.body}</p>
+                    {msg.a2a_payload && Object.keys(msg.a2a_payload).length > 0 && (
+                      <pre className="mt-1 text-[8px] text-gray-500 bg-gray-50 p-1.5 rounded overflow-x-auto">{JSON.stringify(msg.a2a_payload, null, 2)}</pre>
+                    )}
                     {msg.artifact_ref && (
                       <div className="mt-1 flex items-center gap-1 text-[9px] text-indigo-600">
                         <FileText size={9} />
@@ -510,7 +888,32 @@ export default function AgentDetailPage() {
                     )}
                     <p className="text-[8px] text-gray-400 mt-1">{new Date(msg.timestamp).toLocaleString()}</p>
                   </div>
-                ))}
+                )})}
+              </div>
+
+              {/* Send A2A Message Form */}
+              <div className="border rounded-lg p-3 space-y-2">
+                <h4 className="text-[10px] font-semibold text-gray-500">Send A2A Message</h4>
+                <div className="flex gap-2">
+                  <select className="border rounded text-[10px] px-2 py-1 flex-1" value={a2aTo} onChange={e => setA2aTo(e.target.value)}>
+                    <option value="">To agent...</option>
+                    {Object.keys(agentStates).filter(id => id !== agentId).map(id => (
+                      <option key={id} value={id}>{id}</option>
+                    ))}
+                  </select>
+                  <select className="border rounded text-[10px] px-2 py-1" value={composingA2aType} onChange={e => setComposingA2aType(e.target.value)}>
+                    <option value="">Type</option>
+                    <option value="DelegateSubTask">Delegate Subtask</option>
+                    <option value="SubTaskResult">Subtask Result</option>
+                    <option value="RequestClarification">Clarification</option>
+                  </select>
+                </div>
+                <input type="text" className="border rounded text-[10px] px-2 py-1 w-full" placeholder="Subject" value={instruction} onChange={e => setInstruction(e.target.value)} />
+                <textarea className="border rounded text-[10px] px-2 py-1 w-full" rows={2} placeholder="Body or payload JSON" value={composingPayload} onChange={e => setComposingPayload(e.target.value)} />
+                <button onClick={sendA2aMessage} disabled={!a2aTo || !composingA2aType || !instruction}
+                  className="text-[10px] px-2.5 py-1.5 rounded bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 flex items-center gap-1">
+                  <Send size={10} /> Send {composingA2aType}
+                </button>
               </div>
 
               {/* Debug: Show raw message format if empty */}

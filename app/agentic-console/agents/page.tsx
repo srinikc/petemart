@@ -1,14 +1,14 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
     Bot, FileText, Loader2, Shield, Layout, Server, Monitor, Code, Database, Layers,
     Activity as ActivityIcon, Globe, BookOpen, UserCheck, Camera, Settings, Coins, Lock,
-    Lightbulb, GitMerge, Truck, ArrowLeft, ExternalLink,
+    Lightbulb, GitMerge, Truck, ArrowLeft, ExternalLink, Plus, X,
 } from 'lucide-react';
 import {
-    AgentState, StatusBadge, PageTOC, fetchWithTimeout,
+    AgentState, StatusBadge, PageTOC, fetchWithTimeout, timeAgo,
     PHASE_ORDER, PHASE_COLORS, PHASE_LABELS, PHASE_DESCRIPTIONS,
 } from '../shared';
 
@@ -33,14 +33,30 @@ const AGENT_ICONS: Record<string, React.ElementType> = {
 
 export default function AgentsPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [state, setState] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [selectedAgent, setSelectedAgent] = useState<AgentState | null>(null);
     const [filterStatus, setFilterStatus] = useState('all');
     const [searchQuery, setSearchQuery] = useState('');
+    const [showAddModal, setShowAddModal] = useState(false);
+    const [templates, setTemplates] = useState<any[]>([]);
+    const [selectedTemplate, setSelectedTemplate] = useState<string>('');
+    const [agentName, setAgentName] = useState('');
+    const [deps, setDeps] = useState<string[]>([]);
+    const [inputArtifacts, setInputArtifacts] = useState<string[]>(['']);
+    const [outputArtifacts, setOutputArtifacts] = useState<string[]>(['']);
+    const [creating, setCreating] = useState(false);
+    const [createResult, setCreateResult] = useState<string | null>(null);
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
+    const [toast, setToast] = useState<string | null>(null);
+
+    const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
 
     useEffect(() => {
-        fetchWithTimeout('/api/agentic-console/state')
+        const project = searchParams?.get('project') || '';
+        const url = project ? `/api/agentic-console/state?project=${encodeURIComponent(project)}` : '/api/agentic-console/state';
+        fetchWithTimeout(url)
             .then(r => r.ok ? r.json() : null)
             .then(d => { setState(d); setLoading(false); })
             .catch(() => setLoading(false));
@@ -70,6 +86,62 @@ export default function AgentsPage() {
 
     const agentNotes = useMemo(() => sortedAgentEntries.filter(a => a.notes), [sortedAgentEntries]);
 
+    const openAddModal = useCallback(async () => {
+        setShowAddModal(true); setCreateResult(null);
+        try {
+            const r = await fetch('/api/agentic-console/agents');
+            if (r.ok) { const d = await r.json(); setTemplates(d.templates || []); }
+        } catch { setTemplates([]); }
+    }, []);
+
+    const handleCreate = useCallback(async () => {
+        if (!selectedTemplate) return;
+        setCreating(true); setCreateResult(null);
+        try {
+            const r = await fetch('/api/agentic-console/agents', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    template_id: selectedTemplate,
+                    agent_name: agentName || undefined,
+                    dependencies: deps,
+                    input_artifacts: inputArtifacts.filter(Boolean),
+                    output_artifacts: outputArtifacts.filter(Boolean),
+                }),
+            });
+            const d = await r.json();
+            if (r.ok) {
+                setCreateResult(`✅ Created: ${d.agent_id}`);
+                setTimeout(() => { setShowAddModal(false); window.location.reload(); }, 1500);
+            } else {
+                setCreateResult(`❌ ${d.error}`);
+            }
+        } catch (e: unknown) {
+            setCreateResult(`❌ ${e instanceof Error ? e.message : 'Request failed'}`);
+        } finally { setCreating(false); }
+    }, [selectedTemplate, agentName, deps, inputArtifacts, outputArtifacts]);
+
+    const handleQuickApprove = useCallback(async (agentId: string, action: string) => {
+        try {
+            const res = await fetch('/api/agentic-console/approve', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ agentId, action, feedback: `${action} via inline button` }),
+            });
+            if (res.ok) { window.location.reload(); }
+        } catch { showToast('Action failed'); }
+    }, []);
+
+    const handleBulkAction = useCallback(async (action: string) => {
+        for (const id of selectedIds) {
+            await fetch('/api/agentic-console/approve', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ agentId: id, action, feedback: `${action} via bulk action` }),
+            });
+        }
+        setSelectedIds([]);
+        window.location.reload();
+    }, [selectedIds]);
+
     if (loading) {
         return <div className="text-center py-20"><Loader2 size={32} className="animate-spin text-blue-600 mx-auto mb-4" /><p>Loading...</p></div>;
     }
@@ -89,17 +161,34 @@ export default function AgentsPage() {
             <div className="flex items-center gap-2">
                 <input type="text" placeholder="Search agents..." className="border rounded-lg text-xs px-2.5 py-1.5 w-36"
                     value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
-                <select className="border rounded-lg text-xs px-2 py-1.5" value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
-                    <option value="all">All Status</option>
-                    <option value="approved">Approved</option>
-                    <option value="completed">Completed</option>
-                    <option value="awaiting_approval">Awaiting</option>
-                    <option value="pending">Pending</option>
-                    <option value="failed">Failed</option>
-                    <option value="active">Active</option>
-                </select>
+                <div className="flex items-center gap-0.5 bg-gray-100 rounded-lg p-0.5">
+                    {['all','approved','completed','awaiting_approval','pending','failed','active'].map(s => (
+                        <button key={s} onClick={() => setFilterStatus(s)}
+                            className={`text-[10px] px-2 py-1 rounded-md font-medium transition-colors ${filterStatus === s ? 'bg-white shadow-sm text-gray-800' : 'text-gray-500 hover:text-gray-700'}`}>
+                            {s === 'all' ? 'All' : s === 'awaiting_approval' ? 'Awaiting' : s.charAt(0).toUpperCase() + s.slice(1)}
+                        </button>
+                    ))}
+                </div>
+                <button onClick={openAddModal} className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded bg-indigo-600 text-white hover:bg-indigo-700">
+                    <Plus size={12} /> Add Agent
+                </button>
                 <span className="text-[10px] text-gray-400 ml-auto">{filteredAgents.length}/{sortedAgentEntries.length} agents</span>
             </div>
+
+            {/* Bulk action bar */}
+            {selectedIds.length > 0 && (
+                <div className="bg-indigo-50 border border-indigo-200 rounded-lg px-3 py-2 flex items-center gap-2">
+                    <span className="text-[10px] font-medium text-indigo-700">{selectedIds.length} selected</span>
+                    <button onClick={() => handleBulkAction('approve')} className="text-[10px] px-2 py-1 rounded bg-green-600 text-white hover:bg-green-700">Approve All</button>
+                    <button onClick={() => handleBulkAction('reject')} className="text-[10px] px-2 py-1 rounded bg-red-500 text-white hover:bg-red-600">Reject All</button>
+                    <button onClick={() => setSelectedIds([])} className="text-[10px] px-2 py-1 rounded bg-gray-200 text-gray-600 hover:bg-gray-300 ml-auto">Clear</button>
+                </div>
+            )}
+
+            {/* Toast */}
+            {toast && (
+                <div className="fixed top-4 right-4 z-50 bg-gray-800 text-white text-xs px-4 py-2 rounded-lg shadow-lg">{toast}</div>
+            )}
 
             {/* Phase frames */}
             {PHASE_ORDER.filter(p => p !== 'system').map(phase => {
@@ -122,16 +211,19 @@ export default function AgentsPage() {
                                 const passed = a.compliance_checklist?.filter(c => c.passed).length || 0;
                                 const total = a.compliance_checklist?.length || 0;
                                 const AgentIcon = AGENT_ICONS[a.agent_id] || Bot;
+                                const isSelected = selectedIds.includes(a.agent_id);
                                 return (
                                     <div key={a.agent_id}
-                                        className={`border rounded-lg hover:shadow-md transition-shadow cursor-pointer bg-white ${a.status === 'awaiting_approval' ? 'border-amber-300 ring-1 ring-amber-200' : a.status === 'failed' ? 'border-red-300' : ''}`}
-                                        onClick={() => setSelectedAgent(a)}>
+                                        className={`border rounded-lg hover:shadow-md transition-shadow bg-white ${a.status === 'awaiting_approval' ? 'border-amber-300 ring-1 ring-amber-200' : a.status === 'failed' ? 'border-red-300' : ''} ${isSelected ? 'ring-2 ring-indigo-400' : ''}`}>
                                         <div className="p-3">
                                             <div className="flex items-center gap-2 mb-1">
+                                                <input type="checkbox" checked={isSelected}
+                                                    onChange={e => { e.stopPropagation(); setSelectedIds(prev => isSelected ? prev.filter(id => id !== a.agent_id) : [...prev, a.agent_id]); }}
+                                                    className="w-3 h-3 rounded border-gray-300 text-indigo-600" onClick={e => e.stopPropagation()} />
                                                 <AgentIcon size={15} className="text-gray-500 shrink-0" />
-                                                <span className="font-medium text-[11px]">{a.agent_id}</span>
+                                                <span className="font-medium text-[11px] cursor-pointer" onClick={() => setSelectedAgent(a)}>{a.agent_id}</span>
                                             </div>
-                                            <p className="text-[9px] text-gray-500 line-clamp-1 mb-1.5">{a.role}</p>
+                                            <p className="text-[9px] text-gray-500 line-clamp-1 mb-1.5 cursor-pointer" onClick={() => setSelectedAgent(a)}>{a.role}</p>
                                             <div className="flex items-center gap-1.5 flex-wrap">
                                                 <StatusBadge status={a.status} />
                                                 {total > 0 && (
@@ -141,7 +233,12 @@ export default function AgentsPage() {
                                                 )}
                                             </div>
                                             {a.requires_human_approval && a.status === 'awaiting_approval' && (
-                                                <span className="mt-1 inline-block bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded text-[8px] font-medium">HITL</span>
+                                                <div className="mt-1.5 flex items-center gap-1">
+                                                    <button onClick={e => { e.stopPropagation(); handleQuickApprove(a.agent_id, 'approve'); }}
+                                                        className="text-[9px] px-1.5 py-0.5 rounded bg-green-600 text-white hover:bg-green-700">Approve</button>
+                                                    <button onClick={e => { e.stopPropagation(); handleQuickApprove(a.agent_id, 'reject'); }}
+                                                        className="text-[9px] px-1.5 py-0.5 rounded bg-red-500 text-white hover:bg-red-600">Reject</button>
+                                                </div>
                                             )}
                                         </div>
                                     </div>
@@ -194,14 +291,28 @@ export default function AgentsPage() {
                                 <div><span className="text-gray-400">HITL:</span> {selectedAgent.requires_human_approval ? 'Yes' : 'No'}</div>
                                 <div><span className="text-gray-400">Last Active:</span> {selectedAgent.last_activity_timestamp ? new Date(selectedAgent.last_activity_timestamp).toLocaleDateString() : 'Never'}</div>
                             </div>
+                            {selectedAgent.status === 'awaiting_approval' && (
+                                <div className="bg-amber-50 border border-amber-200 rounded-lg p-2.5">
+                                    <h3 className="text-[10px] font-bold text-amber-700 uppercase tracking-wider mb-1.5">Pre-Approval Summary</h3>
+                                    <div className="space-y-1 text-[9px]">
+                                        <div className="flex justify-between"><span className="text-gray-500">Status:</span><span className="font-medium text-amber-700">Awaiting Human Review</span></div>
+                                        {selectedAgent.last_activity_timestamp && (<div className="flex justify-between"><span className="text-gray-500">Last Activity:</span><span className="font-medium">{timeAgo(selectedAgent.last_activity_timestamp)}</span></div>)}
+                                        <div className="flex justify-between"><span className="text-gray-500">Compliance:</span><span className={selectedAgent.compliance_checklist.filter(c => c.passed).length === selectedAgent.compliance_checklist.length ? 'text-green-600 font-medium' : 'text-amber-600 font-medium'}>{selectedAgent.compliance_checklist.filter(c => c.passed).length}/{selectedAgent.compliance_checklist.length} passed</span></div>
+                                        <div className="flex justify-between"><span className="text-gray-500">Executions:</span><span className="font-medium">{selectedAgent.execution_count}/3</span></div>
+                                        <div className="flex justify-between"><span className="text-gray-500">Artifacts:</span><span className="font-medium">{selectedAgent.artifacts_emitted.length} files</span></div>
+                                        {selectedAgent.execution_count > 1 && (<div className="mt-1 pt-1 border-t border-amber-200 text-amber-600"><span className="font-medium">&#x23E4; Re-run #{selectedAgent.execution_count}</span></div>)}
+                                    </div>
+                                </div>
+                            )}
                             <div>
                                 <h3 className="text-xs font-semibold mb-1.5">Compliance ({selectedAgent.compliance_checklist.filter(c => c.passed).length}/{selectedAgent.compliance_checklist.length})</h3>
                                 <div className="max-h-40 overflow-y-auto space-y-0.5 text-xs">
                                     {selectedAgent.compliance_checklist.map(c => (
                                         <div key={c.id} className="flex items-start gap-1.5 p-1 rounded hover:bg-gray-50">
-                                            {c.passed ? <span className="text-green-500 text-[10px]">✓</span> : <span className="text-red-400 text-[10px]">✗</span>}
+                                            {c.passed ? <span className="text-green-500 text-[10px]">&#x2713;</span> : <span className="text-red-400 text-[10px]">&#x2717;</span>}
                                             <span className="text-[9px] text-gray-400 font-mono">{c.id}</span>
                                             <span className="text-[9px]">{c.check.split('—')[0].trim()}</span>
+                                            {c.passed_at && <span className="text-[8px] text-gray-400 ml-auto">{timeAgo(c.passed_at)}</span>}
                                         </div>
                                     ))}
                                 </div>
@@ -209,27 +320,93 @@ export default function AgentsPage() {
                             {selectedAgent.artifacts_emitted.length > 0 && (
                                 <div>
                                     <h3 className="text-xs font-semibold mb-1">Artifacts ({selectedAgent.artifacts_emitted.length})</h3>
-                                    <div className="max-h-24 overflow-y-auto text-[9px] text-gray-500 space-y-0.5">
-                                        {selectedAgent.artifacts_emitted.map((a, i) => <div key={i} className="truncate">{a}</div>)}
-                                    </div>
+                                    <div className="max-h-24 overflow-y-auto text-[9px] text-gray-500 space-y-0.5">{selectedAgent.artifacts_emitted.map((a, i) => <div key={i} className="truncate">{a}</div>)}</div>
                                 </div>
                             )}
-                            {selectedAgent.expert_reviewer && (
-                                <div className="bg-gray-50 rounded p-2.5 text-[10px]">
-                                    <span className="text-gray-400">Reviewer:</span> {selectedAgent.expert_reviewer.role_title} · {selectedAgent.expert_reviewer.review_status}
-                                </div>
-                            )}
-                            {selectedAgent.last_error && (
-                                <div className="text-red-600 bg-red-50 p-2.5 rounded text-xs">{selectedAgent.last_error}</div>
-                            )}
-
+                            {selectedAgent.expert_reviewer && (<div className="bg-gray-50 rounded p-2.5 text-[10px]"><span className="text-gray-400">Reviewer:</span> {selectedAgent.expert_reviewer.role_title} &middot; {selectedAgent.expert_reviewer.review_status}</div>)}
+                            {selectedAgent.last_error && (<div className="text-red-600 bg-red-50 p-2.5 rounded text-xs">{selectedAgent.last_error}</div>)}
                             <div className="pt-2 border-t flex gap-2">
-                                <button onClick={() => { router.push(`/agentic-console/agents/${selectedAgent.agent_id}`); setSelectedAgent(null); }}
-                                    className="flex items-center gap-1 text-xs px-3 py-1.5 rounded bg-indigo-600 text-white hover:bg-indigo-700">
-                                    <ExternalLink size={12} /> Full Details
+                                <button onClick={() => { router.push(`/agentic-console/agents/${selectedAgent.agent_id}`); setSelectedAgent(null); }} className="flex items-center gap-1 text-xs px-3 py-1.5 rounded bg-indigo-600 text-white hover:bg-indigo-700"><ExternalLink size={12} /> Full Details</button>
+                                <button onClick={() => setSelectedAgent(null)} className="text-xs px-3 py-1.5 rounded bg-gray-200 text-gray-600 hover:bg-gray-300 ml-auto">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Add Agent Modal */}
+            {showAddModal && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center" onClick={() => setShowAddModal(false)}>
+                    <div className="bg-white rounded-xl max-w-lg w-full max-h-[85vh] overflow-y-auto m-4" onClick={e => e.stopPropagation()}>
+                        <div className="sticky top-0 bg-white border-b px-5 py-3 flex items-center justify-between">
+                            <h2 className="text-base font-bold">Add Agent</h2>
+                            <button onClick={() => setShowAddModal(false)} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
+                        </div>
+                        <div className="p-5 space-y-4">
+                            {/* Template picker */}
+                            <div>
+                                <label className="text-xs font-semibold mb-1 block">Template</label>
+                                <select className="border rounded-lg text-xs px-2.5 py-2 w-full" value={selectedTemplate} onChange={e => setSelectedTemplate(e.target.value)}>
+                                    <option value="">-- Select template --</option>
+                                    {templates.map((t: { id: string; name: string; description: string }) => (
+                                        <option key={t.id} value={t.id}>{t.name} — {t.description}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            {/* Agent name */}
+                            <div>
+                                <label className="text-xs font-semibold mb-1 block">Agent Name (optional)</label>
+                                <input type="text" className="border rounded-lg text-xs px-2.5 py-2 w-full" placeholder="Leave blank for default" value={agentName} onChange={e => setAgentName(e.target.value)} />
+                            </div>
+                            {/* Dependencies */}
+                            <div>
+                                <label className="text-xs font-semibold mb-1 block">Dependencies (existing agent IDs)</label>
+                                <div className="flex flex-wrap gap-1 mb-1">
+                                    {sortedAgentEntries.filter(a => a.status === 'approved' || a.status === 'completed').map(a => (
+                                        <button key={a.agent_id}
+                                            className={`text-[9px] px-1.5 py-0.5 rounded border ${deps.includes(a.agent_id) ? 'bg-indigo-100 border-indigo-300 text-indigo-700' : 'bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100'}`}
+                                            onClick={() => setDeps(prev => prev.includes(a.agent_id) ? prev.filter(d => d !== a.agent_id) : [...prev, a.agent_id])}>
+                                            {a.agent_id}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                            {/* Input artifacts */}
+                            <div>
+                                <label className="text-xs font-semibold mb-1 block">Input Artifacts (file paths)</label>
+                                {inputArtifacts.map((val, i) => (
+                                    <div key={i} className="flex gap-1 mb-1">
+                                        <input type="text" className="border rounded text-[10px] px-2 py-1 w-full" placeholder="e.g., relative/path/to/file.json" value={val} onChange={e => { const next = [...inputArtifacts]; next[i] = e.target.value; setInputArtifacts(next); }} />
+                                        <button onClick={() => setInputArtifacts(prev => prev.filter((_, j) => j !== i))} className="text-red-400 hover:text-red-600"><X size={14} /></button>
+                                    </div>
+                                ))}
+                                <button onClick={() => setInputArtifacts(prev => [...prev, ''])} className="text-[10px] text-indigo-600 hover:underline">+ Add input</button>
+                            </div>
+                            {/* Output artifacts */}
+                            <div>
+                                <label className="text-xs font-semibold mb-1 block">Output Artifacts (file paths)</label>
+                                {outputArtifacts.map((val, i) => (
+                                    <div key={i} className="flex gap-1 mb-1">
+                                        <input type="text" className="border rounded text-[10px] px-2 py-1 w-full" placeholder="e.g., agents/custom/output.json" value={val} onChange={e => { const next = [...outputArtifacts]; next[i] = e.target.value; setOutputArtifacts(next); }} />
+                                        <button onClick={() => setOutputArtifacts(prev => prev.filter((_, j) => j !== i))} className="text-red-400 hover:text-red-600"><X size={14} /></button>
+                                    </div>
+                                ))}
+                                <button onClick={() => setOutputArtifacts(prev => [...prev, ''])} className="text-[10px] text-indigo-600 hover:underline">+ Add output</button>
+                            </div>
+                            {/* Result */}
+                            {createResult && (
+                                <div className={`text-xs p-2 rounded ${createResult.startsWith('✅') ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+                                    {createResult}
+                                </div>
+                            )}
+                            {/* Submit */}
+                            <div className="pt-2 border-t flex gap-2">
+                                <button onClick={handleCreate} disabled={!selectedTemplate || creating}
+                                    className="flex items-center gap-1 text-xs px-3 py-1.5 rounded bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50">
+                                    {creating ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />}
+                                    {creating ? 'Creating...' : 'Create Agent'}
                                 </button>
-                                <button onClick={() => setSelectedAgent(null)}
-                                    className="text-xs px-3 py-1.5 rounded bg-gray-200 text-gray-600 hover:bg-gray-300 ml-auto">Close</button>
+                                <button onClick={() => setShowAddModal(false)} className="text-xs px-3 py-1.5 rounded bg-gray-200 text-gray-600 hover:bg-gray-300 ml-auto">Cancel</button>
                             </div>
                         </div>
                     </div>
