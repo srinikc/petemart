@@ -31,6 +31,7 @@ const STATUS_DOT: Record<string, { color: string; label: string; pulse?: boolean
   idle: { color: '#9CA3AF', label: 'Idle' },
   failed: { color: '#DC2626', label: 'Failed', pulse: true },
   blocked: { color: '#DC2626', label: 'Blocked', pulse: true },
+  cancelled: { color: '#DC2626', label: 'Cancelled' },
 };
 
 type CriticalAction = { agentId: string; label: string; type: 'approve' | 'fix' | 'rerun'; severity: 'high' | 'medium' | 'low' };
@@ -163,12 +164,12 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
   const [supervisorChatMessages, setSupervisorChatMessages] = useState<{ role: string; content: string; timestamp: number }[]>(savedChat.length > 0 ? savedChat : [welcomeMsg]);
   const supervisorChatRef = useRef<HTMLDivElement>(null);
   const [supervisorStartedAt, setSupervisorStartedAt] = useState<number | null>(null);
-  const [llmProviderLabel, setLlmProviderLabel] = useState('opencode/deepseek-v4-flash');
+  const [llmProviderLabel, setLlmProviderLabel] = useState('opencode-go/deepseek-v4-flash');
   const LLM_OPTIONS = [
-    { value: 'opencode-go/deepseek-v4-flash', label: 'DeepSeek V4 Flash' },
-    { value: 'openrouter/anthropic/claude-sonnet', label: 'Claude Sonnet' },
-    { value: 'openrouter/openai/gpt-4o', label: 'GPT-4o' },
-    { value: 'ollama/llama3', label: 'Llama 3 (Local)' },
+    { value: 'opencode-go/deepseek-v4-flash', label: 'opencode-go / deepseek-v4-flash' },
+    { value: 'openrouter/deepseek/deepseek-v4-flash', label: 'openrouter / deepseek/deepseek-v4-flash' },
+    { value: 'opencode/deepseek-v4-flash-free', label: 'opencode / deepseek-v4-flash-free (Zen)' },
+    { value: 'openrouter/openrouter/free', label: 'openrouter / openrouter/free' },
   ];
 
   const addActivity = useCallback((agentId: string, action: string, detail: string, type: ActivityEntry['type'], severity: ActivityEntry['severity']) => {
@@ -807,52 +808,57 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
                 <span className="text-[10px] text-indigo-700 bg-indigo-100 px-2 py-0.5 rounded-full">Sr. Program Manager</span>
                 <StatusDot status={supervisor?.status || 'idle'} size={7} />
                 <span className="text-[10px] text-indigo-600 font-medium capitalize">{supervisor?.status || 'idle'}</span>
-                <span className="text-[9px] text-indigo-400">· Cycles: {(supervisorControl as any)?.agent_00_supervisor?.cycle_count || 0}/{(supervisorControl as any)?.agent_00_supervisor?.max_cycles_before_break || 100}</span>
+                {(() => {
+                  const hb = (supervisorControl as any)?.agent_00_supervisor?.daemon_last_heartbeat;
+                  const daemonRunning = hb && (Date.now() - hb < 30000);
+                  return (
+                    <span className={`flex items-center gap-1 text-[9px] ${daemonRunning ? 'text-green-600' : 'text-red-500'}`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${daemonRunning ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
+                      Daemon: {daemonRunning ? 'Running' : 'Stopped'}
+                    </span>
+                  );
+                })()}
                 <span className={`text-[9px] ${circuitBreaker?.circuit_breaker_tripped_at ? 'text-red-500 font-bold' : 'text-green-600'}`}>
                   Circuit: {circuitBreaker?.circuit_breaker_tripped_at ? 'TRIPPED' : 'Closed'}
                 </span>
-                <span className="text-[9px] text-indigo-400">· {timeAgo((supervisorControl as any)?.agent_00_supervisor?.last_cycle_timestamp)}</span>
               </div>
-              {/* Supervisor current action */}
+              {/* Supervisor current action — short summary */}
               <div className="flex items-center gap-2 mt-0.5">
                 <span className="text-[9px] text-indigo-500 truncate max-w-[420px]">
                   {(supervisorControl as any)?.agent_00_supervisor?.current_action || 'Pipeline orchestrator standby'}
                 </span>
-                {(supervisorControl as any)?.agent_00_supervisor?.next_agent_to_dispatch && (
-                  <span className="text-[8px] text-indigo-400 bg-indigo-100/50 px-1.5 py-0.5 rounded-full font-mono">
-                    Next: {(supervisorControl as any).agent_00_supervisor.next_agent_to_dispatch}
-                  </span>
-                )}
-                {(supervisorControl as any)?.agent_00_supervisor?.dispatch_queue?.length > 0 && (
-                  <span className="text-[8px] text-indigo-300">
-                    Queue: {(supervisorControl as any).agent_00_supervisor.dispatch_queue.join(', ')}
-                  </span>
-                )}
               </div>
             </div>
             <div className="flex items-center gap-2 text-[10px] shrink-0">
               {/* LLM Provider display + dropdown */}
               <div className="relative" ref={llmDropdownRef}>
                 <button onClick={() => setShowLlmDropdown(v => !v)}
-                  className="flex items-center gap-1 px-2 py-1 rounded-md bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border border-indigo-200 font-mono text-[9px] transition-all active:scale-95">
-                  <Activity size={9} /> {llmProviderLabel.split('/').pop()}
+                  className="flex items-center gap-1 px-2 py-1 rounded-md bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border border-indigo-200 font-mono text-[9px] transition-all active:scale-95 whitespace-nowrap max-w-[200px]"
+                  title={llmProviderLabel}>
+                  <Activity size={9} className="shrink-0" />
+                  <span className="truncate">{llmProviderLabel.split('/').pop()}</span>
                 </button>
                 {showLlmDropdown && (
-                  <div className="absolute right-0 top-full mt-1 bg-white border rounded-xl shadow-lg z-50 py-1 w-48">
-                    {LLM_OPTIONS.map(opt => (
-                      <button key={opt.value} onClick={async () => {
-                        const [provider, model] = opt.value.split('/');
-                        await fetch('/api/agentic-console/pipeline', {
-                          method: 'POST', headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ action: 'select_llm', provider, model, project }),
-                        });
-                        setLlmProviderLabel(opt.value);
-                        setShowLlmDropdown(false);
-                      }}
-                        className={`w-full text-left px-3 py-1.5 text-[11px] hover:bg-indigo-50 transition-colors ${llmProviderLabel === opt.value ? 'text-indigo-700 font-semibold bg-indigo-50' : 'text-gray-600'}`}>
-                        {opt.label}
-                      </button>
-                    ))}
+                  <div className="absolute right-0 top-full mt-1 bg-white border rounded-xl shadow-lg z-50 py-1 w-64">
+                    {LLM_OPTIONS.map(opt => {
+                      const isActive = llmProviderLabel === opt.value;
+                      return (
+                        <button key={opt.value} onClick={async () => {
+                          const [provider, ...modelParts] = opt.value.split('/');
+                          const model = modelParts.join('/');
+                          await fetch('/api/agentic-console/pipeline', {
+                            method: 'POST', headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ action: 'select_llm', provider, model, project }),
+                          });
+                          setLlmProviderLabel(opt.value);
+                          setShowLlmDropdown(false);
+                        }}
+                          className={`w-full text-left px-3 py-1.5 text-[11px] hover:bg-indigo-50 transition-colors flex items-center gap-2 ${isActive ? 'text-indigo-700 font-semibold bg-indigo-50' : 'text-gray-600'}`}>
+                          <span className="flex-1 truncate">{opt.label}</span>
+                          {isActive && <span className="text-[9px] text-green-600 font-bold shrink-0">● ACTIVE</span>}
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
               </div>
@@ -861,33 +867,48 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
                 className="flex items-center gap-1 px-2 py-1 rounded-md bg-indigo-100 text-indigo-700 hover:bg-indigo-200 font-medium transition-all active:scale-95">
                 <MessageSquare size={10} /> Chat
               </button>
-              {/* Start / Stop supervisor */}
-              {(supervisorControl as any)?.agent_00_supervisor?.status === 'active' ? (
-                <button onClick={async () => {
-                  await fetch('/api/agentic-console/pipeline', {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'stop_supervisor', project }),
-                  });
-                  setTimeout(() => window.location.reload(), 500);
-                }}
-                  className="flex items-center gap-1 px-2 py-1 rounded-md bg-red-100 text-red-600 hover:bg-red-200 font-medium transition-all active:scale-95">
-                  <Square size={9} /> Stop
-                </button>
-              ) : (
-                <button onClick={async () => {
-                  await fetch('/api/agentic-console/pipeline', {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'start_supervisor', project }),
-                  });
-                  setTimeout(() => window.location.reload(), 500);
-                }}
-                  className="flex items-center gap-1 px-2 py-1 rounded-md bg-green-100 text-green-600 hover:bg-green-200 font-medium transition-all active:scale-95">
-                  <Play size={9} /> Start
-                </button>
-              )}
-              <span className={`flex items-center gap-1 ${liveConnected ? 'text-green-600' : 'text-red-500'}`}>
-                <span className={`w-1.5 h-1.5 rounded-full ${liveConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
-                {liveConnected ? 'Connected' : 'Offline'}
+              {/* Start / Stop supervisor — based on daemon heartbeat freshness */}
+              {(() => {
+                const hb = (supervisorControl as any)?.agent_00_supervisor?.daemon_last_heartbeat;
+                const daemonRunning = hb && (Date.now() - hb < 30000);
+                return daemonRunning ? (
+                  <button onClick={async () => {
+                    await fetch('/api/agentic-console/pipeline', {
+                      method: 'POST', headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ action: 'stop_supervisor', project }),
+                    });
+                    setTimeout(() => window.location.reload(), 500);
+                  }}
+                    className="flex items-center gap-1 px-2 py-1 rounded-md bg-red-100 text-red-600 hover:bg-red-200 font-medium transition-all active:scale-95">
+                    <Square size={9} /> Stop
+                  </button>
+                ) : (
+                  <button onClick={async () => {
+                    await fetch('/api/agentic-console/pipeline', {
+                      method: 'POST', headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ action: 'start_supervisor', project }),
+                    });
+                    setTimeout(() => window.location.reload(), 500);
+                  }}
+                    className="flex items-center gap-1 px-2 py-1 rounded-md bg-green-100 text-green-600 hover:bg-green-200 font-medium transition-all active:scale-95">
+                    <Play size={9} /> Start
+                  </button>
+                );
+              })()}
+              <button onClick={async () => {
+                await fetch('/api/agentic-console/pipeline', {
+                  method: 'POST', headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ action: 'reset_circuit_breaker', project }),
+                });
+                window.location.reload();
+              }}
+                className="flex items-center gap-1 px-2 py-1 rounded-md bg-orange-100 text-orange-600 hover:bg-orange-200 font-medium transition-all active:scale-95"
+                title="Reset circuit breaker and idle counter">
+                <RefreshCw size={9} /> Reset
+              </button>
+              <span className={`flex items-center gap-1 ${liveConnected ? 'text-green-600' : 'text-gray-400'}`} title={liveConnected ? 'SSE connected to backend' : 'SSE offline — page may need reload'}>
+                <span className={`w-1.5 h-1.5 rounded-full ${liveConnected ? 'bg-green-500 animate-pulse' : 'bg-gray-300'}`} />
+                {liveConnected ? 'Live' : 'SSE Off'}
               </span>
             </div>
           </div>
@@ -927,54 +948,64 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
             {/* Right: NOW box */}
             <div className="w-[360px] shrink-0 border-l-2 border-indigo-100 bg-indigo-50/20 px-3.5 py-2.5">
               <div className="flex items-start gap-2.5">
-                <div className={`flex items-center gap-1.5 text-[12px] font-bold uppercase tracking-wider shrink-0 ${activities.length > 0 ? 'text-indigo-700' : 'text-gray-400'}`}>
-                  <span className={`w-2.5 h-2.5 rounded-full ${activities.length > 0 ? 'bg-indigo-500 animate-pulse' : 'bg-gray-300'}`} />
-                  NOW
+                <div className={`flex items-center gap-1.5 text-[12px] font-bold uppercase tracking-wider shrink-0 ${liveConnected ? 'text-indigo-700' : 'text-gray-400'}`}>
+                  <span className={`w-2.5 h-2.5 rounded-full ${liveConnected ? 'bg-indigo-500 animate-pulse' : 'bg-gray-300'}`} />
+                  STATUS
                 </div>
                 <div className="flex-1 min-w-0">
-                  {activities.length > 0 ? (
-                    <>
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[12px] font-semibold text-indigo-800 truncate activity-enter">{activities[0].action}</span>
-                        {activities[0].agentId && (
-                          <span className="text-[8px] font-mono text-indigo-400 bg-indigo-100 px-1.5 py-0.5 rounded-full shrink-0">
-                            {activities[0].agentId.replace('_agent', '')}
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-[11px] text-indigo-600 line-clamp-2 leading-snug mt-0.5">{activities[0].detail}</div>
-                      {/* Show ETA + step for running agent from state */}
-                      {(() => {
-                        const runningAgent = Object.values(agentStates).find(a =>
-                          (a.status === 'active' || a.status === 'in_progress') && a.estimated_remaining_ms
-                        );
-                        if (!runningAgent) return null;
-                        const eta2 = formatETA(runningAgent.estimated_remaining_ms);
-                        const step2 = runningAgent.current_step && runningAgent.steps_total
-                          ? `${runningAgent.current_step}/${runningAgent.steps_total}`
-                          : null;
-                        return (
-                          <div className="flex items-center gap-2 mt-1 pt-1 border-t border-indigo-100">
-                            {step2 && <span className="text-[9px] font-mono text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">{step2}</span>}
-                            <span className="text-[9px] text-emerald-600">{eta2} remaining</span>
+                  {(() => {
+                    const runningAgent = Object.values(agentStates).find(a =>
+                      a.status === 'active' || a.status === 'in_progress'
+                    );
+                    if (runningAgent) {
+                      const eta = formatETA(runningAgent.estimated_remaining_ms);
+                      const step = runningAgent.current_step && runningAgent.steps_total
+                        ? `${runningAgent.current_step}/${runningAgent.steps_total}`
+                        : null;
+                      return (
+                        <>
+                          <div className="flex items-center gap-1.5">
+                            <Loader2 size={11} className="text-blue-600 animate-spin shrink-0" />
+                            <span className="text-[11px] font-semibold text-blue-800 truncate">{runningAgent.agent_id}</span>
+                            <span className="text-[8px] font-mono text-blue-500 bg-blue-100 px-1.5 py-0.5 rounded-full shrink-0">{runningAgent.role?.split(' ').slice(0, 2).join(' ')}</span>
+                          </div>
+                          <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                            {step && <span className="text-[9px] font-mono text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">{step}</span>}
+                            {eta && <span className="text-[9px] text-emerald-600">{eta} left</span>}
                             {runningAgent.step_label && <span className="text-[8px] text-gray-500 truncate">{runningAgent.step_label}</span>}
                           </div>
-                        );
-                      })()}
-                    </>
-                  ) : (
-                    <div className="text-[11px] text-gray-500">
-                      <div className="font-medium text-gray-700">Pipeline Orchestrator Standby</div>
-                      <div className="text-[10px] text-gray-400 mt-0.5">Awaiting dispatch from Agent 00 — no agents currently executing.</div>
-                    </div>
-                  )}
-                  {activities.length > 1 && (
-                    <div className="text-[10px] text-gray-500 mt-1 pt-1 border-t border-indigo-100 flex items-start gap-1.5">
-                      <span className="w-1 h-1 rounded-full bg-gray-300 mt-1.5 shrink-0" />
-                      <span className="truncate flex-1">{activities[1].action} — {activities[1].detail.slice(0, 50)}</span>
-                      <span className="text-[8px] text-gray-400 shrink-0">{timeAgo(activities[1].timestamp)}</span>
-                    </div>
-                  )}
+                        </>
+                      );
+                    }
+                    const { agents_completed, agents_awaiting_review, agents_pending, agents_failed } = effectiveSummary;
+                    const blocked = Object.values(agentStates).filter(a => a.dependencies?.length > 0 && a.status === 'pending' && !a.dependencies.every(d => {
+                      const dep = agentStates[d];
+                      return dep?.status === 'approved' || dep?.status === 'completed';
+                    })).length;
+                    const nextUp = Object.entries(agentStates).find(([, a]) =>
+                      a.status === 'pending' && a.dependencies?.every(d => {
+                        const dep = agentStates[d];
+                        return dep?.status === 'approved' || dep?.status === 'completed';
+                      })
+                    );
+                    const nextUpId = nextUp ? nextUp[0] : null;
+                    const nextUpAgent = nextUp ? nextUp[1] : null;
+                    return (
+                      <>
+                        <div className="text-[10px] font-semibold text-gray-600">
+                          {nextUpId ? 'Next: ' + nextUpId.replace('_agent','') : 'Pipeline Idle'}
+                        </div>
+                        <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                          {nextUpAgent && <span className="text-[9px] text-indigo-600">{nextUpAgent.role?.split(' ').slice(0,2).join(' ')}</span>}
+                          <span className="text-[9px] text-gray-500">{agents_pending} queued</span>
+                          {agents_awaiting_review > 0 && <span className="text-[9px] text-amber-600">{agents_awaiting_review} awaiting</span>}
+                          {blocked > 0 && <span className="text-[9px] text-orange-500">{blocked} blocked</span>}
+                          {agents_failed > 0 && <span className="text-[9px] text-red-600">{agents_failed} failed</span>}
+                          <span className="text-[9px] text-green-600">{agents_completed} done</span>
+                        </div>
+                      </>
+                    );
+                  })()}
                 </div>
               </div>
             </div>

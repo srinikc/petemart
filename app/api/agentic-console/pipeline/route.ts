@@ -67,9 +67,14 @@ export async function POST(req: NextRequest) {
         if (state.supervisor_control?.loop_guardrails) {
           state.supervisor_control.loop_guardrails.circuit_breaker_tripped_at = null;
           state.supervisor_control.loop_guardrails.circuit_breaker_reason = null;
+          state.supervisor_control.loop_guardrails.idle_cycles = 0;
+          state.supervisor_control.loop_guardrails.circuit_breaker = 'CLOSED';
+        }
+        if (state.supervisor_control?.agent_00_supervisor) {
+          state.supervisor_control.agent_00_supervisor.current_action = 'Reset — pipeline operational';
         }
         writeState(project, state);
-        return NextResponse.json({ success: true, circuit_breaker_reset: true });
+        return NextResponse.json({ success: true, circuit_breaker_reset: true, idle_cycles_reset: true });
 
       case 'start_supervisor': {
         const { startSupervisor } = require('../../../../scripts/runtime/supervisorSingleton');
@@ -85,6 +90,8 @@ export async function POST(req: NextRequest) {
         stopSupervisor();
         state.supervisor_control.agent_00_supervisor.status = 'idle';
         state.supervisor_control.agent_00_supervisor.daemon_pid = null;
+        state.supervisor_control.agent_00_supervisor.daemon_status = 'stopped';
+        state.supervisor_control.agent_00_supervisor.daemon_last_heartbeat = null;
         writeState(project, state);
         return NextResponse.json({ success: true, supervisor_status: 'idle' });
       }

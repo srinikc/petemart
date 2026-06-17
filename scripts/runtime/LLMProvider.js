@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const vlog = require('./VerboseLogger');
-const { LLMFallback, FALLBACK_CHAIN, MODEL_LIMITS } = require('./LLMFallback');
+const { LLMFallback, FALLBACK_CHAIN, STATIC_MODEL_LIMITS } = require('./LLMFallback');
 
 const SPEND_LOG_PATH = path.join(process.cwd(), '00_state_ledger', 'token_spend_log.json');
 
@@ -133,13 +133,28 @@ class LLMProvider {
       const month = new Date().toISOString().slice(0, 7);
       let log = {};
       try { log = JSON.parse(fs.readFileSync(SPEND_LOG_PATH, 'utf-8')); } catch {}
-      // Cost per 1K tokens varies by model tier
       const costPer1K = model?.includes('deepseek') ? 0.00014 : 0.0025;
       const cost = ((promptTokens || 0) + (completionTokens || 0)) / 1000 * costPer1K;
       log[month] = (log[month] || 0) + cost;
       fs.writeFileSync(SPEND_LOG_PATH, JSON.stringify(log, null, 2), 'utf-8');
       vlog.write('LLM', 'SYSTEM', `Token cost: $${cost.toFixed(6)} (${(promptTokens || 0) + (completionTokens || 0)} tok @ ${costPer1K}/1K)`);
     } catch {}
+    this._updateStateMatrix(this.provider, this.model);
+  }
+
+  _updateStateMatrix(provider, model) {
+    try {
+      const matrixPath = path.join(process.cwd(), '00_state_ledger/STATE_MATRIX.json');
+      if (fs.existsSync(matrixPath)) {
+        const data = JSON.parse(fs.readFileSync(matrixPath, 'utf8'));
+        Object.keys(data.agent_states || {}).forEach(aid => {
+          if (data.agent_states[aid].status === 'in_progress') {
+            data.agent_states[aid].active_llm = `${provider}/${model}`;
+          }
+        });
+        fs.writeFileSync(matrixPath, JSON.stringify(data, null, 2));
+      }
+    } catch (e) { vlog.write('LLM', 'SYSTEM', `Failed to update state matrix: ${e.message}`); }
   }
 }
 

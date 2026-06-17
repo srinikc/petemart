@@ -5,12 +5,13 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import {
     Bot, FileText, Loader2, Shield, Layout, Server, Monitor, Code, Database, Layers,
     Activity as ActivityIcon, Globe, BookOpen, UserCheck, Camera, Settings, Coins, Lock,
-    Lightbulb, GitMerge, Truck, ArrowLeft, ExternalLink, Plus, X,
+    Lightbulb, GitMerge, Truck, ArrowLeft, ExternalLink, Plus, X, Network,
 } from 'lucide-react';
 import {
     AgentState, StatusBadge, PageTOC, fetchWithTimeout, timeAgo,
     PHASE_ORDER, PHASE_COLORS, PHASE_LABELS, PHASE_DESCRIPTIONS,
 } from '../shared';
+import PipelineGraph from '../pipeline-graph';
 
 const AGENTS_TOC = [
     { id: 'phase-one', label: 'Phase 1' },
@@ -50,6 +51,7 @@ export default function AgentsPage() {
     const [createResult, setCreateResult] = useState<string | null>(null);
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [toast, setToast] = useState<string | null>(null);
+    const [viewMode, setViewMode] = useState<'grid' | 'graph'>('grid');
 
     const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
 
@@ -190,8 +192,30 @@ export default function AgentsPage() {
                 <div className="fixed top-4 right-4 z-50 bg-gray-800 text-white text-xs px-4 py-2 rounded-lg shadow-lg">{toast}</div>
             )}
 
-            {/* Phase frames */}
-            {PHASE_ORDER.filter(p => p !== 'system').map(phase => {
+            {/* View toggle */}
+            <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-0.5 w-fit">
+              <button onClick={() => setViewMode('grid')}
+                className={`text-[10px] px-2 py-1 rounded-md font-medium transition-colors ${viewMode === 'grid' ? 'bg-white shadow-sm text-gray-800' : 'text-gray-500 hover:text-gray-700'}`}>
+                Grid
+              </button>
+              <button onClick={() => setViewMode('graph')}
+                className={`text-[10px] px-2 py-1 rounded-md font-medium transition-colors ${viewMode === 'graph' ? 'bg-white shadow-sm text-gray-800' : 'text-gray-500 hover:text-gray-700'}`}>
+                <Network size={12} className="inline mr-0.5" />Graph
+              </button>
+            </div>
+
+            {/* Pipeline Graph View */}
+            {viewMode === 'graph' && (
+              <div className="bg-white rounded-xl shadow-sm border p-4 overflow-auto" style={{ minHeight: 500 }}>
+                <PipelineGraph agentStates={agentStates} onAgentClick={(id) => {
+                  const agent = sortedAgentEntries.find(a => a.agent_id === id);
+                  if (agent) setSelectedAgent(agent);
+                }} />
+              </div>
+            )}
+
+            {/* Phase frames (grid view) */}
+            {viewMode === 'grid' && PHASE_ORDER.filter(p => p !== 'system').map(phase => {
                 const agents = agentsByPhase[phase] || [];
                 if (agents.length === 0) return null;
                 const completed = agents.filter(a => a.status === 'approved' || a.status === 'completed').length;
