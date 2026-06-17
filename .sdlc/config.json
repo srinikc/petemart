@@ -1,0 +1,4 @@
+{
+  "llm_context_window": 131072,
+  "description": "Override detected model context window. Remove or set to null to use auto-detection from model name."
+}
