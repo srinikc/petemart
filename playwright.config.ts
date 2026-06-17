@@ -20,26 +20,34 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     video: 'on-first-retry',
   },
+  expect: {
+    toHaveScreenshot: {
+      maxDiffPixelRatio: 0.02,
+      threshold: 0.2,
+    },
+  },
+  webServer: {
+    command: 'npm run dev -- -p 3458',
+    url: BASE_URL,
+    reuseExistingServer: !process.env.CI,
+    timeout: 30000,
+  },
   projects: [
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
       testMatch: /.*\.spec\.ts/,
     },
-    ...(process.env.CI
-      ? [
-          {
-            name: 'firefox',
-            use: { ...devices['Desktop Firefox'] },
-            testMatch: /.*\.spec\.ts/,
-          },
-          {
-            name: 'webkit',
-            use: { ...devices['Desktop Safari'] },
-            testMatch: /.*\.spec\.ts/,
-          },
-        ]
-      : []),
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+      testMatch: /.*\.spec\.ts/,
+    },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+      testMatch: /.*\.spec\.ts/,
+    },
   ],
   outputDir: path.join(__dirname, 'qa-dashboard', 'test-results'),
 });

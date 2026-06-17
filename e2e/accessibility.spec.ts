@@ -1,7 +1,36 @@
 import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
 
-test.describe('Accessibility (Basic)', () => {
-  test('home page has semantic heading structure', async ({ page }) => {
+test.describe('Accessibility (axe-core Audit)', () => {
+  test('home page has no critical accessibility violations', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    const results = await new AxeBuilder({ page }).analyze();
+    expect(results.violations.filter(v => v.impact === 'critical' || v.impact === 'serious')).toEqual([]);
+  });
+
+  test('auth page has no critical accessibility violations', async ({ page }) => {
+    await page.goto('/auth');
+    await page.waitForLoadState('networkidle');
+    const results = await new AxeBuilder({ page }).analyze();
+    expect(results.violations.filter(v => v.impact === 'critical' || v.impact === 'serious')).toEqual([]);
+  });
+
+  test('cart page has no critical accessibility violations', async ({ page }) => {
+    await page.goto('/cart');
+    await page.waitForLoadState('networkidle');
+    const results = await new AxeBuilder({ page }).analyze();
+    expect(results.violations.filter(v => v.impact === 'critical' || v.impact === 'serious')).toEqual([]);
+  });
+
+  test('checkout page has no critical accessibility violations', async ({ page }) => {
+    await page.goto('/checkout');
+    await page.waitForLoadState('networkidle');
+    const results = await new AxeBuilder({ page }).analyze();
+    expect(results.violations.filter(v => v.impact === 'critical' || v.impact === 'serious')).toEqual([]);
+  });
+
+  test('all pages have valid semantic structure', async ({ page }) => {
     await page.goto('/');
     const headings = await page.locator('h1, h2, h3').all();
     expect(headings.length).toBeGreaterThan(0);
@@ -11,7 +40,7 @@ test.describe('Accessibility (Basic)', () => {
     }
   });
 
-  test('home page has alt text on images', async ({ page }) => {
+  test('images have alt text', async ({ page }) => {
     await page.goto('/');
     const images = page.locator('img');
     const count = await images.count();
@@ -21,25 +50,6 @@ test.describe('Accessibility (Basic)', () => {
         expect(alt).not.toBeNull();
       }
     }
-  });
-
-  test('auth page has input fields (labeled or placeholdered)', async ({ page }) => {
-    await page.goto('/auth');
-    const inputs = page.locator('input');
-    const count = await inputs.count();
-    expect(count).toBeGreaterThan(0);
-  });
-
-  test('links have discernible text', async ({ page }) => {
-    await page.goto('/');
-    const links = page.locator('a');
-    const count = await links.count();
-    let emptyLinks = 0;
-    for (let i = 0; i < Math.min(count, 20); i++) {
-      const text = await links.nth(i).textContent();
-      if (!text?.trim()) emptyLinks++;
-    }
-    expect(emptyLinks).toBeLessThan(count * 0.2);
   });
 
   test('page has valid lang attribute', async ({ page }) => {

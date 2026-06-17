@@ -41,7 +41,7 @@ try {
 
   if (systemFiles.length > 0) {
     console.log('  \u2139 System/config files changed — running full test suite');
-    const result = execSync('npm test 2>&1', { encoding: 'utf-8', windowsHide: true, maxBuffer: 10 * 1024 * 1024 });
+    const result = execSync('npm test', { encoding: 'utf-8', windowsHide: true, maxBuffer: 10 * 1024 * 1024 });
     console.log(result);
     const failed = result.includes('FAIL') || result.includes('failed');
     if (failed) process.exit(1);
@@ -67,17 +67,16 @@ try {
   console.log('  \u2139 Running relevant tests for changed files: ' + changedFiles.length + ' file(s)');
   console.log('  Test targets: ' + testArgs);
 
-  const result = execSync('npx vitest run ' + testArgs + ' 2>&1', { encoding: 'utf-8', windowsHide: true, maxBuffer: 10 * 1024 * 1024 });
+  const result = execSync('npx vitest run ' + testArgs, { encoding: 'utf-8', windowsHide: true, maxBuffer: 10 * 1024 * 1024 });
   console.log(result);
 
   const failed = result.includes('FAIL') || result.includes('failed');
   if (failed) process.exit(1);
   process.exit(0);
 } catch (err) {
-  // If the smart test runner itself fails, fall back to full suite
   console.log('  \u26A0 Smart test selection failed (' + err.message + ') — falling back to full test suite');
   try {
-    const result = execSync('npm test 2>&1', { encoding: 'utf-8', windowsHide: true, maxBuffer: 10 * 1024 * 1024 });
+    const result = execSync('npm test', { encoding: 'utf-8', windowsHide: true, maxBuffer: 10 * 1024 * 1024 });
     console.log(result);
     const failed = result.includes('FAIL') || result.includes('failed');
     if (failed) process.exit(1);
