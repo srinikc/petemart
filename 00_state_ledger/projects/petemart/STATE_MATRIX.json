@@ -9,7 +9,7 @@
   "supervisor_control": {
     "agent_00_supervisor": {
       "status": "active",
-      "current_action": "Monitoring pipeline \u00e2\u20ac\u201d 03_architect_agent stuck (timeout), 07a/07b/07c awaiting approval",
+      "current_action": "Monitoring pipeline — 03_architect_agent reset to pending, ready for dispatch",
       "next_agent_to_dispatch": "04_prototype_agent",
       "dispatch_queue": [
         "04_prototype_agent"
@@ -17,7 +17,7 @@
       "last_cycle_timestamp": "2026-06-11T10:28:12.032Z",
       "cycle_count": 100,
       "max_cycles_before_break": 100,
-      "cool_down_seconds": 5,
+      "cool_down_seconds": 2,
       "last_error": null
     },
     "stuck_agent_monitor": {
@@ -216,7 +216,7 @@
       }
     },
     "loop_guardrails": {
-      "max_sequential_executions_per_agent": 3,
+      "max_sequential_executions_per_agent": 10,
       "max_total_cycles_lifetime": 100,
       "circuit_breaker_threshold": 5,
       "circuit_breaker_reason": null,
@@ -552,10 +552,10 @@
     "03_architect_agent": {
       "phase": "phase_one",
       "pool": "async_pool",
-      "status": "failed",
-      "started_at": "2026-06-11T09:49:48.334Z",
+      "status": "pending",
+      "started_at": null,
       "timeout_threshold_ms": 300000,
-      "stuck_detected_at": "2026-06-11T10:00:00.000Z",
+      "stuck_detected_at": null,
       "dependencies": [
         "02_requirement_agent"
       ],

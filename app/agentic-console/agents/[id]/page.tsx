@@ -131,6 +131,7 @@ export default function AgentDetailPage() {
       if (res.ok) {
         showToast(`${action === 'approve' ? 'Approved' : action === 'reject' ? 'Rejected' : 'Queued'} ${agentId}`);
         setInstruction('');
+        if (action === 'rerun') setTimeout(() => window.location.reload(), 1000);
       }
     } catch { showToast('Action failed'); }
     setActionLoading(null);

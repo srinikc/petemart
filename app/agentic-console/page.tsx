@@ -11,12 +11,13 @@ function safeReadJSON(relPath: string) {
   } catch { return null; }
 }
 
-export default function AgenticConsolePage({
+export default async function AgenticConsolePage({
   searchParams,
 }: {
-  searchParams?: { project?: string };
+  searchParams?: Promise<{ project?: string }>;
 }) {
-  const project = searchParams?.project || null;
+  const params = await searchParams;
+  const project = params?.project || null;
   const projectsIndex = safeReadJSON('00_state_ledger/projects_index.json');
 
   // Global mode: no project selected — show mini trains for all projects

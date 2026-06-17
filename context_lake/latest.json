@@ -1,41 +1,44 @@
 {
-  "latest_entry": "lake/2026-06-09/2026-06-09T23-00-15_cockpit-redesign-analysis",
-  "window_name": "cockpit-redesign-analysis",
-  "captured_at": "2026-06-09T17:47:00.000000+00:00",
-  "git_branch": "feature/agent-detail-and-mcp-registry",
-  "git_sha": "f3e89cf",
-  "last_commit": "feat(agentic-console): agent detail page with guardrails, artifacts, run logs, A2A comm, MCP tools + MCP servers registry (#13)",
+  "latest_entry": "lake/2026-06-17/2026-06-17T16-58-00_runtime-reconstruction",
+  "window_name": "runtime-reconstruction",
+  "captured_at": "2026-06-17T16:58:00.000000+00:00",
+  "git_branch": "develop",
+  "git_sha": "2301993",
+  "last_commit": "QA: agentic-console P1-P3 completion + per-project restructuring",
   "conversation": {
-    "file": "20260609-21-58-36-Agentic-console-not-coming-up.md",
-    "exchanges": 110,
-    "goal": "agentic console not coming up → SSE connection leak fix → research best UI → redesign agents page with inline approval → build interactive pipeline graph → plan cockpit redesign",
-    "last_query": "save context and then proceed",
-    "last_response": "Context saved to lake",
-    "topics": [
-      "ui",
-      "cockpit",
-      "pipeline-graph",
-      "dashboard",
-      "approval",
-      "flyout",
-      "sse-fix",
-      "react-flow",
-      "apple-like-design"
-    ],
-    "done_mentions": 32,
-    "pending_mentions": 0,
-    "messages": 3
+    "file": "runtime-reconstruction.md",
+    "exchanges": 200,
+    "goal": "Reconstruct runtime files lost during git rebase + fix checkpoint Phase 2 0-artifact bug",
+    "last_query": "regenerate all that is needed for entire agentic-console to work",
+    "last_response": "9 runtime files reconstructed + AGENT_REGISTRY fixed",
+    "topics": ["runtime", "AgentRuntime", "checkpoint", "agentic-console", "AGENT_REGISTRY", "recovery"],
+    "done_mentions": 0,
+    "pending_mentions": 0
   },
   "state_files": [
-    {
-      "path": "00_state_ledger\\STATE_MATRIX.json",
-      "summary": "69% complete | 8/16 agents done"
-    },
-    {
-      "path": "00_state_ledger\\AGENT_REGISTRY.json",
-      "summary": "state file"
-    }
+    { "path": "00_state_ledger\\STATE_MATRIX.json", "summary": "69% complete | 8/16 agents done | 03 awaiting HITL" },
+    { "path": "00_state_ledger\\AGENT_REGISTRY.json", "summary": "REWRITTEN: 18 agents, 2 with checkpoints (01-4, 03-2), all with tools, valid JSON" }
   ],
-  "agent_count": 19,
+  "files_created": [
+    "scripts/runtime/VerboseLogger.js",
+    "scripts/runtime/TraceLogger.js",
+    "scripts/runtime/LLMProvider.js",
+    "scripts/runtime/AgentRuntime.js",
+    "scripts/runtime/SupervisorAgent.js",
+    "scripts/runtime/runAgentProcess.js",
+    "scripts/runtime/supervisorDaemon.js",
+    "scripts/runtime/supervisorSingleton.js",
+    "scripts/execute_agent_task.js",
+    ".opencode/rules/terminal-rules.md",
+    "Rules-Guardrails-Compliance.md",
+    "State-Changes.md"
+  ],
+  "files_modified": [
+    "00_state_ledger/AGENT_REGISTRY.json",
+    "opencode.json",
+    "context_lake/system_instructions.md",
+    "context_lake/tool_efficiency.md"
+  ],
+  "agent_count": 18,
   "recent_sessions": []
 }

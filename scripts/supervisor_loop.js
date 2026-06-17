@@ -233,7 +233,7 @@ function updateDashboardSummary(state) {
 async function runCycle(state) {
   const loopGuard = state.supervisor_control?.loop_guardrails || {};
   const maxConcurrent = loopGuard.max_concurrent_agents || 3;
-  const cooldown = (loopGuard.cooldown_between_cycles_s || 5) * 1000;
+  const cooldown = (loopGuard.cooldown_between_cycles_s || 2) * 1000;
 
   if (state.pipeline_control?.is_pipeline_paused) {
     return { skipped: true, reason: 'Pipeline paused' };
@@ -308,10 +308,16 @@ async function runCycle(state) {
     const hasFatalFailure = fatalFailures.length > 0;
 
     if (hasFatalFailure) {
-      transitionAgent(state, agent.id, 'failed', {
-        last_error: `Compliance audit failed — ${fatalFailures.map(i => i.check).join(', ')}`,
-      });
+      const errorMsg = `Compliance audit failed — ${fatalFailures.map(i => i.check).join(', ')}`;
+      transitionAgent(state, agent.id, 'failed', { last_error: errorMsg });
+      agent.consecutive_failures = (agent.consecutive_failures || 0) + 1;
       logEvent({ type: 'compliance_failed', agent_id: agent.id, fatal: fatalFailures.map(i => i.id) });
+      // Trip circuit breaker if consecutive failures exceed threshold
+      const threshold = state.supervisor_control?.loop_guardrails?.circuit_breaker_threshold || 5;
+      if (agent.consecutive_failures >= threshold) {
+        state.supervisor_control.loop_guardrails.circuit_breaker_tripped_at = new Date().toISOString();
+        logEvent({ type: 'circuit_breaker_tripped', agent_id: agent.id, consecutive: agent.consecutive_failures, threshold });
+      }
       continue;
     }
 
@@ -393,7 +399,7 @@ async function main() {
     }
 
     if (watch) {
-      const cooldown = (current.supervisor_control?.loop_guardrails?.cooldown_between_cycles_s || 5) * 1000;
+      const cooldown = (current.supervisor_control?.loop_guardrails?.cooldown_between_cycles_s || 2) * 1000;
       console.log(`⏳ Cooldown ${cooldown/1000}s...\n`);
       await new Promise(r => setTimeout(r, cooldown));
       setImmediate(runNext);

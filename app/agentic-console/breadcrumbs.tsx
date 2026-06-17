@@ -9,6 +9,7 @@ const PAGE_LABELS: Record<string, string> = {
     'agentic-console': 'Dashboard',
     'agents': 'Agent Pipeline',
     'quality': 'Quality',
+    'logs': 'Logs',
     'health': 'Health',
     'operations': 'Operations',
     'tools': 'Tools',

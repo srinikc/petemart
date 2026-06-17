@@ -192,6 +192,7 @@ export const GLOBAL_NAV_ITEMS = [
     { href: '/agentic-console', label: 'Dashboard', icon: 'Activity' },
     { href: '/agentic-console/agents', label: 'Agent Pipeline', icon: 'Bot' },
     { href: '/agentic-console/quality', label: 'Quality', icon: 'Shield' },
+    { href: '/agentic-console/logs', label: 'Logs', icon: 'Terminal' },
     { href: '/agentic-console/health', label: 'Health', icon: 'Activity' },
     { href: '/agentic-console/operations', label: 'Operations', icon: 'Settings' },
     { href: '/agentic-console/tools', label: 'Tools', icon: 'Radio' },

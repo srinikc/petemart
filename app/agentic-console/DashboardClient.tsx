@@ -168,7 +168,7 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
   // SSE connection for live updates
   useEffect(() => {
     if (isGlobal) return; // SSE only for per-project mode
-    const esUrl = project ? `/api/agentic-console/events?poll=4000&project=${encodeURIComponent(project)}` : '/api/agentic-console/events?poll=4000';
+    const esUrl = project ? `/api/agentic-console/events?poll=5000&project=${encodeURIComponent(project)}` : '/api/agentic-console/events?poll=5000';
     const es = new EventSource(esUrl);
     let reconnectTimer: ReturnType<typeof setTimeout>;
 
@@ -375,7 +375,10 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
     if (!agentId) return;
     setFlyoutActionLoading(action);
     try {
-      const body: any = { agentId, action, feedback: flyoutInstruction || `${action} via Cockpit` };
+      const isRerun = action === 'rerun';
+      const body: any = isRerun
+        ? { action: 'rerun_agent', agentId }
+        : { agentId, action, feedback: flyoutInstruction || `${action} via Cockpit` };
       if (action === 'provide-input') {
         const agent = agentStates[agentId];
         const inputs = (agent as any)?.pending_inputs || [];
@@ -386,7 +389,7 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
         });
         body.inputs = values;
       }
-      const endpoint = action === 'rerun' ? '/api/agentic-console/pipeline' : '/api/agentic-console/approve';
+      const endpoint = isRerun ? '/api/agentic-console/pipeline' : '/api/agentic-console/approve';
       const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       if (res.ok) { setTimeout(() => window.location.reload(), 1000); }
     } catch { }

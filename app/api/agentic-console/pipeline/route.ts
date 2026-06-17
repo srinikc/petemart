@@ -5,6 +5,7 @@ import path from 'path';
 export const dynamic = 'force-dynamic';
 
 const ROOT = process.cwd();
+const TRACES_PATH = path.join(ROOT, '00_state_ledger/traces.jsonl');
 
 function statePath(project?: string | null): string {
   if (project) {
@@ -19,7 +20,29 @@ function readState(project?: string | null): any {
 }
 
 function writeState(project: string | null | undefined, data: any) {
-  fs.writeFileSync(statePath(project), JSON.stringify(data, null, 2), 'utf-8');
+  const p = statePath(project);
+  fs.writeFileSync(p, JSON.stringify(data, null, 2), 'utf-8');
+  if (project) {
+    const root = path.join(ROOT, '00_state_ledger/STATE_MATRIX.json');
+    if (fs.existsSync(root)) {
+      fs.writeFileSync(root, JSON.stringify(data, null, 2), 'utf-8');
+    }
+  }
+}
+
+function appendTrace(event: any) {
+  try {
+    event.timestamp = event.timestamp || new Date().toISOString();
+    fs.appendFileSync(TRACES_PATH, JSON.stringify(event) + '\n', 'utf-8');
+  } catch { /* ignore */ }
+}
+
+function appendEvent(event: any) {
+  try {
+    event.timestamp = event.timestamp || new Date().toISOString();
+    const p = path.join(ROOT, '00_state_ledger/PIPELINE_EVENTS.jsonl');
+    fs.appendFileSync(p, JSON.stringify(event) + '\n', 'utf-8');
+  } catch { /* ignore */ }
 }
 
 export async function POST(req: NextRequest) {
@@ -48,28 +71,179 @@ export async function POST(req: NextRequest) {
         writeState(project, state);
         return NextResponse.json({ success: true, circuit_breaker_reset: true });
 
+      case 'start_supervisor': {
+        const { startSupervisor } = require('../../../../scripts/runtime/supervisorSingleton');
+        const result = startSupervisor();
+        state.supervisor_control.agent_00_supervisor.status = 'active';
+        state.supervisor_control.agent_00_supervisor.last_cycle_timestamp = new Date().toISOString();
+        writeState(project, state);
+        return NextResponse.json({ success: true, supervisor_status: 'active', result });
+      }
+
+      case 'stop_supervisor': {
+        const { stopSupervisor } = require('../../../../scripts/runtime/supervisorSingleton');
+        stopSupervisor();
+        state.supervisor_control.agent_00_supervisor.status = 'idle';
+        state.supervisor_control.agent_00_supervisor.daemon_pid = null;
+        writeState(project, state);
+        return NextResponse.json({ success: true, supervisor_status: 'idle' });
+      }
+
+      case 'select_llm': {
+        const { provider, model } = body;
+        if (!state.supervisor_control.agent_00_supervisor) {
+          state.supervisor_control.agent_00_supervisor = {};
+        }
+        state.supervisor_control.agent_00_supervisor.llm_override = { provider, model };
+        writeState(project, state);
+        return NextResponse.json({ success: true, llm: { provider, model } });
+      }
+
+      case 'set_supervisor_prompt': {
+        const prompt = body.prompt || '';
+        const cmdPath = path.join(ROOT, '00_state_ledger/SUPERVISOR_COMMANDS.jsonl');
+        fs.appendFileSync(cmdPath, JSON.stringify({
+          type: 'set_prompt', prompt, timestamp: new Date().toISOString(),
+        }) + '\n', 'utf-8');
+        return NextResponse.json({ success: true, prompt });
+      }
+
       case 'rerun_agent': {
         const agentId = body.agentId;
+        const instruction = body.feedback || '';
         if (!agentId) {
           return NextResponse.json({ error: 'agentId required' }, { status: 400 });
         }
         const agentKey = Object.keys(state.agent_states).find(k => k.includes(agentId));
         if (!agentKey) {
-          return NextResponse.json({ error: `Agent ${agentId} not found` }, { status: 404 });
+          return NextResponse.json({ error: `Agent ${agentKey || agentId} not found` }, { status: 404 });
         }
         const agent = state.agent_states[agentKey];
-        agent.status = 'pending';
-        agent.approved = false;
+        if (agent.status === 'in_progress' || agent.status === 'active') {
+          return NextResponse.json({ error: `Agent ${agentKey} is already running (${agent.status})` }, { status: 409 });
+        }
+        // Store rollback snapshot
+        const rollbackSnapshot = JSON.parse(JSON.stringify(agent));
+        state._rollback = state._rollback || {};
+        state._rollback[agentKey] = rollbackSnapshot;
+        // Archive old artifacts
+        if (agent.artifacts_emitted && agent.artifacts_emitted.length > 0) {
+          try {
+            const baseDir = path.join(ROOT, 'agents');
+            const oldDir = path.join(ROOT, `agents/${agentKey}/oldartifacts`);
+            if (!fs.existsSync(oldDir)) fs.mkdirSync(oldDir, { recursive: true });
+            const ts = new Date().toISOString().replace(/[:.]/g, '-');
+            const manifest = { archived_at: ts, artifacts: agent.artifacts_emitted };
+            fs.writeFileSync(path.join(oldDir, `${ts}-manifest.json`), JSON.stringify(manifest, null, 2), 'utf-8');
+          } catch { /* ignore */ }
+        }
+        const now = new Date().toISOString();
+        agent.status = 'in_progress';
+        agent.approved = true;
         agent.last_error = null;
-        agent.last_activity_timestamp = new Date().toISOString();
+        agent.started_at = now;
+        agent.stuck_detected_at = null;
+        agent.dlq_entry = null;
+        agent.last_activity_timestamp = now;
+        agent.execution_count = (agent.execution_count || 0) + 1;
+        // Deduplicate user_instructions (keep last 20)
+        if (instruction) {
+          const existing = agent.user_instruction || '';
+          const entries = existing ? existing.split('\\n') : [];
+          entries.push(`[${now}] ${instruction}`);
+          agent.user_instruction = entries.slice(-20).join('\\n');
+        }
         if (agent.expert_reviewer) {
           agent.expert_reviewer.review_status = 'pending';
           agent.expert_reviewer.reviewed_by = null;
           agent.expert_reviewer.reviewed_at = null;
           agent.expert_reviewer.sign_off_granted = false;
         }
+        // Reset circuit breaker
+        if (state.supervisor_control?.loop_guardrails) {
+          state.supervisor_control.loop_guardrails.circuit_breaker_tripped_at = null;
+          state.supervisor_control.loop_guardrails.circuit_breaker_reason = null;
+        }
+        // Cascade downstream recursively
+        const cascaded: string[] = [];
+        const toReset = new Set<string>();
+        const walkDownstream = (targetKey: string) => {
+          for (const [id, a] of Object.entries(state.agent_states) as [string, any][]) {
+            if (id === targetKey || toReset.has(id)) continue;
+            const deps: string[] = a.dependencies || [];
+            if (deps.some((d: string) => d === targetKey || d.startsWith(targetKey.split('_')[0]))) {
+              toReset.add(id);
+              walkDownstream(id);
+            }
+          }
+        };
+        walkDownstream(agentKey);
+        for (const id of toReset) {
+          const a = state.agent_states[id];
+          if (a.status === 'approved' || a.status === 'completed' || a.status === 'awaiting_approval') {
+            a.status = 'pending';
+            a.approved = false;
+            a.last_error = `DOWNSTREAM_RESET: Upstream ${agentKey} re-queued — reset to pending`;
+            a.started_at = null;
+            a.stuck_detected_at = null;
+            a.dlq_entry = null;
+            cascaded.push(id);
+          }
+        }
         writeState(project, state);
-        return NextResponse.json({ success: true, agentId: agentKey, newStatus: 'pending' });
+        appendEvent({
+          type: 'rerun_agent', agent_id: agentKey,
+          status: 'in_progress', cascaded_count: cascaded.length,
+          timestamp: now,
+        });
+        appendTrace({
+          type: 'action', action: 'rerun_agent', agent_id: agentKey,
+          cascaded, instruction, timestamp: now,
+        });
+        // Run via AgentRuntime (in-process, fire-and-forget)
+        const { AgentRuntime } = require('../../../../scripts/runtime/AgentRuntime');
+        const { LLMProvider } = require('../../../../scripts/runtime/LLMProvider');
+        const runtime = new AgentRuntime({ llm: LLMProvider.fromEnv() });
+        runtime.runAgent(agentKey, { userInstruction: instruction }).catch((err: any) => {
+          console.error(`[AgentRuntime] ${agentKey} failed:`, err.message);
+        });
+        return NextResponse.json({ success: true, agentId: agentKey, newStatus: 'in_progress', cascaded });
+      }
+
+      case 'cancel_agent': {
+        const agentId = body.agentId;
+        if (!agentId) {
+          return NextResponse.json({ error: 'agentId required' }, { status: 400 });
+        }
+        const agentKey = Object.keys(state.agent_states).find(k => k.includes(agentId));
+        if (!agentKey) {
+          return NextResponse.json({ error: `Agent ${agentKey || agentId} not found` }, { status: 404 });
+        }
+        // Abort via runtime
+        const { AgentRuntime } = require('../../../../scripts/runtime/AgentRuntime');
+        const aborted = AgentRuntime.abortAgent(agentKey);
+        // Restore rollback if available
+        const snapshot = state._rollback?.[agentKey];
+        if (snapshot) {
+          state.agent_states[agentKey] = snapshot;
+          state.agent_states[agentKey].last_error = 'CANCELLED_BY_USER';
+          state.agent_states[agentKey].status = 'failed';
+          state.agent_states[agentKey].started_at = null;
+          state.agent_states[agentKey].step_label = null;
+          delete state._rollback[agentKey];
+        } else {
+          const agent = state.agent_states[agentKey];
+          agent.status = 'failed';
+          agent.last_error = 'CANCELLED_BY_USER';
+          agent.started_at = null;
+          agent.step_label = null;
+        }
+        writeState(project, state);
+        appendEvent({
+          type: 'agent_cancelled', agent_id: agentKey,
+          aborted, timestamp: new Date().toISOString(),
+        });
+        return NextResponse.json({ success: true, agentId: agentKey, newStatus: 'cancelled', aborted });
       }
 
       default:
