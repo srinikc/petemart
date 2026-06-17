@@ -2,12 +2,39 @@ import { NextRequest, NextResponse } from 'next/server';
 import { spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
+import { parseVitestResults, testTypeToPattern } from '@/lib/qa/parse-vitest-results';
+import { evaluateQualityGates, saveQualityGates } from '@/lib/qa/quality-gates';
+import { createDefectFromFailure } from '@/lib/qa/defect-links';
+import type { Defect } from '@/lib/qa/defect-links';
+import { projectResultsPath, projectHistoryPath, ensureProjectDir, readProjectJSON } from '@/lib/qa/project-paths';
 import http from 'http';
 
-const STATUS_DIR = path.join(process.cwd(), 'qa-dashboard');
-const STATUS_FILE = path.join(STATUS_DIR, '.run-status.json');
+// ---- Configuration ----
+
+const QA_DIR = path.join(process.cwd(), 'qa-dashboard');
+const STATUS_FILE = path.join(QA_DIR, '.run-status.json');
 const DEV_SERVER_PORT = 3000;
 const DEV_SERVER_URL = `http://localhost:${DEV_SERVER_PORT}`;
+
+// Max timeout per tier (ms)
+const TIER_TIMEOUTS: Record<string, number> = {
+  sanity: 180_000,  // 3 min
+  full: 300_000,     // 5 min
+  release: 300_000,  // 5 min
+  custom: 300_000,   // 5 min
+};
+
+// Cap at 5 min per requirements
+const MAX_TIMEOUT = 300_000;
+
+// Mapping from generic config test types to our agentic-console test type patterns
+const TIER_TEST_TYPE_MAP: Record<string, string[]> = {
+  sanity: ['unit', 'component', 'api-contract'],
+  full: ['unit', 'component', 'api-contract', 'sse'],
+  release: ['unit', 'component', 'api-contract', 'sse', 'security'],
+};
+
+// ---- Helpers ----
 
 interface RunStatus {
   status: 'idle' | 'running' | 'completed' | 'failed';
@@ -22,7 +49,7 @@ interface RunStatus {
 
 function writeStatus(s: Partial<RunStatus>) {
   let current: RunStatus = { status: 'idle', tier: '', started_at: '', progress: '', results_url: '/api/qa/results/latest', run_id: '' };
-  try { current = JSON.parse(fs.readFileSync(STATUS_FILE, 'utf-8')); } catch {}
+  try { current = JSON.parse(fs.readFileSync(STATUS_FILE, 'utf-8')); } catch { /* ignore */ }
   fs.writeFileSync(STATUS_FILE, JSON.stringify({ ...current, ...s }, null, 2), 'utf-8');
 }
 
@@ -48,11 +75,9 @@ function startDevServer(): Promise<void> {
     });
 
     child.stderr?.on('data', (data: Buffer) => {
-      const text = data.toString();
-      console.log('[dev-server]', text.trim());
+      console.log('[dev-server]', data.toString().trim());
     });
 
-    // Poll until server is ready
     const maxAttempts = 30;
     let attempts = 0;
     const poll = setInterval(async () => {
@@ -71,13 +96,132 @@ function startDevServer(): Promise<void> {
   });
 }
 
+function readJSON<T>(filePath: string, fallback: T): T {
+  try {
+    if (!fs.existsSync(filePath)) return fallback;
+    return JSON.parse(fs.readFileSync(filePath, 'utf-8')) as T;
+  } catch {
+    return fallback;
+  }
+}
+
+function formatRunId(): string {
+  const now = new Date();
+  const y = now.getFullYear();
+  const M = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  const h = String(now.getHours()).padStart(2, '0');
+  const m = String(now.getMinutes()).padStart(2, '0');
+  const s = String(now.getSeconds()).padStart(2, '0');
+  return `run-${y}${M}${d}-${h}${m}${s}`;
+}
+
+function guessLayerFromTestFile(testFile: string): string {
+  if (testFile.includes('/unit/')) return 'unit';
+  if (testFile.includes('/comp/')) return 'component';
+  if (testFile.includes('/api/')) return 'api-contract';
+  if (testFile.includes('/sse/')) return 'sse';
+  if (testFile.includes('/security/')) return 'security';
+  return 'unknown';
+}
+
+function guessSeverity(error: string): Defect['severity'] {
+  const low = ['cosmetic', 'style', 'typo', 'spacing', 'format'];
+  const high = ['crash', 'timeout', '500', 'internal server', 'security', 'auth', 'xss', 'injection'];
+  const critical = ['data loss', 'breach', 'exposure', 'deadlock', 'panic'];
+  const errLower = error.toLowerCase();
+  if (critical.some((k) => errLower.includes(k))) return 'critical';
+  if (high.some((k) => errLower.includes(k))) return 'high';
+  if (low.some((k) => errLower.includes(k))) return 'low';
+  return 'medium';
+}
+
+async function runVitestWithTimeout(
+  testType: string,
+  pattern: string,
+  timeoutMs: number
+): Promise<{
+  success: boolean;
+  testType: string;
+  results: ReturnType<typeof parseVitestResults>;
+  stdout: string;
+  stderr: string;
+  durationMs: number;
+  error?: string;
+}> {
+  return new Promise((resolve) => {
+    const startTime = Date.now();
+    const args = ['vitest', 'run', pattern, '--reporter=json'];
+    const child = spawn('npx', args, {
+      cwd: process.cwd(),
+      env: { ...process.env, CI: 'false', NO_COLOR: '1' },
+      stdio: ['ignore', 'pipe', 'pipe'],
+      windowsHide: true,
+      shell: true,
+    });
+
+    let stdout = '';
+    let stderr = '';
+
+    child.stdout?.on('data', (data: Buffer) => {
+      stdout += data.toString();
+    });
+
+    child.stderr?.on('data', (data: Buffer) => {
+      stderr += data.toString();
+    });
+
+    const timer = setTimeout(() => {
+      child.kill('SIGTERM');
+      resolve({
+        success: false,
+        testType,
+        results: { results: [], summary: { total: 0, passed: 0, failed: 0, skipped: 0, durationMs: 0 } },
+        stdout,
+        stderr,
+        durationMs: Date.now() - startTime,
+        error: `Test type "${testType}" timed out after ${timeoutMs / 1000}s`,
+      });
+    }, timeoutMs);
+
+    child.on('error', (err: Error) => {
+      clearTimeout(timer);
+      resolve({
+        success: false,
+        testType,
+        results: { results: [], summary: { total: 0, passed: 0, failed: 0, skipped: 0, durationMs: 0 } },
+        stdout,
+        stderr,
+        durationMs: Date.now() - startTime,
+        error: err.message,
+      });
+    });
+
+    child.on('close', (code: number | null) => {
+      clearTimeout(timer);
+      const parsed = parseVitestResults(stdout, stderr);
+      resolve({
+        success: code === 0,
+        testType,
+        results: parsed,
+        stdout,
+        stderr,
+        durationMs: Date.now() - startTime,
+        error: code !== 0 && !stderr ? `Exit code: ${code}` : undefined,
+      });
+    });
+  });
+}
+
+// ---- Main POST Handler ----
+
 export async function POST(req: NextRequest) {
   if (process.env.BLOCK_QA_API === 'true') {
     return NextResponse.json({ error: 'Not available in production' }, { status: 403 });
   }
 
   try {
-    // Ensure dev server is running
+    // Ensure dev server is running (needed for status endpoint + results page)
     const isRunning = await checkDevServer();
     if (!isRunning) {
       try {
@@ -88,114 +232,279 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const selectedTypes: string[] = body.types || [];
-    const env: string = body.env || 'sandbox';
-    const tier: string = body.tier || '';
+    const { tier, testTypes: rawTestTypes } = body as {
+      tier?: string;
+      testTypes?: string[];
+    };
 
-    const root = process.cwd();
-    const configPath = path.join(root, 'qa-dashboard', 'test-run-config.json');
-    const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+    const project = body.project || 'agentic-console';
 
-    const buildLabel = body.buildLabel || `manual-${Date.now()}`;
-    const triggeredBy = body.triggeredBy || 'qa-dashboard';
-
-    let typeArg: string;
-    if (tier && config.tiers?.[tier]) {
-      typeArg = config.tiers[tier].testTypes.join(',');
-    } else if (selectedTypes.length === 0) {
-      return NextResponse.json({ error: 'No test types or tier specified' }, { status: 400 });
+    let testTypesToRun: string[] = [];
+    if (tier && TIER_TEST_TYPE_MAP[tier]) {
+      testTypesToRun = TIER_TEST_TYPE_MAP[tier];
+    } else if (rawTestTypes && rawTestTypes.length > 0) {
+      const ALL_KNOWN_TYPES = ['unit', 'component', 'api-contract', 'sse', 'security', 'e2e', 'visual-regression'];
+      testTypesToRun = rawTestTypes.filter((t) => ALL_KNOWN_TYPES.includes(t));
+      if (testTypesToRun.length === 0) {
+        return NextResponse.json({
+          error: `No valid test types specified. Valid types: ${ALL_KNOWN_TYPES.join(', ')}`,
+        }, { status: 400 });
+      }
     } else {
-      typeArg = selectedTypes.join(',');
+      return NextResponse.json({ error: 'Specify a tier (sanity/full/release) or testTypes array' }, { status: 400 });
     }
 
-    const envConfig = config.environments[env];
-    if (!envConfig) {
-      return NextResponse.json({ error: `Unknown environment: ${env}` }, { status: 400 });
-    }
+    const RESULTS_FILE = projectResultsPath(project);
+    const HISTORY_FILE = projectHistoryPath(project);
+    ensureProjectDir(project);
 
-    const runId = `${tier || 'custom'}-${Date.now()}`;
-    const tierArg = tier ? `--tier=${tier}` : '';
+    const timeoutMs = Math.min(TIER_TIMEOUTS[tier || 'custom'] || MAX_TIMEOUT, MAX_TIMEOUT);
+    const runId = formatRunId();
+    const startedAt = new Date().toISOString();
 
     writeStatus({
       status: 'running',
       tier: tier || 'custom',
-      started_at: new Date().toISOString(),
-      progress: '0/1 starting...',
+      started_at: startedAt,
+      progress: `0/${testTypesToRun.length} starting...`,
       results_url: '/api/qa/results/latest',
       run_id: runId,
     });
 
-    const spawnArgs = ['scripts/run-tests.js', `--env=${env}`, `--type=${typeArg}`];
-    if (tierArg) spawnArgs.push(tierArg);
-    const child = spawn('node', spawnArgs, {
-      cwd: root,
-      env: { ...process.env, CI: 'false' },
-      stdio: ['ignore', 'pipe', 'pipe'],
-      detached: true,
-      windowsHide: true,
-    });
+    // Run each test type sequentially
+    const testTypeResults: Array<{
+      testType: string;
+      success: boolean;
+      total: number;
+      passed: number;
+      failed: number;
+      skipped: number;
+      durationMs: number;
+      error?: string;
+      failures?: Array<{ testFile: string; testName: string; error: string }>;
+    }> = [];
 
-    let stdout = '';
-    let stderr = '';
+    let grandTotal = 0;
+    let grandPassed = 0;
+    let grandFailed = 0;
+    let grandDurationMs = 0;
+    const allDefectsCreated: Defect[] = [];
 
-    child.stdout?.on('data', (data: Buffer) => {
-      stdout += data.toString();
-      const lines = stdout.split('\n').filter(l => l.includes('Running:') || l.includes('PASSED') || l.includes('FAILED'));
-      if (lines.length > 0) {
-        writeStatus({ progress: `${lines.length} test types processed` });
+    for (let i = 0; i < testTypesToRun.length; i++) {
+      const tt = testTypesToRun[i];
+      const pattern = testTypeToPattern(tt);
+
+      // Update progress
+      writeStatus({ progress: `${i}/${testTypesToRun.length} running: ${tt}...` });
+
+      // Check if the test directory has any files; skip if not
+      const testDir = path.join(process.cwd(), pattern);
+      let hasTests = false;
+      try {
+        if (fs.existsSync(testDir)) {
+          const entries = fs.readdirSync(testDir);
+          hasTests = entries.some((e) => e.endsWith('.ts') || e.endsWith('.tsx'));
+        }
+      } catch { /* assume no tests */ }
+
+      if (!hasTests) {
+        testTypeResults.push({
+          testType: tt,
+          success: true, // skip, not a failure
+          total: 0,
+          passed: 0,
+          failed: 0,
+          skipped: 0,
+          durationMs: 0,
+          error: undefined,
+        });
+        continue;
       }
-    });
 
-    child.stderr?.on('data', (data: Buffer) => {
-      stderr += data.toString();
-    });
+      const result = await runVitestWithTimeout(tt, pattern, timeoutMs);
+      const { summary, results } = result.results;
 
-    child.on('error', (err: Error) => {
-      writeStatus({ status: 'failed', error: err.message, completed_at: new Date().toISOString() });
-    });
+      // Collect failures
+      const failures = results
+        .filter((r) => !r.passed)
+        .map((r) => ({
+          testFile: r.testFile,
+          testName: r.testName,
+          error: r.error || 'Unknown error',
+        }));
 
-    child.on('close', (code: number | null) => {
-      const success = code === 0;
-      writeStatus({
-        status: success ? 'completed' : 'failed',
-        completed_at: new Date().toISOString(),
-        progress: success ? 'All tests completed' : `Failed with exit code ${code}`,
-        error: success ? undefined : (stderr || `Exit code: ${code}`),
+      // Auto-create defects for each failure
+      for (const f of failures) {
+        try {
+          const layer = guessLayerFromTestFile(f.testFile);
+          const severity = guessSeverity(f.error);
+          const defect = createDefectFromFailure(f.testFile, f.testName, f.error, layer, severity);
+          if (defect) {
+            allDefectsCreated.push(defect);
+          }
+        } catch {
+          // Continue if defect creation fails
+        }
+      }
+
+      testTypeResults.push({
+        testType: tt,
+        success: result.success,
+        total: summary.total,
+        passed: summary.passed,
+        failed: summary.failed,
+        skipped: summary.skipped,
+        durationMs: result.durationMs,
+        error: result.error,
+        failures: failures.length > 0 ? failures : undefined,
       });
 
-      try {
-        const historyPath = path.join(root, 'qa-dashboard', 'run-history.json');
-        const history = JSON.parse(fs.readFileSync(historyPath, 'utf-8') || '[]');
-        if (Array.isArray(history) && history.length > 0) {
-          const last = history[history.length - 1];
-          if (last.started && !last.completed) {
-            last.completed = new Date().toISOString();
-            last.allPassed = success;
-            last.runId = runId;
-            fs.writeFileSync(historyPath, JSON.stringify(history, null, 2), 'utf-8');
+      grandTotal += summary.total;
+      grandPassed += summary.passed;
+      grandFailed += summary.failed;
+      grandDurationMs += result.durationMs;
+    }
+
+    // Compute summary
+    const passRate = grandTotal > 0 ? Math.round((grandPassed / grandTotal) * 1000) / 10 : 100;
+    const allPassed = grandFailed === 0;
+
+    // Update results.json with latest counts
+    const existingResults = readJSON<any>(RESULTS_FILE, null);
+    if (existingResults) {
+      // (defects are stored separately in per-project defects.json — not embedded here)
+      existingResults.lastUpdated = new Date().toISOString();
+      existingResults.summary = {
+        ...existingResults.summary,
+        totalTests: grandTotal,
+        passed: grandPassed,
+        failed: grandFailed,
+        passRate,
+        durationMs: grandDurationMs,
+      };
+
+      if (Array.isArray(existingResults.testTypes)) {
+        for (const tr of testTypeResults) {
+          const target = existingResults.testTypes.find((t: any) => t.id === tr.testType);
+          if (target) {
+            target.total = tr.total;
+            target.passed = tr.passed;
+            target.failed = tr.failed;
+            target.status = tr.success ? 'implemented' : 'partial';
           }
         }
-      } catch {}
-    });
+      }
 
-    child.unref();
+      fs.writeFileSync(RESULTS_FILE, JSON.stringify(existingResults, null, 2), 'utf-8');
+    }
+
+    // Add entry to run-history.json
+    const history = readJSON<any[]>(HISTORY_FILE, []);
+    const testsByType: Record<string, { total: number; passed: number; failed: number; status: string }> = {};
+    for (const tr of testTypeResults) {
+      const existingEntry = existingResults?.testTypes?.find((t: any) => t.id === tr.testType);
+      testsByType[tr.testType] = {
+        total: tr.total,
+        passed: tr.passed,
+        failed: tr.failed,
+        status: existingEntry?.status || (tr.success ? 'implemented' : 'partial'),
+      };
+    }
+
+    history.unshift({
+      runId,
+      tier: tier || 'custom',
+      tierLabel: tier ? (tier.charAt(0).toUpperCase() + tier.slice(1)) : 'Custom',
+      status: allPassed ? 'passed' : 'completed',
+      started: startedAt,
+      completed: new Date().toISOString(),
+      allPassed,
+      summary: {
+        total: grandTotal,
+        passed: grandPassed,
+        failed: grandFailed,
+        passRate,
+        durationMs: grandDurationMs,
+        newDefects: allDefectsCreated.length,
+      },
+      tests: testsByType,
+      metadata: {
+        buildLabel: body.buildLabel || `manual-${Date.now()}`,
+        triggeredBy: body.triggeredBy || 'qa-dashboard',
+        commitSha: body.commitSha || '',
+        branch: body.branch || '',
+        durationMs: grandDurationMs,
+      },
+      source: body.triggeredBy === 'ci-pipeline' ? 'ci-pipeline' : 'manual',
+      defectsFound: allDefectsCreated.map((d) => d.id),
+    });
+    // Keep max 50 entries
+    if (history.length > 50) history.length = 50;
+    fs.writeFileSync(HISTORY_FILE, JSON.stringify(history, null, 2), 'utf-8');
+
+    // Evaluate quality gates
+    const qualityGates = evaluateQualityGates(project);
+    try { saveQualityGates(qualityGates, project); } catch { /* continue */ }
+
+    writeStatus({
+      status: allPassed ? 'completed' : 'completed',
+      completed_at: new Date().toISOString(),
+      progress: allPassed ? 'All tests passed' : `${grandFailed} test(s) failed`,
+      error: allPassed ? undefined : `${grandFailed} test(s) failed across ${testTypeResults.filter((t) => !t.success).length} type(s)`,
+    });
 
     return NextResponse.json({
       success: true,
-      status: 'started',
-      run_id: runId,
+      runId,
       tier: tier || 'custom',
-      message: 'Tests started in background. Poll /api/qa/status for updates.',
-      buildLabel,
-      triggeredBy,
-      devServer: isRunning ? 'already_running' : 'started',
+      project,
+      startedAt,
+      completedAt: new Date().toISOString(),
+      allPassed,
+      summary: {
+        total: grandTotal,
+        passed: grandPassed,
+        failed: grandFailed,
+        passRate,
+        durationMs: grandDurationMs,
+      },
+      testTypeResults: testTypeResults.map((tr) => ({
+        testType: tr.testType,
+        success: tr.success,
+        total: tr.total,
+        passed: tr.passed,
+        failed: tr.failed,
+        skipped: tr.skipped,
+        durationMs: tr.durationMs,
+        error: tr.error,
+        failureCount: tr.failures?.length || 0,
+        failures: tr.failures || [],
+      })),
+      defectsCreated: allDefectsCreated.map((d) => ({
+        id: d.id,
+        title: d.title,
+        severity: d.severity,
+        testFile: d.testFile,
+        testName: d.testName,
+      })),
+      qualityGates: qualityGates.map((g) => ({
+        gateId: g.gateId,
+        name: g.name,
+        status: g.status,
+        description: g.description,
+        metrics: g.metrics,
+      })),
+      runHistoryUrl: `/agentic-console/quality?tab=run-history&run=${runId}`,
     });
   } catch (err: any) {
-    writeStatus({ status: 'failed', error: err.message, completed_at: new Date().toISOString() });
+    writeStatus({
+      status: 'failed',
+      error: err.message || 'Unknown error',
+      completed_at: new Date().toISOString(),
+    });
     return NextResponse.json({
       success: false,
-      status: 'error',
-      error: err.message || 'Unknown error',
+      error: err.message || 'Internal server error',
     }, { status: 500 });
   }
 }

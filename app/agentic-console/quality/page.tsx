@@ -12,6 +12,8 @@ import {
     AgentState, StatusBadge, fetchWithTimeout,
 } from '../shared';
 
+export const dynamic = 'force-dynamic';
+
 function GoNoGoBadge({ decision }: { decision: 'go' | 'no-go' | null | undefined }) {
     if (decision === 'go') {
         return <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold bg-green-100 text-green-800 border border-green-300">GO <CheckCircle size={16} /></span>;
@@ -44,8 +46,8 @@ export default function QualityPage() {
         const stateUrl = project ? `/api/agentic-console/state?project=${encodeURIComponent(project)}` : '/api/agentic-console/state';
         Promise.all([
             fetchWithTimeout(stateUrl),
-            fetch('/api/qa/reviews').then(r => r.json().catch(() => null)),
-            fetch('/api/qa/results').then(r => r.json().catch(() => null)),
+            fetch('/api/qa/reviews?project=agentic-console').then(r => r.json().catch(() => null)),
+            fetch('/api/qa/results?project=agentic-console').then(r => r.json().catch(() => null)),
         ]).then(([stateRes, reviewData, qaData]) => {
             if (stateRes.ok) stateRes.json().then(d => setState(d));
             if (reviewData?.reviews) {
@@ -75,7 +77,7 @@ export default function QualityPage() {
 
     const openItems = useMemo(() => {
         const items: Array<{ type: 'agent' | string; data: any }> = [];
-        Object.values(agentStates).filter((a: AgentState) => a.status === 'awaiting_approval' || a.status === 'failed' || a.last_error)
+        Object.values(agentStates).filter((a: AgentState) => a.status === 'awaiting_approval' || a.status === 'failed' || a.status === 'cancelled' || a.last_error)
             .forEach(a => items.push({ type: 'agent', data: a }));
         return items;
     }, [agentStates]);
@@ -149,8 +151,8 @@ export default function QualityPage() {
                             </button>
                         ))}
                     </div>
-                    <a href="/qa-dashboard" className="text-xs text-blue-600 hover:underline flex items-center gap-1 ml-auto font-medium shrink-0">
-                        <ExternalLink size={14} /> Full QA Dashboard
+                    <a href="/agentic-console/qa-dashboard" className="text-xs text-blue-600 hover:underline flex items-center gap-1 ml-auto font-medium shrink-0">
+                        <ExternalLink size={14} /> Full QA Dashboard →
                     </a>
                 </div>
 
@@ -306,8 +308,8 @@ export default function QualityPage() {
                         <div className="flex items-center gap-2 mb-2">
                             <ScrollText size={20} className="text-blue-600" />
                             <h2 className="text-lg font-bold">Test Results by Type</h2>
-                            <a href="/qa-dashboard" className="text-xs text-blue-600 hover:underline flex items-center gap-1 ml-auto">
-                                <ExternalLink size={14} /> Full QA Dashboard
+                            <a href="/agentic-console/qa-dashboard" className="text-xs text-blue-600 hover:underline flex items-center gap-1 ml-auto">
+                                <ExternalLink size={14} /> Full QA Dashboard →
                             </a>
                         </div>
                         {testTypes.length > 0 ? (
@@ -361,7 +363,7 @@ export default function QualityPage() {
                                 <div className="space-y-1.5">
                                     <div className="text-xs font-semibold text-gray-400 uppercase">Execution</div>
                                     {[
-                                        ['Max exec/agent', `${loopGuardrails.max_sequential_executions_per_agent || 3}`],
+                                        ['Max exec/agent', `${loopGuardrails.max_sequential_executions_per_agent || 10}`],
                                         ['Max cycles', `${loopGuardrails.max_total_cycles_lifetime || 100}`],
                                         ['Circuit breaker', `${loopGuardrails.circuit_breaker_threshold || 5} failures`],
                                     ].map(([l, v]) => (

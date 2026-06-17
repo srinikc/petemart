@@ -1,8 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import path from 'path';
 import fs from 'fs';
+import { createDefect, loadDefects, saveDefects } from '@/app/api/qa/defect-tracker';
+import type { TestFailure, Defect } from '@/app/api/qa/defect-tracker';
+import { projectResultsPath, projectHistoryPath, ensureProjectDir, readProjectJSON } from '@/lib/qa/project-paths';
 
 export const dynamic = 'force-dynamic';
+
+interface TestResultItem {
+  testFile: string;
+  testName: string;
+  layer: TestFailure['layer'];
+  passed: boolean;
+  error?: string;
+  agentId?: string;
+  featureId?: string;
+  prNumber?: number;
+  screenshotPath?: string;
+}
 
 interface PushPayload {
   tier: 'sanity' | 'full' | 'release';
@@ -14,6 +29,7 @@ interface PushPayload {
     blocked: number;
     coveragePct?: number;
   };
+  testResults?: TestResultItem[];
   testTypes?: Record<string, {
     total: number;
     passed: number;
@@ -41,30 +57,28 @@ interface PushPayload {
     commitSha?: string;
     branch?: string;
     durationMs?: number;
+    project?: string;
   };
 }
-
-const HISTORY_FILE = path.join(process.cwd(), 'qa-dashboard', 'run-history.json');
-const RESULTS_FILE = path.join(process.cwd(), 'qa-dashboard', 'results.json');
 
 export async function POST(req: NextRequest) {
   try {
     const payload: PushPayload = await req.json();
+    const project = payload.metadata?.project || 'agentic-console';
+    ensureProjectDir(project);
 
     if (!payload.tier || !payload.status) {
-      return NextResponse.json(
-        { error: 'Missing required fields: tier, status' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing required fields: tier, status' }, { status: 400 });
     }
 
     const validTiers = ['sanity', 'full', 'release'];
     if (!validTiers.includes(payload.tier)) {
-      return NextResponse.json(
-        { error: `Invalid tier: ${payload.tier}. Must be one of: ${validTiers.join(', ')}` },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: `Invalid tier: ${payload.tier}. Must be one of: ${validTiers.join(', ')}` }, { status: 400 });
     }
+
+    const HISTORY_FILE = projectHistoryPath(project);
+    const RESULTS_FILE = projectResultsPath(project);
+    const existingResults = readProjectJSON<any>(RESULTS_FILE, null);
 
     const historyEntry = {
       runId: `ci-${payload.tier}-${Date.now()}`,
@@ -86,42 +100,59 @@ export async function POST(req: NextRequest) {
         history = JSON.parse(fs.readFileSync(HISTORY_FILE, 'utf-8'));
       }
     } catch { history = []; }
-
     if (!Array.isArray(history)) history = [];
     history.push(historyEntry);
-
-    if (history.length > 100) {
-      history = history.slice(-100);
-    }
-
+    if (history.length > 100) history = history.slice(-100);
     fs.writeFileSync(HISTORY_FILE, JSON.stringify(history, null, 2), 'utf-8');
 
-    if (payload.qualityGates || payload.defects) {
+    // ── Auto-create defects from test failures (per-project) ───────────────
+    const newDefects: Defect[] = [];
+    if (payload.testResults && Array.isArray(payload.testResults)) {
       try {
-        const existing = fs.existsSync(RESULTS_FILE)
-          ? JSON.parse(fs.readFileSync(RESULTS_FILE, 'utf-8'))
-          : {};
-        if (payload.qualityGates) existing.qualityGates = payload.qualityGates;
-        if (payload.defects) {
-          existing.defects = [
-            ...(payload.defects.map(d => ({
-              id: d.id || `CI-DEF-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-              ...d,
-              foundAt: new Date().toISOString(),
-            }))),
-            ...(existing.defects || []),
-          ].slice(0, 100);
+        for (const tr of payload.testResults) {
+          if (tr.passed === false) {
+            const failure: TestFailure = {
+              testFile: tr.testFile, testName: tr.testName,
+              layer: tr.layer, error: tr.error || 'Unknown failure',
+              timestamp: new Date().toISOString(), agentId: tr.agentId,
+              featureId: tr.featureId, prNumber: tr.prNumber,
+              screenshotPath: tr.screenshotPath, project,
+            };
+            const defect = createDefect(failure, project);
+            newDefects.push(defect);
+          }
         }
-        existing.lastUpdated = new Date().toISOString();
-        fs.writeFileSync(RESULTS_FILE, JSON.stringify(existing, null, 2), 'utf-8');
-      } catch {}
+        const existingDefects = loadDefects(project);
+        if (newDefects.length > 0) {
+          saveDefects([...newDefects, ...existingDefects], project);
+        }
+      } catch (e) {
+        console.error('[push-results] Error auto-creating defects:', e);
+      }
+    }
+
+    // ── Update results.json (summary only, no embedded defects) ────────────
+    if (existingResults || payload.qualityGates) {
+      const existing = existingResults || {};
+      if (payload.qualityGates) existing.qualityGates = payload.qualityGates;
+
+      if (payload.testResults) {
+        existing.summary = existing.summary || {};
+        existing.summary.totalTests = payload.summary.total;
+        existing.summary.passed = payload.summary.passed;
+        existing.summary.failed = payload.summary.failed;
+        existing.summary.blocked = payload.summary.blocked || 0;
+        existing.summary.passRate = payload.summary.total > 0
+          ? Math.round((payload.summary.passed / payload.summary.total) * 1000) / 10 : 0;
+      }
+      existing.lastUpdated = new Date().toISOString();
+      fs.writeFileSync(RESULTS_FILE, JSON.stringify(existing, null, 2), 'utf-8');
     }
 
     return NextResponse.json({
-      success: true,
-      runId: historyEntry.runId,
+      success: true, runId: historyEntry.runId,
       message: `Results for ${payload.tier} (${payload.status}) written successfully.`,
-      entryCount: history.length,
+      entryCount: history.length, defectsCreated: newDefects.length, defects: newDefects, project,
     });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
