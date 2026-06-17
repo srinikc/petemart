@@ -14,14 +14,17 @@ vi.mock('next/link', () => ({
   },
 }));
 
-const localStorageMock = { getItem: vi.fn(), setItem: vi.fn(), removeItem: vi.fn(), clear: vi.fn(), length: 0, key: vi.fn() };
-Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+// Guard window references for tests with `// @vitest-environment node`
+if (typeof window !== 'undefined') {
+  const localStorageMock = { getItem: vi.fn(), setItem: vi.fn(), removeItem: vi.fn(), clear: vi.fn(), length: 0, key: vi.fn() };
+  Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
-const sessionStorageMock = { getItem: vi.fn(), setItem: vi.fn(), removeItem: vi.fn(), clear: vi.fn(), length: 0, key: vi.fn() };
-Object.defineProperty(window, 'sessionStorage', { value: sessionStorageMock });
+  const sessionStorageMock = { getItem: vi.fn(), setItem: vi.fn(), removeItem: vi.fn(), clear: vi.fn(), length: 0, key: vi.fn() };
+  Object.defineProperty(window, 'sessionStorage', { value: sessionStorageMock });
 
-class MockIntersectionObserver { observe = vi.fn(); unobserve = vi.fn(); disconnect = vi.fn(); }
-Object.defineProperty(window, 'IntersectionObserver', { writable: true, configurable: true, value: MockIntersectionObserver });
+  class MockIntersectionObserver { observe = vi.fn(); unobserve = vi.fn(); disconnect = vi.fn(); }
+  Object.defineProperty(window, 'IntersectionObserver', { writable: true, configurable: true, value: MockIntersectionObserver });
 
-class MockResizeObserver { observe = vi.fn(); unobserve = vi.fn(); disconnect = vi.fn(); }
-Object.defineProperty(window, 'ResizeObserver', { writable: true, configurable: true, value: MockResizeObserver });
+  class MockResizeObserver { observe = vi.fn(); unobserve = vi.fn(); disconnect = vi.fn(); }
+  Object.defineProperty(window, 'ResizeObserver', { writable: true, configurable: true, value: MockResizeObserver });
+}

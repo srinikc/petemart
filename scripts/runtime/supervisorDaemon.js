@@ -68,25 +68,41 @@ async function runCycle() {
   const state = readState();
   if (!state) return { skipped: true, reason: 'No state' };
 
+  // Write daemon heartbeat at START of cycle (before any blocking work)
+  state.supervisor_control = state.supervisor_control || {};
+  state.supervisor_control.agent_00_supervisor = state.supervisor_control.agent_00_supervisor || {};
+  state.supervisor_control.agent_00_supervisor.daemon_last_heartbeat = Date.now();
+  state.supervisor_control.agent_00_supervisor.daemon_status = 'running';
+  state.supervisor_control.agent_00_supervisor.last_cycle_timestamp = new Date().toISOString();
+
+  // Validate dependency chain: any agent whose upstream dep isn't approved/completed → reset to pending
+  for (const [id, agent] of Object.entries(state.agent_states || {})) {
+    if (id === '00_supervisor_agent') continue;
+    if (agent.status === 'approved' || agent.status === 'completed' || agent.status === 'awaiting_approval') {
+      const depUnmet = (agent.dependencies || []).some(dep => {
+        const depAgent = state.agent_states?.[dep];
+        return !depAgent || (depAgent.status !== 'approved' && depAgent.status !== 'completed');
+      });
+      if (depUnmet) {
+        agent.status = 'pending';
+        agent.approved = false;
+        agent.last_error = `DOWNSTREAM_CASCADE: upstream ${agent.dependencies.filter(d => {
+          const da = state.agent_states?.[d];
+          return !da || (da.status !== 'approved' && da.status !== 'completed');
+        }).join(',')} not completed — reset to pending`;
+        agent.started_at = null;
+        logEvent({ type: 'dependency_cascade_reset', agent_id: id });
+      }
+    }
+  }
+  saveState(state);
+
   if (state.pipeline_control?.is_pipeline_paused) {
     return { skipped: true, reason: 'Pipeline paused' };
   }
 
-  const supCtrl = state.supervisor_control?.agent_00_supervisor || {};
-  const cycleCount = (supCtrl.cycle_count || 0) + 1;
-  const maxCycles = supCtrl.max_cycles_before_break || 100;
-
-  if (cycleCount > maxCycles) {
-    logEvent({ type: 'max_cycles_reached', cycle_count: cycleCount });
-    return { skipped: true, reason: 'Max cycles reached' };
-  }
-
-  state.supervisor_control = state.supervisor_control || {};
-  state.supervisor_control.agent_00_supervisor = {
-    ...state.supervisor_control.agent_00_supervisor,
-    cycle_count: cycleCount,
-    last_cycle_timestamp: new Date().toISOString(),
-  };
+  const idleCycles = (state.supervisor_control?.loop_guardrails?.idle_cycles || 0);
+  const maxIdle = state.supervisor_control?.loop_guardrails?.max_idle_cycles || 50;
 
   const launched = [];
 
@@ -161,10 +177,28 @@ async function runCycle() {
     logEvent({ type: 'agent_launched', agent_id: agent.id });
   }
 
+  // Track consecutive idle cycles — reset when something launched, increment when idle
+  if (launched.length === 0 && eligible.filter(e => !e.disabled).length === 0) {
+    const newIdle = (idleCycles || 0) + 1;
+    state.supervisor_control.loop_guardrails = state.supervisor_control.loop_guardrails || {};
+    state.supervisor_control.loop_guardrails.idle_cycles = newIdle;
+    state.supervisor_control.agent_00_supervisor.current_action = `Waiting — ${newIdle} idle cycles`;
+    if (newIdle >= maxIdle) {
+      logEvent({ type: 'max_idle_cycles_reached', idle_cycles: newIdle });
+      state.supervisor_control.agent_00_supervisor.current_action = `Idle timeout — ${maxIdle} cycles with no activity. Click Reset if stuck.`;
+    }
+  } else if (launched.length > 0 || eligible.length > 0) {
+    state.supervisor_control.loop_guardrails = state.supervisor_control.loop_guardrails || {};
+    state.supervisor_control.loop_guardrails.idle_cycles = 0;
+    state.supervisor_control.agent_00_supervisor.current_action = launched.length > 0
+      ? `Launched ${launched.length} agent(s)`
+      : `${eligible.length} eligible agent(s) — awaiting HITL or dependencies`;
+  }
+
   supervisor.updateDashboard(state);
   saveState(state);
 
-  return { launched, cycle_count: cycleCount };
+  return { launched, idle_cycles: state.supervisor_control?.loop_guardrails?.idle_cycles || 0 };
 }
 
 function launchAgentTask(agentId, state) {
@@ -197,12 +231,17 @@ async function daemonLoop() {
   vlog.write('DAEMON', '00_supervisor_agent', 'Daemon started');
   while (true) {
     try {
-      const result = await runCycle();
+      // Cycle timeout: if runCycle takes >60s, treat as stuck
+      const result = await Promise.race([
+        runCycle(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Cycle timeout (>60s)')), 60000)),
+      ]);
       if (result.skipped) {
         vlog.write('DAEMON', '00_supervisor_agent', `Skipped: ${result.reason}`);
         if (result.complete) {
-          vlog.write('DAEMON', '00_supervisor_agent', 'Pipeline complete, daemon exiting');
-          process.exit(0);
+          vlog.write('DAEMON', '00_supervisor_agent', 'Pipeline complete, daemon idle');
+          await new Promise(r => setTimeout(r, 30000));
+          continue;
         }
       } else {
         vlog.write('DAEMON', '00_supervisor_agent', `Cycle: ${result.launched.length} agent(s) launched`);
@@ -250,4 +289,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { runCycle, getEligibleAgents, dependenciesMet, supervisor };
+module.exports = { runCycle, getEligibleAgents, dependenciesMet, supervisor, daemonLoop };

@@ -6,9 +6,9 @@ const vlog = require('./VerboseLogger');
  */
 const FALLBACK_CHAIN = [
   { provider: 'opencode-go', model: 'deepseek-v4-flash', label: 'Primary' },
-  { provider: 'opencode-go', model: 'deepseek-chat', label: 'Fallback-1' },
-  { provider: 'fallback',    model: 'gpt-4o-mini',      label: 'Fallback-2' },
-  { provider: 'fallback',    model: 'gpt-4o',           label: 'Fallback-3' },
+  { provider: 'openrouter', model: 'deepseek/deepseek-v4-flash', label: 'Fallback-1' },
+  { provider: 'opencode', model: 'deepseek-v4-flash-free', label: 'Fallback-2' },
+  { provider: 'openrouter', model: 'openrouter/free', label: 'Fallback-3' },
 ];
 
 /**
@@ -35,11 +35,31 @@ const HEALTH_CHECK_PROMPT = 'Reply with exactly: HEALTH_OK';
 
 class LLMFallback {
   constructor() {
-    this._probedLimits = {};  // provider/model → context window (cached after first probe)
-    this._healthyProviders = new Set(); // "provider/model" → confirmed healthy
+    this._probedLimits = {};
+    this._healthyProviders = new Set();
     this._defaultProvider = null;
     this._defaultModel = null;
-    this._providerCooldowns = new Map(); // "provider/model" → timestamp when cooldown expires
+    this._providerCooldowns = new Map();
+  }
+
+  /**
+   * Build fallback chain dynamically from environment variables.
+   * Checks OPENROUTER_API_KEY, OPENCODE_ZEN_API_KEY to conditionally include providers.
+   */
+  static fromEnv() {
+    const chain = [
+      { provider: 'opencode-go', model: 'deepseek-v4-flash', label: 'Primary' },
+    ];
+    if (process.env.OPENROUTER_API_KEY) {
+      chain.push({ provider: 'openrouter', model: 'deepseek/deepseek-v4-flash', label: 'Fallback-1' });
+    }
+    if (process.env.OPENCODE_ZEN_API_KEY) {
+      chain.push({ provider: 'opencode', model: 'deepseek-v4-flash-free', label: 'Fallback-2' });
+    }
+    if (process.env.OPENROUTER_API_KEY) {
+      chain.push({ provider: 'openrouter', model: 'openrouter/free', label: 'Fallback-3' });
+    }
+    return chain;
   }
 
   _isOnCooldown(provider, model) {
@@ -233,18 +253,27 @@ class LLMFallback {
     const chain = this._buildChain(options);
 
     for (const entry of chain) {
-      try {
-        const truncated = this.truncatePrompt(systemPrompt, entry.model, options.reservedTokens || 0);
-        const result = await this._callProvider(truncated, messages, entry, options);
-        vlog.write('FALLBACK', agentId, `Success: ${entry.label} ${entry.provider}/${entry.model}`);
-        return { ...result, provider: entry.provider, model: entry.model, fallbackLabel: entry.label };
-      } catch (err) {
-        const isRetryable = RETRYABLE_ERRORS.some(e => err.message?.includes(e));
-        lastError.push({ provider: entry.provider, model: entry.model, error: err.message, retryable: isRetryable });
-        vlog.write('FALLBACK', agentId, `${entry.label} failed: ${err.message}`);
-        // Put provider on cooldown (120s) so it's not retried immediately
-        this._setCooldown(entry.provider, entry.model);
-        if (isRetryable && options.canRetry !== false) await new Promise(r => setTimeout(r, 2000));
+      // Per-provider retry with exponential backoff
+      const maxRetries = 1;
+      for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        try {
+          const truncated = this.truncatePrompt(systemPrompt, entry.model, options.reservedTokens || 0);
+          const result = await this._callProvider(truncated, messages, entry, options);
+          vlog.write('FALLBACK', agentId, `Success: ${entry.label} ${entry.provider}/${entry.model}`);
+          return { ...result, provider: entry.provider, model: entry.model, fallbackLabel: entry.label };
+        } catch (err) {
+          const isRetryable = RETRYABLE_ERRORS.some(e => err.message?.includes(e));
+          if (attempt < maxRetries && isRetryable && options.canRetry !== false) {
+            const backoffMs = Math.min(2000 * Math.pow(2, attempt), 30000);
+            vlog.write('FALLBACK', agentId, `${entry.label} attempt ${attempt + 1} failed, retry in ${backoffMs}ms: ${err.message}`);
+            await new Promise(r => setTimeout(r, backoffMs));
+            continue;
+          }
+          lastError.push({ provider: entry.provider, model: entry.model, error: err.message, retryable: isRetryable });
+          vlog.write('FALLBACK', agentId, `${entry.label} failed after ${attempt + 1} attempt(s): ${err.message}`);
+          this._setCooldown(entry.provider, entry.model);
+          break;
+        }
       }
     }
 

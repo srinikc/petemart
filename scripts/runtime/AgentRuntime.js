@@ -30,7 +30,7 @@ function dynamicLLMTimeout(promptLength) {
 
 class AgentRuntime {
   constructor(options = {}) {
-    this.llm = new LLMProvider({
+    this.llm = options.llm || new LLMProvider({
       provider: options.provider || 'opencode-go',
       model: options.model || 'deepseek-v4-flash',
     });
@@ -226,10 +226,10 @@ class AgentRuntime {
       this._logEvent({ type: 'step_label', agent_id: agentId, run_id: runId, label: 'processing results' });
       await this._runPipeline(agentId, runId, agentDef, result, systemPrompt, duration, startTime);
 
-      // Determine final status
+      // Determine final status (already set by _runPipeline compliance check)
       const finalState = this._getState();
       const finalAgent = finalState.agent_states?.[agentId];
-      const finalStatus = finalAgent?.status === 'failed' ? 'failed' : 'completed';
+      const finalStatus = finalAgent?.status === 'failed' ? 'failed' : (finalAgent?.status || 'completed');
 
       this._logToFile('LOG', `runAgent completed: status=${finalStatus}, artifacts=${(result.artifacts || []).length}, duration=${duration}ms`);
       vlog.write('RUNTIME', agentId, `runAgent finished | status=${finalStatus} | artifacts=${(result.artifacts || []).length} | total_duration=${duration}ms`);
@@ -449,8 +449,8 @@ class AgentRuntime {
           }
         }
       } else if (resp.content) {
-        // No tool calls but has content — check for missing compliance files
-        consecutiveSameTool.clear(); // Reset tool loop detection when LLM switches to content
+        // No tool calls but has content
+        consecutiveSameTool.clear();
         consecutiveReadOnly++;
         if (consecutiveReadOnly >= 3) {
           vlog.write('RUNTIME', agentDef.id, `Loop guard | iter ${i + 1} | read-only x${consecutiveReadOnly} | injecting nudge`);
@@ -460,10 +460,6 @@ class AgentRuntime {
         if (missing.length > 0 && i < MAX_ITERATIONS - 1) {
           vlog.write('RUNTIME', agentDef.id, `Missing files re-prompt | ${missing.length} missing: ${missing.join(', ')}`);
           messages.push({ role: 'user', content: `You did not call write_artifact for these required files: ${missing.join(', ')}. Please use write_artifact to create each of them now. Do NOT output text — only use write_artifact tool calls.` });
-          continue;
-        }
-        if (i < MAX_ITERATIONS - 1) {
-          messages.push({ role: 'user', content: 'You wrote text but did not call write_artifact. Use write_artifact now to save your output as files.' });
           continue;
         }
         break;
@@ -566,8 +562,30 @@ class AgentRuntime {
         }
         agent.last_artifact_emitted = agent.artifacts_emitted;
       }
+      // Compliance check: verify all required artifacts exist
+      const checkPassed = this._verifyCompliance(agent, agentDef);
+      agent.status = checkPassed ? 'approved' : 'failed';
+      if (!checkPassed && !agent.last_error) {
+        agent.last_error = 'Compliance failed: required artifacts missing';
+      }
       this._saveState(state);
     }
+  }
+
+  _verifyCompliance(agent, agentDef) {
+    const checklist = agent?.compliance_checklist || agentDef?.compliance_checklist || [];
+    if (checklist.length === 0) return true;
+    for (const item of checklist) {
+      if (item.required && item.check?.startsWith('artifact_exists(')) {
+        const artifactName = item.check.match(/\((.*?)\)/)?.[1];
+        if (artifactName) {
+          const artifacts = agent?.artifacts_emitted || [];
+          const found = artifacts.some(a => a.includes(artifactName));
+          if (!found) return false;
+        }
+      }
+    }
+    return true;
   }
 
   // ── Tool Handlers ──
@@ -576,8 +594,9 @@ class AgentRuntime {
     const name = args.name;
     const data = args.data || '';
     const type = args.type || 'markdown';
-    const sandbox = agentDef.workspace_root || `agents/03_execution_workspace/${this._agentId}/`;
-    const filePath = path.join(ROOT, sandbox, name);
+    const sandbox = agentDef.workspace_root || agentDef.workspaceRoot || (this._agentId ? `agents/03_execution_workspace/${this._agentId}/` : '');
+    const safeName = name.includes('/') || name.includes('\\') ? path.basename(name) : name;
+    const filePath = path.join(ROOT, sandbox, safeName);
     const dir = path.dirname(filePath);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     if (fs.existsSync(filePath)) {
@@ -587,8 +606,8 @@ class AgentRuntime {
       fs.renameSync(filePath, path.join(archiveDir, `${ts}_${name}`));
     }
     fs.writeFileSync(filePath, data, 'utf-8');
-    vlog.write('RUNTIME', this._agentId, `Write | ${name} | type=${type} | size=${data.length} bytes`);
-    return { artifact: { name, data, type } };
+    vlog.write('RUNTIME', this._agentId || agentDef?.id, `Write | ${name} | type=${type} | size=${data.length} bytes`);
+    return { success: true, artifact: { name, data, type } };
   }
 
   async _readDependency(args) {
