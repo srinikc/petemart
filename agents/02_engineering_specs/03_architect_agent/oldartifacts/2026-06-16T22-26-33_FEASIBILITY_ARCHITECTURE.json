@@ -1,0 +1,149 @@
+{
+  "meta": {
+    "document": "FEASIBILITY_ARCHITECTURE.json",
+    "agent_id": "03_architect_agent",
+    "version": "1.0",
+    "generated_at": "2026-06-16T14:30:00Z",
+    "status": "complete",
+    "source_prd_version": "2.0",
+    "total_requirements": 111
+  },
+  "architecture_overview": {
+    "system_name": "PeteMart",
+    "domain": "Hyper-local Multi-channel Digital Commerce Marketplace",
+    "target_markets": "21 Pete areas of Old Bangalore",
+    "target_merchants": 5000,
+    "interaction_modes": ["Mode_A_Direct_Purchase", "Mode_B_WhatsApp_Enquiry", "Mode_C_Store_Visit"],
+    "channels": ["Web_App", "iOS_Mobile_App", "Android_Mobile_App", "WhatsApp"],
+    "architecture_style": "API-First Microservices + Event-Driven Architecture",
+    "architecture_complexity": "Enterprise Production Grade"
+  },
+  "personas": [
+    {"name": "Priya_Sharma", "role": "Hyperlocal_Customer_Buyer", "type": "PERS-CUST-001", "tech_literacy": "Moderate"},
+    {"name": "Ramesh_Gupta", "role": "Traditional_Pete_Merchant_Seller", "type": "PERS-MER-001", "tech_literacy": "Low-Moderate"},
+    {"name": "Vinay_Kumar", "role": "Delivery_Courier_Partner", "type": "PERS-DLV-001", "tech_literacy": "Moderate"},
+    {"name": "Ananya_Rao", "role": "Platform_Admin_Operator", "type": "PERS-ADM-001", "tech_literacy": "High"},
+    {"name": "Deepa_Patel", "role": "Bulk_B2B_Buyer_Wholesale_Reseller", "type": "PERS-B2B-001", "tech_literacy": "Moderate"}
+  ],
+  "requirement_mapping": {
+    "total_requirements": 111,
+    "categories": {
+      "UI_UX": {"count": 24, "prefix": "REQ-UI-", "p0_count": 11, "p1_count": 9, "p2_count": 3, "p3_count": 1},
+      "API": {"count": 13, "prefix": "REQ-API-", "p0_count": 8, "p1_count": 5},
+      "Backend_Data": {"count": 26, "prefix": "REQ-BE-", "p0_count": 10, "p1_count": 11, "p2_count": 4, "p3_count": 1},
+      "Commerce_Monetization": {"count": 10, "prefix": "REQ-COM-", "p0_count": 2, "p1_count": 6, "p2_count": 2},
+      "Infrastructure_Security": {"count": 11, "prefix": "REQ-INFRA-", "p0_count": 7, "p1_count": 3, "p2_count": 1},
+      "Performance_Scale": {"count": 3, "prefix": "REQ-PERF-", "p0_count": 2, "p1_count": 1},
+      "Maintenance_Patch_Lifecycle": {"count": 5, "prefix": "REQ-MAINT-", "p0_count": 2, "p1_count": 3},
+      "Merchant_Microsite_Settlement": {"count": 8, "prefix": "REQ-MICRO-", "p0_count": 4, "p1_count": 3, "p2_count": 1},
+      "Disaster_Recovery": {"count": 4, "prefix": "REQ-DR-", "p0_count": 2, "p1_count": 1, "p2_count": 1},
+      "Acquisition_Funnels": {"count": 4, "prefix": "REQ-FUNNEL-", "p1_count": 3, "p2_count": 1},
+      "Data_Privacy_Compliance": {"count": 3, "prefix": "REQ-DATA-", "p0_count": 1, "p2_count": 1, "p3_count": 1}
+    },
+    "priority_summary": {"P0_Critical": 46, "P1_High": 44, "P2_Medium": 17, "P3_Low": 4}
+  },
+  "full_tech_stack": {
+    "frontend_web": {"technology": "React 18 + Next.js 14 (App Router)", "css": "Tailwind CSS", "ui_library": "Radix UI", "justification": "SSR, SEO, ISR for merchant microsites"},
+    "mobile": {"technology": "React Native (Expo) + Expo Router", "justification": "Single codebase iOS/Android, OTA updates"},
+    "backend_api": {"technology": "Node.js 20 (Fastify)", "alternative": "Python FastAPI", "justification": "Async I/O, schema-first APIs"},
+    "database": {"technology": "Supabase (PostgreSQL with pgvector)", "justification": "Built-in auth, real-time, vector search for AI"},
+    "cache": {"technology": "Redis (Upstash / Railway managed)", "justification": "Sub-millisecond responses, rate limiting"},
+    "message_queue": {"technology": "RabbitMQ (CloudAMQP)", "justification": "Durable queuing, pub/sub"},
+    "object_storage": {"technology": "Supabase Storage / AWS S3", "justification": "Product images, try-on assets"},
+    "search_engine": {"technology": "PostgreSQL FTS → Algolia (scale)", "justification": "Typo-tolerance, faceted filters"},
+    "ai_ml": {"technology": "TensorFlow.js / ONNX Runtime on Vercel Edge", "justification": "Virtual try-on inference at edge"},
+    "cicd": {"technology": "GitHub Actions + Vercel + Railway", "justification": "Automated build/test/deploy"},
+    "monitoring": {"technology": "Sentry + Better Stack + Grafana", "justification": "Error tracking, uptime, APM"},
+    "api_gateway": {"technology": "Vercel Edge Functions / Kong API Gateway", "justification": "Rate-limiting, auth, routing"}
+  },
+  "security_framework": {
+    "authentication": "JWT (RS256) + OTP phone verification",
+    "authorization": "API Keys + RBAC for admins/merchants",
+    "data_encryption_transport": "TLS 1.3",
+    "data_encryption_at_rest": "AES-256-GCM",
+    "pci_dss": "Razorpay handles card data (SAQ A) – no PCI data on PeteMart servers",
+    "secrets_management": "Environment variables via Vercel/Railway → HashiCorp Vault for production",
+    "owasp_protection": "Input sanitization, CSP headers, rate-limiting (1000 req/min/IP), parameterized queries",
+    "audit_logging": "Immutable audit trail for all financial transactions, admin actions, API mutations"
+  },
+  "testing_architecture": {
+    "layers": [
+      {"name": "Unit", "tools": ["Jest", "Vitest"], "ci_gate": "Fail if <80% coverage"},
+      {"name": "Integration", "tools": ["Supertest", "Testcontainers"], "ci_gate": "Fail if any endpoint fails"},
+      {"name": "E2E", "tools": ["Playwright", "Detox (mobile)"], "ci_gate": "Fail if critical path broken"},
+      {"name": "Performance", "tools": ["k6", "Artillery"], "ci_gate": "Fail if P95 latency >500ms"},
+      {"name": "Visual_Regression", "tools": ["Percy", "Playwright Screenshots"], "ci_gate": "Fail on visual drift"},
+      {"name": "Security", "tools": ["OWASP ZAP", "Gitleaks"], "ci_gate": "Fail on high/critical"},
+      {"name": "API_Contract", "tools": ["Dredd", "Postman"], "ci_gate": "Fail on contract mismatch"}
+    ]
+  },
+  "data_flow": {
+    "sequence": [
+      "Client → API Gateway – request validated, authenticated, routed",
+      "API → Order Service – creates order, writes to PostgreSQL, publishes OrderCreated event",
+      "Event Bus – consumed by Multi-Store Consolidation, Payment Service, Delivery Dispatcher",
+      "Payment Service – calls Razorpay, handles webhook callbacks, updates order status",
+      "Delivery Orchestrator – reads order, assigns courier, calculates consolidated delivery fee, updates status",
+      "Notification Service – pushes status updates via SMS, email, or push notifications",
+      "Analytics Pipeline – streams events into Data Lake, runs batch/stream processing for dashboards"
+    ],
+    "caching_strategy": "Redis for product catalog (TTL 300s), session state, rate-limited API responses",
+    "message_queue_tech": "RabbitMQ for order processing, email notifications, async tasks",
+    "event_driven_webhooks": "Outbound to merchant dashboards, WhatsApp, Google Maps; inbound from payment/courier validated and persisted"
+  },
+  "api_strategy": {
+    "style": "RESTful JSON",
+    "versioning": "/api/v1/",
+    "specification": "OpenAPI 3.0",
+    "rate_limiting": "1000 req/min per IP, burst 2000",
+    "authentication": "JWT + OTP for customers; API keys + RBAC for admins/merchants"
+  },
+  "infrastructure_costing": {
+    "production_monthly_inr": 33900,
+    "production_monthly_usd": 405,
+    "annual_projection_inr": 350000,
+    "annual_projection_max_inr": 800000,
+    "breakdown": [
+      {"resource": "Supabase Pro (16GB RAM, 100GB DB)", "monthly_inr": 7500, "notes": "PostgreSQL + Auth + Storage + Realtime"},
+      {"resource": "Vercel Pro (Team plan)", "monthly_inr": 6000, "notes": "Edge functions, SSR, ISR"},
+      {"resource": "Railway (Scale plan)", "monthly_inr": 4200, "notes": "Backend services, Redis, RabbitMQ"},
+      {"resource": "Redis (Upstash)", "monthly_inr": 2500, "notes": "Managed Redis with TLS"},
+      {"resource": "CloudAMQP/RabbitMQ", "monthly_inr": 1700, "notes": "Message queue"},
+      {"resource": "Sentry (Team)", "monthly_inr": 3300, "notes": "Error tracking & performance"},
+      {"resource": "Better Stack (Uptime)", "monthly_inr": 1200, "notes": "Monitoring"},
+      {"resource": "Google Maps API", "monthly_inr": 4200, "notes": "Geocoding, directions"},
+      {"resource": "SMS Provider (MSG91)", "monthly_inr": 3000, "notes": "10K SMS transactional"},
+      {"resource": "Razorpay (2% PG fee)", "monthly_inr": "Usage-based", "notes": "Passed to customers"},
+      {"resource": "WhatsApp Business API", "monthly_inr": "Usage-based", "notes": "~₹0.50/message"}
+    ]
+  },
+  "poc_architecture": {
+    "scope": "8 pilot merchants from Balepet & Chickpet",
+    "pilot_merchants": ["Tarun Enterprises", "Sri Vari Traders", "Samskruti Silks (2 branches)", "flowers2u", "Pastry Cafe", "Sri Vinayaka Textorium", "Sanjana Apparels", "Madhumathi All-men's Ethnic"],
+    "monthly_cost_inr": 0,
+    "free_tier_services": {
+      "web_app": {"service": "Vercel Hobby", "role": "Next.js landing, catalog, cart"},
+      "mobile_app": {"service": "Expo", "role": "iOS/Android prototype"},
+      "database_auth": {"service": "Supabase Free", "role": "500MB DB, 2GB storage, PostgreSQL, Auth"},
+      "backend_api": {"service": "Railway ($5 credit)", "role": "Fastify API server, RabbitMQ"},
+      "whatsapp": {"service": "WhatsApp Business API (free dev)", "role": "Mode B enquiry"},
+      "maps": {"service": "Google Maps ($200 free credit)", "role": "Mode C store locator"},
+      "monitoring": {"service": "Better Stack (free)", "role": "Uptime monitoring"},
+      "domain": {"service": "*.vercel.app, *.railway.app", "role": "No custom domain"}
+    },
+    "requirements_covered": ["REQ-UI-001 to REQ-UI-009", "REQ-API-001 to REQ-API-007", "REQ-BE-001 to REQ-BE-010", "REQ-COM-001 to REQ-COM-004", "REQ-INFRA-001", "REQ-INFRA-004"]
+  },
+  "scaling_strategy": {
+    "horizontal_scaling": "Stateless Next.js serverless functions auto-scale; database read replicas up to 5",
+    "connection_pooling": "PgBouncer handles 10,000+ concurrent connections",
+    "cdn_caching": "Static assets, product images, API responses cached at edge via Cloudflare",
+    "multi_city_isolation": "Data partition by city_id with region-specific config (REQ-BE-022)",
+    "merchant_onboarding_scale": "Bulk import via CSV/API (REQ-INFRA-010), modular plugin architecture",
+    "load_testing": "Quarterly k6 tests simulating 500 concurrent users, 50 req/s peak (REQ-PERF-003)"
+  },
+  "deployment_architecture": {
+    "production": {"platform": "Vercel + Railway + Supabase", "cdn": "Cloudflare", "cache": "Upstash Redis", "queue": "CloudAMQP RabbitMQ"},
+    "staging": {"platform": "Vercel Preview + Railway Dev + Supabase Dev DB"},
+    "ci_cd": "GitHub Actions → Playwright/Jest/k6 tests → Deploy to Vercel + Railway"
+  }
+}

@@ -1,0 +1,229 @@
+{
+  "schema_version": "1.0",
+  "document_title": "PeteMart - Full Product Architecture Blueprint (Structured)",
+  "generated_at": "2026-06-15T14:54:42.000Z",
+  "generated_by": "03_architect_agent",
+  "status": "final",
+  "source_documents": [
+    "agents/01_front_office/02_requirement_agent/prd.md",
+    "agents/01_front_office/02_requirement_agent/prd.json",
+    "agents/01_front_office/02_requirement_agent/prd_config.json",
+    "agents/01_front_office/01_ideation_agent/business_revenue_model.json"
+  ],
+  "architecture_overview": {
+    "patterns": ["API-First", "Event-Driven", "Cloud-Native", "Offline-First Mobile", "Security by Design", "Cost-Aware Scaling"],
+    "evolution": {
+      "phase_1_poc": "Modular monolith on Vercel + Supabase (8 merchants)",
+      "phase_2_growth": "Microservices with message queue (500 merchants)",
+      "phase_3_scale": "Event-driven microservices + Kubernetes (2,000 merchants)",
+      "phase_4_vision": "Full multi-region, event-driven, auto-scaled (5,000+ merchants)"
+    },
+    "adr_count": 12,
+    "key_technologies": ["Next.js 14", "React Native (Expo)", "Supabase PostgreSQL", "RabbitMQ", "Redis", "AWS EKS", "Cloudflare", "Razorpay", "MeiliSearch", "ClickHouse", "Go", "Node.js", "Python"]
+  },
+  "c4_models": {
+    "system_context": {
+      "personas": ["customer", "merchant", "courier", "admin", "b2b_buyer"],
+      "internal_systems": ["PeteMart Platform"],
+      "external_systems": ["Razorpay", "WhatsApp Business API", "Google Maps API", "ShipRocket", "Jitsi", "IBJA/IndiaBulls", "Cloudflare", "Supabase", "OpenAI API", "Redis/RabbitMQ", "Sentry", "Amplitude/Mixpanel"]
+    },
+    "containers": {
+      "frontend": ["Web Application (Next.js 14)", "Mobile Application (React Native Expo)"],
+      "gateway": ["API Gateway (Kong/AWS API Gateway)"],
+      "microservices": ["Auth Service", "Catalog Service", "Order Service", "Payment Service", "Delivery Service", "Merchant Service", "Admin Service", "Notification Service", "AI Service", "Analytics Service"],
+      "infrastructure": ["Message Queue (RabbitMQ)", "Cache Layer (Redis)", "Primary Database (Supabase PostgreSQL)", "Data Warehouse (ClickHouse)", "Object Store (S3/Supabase Storage)", "Search Engine (MeiliSearch)"]
+    }
+  },
+  "api_catalog": {
+    "total_endpoints": 42,
+    "customer_facing": 20,
+    "merchant_facing": 7,
+    "admin_facing": 7,
+    "courier_facing": 4,
+    "webhooks": 8,
+    "rate_limits": {
+      "per_user": 100,
+      "per_merchant": 1000,
+      "per_admin": 5000
+    },
+    "protocols": ["REST", "GraphQL", "WebSocket", "gRPC"]
+  },
+  "data_architecture": {
+    "entities": ["MERCHANT", "PRODUCT", "CUSTOMER", "ORDER", "ORDER_ITEM", "PAYMENT", "DELIVERY", "SUBSCRIPTION", "PAYOUT", "REVIEW", "CART", "PRODUCT_IMAGE"],
+    "estimated_storage_at_scale": {
+      "database_gb": 22,
+      "media_assets_gb": 500
+    },
+    "cache_strategy": {
+      "product_detail_ttl_min": 5,
+      "category_tree_ttl_hours": 1,
+      "merchant_list_ttl_min": 10,
+      "bullion_rates_ttl_min": 5,
+      "session_ttl_days": 7
+    }
+  },
+  "security_framework": {
+    "auth_methods": ["OTP (phone)", "Email/Password", "JWT", "2FA/TOTP", "HMAC API Keys"],
+    "rbac_roles": ["customer", "b2b_buyer", "merchant", "courier", "admin", "super_admin"],
+    "encryption": {
+      "at_rest": "AES-256",
+      "in_transit": "TLS 1.3"
+    },
+    "compliances": ["IT Act 2000", "DPDP Act 2023", "PCI-DSS", "GDPR"]
+  },
+  "deployment": {
+    "phase_1_poc": {
+      "platform": "Vercel Hobby + Supabase Free + Railway $5 Credit",
+      "merchants": 8,
+      "monthly_cost_inr": 0
+    },
+    "phase_2_launch": {
+      "platform": "Vercel Pro + Supabase Pro + Railway Pro",
+      "merchants": 100,
+      "monthly_cost_inr": 15000
+    },
+    "phase_3_growth": {
+      "platform": "AWS EKS (small) + RDS + ElastiCache",
+      "merchants": 500,
+      "monthly_cost_inr": 120000
+    },
+    "phase_4_scale": {
+      "platform": "AWS EKS (medium) + RDS Multi-AZ + Redis Cluster",
+      "merchants": 2000,
+      "monthly_cost_inr": 411000
+    },
+    "phase_5_vision": {
+      "platform": "AWS EKS (large) + Multi-region + Auto-scale",
+      "merchants": 5000,
+      "monthly_cost_inr": 1200000
+    }
+  },
+  "cost_models": {
+    "phase_3_monthly_breakdown_usd": {
+      "compute_eks": 360,
+      "compute_gpu": 650,
+      "database_rds": 250,
+      "database_replicas": 500,
+      "cache_redis": 350,
+      "queue_rabbitmq": 400,
+      "storage_s3": 50,
+      "cdn_cloudflare": 20,
+      "search_meilisearch": 85,
+      "analytics_clickhouse": 340,
+      "monitoring": 100,
+      "cicd": 20,
+      "email": 20,
+      "sms": 150,
+      "whatsapp": 200,
+      "maps": 50,
+      "ai_openai": 500,
+      "shipping_api": 100,
+      "reserve_20pct": 800,
+      "total_usd": 4945,
+      "total_inr": 411000
+    },
+    "annual_infra_inr": {
+      "poc_8_merchants": 0,
+      "launch_100_merchants": 180000,
+      "growth_500_merchants": 1440000,
+      "scale_2000_merchants": 4932000,
+      "vision_5000_merchants": 14400000
+    },
+    "annual_ops_inr": {
+      "year_1": 17700000,
+      "year_2": 24800000
+    },
+    "revenue_vs_cost_inr": {
+      "poc_monthly_gmv": 500000,
+      "poc_monthly_revenue": 15000,
+      "poc_monthly_net": -285000,
+      "launch_monthly_gmv": 5000000,
+      "launch_monthly_revenue": 150000,
+      "launch_monthly_net": -365000,
+      "growth_monthly_gmv": 30000000,
+      "growth_monthly_revenue": 900000,
+      "growth_monthly_net": -220000,
+      "scale_monthly_gmv": 150000000,
+      "scale_monthly_revenue": 4500000,
+      "scale_monthly_net": 2089000,
+      "vision_monthly_gmv": 500000000,
+      "vision_monthly_revenue": 15000000,
+      "vision_monthly_net": 9800000
+    }
+  },
+  "testing_architecture": {
+    "layers": ["Unit Tests", "Integration Tests", "Performance Tests", "Security Tests", "Acceptance Tests"],
+    "frameworks": ["Jest", "Vitest", "Pytest", "Supertest", "TestContainers", "Cypress", "Playwright", "Detox", "k6", "OWASP ZAP", "Snyk", "Cucumber", "Percy"],
+    "ci_cd_gates": {
+      "every_commit": ["lint", "type_check", "unit_tests"],
+      "every_pr": ["integration_tests", "e2e_web", "visual_regression"],
+      "daily_build": ["e2e_mobile"],
+      "weekly": ["load_tests", "security_scan"],
+      "sprint_end": ["bdd_tests"]
+    }
+  },
+  "scaling_strategy": {
+    "horizontal_triggers": [
+      {"metric": "CPU > 70%", "duration": "5 min avg", "action": "Add pod (HPA)"},
+      {"metric": "Memory > 75%", "duration": "5 min avg", "action": "Add pod (HPA)"},
+      {"metric": "Latency > 500ms", "duration": "1 min avg", "action": "Add pod + query optimization"},
+      {"metric": "Queue depth > 10,000", "queue": "RabbitMQ", "action": "Add consumer pods"},
+      {"metric": "DB connections > 80%", "database": "Supabase/RDS", "action": "Add read replicas"}
+    ],
+    "database_evolution": [
+      {"phase": "1-2", "solution": "Supabase Pro (8 GB, 8 CPU)", "type": "single instance"},
+      {"phase": "3", "solution": "AWS RDS PostgreSQL Multi-AZ", "type": "read replicas x2"},
+      {"phase": "4", "solution": "Amazon Aurora Serverless v2", "type": "auto-scale"}
+    ],
+    "multi_city_roadmap": [
+      {"phase": "Q1 2027", "cities": ["Mysore", "Tumkur", "Kolar"]},
+      {"phase": "Q2 2027", "cities": ["Chennai", "Hyderabad", "Coimbatore"]},
+      {"phase": "Q3 2027", "cities": ["Mumbai", "Delhi NCR"]},
+      {"phase": "Q4 2027", "cities": ["Kolkata", "Pune", "Ahmedabad"]}
+    ]
+  },
+  "implementation_roadmap": {
+    "phase_0_poc_duration_weeks": 6,
+    "phase_0_poc_milestones": [
+      {"week": "1-2", "milestone": "Foundation", "deliverables": ["Supabase setup", "Next.js boilerplate", "API skeleton", "Auth"]},
+      {"week": "3-4", "milestone": "Core Features", "deliverables": ["Product catalog", "Merchant microsite", "Mode B/C", "Cart"]},
+      {"week": "5-6", "milestone": "Checkout & Launch", "deliverables": ["Mode A checkout", "Razorpay integration", "8 merchants live"]}
+    ],
+    "phase_1_launch_months": "2-4",
+    "phase_2_growth_months": "5-8",
+    "phase_3_scale_months": "9-14",
+    "phase_4_vision_months": "15-24"
+  },
+  "integrations": {
+    "razorpay": {
+      "type": "payment_gateway",
+      "protocol": "REST + Webhook",
+      "features": ["UPI", "Card", "NetBanking", "Wallet", "Escrow", "Settlements"]
+    },
+    "whatsapp_cloud_api": {
+      "type": "messaging",
+      "protocol": "REST",
+      "features": ["Deep links", "Template messages", "Notification", "Click tracking"]
+    },
+    "google_maps": {
+      "type": "geo_services",
+      "protocol": "REST + JavaScript SDK",
+      "features": ["Geocoding", "Directions", "Places", "Distance Matrix"]
+    },
+    "shiprocket": {
+      "type": "shipping",
+      "protocol": "REST + Webhook",
+      "features": ["AWB generation", "Label printing", "Tracking", "Pan-India 18,000+ pincodes"]
+    },
+    "jitsi": {
+      "type": "video_calling",
+      "protocol": "WebRTC + JWT",
+      "features": ["Self-hosted", "Room management", "Screen sharing", "Recording"]
+    },
+    "ibja_bullion": {
+      "type": "data_feed",
+      "protocol": "REST",
+      "features": ["Live gold/silver rates", "24k/22k/18k", "5 min poll interval"]
+    }
+  }
+}

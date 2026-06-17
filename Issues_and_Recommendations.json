@@ -1,0 +1,27 @@
+
+{
+  "title": "Issues and Recommendations from Code/Workflow Review",
+  "issues_found": [
+    "AI Assistant Workflow Non-Compliance: The AI assistant (opencode) has repeatedly violated Git workflow rules, including using `--no-verify` and neglecting PR template usage and `STATE_MATRIX.json` updates. This compromises auditability and consistency.",
+    "`03_architect_agent` Bottleneck: The `03_architect_agent` is in a "failed" state, with an exceptionally high `execution_count` of 26. It consistently fails to meet compliance (missing diagrams, cost models, presentation), pausing the entire pipeline. The `last_error` reporting is inconsistent.",
+    "Downstream Agent Resets: Downstream agents (e.g., `04_prototype_agent`, `05_program_mgmt_agent`) are repeatedly reset (`DOWNSTREAM_RESET`) due to `03_architect_agent` re-runs, leading to significant delays and wasted effort.",
+    "Inconsistent Artifact Paths: There's an inconsistent naming convention and path structure for agent sandbox directories and emitted artifacts across agents, potentially causing confusion and file referencing issues.",
+    "Critical HITL Gate Failure: The `GATE-PRODUCTION-01` Human-In-The-Loop (HITL) approval gate is failing, indicating a significant blocker for production rollout.",
+    "Lax Compliance Enforcement: Some agents are marked "approved" despite having critical compliance checks (e.g., workflow, traceability) failing, which misrepresents their true state.",
+    ""Supervisor-Only Orchestration" Violation: The `AGENT_REGISTRY.json` specifies "Supervisor-Only Orchestration," but `STATE_MATRIX.json` shows `rerun_agent via Cockpit`, suggesting direct invocation and potential bypass of the supervisor.",
+    "Excessive `system_prompt` Length: Agent `system_prompt`s are very long and detailed, potentially leading to high token usage and slower execution.",
+    "Hardcoded `workspace_root`: Agent `workspace_root` paths are hardcoded in `AGENT_REGISTRY.json`, reducing deployment flexibility.",
+    "Custom Tool Mismatch: Agents use custom tools (`write_artifact`, `read_dependency`) while Opencode uses native tools (`write`, `read`). The `write_artifact` definition in `AGENT_REGISTRY.json` also lacks a `filePath` parameter, which is required by Opencode's `write` tool. This mismatch needs a clear integration strategy."
+  ],
+  "recommended_changes": [
+    "Strictly Enforce AI Assistant Workflow Compliance: Modify the AI assistant's internal instructions to prioritize feature branch workflow, PR template usage, and `STATE_MATRIX.json` updates. Implement pre-execution checks in the supervisor to validate AI assistant Git operations and state updates before proceeding.",
+    "Debug and Fix `03_architect_agent` Failures: Thoroughly investigate the `03_architect_agent`'s internal logs and prompt to identify and rectify the root cause of its repeated failures, especially regarding artifact generation. Standardize `last_error` reporting for clarity.",
+    "Implement Robust Dependency and Rollback Management: Introduce artifact versioning or "dirty" flags to trigger downstream re-runs only when specific input dependencies change. Develop more sophisticated rollback or state management for agents to minimize progress loss during resets.",
+    "Standardize Agent Artifact Paths: Define and enforce a consistent artifact path structure (e.g., `agents/<phase_name>/<agent_id>/<artifact_name>`) across all agents and configuration files.",
+    "Refine Human-In-The-Loop (HITL) Integration: Improve the clarity and conciseness of information presented to human reviewers at approval gates. Automate review summaries to streamline the human approval process. Define a clear remediation path for `GATE-PRODUCTION-01` failures.",
+    "Strengthen Compliance Enforcement for Status Progression: Modify supervisor logic to prevent agents from being marked "approved" if critical compliance checks are failing. An agent should remain "awaiting_compliance" or "failed" until all checks pass.",
+    "Address Custom Tooling and Opencode Tool Mismatch: Explicitly define the mapping logic in the supervisor or `execute_agent_task.js` to translate custom agent tool calls (e.g., `write_artifact`) to Opencode's native tools (`write`). Update `write_artifact`'s definition in `AGENT_REGISTRY.json` to include a `filePath` parameter.",
+    "Optimize `system_prompt` Usage: Explore modularizing lengthy `system_prompt`s into smaller, dynamically loaded instructions or cached components to reduce token costs.",
+    "Decouple `workspace_root` Configuration: Externalize `workspace_root` configurations to environment variables or a separate dynamic configuration file for improved flexibility."
+  ]
+}

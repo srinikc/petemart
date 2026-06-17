@@ -1,0 +1,306 @@
+{
+  "document_metadata": {
+    "title": "PeteMart Full Production Architecture Blueprint",
+    "version": "3.0",
+    "author": "03_architect_agent (Senior Enterprise Solution Architect)",
+    "generated_at": "2026-06-15T09:35:50+05:30",
+    "status": "Final (Awaiting HITL Approval)",
+    "derived_from": [
+      "PRD v2.0",
+      "prd_config.json",
+      "Business Revenue Model v1.4",
+      "Idea Proposal v1.3"
+    ]
+  },
+  "executive_summary": {
+    "platform": "PeteMart",
+    "target_merchants": 5000,
+    "target_markets": "21 historic Pete markets of Old Bangalore",
+    "channels": ["Web (Next.js)", "Mobile iOS (React Native)", "Mobile Android (React Native)", "WhatsApp"],
+    "interaction_modes": ["Mode A: Direct Purchase", "Mode B: WhatsApp Enquiry", "Mode C: Visit Store"],
+    "key_design_decisions": [
+      {"decision": "Frontend", "choice": "Next.js 14 + React Native (Expo)", "rationale": "SSR for SEO, PWA, cross-platform mobile"},
+      {"decision": "Backend", "choice": "Next.js API Routes + Node.js Microservices", "rationale": "Unified API surface, serverless scaling"},
+      {"decision": "Database", "choice": "PostgreSQL (Supabase)", "rationale": "Relational integrity, RLS, geospatial"},
+      {"decision": "Cache", "choice": "Redis (Upstash)", "rationale": "Sub-10ms response, serverless-compatible"},
+      {"decision": "Queue", "choice": "pgmq / RabbitMQ", "rationale": "Async processing, event-driven webhooks"},
+      {"decision": "AI", "choice": "DeepSeek API + ONNX Runtime", "rationale": "No GPU infra, cost-effective"},
+      {"decision": "Payment", "choice": "Razorpay", "rationale": "Indian market leader, escrow support"},
+      {"decision": "Delivery", "choice": "ShipRocket + Custom Courier App", "rationale": "National + hyperlocal fulfillment"}
+    ]
+  },
+  "system_context": {
+    "actors": [
+      {"id": "customer", "name": "Priya (Customer)", "type": "Person", "description": "Shopper browsing/ordering from Pete markets"},
+      {"id": "merchant", "name": "Ramesh (Merchant)", "type": "Person", "description": "Store owner managing catalog & orders"},
+      {"id": "delivery", "name": "Vinay (Courier)", "type": "Person", "description": "Delivery partner fulfilling orders"},
+      {"id": "admin", "name": "Ananya (Admin)", "type": "Person", "description": "Platform operator managing marketplace"},
+      {"id": "b2b_buyer", "name": "Deepa (B2B Buyer)", "type": "Person", "description": "Wholesale reseller buying in bulk"}
+    ],
+    "internal_systems": [
+      {"id": "webapp", "name": "Web Application", "tech": "Next.js SSR", "description": "Customer & Merchant portals"},
+      {"id": "mobileapp", "name": "Mobile Application", "tech": "React Native", "description": "iOS & Android native apps"},
+      {"id": "api_gateway", "name": "API Gateway", "tech": "Next.js API Routes + Kong", "description": "Rate limiting, auth, routing"},
+      {"id": "backend", "name": "Backend Services", "tech": "Node.js microservices", "description": "Event processing orchestration"},
+      {"id": "db", "name": "Database Cluster", "tech": "PostgreSQL + Redis + Elasticsearch", "description": "Data persistence and caching"}
+    ],
+    "external_systems": [
+      {"id": "razorpay", "name": "Razorpay", "description": "Payment gateway - UPI/Card/NetBanking"},
+      {"id": "whatsapp", "name": "WhatsApp Business API", "description": "Notifications & Enquiry routing"},
+      {"id": "shiprocket", "name": "ShipRocket", "description": "National shipping & courier aggregation"},
+      {"id": "maps", "name": "Google Maps API", "description": "Geocoding, directions, distance matrix"},
+      {"id": "deepseek", "name": "DeepSeek API", "description": "AI Virtual Try-On inference"},
+      {"id": "bullion", "name": "MCX / IBJA API", "description": "Live gold/silver bullion rates"},
+      {"id": "jitsi", "name": "Jitsi / Daily.co", "description": "Video call appointments"},
+      {"id": "analytics", "name": "PostHog / Mixpanel", "description": "Product analytics & user behavior"},
+      {"id": "monitoring", "name": "Sentry + Grafana", "description": "Error tracking & observability"}
+    ]
+  },
+  "container_architecture": {
+    "frontend_containers": [
+      {"name": "Single Page App", "tech": "Next.js 14", "purpose": "Customer-facing web app with SSR, PWA"},
+      {"name": "Mobile App", "tech": "React Native (Expo)", "purpose": "iOS & Android native apps"},
+      {"name": "Merchant Portal", "tech": "Next.js 14", "purpose": "Merchant dashboard and analytics"},
+      {"name": "Admin Dashboard", "tech": "Next.js 14", "purpose": "Platform operations console"}
+    ],
+    "backend_containers": [
+      {"name": "API Gateway", "tech": "Next.js + Kong", "purpose": "Rate limiting, auth, routing, versioning"},
+      {"name": "Web API Service", "tech": "Node.js", "purpose": "Customer-facing REST endpoints"},
+      {"name": "Merchant API Service", "tech": "Node.js", "purpose": "Merchant CRUD & analytics endpoints"},
+      {"name": "Order Service", "tech": "Node.js", "purpose": "Order processing, multi-store consolidation"},
+      {"name": "Payment Service", "tech": "Node.js", "purpose": "Razorpay integration, escrow, settlement"},
+      {"name": "Delivery Service", "tech": "Node.js", "purpose": "Courier dispatch, route optimization"},
+      {"name": "Notification Service", "tech": "Node.js", "purpose": "Push, WhatsApp, email, SMS"},
+      {"name": "AI Service", "tech": "Python FastAPI", "purpose": "Virtual Try-On, recommendation engine"},
+      {"name": "Auth Service", "tech": "NextAuth.js / Supabase Auth", "purpose": "Authentication, RBAC, OTP"}
+    ],
+    "data_containers": [
+      {"name": "Primary Database", "tech": "PostgreSQL (Supabase)", "purpose": "Transactional data, merchants, orders, products"},
+      {"name": "Cache Layer", "tech": "Redis (Upstash)", "purpose": "Session cache, rate cache, API response cache"},
+      {"name": "Search Index", "tech": "Elasticsearch / Meilisearch", "purpose": "Full-text product search, faceted filters"},
+      {"name": "Message Queue", "tech": "pgmq / RabbitMQ", "purpose": "Async order processing, notification dispatch"},
+      {"name": "File Storage", "tech": "Supabase Storage / S3", "purpose": "Product images, AI try-on results"}
+    ]
+  },
+  "api_strategy": {
+    "gateway": "Kong / Vercel Edge",
+    "versioning": "URI-based (/api/v1/*, /api/v2/*)",
+    "protocol": "REST over HTTPS",
+    "rate_limiting": {
+      "anonymous": {"rpm": 30, "burst": 10},
+      "authenticated_user": {"rpm": 120, "burst": 30},
+      "merchant_api": {"rpm": 300, "burst": 50},
+      "webhook_endpoints": {"rpm": 600, "burst": 100, "whitelisted_ips": ["razorpay", "shiprocket"]},
+      "ai_endpoints": {"rpm": 10, "burst": 3}
+    },
+    "endpoints": [
+      {"group": "Products", "path": "/api/v1/products", "method": "GET", "purpose": "List/search products", "rate_limit": "100/min"},
+      {"group": "Products", "path": "/api/v1/products/:id", "method": "GET", "purpose": "Product detail", "rate_limit": "100/min"},
+      {"group": "Cart", "path": "/api/v1/cart", "method": "GET/POST/PUT/DELETE", "purpose": "Cart operations", "rate_limit": "60/min"},
+      {"group": "Checkout", "path": "/api/v1/checkout/calculate", "method": "POST", "purpose": "Calculate fees", "rate_limit": "30/min"},
+      {"group": "Checkout", "path": "/api/v1/checkout/confirm", "method": "POST", "purpose": "Confirm order", "rate_limit": "10/min"},
+      {"group": "Orders", "path": "/api/v1/orders", "method": "GET", "purpose": "List user orders", "rate_limit": "60/min"},
+      {"group": "Payment", "path": "/api/v1/payment/create", "method": "POST", "purpose": "Create payment session", "rate_limit": "20/min"},
+      {"group": "Payment", "path": "/api/v1/payment/webhook", "method": "POST", "purpose": "Razorpay webhook", "rate_limit": "200/min"},
+      {"group": "Merchant", "path": "/api/v1/merchant/products", "method": "CRUD", "purpose": "Merchant catalog mgmt", "rate_limit": "60/min"},
+      {"group": "Delivery", "path": "/api/v1/delivery/status", "method": "PUT", "purpose": "Courier status update", "rate_limit": "120/min"},
+      {"group": "AI", "path": "/api/v1/ai/try-on", "method": "POST", "purpose": "Virtual try-on", "rate_limit": "5/min/user"},
+      {"group": "Bullion", "path": "/api/v1/bullion/rates", "method": "GET", "purpose": "Live gold/silver rates", "rate_limit": "20/min"},
+      {"group": "WhatsApp", "path": "/api/v1/whatsapp/link", "method": "GET", "purpose": "Generate deep link", "rate_limit": "60/min"}
+    ]
+  },
+  "data_architecture": {
+    "database": "PostgreSQL 15 (Supabase)",
+    "major_tables": [
+      "markets", "merchants", "products", "product_images", "product_variants",
+      "customers", "carts", "cart_items", "orders", "order_merchants", "line_items",
+      "payments", "deliveries", "carriers",
+      "merchant_subscriptions", "subscriptions",
+      "coupons", "reviews", "review_moderation",
+      "merchant_modes", "interaction_modes",
+      "try_on_sessions", "bullion_rates", "bullion_pricing",
+      "audit_logs", "order_events", "analytics_events"
+    ],
+    "caching_strategy": {
+      "cache_layers": [
+        {"level": "L1", "type": "Browser/CDN Cache", "ttl": "5-60 min"},
+        {"level": "L2", "type": "Redis Cache (Upstash)", "ttl": "60-600s", "latency": "~10ms"},
+        {"level": "L3", "type": "PostgreSQL Materialized Views", "ttl": "Configurable"},
+        {"level": "L4", "type": "Database B-tree/GiST Indexes", "ttl": "Persistent"}
+      ],
+      "redis_keys": [
+        {"key": "product:{id}", "ttl": "300s"},
+        {"key": "merchant:{id}:products", "ttl": "120s"},
+        {"key": "market:{id}:merchants", "ttl": "600s"},
+        {"key": "bullion:rates", "ttl": "60s"},
+        {"key": "cart:{userId}", "ttl": "86400s"},
+        {"key": "session:{token}", "ttl": "3600s"},
+        {"key": "search:{query}", "ttl": "120s"},
+        {"key": "rate_limit:{ip}:{endpoint}", "ttl": "60s"}
+      ]
+    }
+  },
+  "event_driven_architecture": {
+    "message_queue": "pgmq / RabbitMQ",
+    "event_sources": ["Order Service", "Payment Service", "Delivery Service", "Notification Service", "Analytics Service"],
+    "event_topics": [
+      "order.created", "order.paid", "order.fulfilled",
+      "delivery.assigned", "delivery.status_changed",
+      "payment.completed", "payment.failed",
+      "notification.send", "analytics.event", "cache.invalidate"
+    ],
+    "event_consumers": ["Email Service", "WhatsApp Service", "Push Notification", "Cache Manager", "Analytics Pipeline", "ShipRocket Integration"]
+  },
+  "security_framework": {
+    "layers": [
+      {"layer": 1, "name": "Cloudflare WAF", "purpose": "DDoS protection, IP reputation"},
+      {"layer": 2, "name": "API Gateway", "purpose": "Rate limiting, request validation"},
+      {"layer": 3, "name": "Auth Layer", "purpose": "Supabase Auth / NextAuth, JWT + RBAC"},
+      {"layer": 4, "name": "Row Level Security", "purpose": "PostgreSQL RLS, tenant isolation"},
+      {"layer": 5, "name": "Encryption", "purpose": "TLS 1.3, AES-256 at Rest"}
+    ],
+    "controls": [
+      {"control": "Authentication", "implementation": "Supabase Auth + NextAuth.js", "detail": "Email/OTP, Google OAuth, WhatsApp OTP"},
+      {"control": "Authorization", "implementation": "RBAC with 5 roles", "detail": "Customer, Merchant, Courier, Admin, SuperAdmin"},
+      {"control": "Row Level Security", "implementation": "PostgreSQL RLS policies", "detail": "Merchants see only their data"},
+      {"control": "API Rate Limiting", "implementation": "Kong + Vercel Edge", "detail": "Per-IP, per-user, per-endpoint tiers"},
+      {"control": "Input Validation", "implementation": "Zod schemas", "detail": "All API inputs validated server-side"},
+      {"control": "Payment Security", "implementation": "Razorpay Webhook Signatures", "detail": "HMAC-SHA256 verification"},
+      {"control": "Data Encryption", "implementation": "AES-256 at rest + TLS 1.3", "detail": "Supabase + Cloudflare encryption"}
+    ],
+    "compliance": [
+      {"regulation": "GDPR / DPDP Act (India)", "implementation": "Consent checkbox, account deletion API"},
+      {"regulation": "PCI-DSS", "implementation": "Razorpay handles all payment data"},
+      {"regulation": "IT Act 2000 (India)", "implementation": "Data stored in India-region (ap-south-1)"}
+    ]
+  },
+  "testing_architecture": {
+    "layers": [
+      {"layer": "Unit", "tool": "Jest + Vitest", "scope": "All services, utilities, models", "frequency": "Per commit", "coverage_target": "80%+"},
+      {"layer": "Component", "tool": "React Testing Library + Storybook", "scope": "UI components, forms", "frequency": "Per PR"},
+      {"layer": "Integration", "tool": "Supertest + TestContainers", "scope": "API endpoints, database queries", "frequency": "Per PR"},
+      {"layer": "E2E", "tool": "Cypress / Playwright", "scope": "Critical user journeys", "frequency": "Per staging deploy", "flows": 20},
+      {"layer": "Performance", "tool": "k6 / Artillery", "scope": "API endpoints under load", "frequency": "Weekly", "p95": "< 500ms"},
+      {"layer": "Load", "tool": "Locust / k6", "scope": "5,000 concurrent shoppers", "frequency": "Monthly"},
+      {"layer": "Security", "tool": "OWASP ZAP + Snyk", "scope": "Dependency scan + DAST", "frequency": "Per release"},
+      {"layer": "Accessibility", "tool": "axe-core + Lighthouse", "scope": "All pages WCAG 2.1 AA", "frequency": "Per PR"}
+    ]
+  },
+  "infrastructure": {
+    "hosting": {"frontend": "Vercel (Edge Network)", "database": "Supabase (AWS ap-south-1)", "cache": "Upstash (Global)"},
+    "scaling_thresholds": [
+      {"merchants": 100, "tier": "Vercel Pro + Supabase Pro", "monthly_cost_inr": 4500},
+      {"merchants": 500, "tier": "Add Redis + Background Workers", "monthly_cost_inr": 12000},
+      {"merchants": 1000, "tier": "Vercel Enterprise + Supabase Team + PG replication", "monthly_cost_inr": 35000},
+      {"merchants": 2500, "tier": "Add Elasticsearch + Read replicas + CDN optimization", "monthly_cost_inr": 80000},
+      {"merchants": 5000, "tier": "Multi-region PG + Dedicated AI infra", "monthly_cost_inr": 200000},
+      {"merchants_multicity": "Per city", "tier": "Dedicated Supabase + Local micro-hub", "monthly_cost_inr": 50000}
+    ]
+  },
+  "cost_model": {
+    "poc_phase": {
+      "total_monthly": 0,
+      "total_annual": 0,
+      "merchant_count": 8,
+      "services": [
+        {"service": "Vercel", "tier": "Hobby (Free)", "monthly": 0, "annual": 0},
+        {"service": "Supabase", "tier": "Free", "monthly": 0, "annual": 0},
+        {"service": "GitHub", "tier": "Free", "monthly": 0, "annual": 0},
+        {"service": "Expo", "tier": "Free", "monthly": 0, "annual": 0},
+        {"service": "DeepSeek API", "tier": "Free Tier", "monthly": 0, "annual": 0},
+        {"service": "Razorpay", "tier": "Free", "monthly": 0, "annual": 0}
+      ]
+    },
+    "production_phase_scaled": {
+      "min_monthly_inr": 14470,
+      "max_monthly_inr": 191250,
+      "merchant_capacity_min": 100,
+      "merchant_capacity_max": 5000,
+      "services": [
+        {"service": "Vercel", "min_tier": "Pro", "max_tier": "Enterprise", "min_monthly_inr": 1700, "max_monthly_inr": 34000},
+        {"service": "Supabase", "min_tier": "Pro", "max_tier": "Enterprise", "min_monthly_inr": 2100, "max_monthly_inr": 42000},
+        {"service": "Upstash Redis", "tier": "Pay-as-you-go", "min_monthly_inr": 850, "max_monthly_inr": 8500},
+        {"service": "DeepSeek API", "tier": "Pay-per-token", "min_monthly_inr": 4250, "max_monthly_inr": 42500},
+        {"service": "WhatsApp Business", "tier": "Pay-per-conversation", "min_monthly_inr": 850, "max_monthly_inr": 8500},
+        {"service": "ShipRocket", "tier": "Pay-per-shipment", "min_monthly_inr": 1700, "max_monthly_inr": 17000},
+        {"service": "Google Maps API", "tier": "Pay-as-you-go", "min_monthly_inr": 850, "max_monthly_inr": 4250},
+        {"service": "Sentry", "tier": "Team → Business", "min_monthly_inr": 2170, "max_monthly_inr": 8500},
+        {"service": "PostHog", "tier": "Free → Scale", "min_monthly_inr": 0, "max_monthly_inr": 8500},
+        {"service": "Elasticsearch", "tier": "Managed", "min_monthly_inr": 0, "max_monthly_inr": 17000}
+      ]
+    },
+    "unit_economics": {
+      "starter_plan": {"platform_cost_per_month_inr": 85, "subscription_revenue_inr": 499, "gross_margin_pct": 83},
+      "growth_plan": {"platform_cost_per_month_inr": 170, "subscription_revenue_inr": 999, "gross_margin_pct": 83},
+      "premium_plan": {"platform_cost_per_month_inr": 250, "subscription_revenue_inr": 2499, "gross_margin_pct": 90},
+      "breakeven": {
+        "total_fixed_infra_monthly_inr": 14470,
+        "breakeven_merchants_at_starter": 29,
+        "breakeven_merchants_at_growth": 15,
+        "monthly_revenue_at_5000_merchants_inr": 8325000,
+        "monthly_revenue_at_1000_merchants_inr": 1665000
+      }
+    }
+  },
+  "poc_architecture": {
+    "scope": "8 pilot merchants from Balepet and Chickpet markets",
+    "total_cost_inr_per_month": 0,
+    "included_features": [
+      "Web: Vercel Hobby (petemart-pilot.vercel.app)",
+      "Database: Supabase Free (500MB DB, 1GB storage)",
+      "Auth: Supabase Auth (Email OTP + Magic Link)",
+      "Basic product catalog (up to 50 products/merchant)",
+      "Mode A: Simple cart + checkout flow",
+      "Mode B: WhatsApp deep links (no tracking)",
+      "Mode C: Google Maps store pin",
+      "Merchant dashboard (basic order management)",
+      "Multi-language: English + Kannada"
+    ],
+    "deferred_features": [
+      "Mobile apps (iOS/Android)",
+      "WhatsApp Business API integration",
+      "Multi-store consolidated cart",
+      "AI Virtual Try-On",
+      "Live bullion rates",
+      "Video call appointments",
+      "National shipping (ShipRocket)",
+      "Multi-city expansion",
+      "Advanced analytics & reporting",
+      "Feature flags & kill switch",
+      "Pete Street Virtual Walk",
+      "Live Bazaar streaming"
+    ],
+    "requirement_mapping": {
+      "included": ["REQ-UI-001 to 008", "REQ-UI-011", "REQ-UI-013"],
+      "deferred": ["REQ-UI-009,010", "REQ-UI-015,016", "REQ-UI-017", "REQ-UI-019", "REQ-API-013", "REQ-BE-018", "REQ-COM-010", "REQ-INFRA-011"]
+    }
+  },
+  "integration_points": [
+    {"integration": "Razorpay", "protocol": "REST + Webhooks", "auth": "API Key + HMAC", "min_volume": "10K txns/mo", "max_volume": "500K txns/mo", "sla": "99.9%"},
+    {"integration": "WhatsApp Business", "protocol": "REST API", "auth": "API Token", "min_volume": "1K conv/mo", "max_volume": "50K conv/mo", "sla": "99.5%"},
+    {"integration": "ShipRocket", "protocol": "REST API", "auth": "API Key", "min_volume": "500 orders/mo", "max_volume": "25K orders/mo", "sla": "99.5%"},
+    {"integration": "Google Maps", "protocol": "REST + JS SDK", "auth": "API Key", "min_volume": "10K req/day", "max_volume": "100K req/day", "sla": "99.9%"},
+    {"integration": "DeepSeek", "protocol": "REST API", "auth": "API Key", "min_volume": "100K inferences/mo", "max_volume": "1M inferences/mo", "sla": "99.5%"},
+    {"integration": "IBJA/MCX", "protocol": "REST API", "auth": "API Key", "min_volume": "1K req/day", "max_volume": "10K req/day", "sla": "99.0%"},
+    {"integration": "Jitsi/Daily.co", "protocol": "REST + WebRTC", "auth": "API Key", "min_volume": "100 calls/mo", "max_volume": "5K calls/mo", "sla": "99.5%"},
+    {"integration": "PostHog", "protocol": "REST + SDK", "auth": "API Key", "min_volume": "All events", "max_volume": "All events", "sla": "99.9%"}
+  ],
+  "technology_stack": {
+    "frontend": {"web": "Next.js 14", "mobile": "React Native (Expo) 50", "ui_framework": "Tailwind CSS 3 + Radix UI / shadcn", "mobile_ui": "NativeWind", "state_management": "Zustand 4", "server_state": "TanStack Query 5", "forms": "React Hook Form + Zod", "i18n": "next-intl 3"},
+    "backend": {"api": "Next.js API Routes 14", "microservices": "Node.js 20 LTS + Express", "ai_service": "Python FastAPI", "orm": "Prisma 5", "auth": "NextAuth.js + Supabase Auth"},
+    "data": {"database": "PostgreSQL 15 (Supabase)", "cache": "Redis 7 (Upstash)", "search": "Meilisearch", "queue": "pgmq / RabbitMQ", "storage": "Supabase Storage / S3"},
+    "devops": {"cicd": "GitHub Actions", "hosting": "Vercel", "db_hosting": "Supabase", "cdn": "Vercel Edge Network", "monitoring": "Sentry + Grafana", "analytics": "PostHog"}
+  },
+  "architectural_decision_records": [
+    {"id": "ADR-001", "decision": "Next.js over separate BE+FE", "rationale": "Unified API surface, SSR for SEO, reduced DevOps", "alternatives": ["React + Express API", "Django REST"]},
+    {"id": "ADR-002", "decision": "Supabase over custom PostgreSQL", "rationale": "Built-in auth, RLS, realtime, storage, cheaper", "alternatives": ["AWS RDS", "Neon", "PlanetScale"]},
+    {"id": "ADR-003", "decision": "DeepSeek API over self-hosted model", "rationale": "No GPU infra, pay-per-token, rapid iteration", "alternatives": ["Stable Diffusion self-host", "Replicate"]},
+    {"id": "ADR-004", "decision": "pgmq over dedicated queue", "rationale": "Less infra, integrated with PostgreSQL", "alternatives": ["Redis Queue", "BullMQ", "RabbitMQ"]},
+    {"id": "ADR-005", "decision": "Zustand over Redux", "rationale": "Lighter bundle, simpler API, sufficient for scale", "alternatives": ["Redux Toolkit", "Jotai", "Pinia"]},
+    {"id": "ADR-006", "decision": "Razorpay over Stripe", "rationale": "Indian market leader, UPI support, better INR rates", "alternatives": ["Stripe", "Instamojo", "Cashfree"]},
+    {"id": "ADR-007", "decision": "ShipRocket over custom delivery", "rationale": "National scale, multiple courier partners, lower rates", "alternatives": ["Custom fleet", "Dunzo", "Shadowfax"]},
+    {"id": "ADR-008", "decision": "Meilisearch over Elasticsearch", "rationale": "Simpler setup, lower cost, sufficient for 5K merchants", "alternatives": ["Elasticsearch", "Algolia", "Typesense"]},
+    {"id": "ADR-009", "decision": "next-intl over react-i18next", "rationale": "Next.js native, server components compatible", "alternatives": ["react-i18next", "FormatJS"]},
+    {"id": "ADR-010", "decision": "Expo over bare React Native", "rationale": "Faster development, OTA updates, easier CI/CD", "alternatives": ["Bare RN", "Flutter", "Kotlin Multiplatform"]}
+  ]
+}

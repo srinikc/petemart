@@ -1,0 +1,459 @@
+{
+  "document_metadata": {
+    "name": "PeteMart Enterprise Production Architecture Blueprint",
+    "version": "1.0",
+    "author": "Agent 03 - Senior Enterprise Solutions Architect",
+    "date": "2026-06-15",
+    "status": "Final",
+    "derived_from": [
+      "PRD v2.0 (111 Requirements)",
+      "Idea Proposal v1.3",
+      "Business Revenue Model v1.4",
+      "Epic Story Map v1.0",
+      "Workflow Maps v1.0",
+      "MVP Scope v1.0"
+    ]
+  },
+  "architecture_overview": {
+    "platform_name": "PeteMart",
+    "platform_type": "Hyperlocal digital commerce marketplace",
+    "target_merchants": 5000,
+    "target_markets": "21 historic Pete markets of Old Bangalore",
+    "interaction_modes": ["Mode A (Direct Purchase)", "Mode B (WhatsApp Enquiry)", "Mode C (Visit Store)"],
+    "architecture_style": "API-First, Event-Driven Microservices",
+    "deployment_model": "Cloud-Native (Vercel + AWS ECS Fargate)",
+    "key_design_principles": [
+      "API-First Design",
+      "Event-Driven Architecture",
+      "Tenant Isolation via RLS",
+      "Offline Resilience",
+      "Progressive Enhancement",
+      "Cost-Aware Scaling",
+      "Security by Design"
+    ]
+  },
+  "key_architectural_decisions": [
+    {
+      "decision": "Frontend Framework",
+      "choice": "Next.js 15 (Web) + React Native/Expo (Mobile)",
+      "rationale": "Shared TypeScript types, SSR for SEO, code reuse between web and mobile"
+    },
+    {
+      "decision": "Backend Architecture",
+      "choice": "Next.js API Routes → Node.js Microservices",
+      "rationale": "Unified API layer initially, gradual extraction to microservices as scale demands"
+    },
+    {
+      "decision": "Database",
+      "choice": "Supabase (PostgreSQL) → Aurora PostgreSQL",
+      "rationale": "Start free with Supabase, scale with pgBouncer + read replicas on Aurora"
+    },
+    {
+      "decision": "Cache Layer",
+      "choice": "Redis (Upstash → ElastiCache)",
+      "rationale": "Sub-millisecond cart/price lookups, session store, rate limiting"
+    },
+    {
+      "decision": "Message Queue",
+      "choice": "BullMQ + Redis",
+      "rationale": "Order processing, notification dispatch, async task execution"
+    },
+    {
+      "decision": "AI Inference",
+      "choice": "Replicate + Hugging Face + Custom ONNX",
+      "rationale": "Cost-effective inference with GPU auto-scaling"
+    },
+    {
+      "decision": "Payment Gateway",
+      "choice": "Razorpay",
+      "rationale": "Indian market leader, subaccount routing for merchant settlements, escrow support"
+    },
+    {
+      "decision": "Hosting",
+      "choice": "Vercel → AWS ECS Fargate",
+      "rationale": "Serverless start with Vercel, containerized scale with AWS"
+    },
+    {
+      "decision": "CDN & Security",
+      "choice": "Cloudflare",
+      "rationale": "Global edge caching, DDoS protection, WAF, rate limiting"
+    }
+  ],
+  "c4_models": {
+    "system_context": {
+      "description": "C4 Level 1 - System Context diagram",
+      "persons": [
+        {"name": "Customer (Priya)", "description": "Hyperlocal buyer browsing & ordering"},
+        {"name": "Merchant (Ramesh)", "description": "Store owner managing catalog & orders"},
+        {"name": "Courier (Vinay)", "description": "Delivery partner handling pickups & drops"},
+        {"name": "Admin (Ananya)", "description": "Platform operator managing marketplace"},
+        {"name": "B2B Buyer (Deepa)", "description": "Wholesale reseller buying in bulk"}
+      ],
+      "internal_systems": [
+        {"name": "PeteMart Web App", "tech": "Next.js 15 PWA"},
+        {"name": "PeteMart Mobile App", "tech": "React Native / Expo"},
+        {"name": "PeteMart API Gateway", "tech": "API-first backend"},
+        {"name": "Admin Console", "tech": "Platform management"},
+        {"name": "Merchant Dashboard", "tech": "Store operations"}
+      ],
+      "external_systems": [
+        {"name": "Razorpay", "purpose": "Payment Gateway"},
+        {"name": "WhatsApp Business API", "purpose": "Messaging"},
+        {"name": "Google Maps API", "purpose": "Directions & Geolocation"},
+        {"name": "ShipRocket", "purpose": "National Shipping"},
+        {"name": "Supabase", "purpose": "PostgreSQL + Auth + Storage"},
+        {"name": "Upstash Redis", "purpose": "Caching & Queues"},
+        {"name": "AI Inference Engine", "purpose": "Virtual Try-On"},
+        {"name": "Bullion Rate API", "purpose": "Live Gold/Silver Rates"},
+        {"name": "Sentry", "purpose": "Error Monitoring"},
+        {"name": "Cloudflare", "purpose": "CDN & WAF"}
+      ]
+    },
+    "container_architecture": {
+      "description": "C4 Level 2 - Container diagram",
+      "containers": [
+        {"name": "Web Application", "tech": "Next.js 15 + shadcn/ui", "purpose": "SSR PWA for desktop & mobile web"},
+        {"name": "Mobile Application", "tech": "React Native / Expo", "purpose": "iOS & Android native apps"},
+        {"name": "API Gateway", "tech": "Next.js API Routes + Express", "purpose": "Rate-limiting, auth, routing"}
+      ],
+      "microservices": [
+        {"name": "Auth Service", "tech": "Node.js", "purpose": "OTP auth, JWT, RBAC"},
+        {"name": "Order Service", "tech": "Node.js", "purpose": "Cart, checkout, lifecycle"},
+        {"name": "Merchant Service", "tech": "Node.js", "purpose": "Catalog, inventory, microsite"},
+        {"name": "Payment Service", "tech": "Node.js", "purpose": "Razorpay integration, settlement"},
+        {"name": "Delivery Service", "tech": "Node.js", "purpose": "Zone calc, route optimization"},
+        {"name": "Notification Service", "tech": "Node.js", "purpose": "Push, SMS, WhatsApp, email"},
+        {"name": "AI Service", "tech": "Python FastAPI", "purpose": "Virtual try-on, recommendations"},
+        {"name": "Analytics Service", "tech": "Node.js", "purpose": "CDP, reports, dashboards"}
+      ],
+      "data_stores": [
+        {"name": "Primary Database", "tech": "PostgreSQL (Supabase/Aurora)", "purpose": "Orders, merchants, products, users"},
+        {"name": "Redis Cache", "tech": "Upstash / ElastiCache", "purpose": "Session, cart, rate limits, queues"},
+        {"name": "Object Storage", "tech": "Supabase Storage / S3", "purpose": "Product images, store photos"},
+        {"name": "Search Index", "tech": "MeiliSearch / Typesense", "purpose": "Full-text product search"}
+      ]
+    }
+  },
+  "technology_stack": {
+    "frontend": {
+      "web_framework": "Next.js 15.x",
+      "ui_library": "shadcn/ui + Radix",
+      "styling": "Tailwind CSS 4.x",
+      "state_management": "Zustand + TanStack Query",
+      "forms_validation": "React Hook Form + Zod",
+      "i18n": "next-intl",
+      "animation": "Framer Motion",
+      "pwa": "next-pwa",
+      "mobile_framework": "React Native + Expo 52+",
+      "mobile_navigation": "Expo Router"
+    },
+    "backend": {
+      "api_framework": "Next.js API Routes → Express/Fastify",
+      "auth": "Supabase Auth + JWT + OTP",
+      "orm": "Drizzle ORM",
+      "message_queue": "BullMQ + Redis",
+      "validation": "Zod",
+      "caching": "Upstash Redis / ElastiCache",
+      "search": "MeiliSearch / Typesense",
+      "file_storage": "Supabase Storage → S3"
+    },
+    "ai_ml": {
+      "virtual_try_on_apparel": "Replicate API / Custom ONNX",
+      "virtual_try_on_jewellery": "Face landmark detection + rendering on ONNX Runtime",
+      "recommendations": "Collaborative filtering + embeddings with pgvector",
+      "analytics_cdp": "RudderStack + ClickHouse",
+      "image_optimization": "Cloudflare Images / Sharp"
+    }
+  },
+  "api_strategy": {
+    "architecture": "API Gateway pattern with rate-limiting, auth middleware, and request validation",
+    "protocols": ["REST (primary)", "GraphQL (analytics)", "WebSocket (live tracking)"],
+    "response_format": {
+      "success": {"success": true, "data": {}, "meta": {"page": 1, "per_page": 20, "total": 0, "total_pages": 0}, "error": null},
+      "error": {"success": false, "data": null, "error": {"code": "ERROR_CODE", "message": "Human readable", "details": []}}
+    },
+    "rate_limiting": {
+      "strategy": "Redis-based sliding window",
+      "public_endpoints": "60-200 requests/min",
+      "auth_endpoints": "5-30 requests/min",
+      "admin_endpoints": "10-30 requests/min"
+    },
+    "endpoints": {
+      "public": [
+        {"method": "GET", "path": "/api/markets", "description": "List all Pete markets", "rate_limit": "100/min"},
+        {"method": "GET", "path": "/api/markets/:slug", "description": "Market details with merchants", "rate_limit": "100/min"},
+        {"method": "GET", "path": "/api/merchants/:slug", "description": "Merchant microsite data", "rate_limit": "100/min"},
+        {"method": "GET", "path": "/api/products", "description": "Search/filter products", "rate_limit": "200/min"},
+        {"method": "GET", "path": "/api/products/:id", "description": "Product details", "rate_limit": "200/min"},
+        {"method": "GET", "path": "/api/bullion/rates", "description": "Live gold/silver rates", "rate_limit": "60/min"},
+        {"method": "POST", "path": "/api/auth/otp/send", "description": "Send OTP", "rate_limit": "5/min per phone"},
+        {"method": "POST", "path": "/api/auth/otp/verify", "description": "Verify OTP", "rate_limit": "10/min per phone"}
+      ],
+      "customer": [
+        {"method": "GET", "path": "/api/cart", "description": "Get current cart"},
+        {"method": "POST", "path": "/api/cart/items", "description": "Add to cart"},
+        {"method": "POST", "path": "/api/orders", "description": "Place order"},
+        {"method": "GET", "path": "/api/orders", "description": "Order history"},
+        {"method": "POST", "path": "/api/payments/verify", "description": "Verify payment"},
+        {"method": "GET", "path": "/api/tracking/:id", "description": "Live tracking"}
+      ],
+      "merchant": [
+        {"method": "GET", "path": "/api/merchant/dashboard", "description": "Dashboard summary"},
+        {"method": "GET", "path": "/api/merchant/products", "description": "Product list"},
+        {"method": "POST", "path": "/api/merchant/products", "description": "Create product"},
+        {"method": "POST", "path": "/api/merchant/products/bulk", "description": "Bulk CSV upload"},
+        {"method": "GET", "path": "/api/merchant/orders", "description": "Order list"},
+        {"method": "GET", "path": "/api/merchant/analytics", "description": "Sales analytics"}
+      ],
+      "admin": [
+        {"method": "GET", "path": "/api/admin/dashboard", "description": "Platform overview"},
+        {"method": "GET", "path": "/api/admin/merchants", "description": "Merchant list"},
+        {"method": "PUT", "path": "/api/admin/merchants/:id/approve", "description": "Approve merchant"},
+        {"method": "GET", "path": "/api/admin/config", "description": "Platform config"},
+        {"method": "PUT", "path": "/api/admin/feature-flags", "description": "Toggle flag"},
+        {"method": "GET", "path": "/api/admin/reports", "description": "Revenue reports"}
+      ]
+    },
+    "webhook_events": [
+      {"event": "payment.captured", "source": "Razorpay", "destination": "API Gateway", "description": "Payment successful"},
+      {"event": "payment.failed", "source": "Razorpay", "destination": "API Gateway", "description": "Payment failed"},
+      {"event": "order.created", "source": "Order Service", "destination": "Notification Service", "description": "New order alert"},
+      {"event": "order.status_changed", "source": "Order Service", "destination": "All consumers", "description": "Status transition"},
+      {"event": "merchant.registered", "source": "Auth Service", "destination": "Admin Service", "description": "New merchant signup"},
+      {"event": "delivery.assigned", "source": "Delivery Service", "destination": "Courier App", "description": "Courier assigned"},
+      {"event": "delivery.status_update", "source": "Courier App", "destination": "Order Service", "description": "GPS + status update"}
+    ]
+  },
+  "data_architecture": {
+    "core_tables": [
+      "users", "merchants", "products", "product_images", "product_variants",
+      "orders", "order_items", "payments", "deliveries", "delivery_status_logs",
+      "carts", "cart_items", "addresses", "reviews",
+      "markets", "cities", "delivery_zones",
+      "merchant_subscriptions", "feature_flags", "audit_logs",
+      "whatsapp_click_logs", "analytics_events"
+    ],
+    "caching_strategy": [
+      {"pattern": "cart:{session_id}", "ttl": "24h", "store": "Redis", "purpose": "Guest cart"},
+      {"pattern": "cart:{user_id}", "ttl": "24h", "store": "Redis", "purpose": "User cart"},
+      {"pattern": "product:{id}", "ttl": "5min", "store": "Redis", "purpose": "Product details"},
+      {"pattern": "merchant:{slug}", "ttl": "5min", "store": "Redis", "purpose": "Merchant microsite"},
+      {"pattern": "market:{slug}", "ttl": "10min", "store": "Redis", "purpose": "Market page"},
+      {"pattern": "rates:bullion", "ttl": "30s", "store": "Redis", "purpose": "Live bullion rates"},
+      {"pattern": "session:{token}", "ttl": "7d", "store": "Redis", "purpose": "JWT session"},
+      {"pattern": "rate_limit:{ip}:{endpoint}", "ttl": "1min", "store": "Redis", "purpose": "Rate limiting"}
+    ]
+  },
+  "security_framework": {
+    "authentication": ["Phone OTP (Supabase Auth)", "JWT Access Token (15min)", "Refresh Token (7 days)"],
+    "authorization": ["RBAC Roles (customer/merchant/admin/courier)", "Row-Level Security (PostgreSQL)", "API Middleware Route Guards"],
+    "security_controls": [
+      {"control": "OTP Rate Limiting", "implementation": "Redis + Supabase", "detail": "Max 3 OTP sends/hour per phone"},
+      {"control": "Passwordless Auth", "implementation": "Phone OTP only", "detail": "No password storage risk"},
+      {"control": "RLS Policies", "implementation": "PostgreSQL", "detail": "Merchants see only their data"},
+      {"control": "API Rate Limiting", "implementation": "Upstash Redis", "detail": "Per-endpoint, per-IP, per-user"},
+      {"control": "Input Validation", "implementation": "Zod schemas", "detail": "All API inputs validated"},
+      {"control": "SQL Injection Prevention", "implementation": "Drizzle ORM", "detail": "Parameterized queries"},
+      {"control": "Encryption at Rest", "implementation": "PostgreSQL + S3 SSE", "detail": "AES-256"},
+      {"control": "Encryption in Transit", "implementation": "TLS 1.3", "detail": "All traffic HTTPS"},
+      {"control": "Webhook Verification", "implementation": "HMAC-SHA256", "detail": "Razorpay signature verify"},
+      {"control": "DDoS Protection", "implementation": "Cloudflare WAF", "detail": "Rate limiting + challenge"},
+      {"control": "Audit Logging", "implementation": "audit_logs table", "detail": "All admin actions logged"}
+    ]
+  },
+  "infrastructure_deployment": {
+    "poc": {
+      "hosting": "Vercel Hobby",
+      "database": "Supabase Free (500MB)",
+      "cache": "In-memory (Next.js)",
+      "search": "PostgreSQL LIKE",
+      "storage": "Supabase Storage (1GB)",
+      "cdn": "Vercel Edge",
+      "monitoring": "Sentry Free",
+      "ci_cd": "GitHub Actions"
+    },
+    "production_500": {
+      "hosting": "Vercel Pro + AWS ECS",
+      "database": "Supabase Pro (8GB)",
+      "cache": "Upstash Redis (256MB)",
+      "search": "MeiliSearch (1GB RAM)",
+      "storage": "Supabase Storage (100GB)",
+      "cdn": "Cloudflare Pro",
+      "monitoring": "Sentry Team",
+      "ci_cd": "GitHub Actions + Vercel"
+    },
+    "production_5000": {
+      "hosting": "AWS ECS Fargate + CloudFront",
+      "database": "Aurora PostgreSQL Serverless v2",
+      "cache": "ElastiCache Redis (5GB)",
+      "search": "Typesense Cluster (8GB)",
+      "storage": "S3 + CloudFront CDN",
+      "cdn": "Cloudflare Enterprise",
+      "monitoring": "Datadog + Sentry Business",
+      "ci_cd": "GitHub Actions + AWS CodePipeline"
+    }
+  },
+  "scaling_strategy": {
+    "phases": [
+      {"phase": "POC", "merchants": 8, "daily_orders": 20, "db_size": "10MB", "cost_per_month_inr": 0},
+      {"phase": "Launch", "merchants": 50, "daily_orders": 150, "db_size": "100MB", "cost_per_month_inr": 5000},
+      {"phase": "Growth", "merchants": 500, "daily_orders": 2500, "db_size": "2GB", "cost_per_month_inr": 25000},
+      {"phase": "Scale", "merchants": 2000, "daily_orders": 12000, "db_size": "10GB", "cost_per_month_inr": 80000},
+      {"phase": "Enterprise", "merchants": 5000, "daily_orders": 35000, "db_size": "50GB+", "cost_per_month_inr": 420000}
+    ],
+    "auto_scaling_rules": [
+      {"service": "Web (Vercel)", "metric": "Requests/sec", "scale_out": ">1000 rps", "scale_in": "<200 rps", "min": 0, "max": "∞"},
+      {"service": "API (ECS)", "metric": "CPU > 70%", "scale_out": "+2 tasks", "scale_in": "-1 task", "min": 2, "max": 20},
+      {"service": "Order Service", "metric": "Queue depth > 100", "scale_out": "+2 tasks", "scale_in": "-1 task", "min": 2, "max": 10},
+      {"service": "AI Service", "metric": "GPU util > 80%", "scale_out": "+1 instance", "scale_in": "-1 instance", "min": 0, "max": 4},
+      {"service": "Database", "metric": "Connections > 80%", "scale_out": "Add replica", "scale_in": "Remove replica", "min": 1, "max": 5},
+      {"service": "Redis", "metric": "Memory > 70%", "scale_out": "Scale up node", "scale_in": "Scale down", "min": "1GB", "max": "10GB"}
+    ],
+    "database_scaling_path": [
+      "Phase 1: Supabase Free (500MB, 2 connections)",
+      "Phase 2: Supabase Pro (8GB, 120 connections)",
+      "Phase 3: Supabase Team (16GB, pgBouncer)",
+      "Phase 4: Aurora Serverless v2 (ACU 8-64)",
+      "Phase 5: Aurora Cluster (Writer + 3 Read Replicas + pgBouncer)"
+    ]
+  },
+  "testing_architecture": {
+    "pyramid": [
+      {"layer": "Static Analysis", "tools": ["TypeScript", "ESLint", "SonarQube"], "stage": "Pre-commit"},
+      {"layer": "Unit Tests", "tools": ["Vitest", "Testing Library"], "coverage": "85%+ lines", "stage": "Pre-commit"},
+      {"layer": "Component Tests", "tools": ["Storybook", "Testing Library"], "coverage": "80%+ stories", "stage": "PR"},
+      {"layer": "API Integration", "tools": ["Supertest", "TestContainers"], "coverage": "90%+ endpoints", "stage": "PR"},
+      {"layer": "E2E Tests", "tools": ["Playwright"], "coverage": "Critical paths 100%", "stage": "Pre-deploy"},
+      {"layer": "Visual Regression", "tools": ["Percy/Chromatic"], "coverage": "All components", "stage": "PR"},
+      {"layer": "Performance", "tools": ["Lighthouse CI"], "target": "LCP < 2.5s", "stage": "Pre-deploy"},
+      {"layer": "Security", "tools": ["Snyk", "Dependabot"], "target": "No critical vulns", "stage": "Weekly"},
+      {"layer": "Accessibility", "tools": ["axe-core", "Stitch"], "target": "WCAG 2.1 AA", "stage": "PR"},
+      {"layer": "Load Testing", "tools": ["k6"], "target": "1000 concurrent users", "stage": "Pre-release"},
+      {"layer": "Mutation Testing", "tools": ["Stryker"], "target": "70%+ mutation score", "stage": "Nightly"}
+    ]
+  },
+  "monitoring_observability": {
+    "stack": [
+      {"layer": "APM", "tool": "Sentry Performance", "metrics": ["P50/P95/P99 latency", "error rates"]},
+      {"layer": "Logs", "tool": "Sentry + Vercel Logs", "metrics": ["Structured JSON logs"]},
+      {"layer": "Metrics", "tool": "Vercel Analytics + Datadog", "metrics": ["RPS", "CPU", "Memory", "DB connections"]},
+      {"layer": "Uptime", "tool": "Better Uptime / Checkly", "metrics": ["SLA monitoring", "SSL expiry"]},
+      {"layer": "Alerts", "tool": "Sentry + PagerDuty", "metrics": ["P0/P1 incident alerts"]},
+      {"layer": "Dashboards", "tool": "Datadog / Grafana", "metrics": ["Real-time business + technical KPIs"]}
+    ],
+    "key_alerts": [
+      {"metric": "API P95 Latency", "warning": ">500ms", "critical": ">1s", "action": "Scale out, check DB"},
+      {"metric": "Error Rate", "warning": ">1%", "critical": ">5%", "action": "Rollback, page team"},
+      {"metric": "DB Connections", "warning": ">70%", "critical": ">90%", "action": "Add connection pool"},
+      {"metric": "Cart Checkout Success", "warning": "<95%", "critical": "<90%", "action": "Investigate payment flow"},
+      {"metric": "Redis Memory", "warning": ">70%", "critical": ">85%", "action": "Evict or scale"},
+      {"metric": "Search Latency", "warning": ">200ms", "critical": ">500ms", "action": "Optimize index"}
+    ]
+  },
+  "disaster_recovery": {
+    "backup_strategy": [
+      {"data": "PostgreSQL DB", "frequency": "Hourly", "retention": "30 days", "storage": "S3 Glacier", "rpo": "1 hour", "rto": "2 hours"},
+      {"data": "Product Images", "frequency": "Real-time", "retention": "Forever", "storage": "S3 + CloudFront", "rpo": "0", "rto": "5 min"},
+      {"data": "Redis Cache", "frequency": "Snapshot/6h", "retention": "7 days", "storage": "S3", "rpo": "6 hours", "rto": "30 min"},
+      {"data": "Application Logs", "frequency": "Real-time", "retention": "90 days", "storage": "S3", "rpo": "0", "rto": "10 min"}
+    ],
+    "recovery_procedures": [
+      {"scenario": "Single instance failure", "procedure": "Auto-restart via ECS", "rto": "30s", "rpo": "0"},
+      {"scenario": "AZ outage", "procedure": "Multi-AZ failover (Aurora)", "rto": "5min", "rpo": "<1min"},
+      {"scenario": "Region outage", "procedure": "Cross-region DR (secondary region)", "rto": "30min", "rpo": "15min"},
+      {"scenario": "Data corruption", "procedure": "Point-in-time recovery", "rto": "2h", "rpo": "1h"},
+      {"scenario": "Full DB loss", "procedure": "Restore from S3 backup", "rto": "4h", "rpo": "1h"},
+      {"scenario": "Security breach", "procedure": "Isolate + restore clean snapshot", "rto": "2h", "rpo": "1h"}
+    ],
+    "sla_commitments": [
+      {"tier": "POC", "uptime": "99%", "support_response": "48h", "max_downtime_per_month": "7.2h"},
+      {"tier": "Launch", "uptime": "99.5%", "support_response": "4h business", "max_downtime_per_month": "3.6h"},
+      {"tier": "Growth", "uptime": "99.9%", "support_response": "1h", "max_downtime_per_month": "43min"},
+      {"tier": "Scale", "uptime": "99.95%", "support_response": "30min", "max_downtime_per_month": "22min"},
+      {"tier": "Enterprise", "uptime": "99.99%", "support_response": "15min", "max_downtime_per_month": "4min"}
+    ]
+  },
+  "cost_model": {
+    "monthly_infrastructure_5000_merchants": [
+      {"service": "Frontend Hosting", "plan": "Vercel Enterprise", "monthly_cost_inr": 150000, "notes": "5M+ requests/mo"},
+      {"service": "API Hosting", "plan": "AWS ECS Fargate (10 tasks)", "monthly_cost_inr": 80000, "notes": "2 vCPU, 4GB each"},
+      {"service": "Database", "plan": "Aurora Serverless v2", "monthly_cost_inr": 60000, "notes": "ACU 8-64, multi-AZ"},
+      {"service": "Cache", "plan": "ElastiCache Redis 5GB", "monthly_cost_inr": 15000, "notes": "Cluster mode"},
+      {"service": "Search", "plan": "Typesense Cloud (8GB)", "monthly_cost_inr": 20000, "notes": "Dedicated cluster"},
+      {"service": "Storage", "plan": "S3 + CloudFront", "monthly_cost_inr": 10000, "notes": "500GB images"},
+      {"service": "CDN + WAF", "plan": "Cloudflare Enterprise", "monthly_cost_inr": 25000, "notes": "DDoS + WAF"},
+      {"service": "AI Inference", "plan": "Replicate + GPU", "monthly_cost_inr": 30000, "notes": "Virtual try-on"},
+      {"service": "Monitoring", "plan": "Datadog + Sentry", "monthly_cost_inr": 15000, "notes": "APM + logs"},
+      {"service": "CI/CD", "plan": "GitHub Actions", "monthly_cost_inr": 5000, "notes": "10K min/mo"},
+      {"service": "Email/SMS", "plan": "Twilio + AWS SES", "monthly_cost_inr": 10000, "notes": "Notifications"},
+      {"service": "Total", "plan": "", "monthly_cost_inr": 420000, "notes": "~$5,000/mo"}
+    ],
+    "annual_projections": [
+      {"year": "Y1", "merchants": 500, "monthly_cost_inr": 25000, "annual_cost_inr": 300000, "revenue_est_inr": 6000000, "net_inr": 5700000},
+      {"year": "Y2", "merchants": 2000, "monthly_cost_inr": 80000, "annual_cost_inr": 960000, "revenue_est_inr": 24000000, "net_inr": 23040000},
+      {"year": "Y3", "merchants": 5000, "monthly_cost_inr": 420000, "annual_cost_inr": 5040000, "revenue_est_inr": 60000000, "net_inr": 54960000}
+    ]
+  },
+  "implementation_roadmap": {
+    "phase_1_foundation": {
+      "duration": "Months 1-3",
+      "features": [
+        "Core auth, merchant onboarding, product catalog",
+        "Multi-store cart, checkout, Razorpay integration",
+        "Mode A/B/C workflows",
+        "Admin console basics"
+      ],
+      "target": "50 merchants live"
+    },
+    "phase_2_growth": {
+      "duration": "Months 4-6",
+      "features": [
+        "Mobile apps (Expo/React Native)",
+        "Order tracking with GPS",
+        "Reviews & ratings system",
+        "Promo engine & loyalty",
+        "Merchant analytics dashboard"
+      ],
+      "target": "500 merchants live"
+    },
+    "phase_3_scale": {
+      "duration": "Months 7-9",
+      "features": [
+        "AI Virtual Try-On (apparel + jewellery)",
+        "Live bullion rates integration",
+        "National shipping (ShipRocket)",
+        "Multi-language support (Kannada, Hindi)",
+        "White-label branding"
+      ],
+      "target": "2,000 merchants live"
+    },
+    "phase_4_expansion": {
+      "duration": "Months 10-12",
+      "features": [
+        "Multi-city expansion (Mysore, Chennai, Hyderabad)",
+        "Video call appointments",
+        "Pete Street Virtual Walk",
+        "Live Bazaar streaming",
+        "Co-shopping feature"
+      ],
+      "target": "5,000+ merchants live"
+    }
+  },
+  "prd_requirement_coverage": {
+    "total_requirements": 111,
+    "covered_in_architecture": 111,
+    "by_category": {
+      "UI/UX": {"total": 24, "covered": 24, "details": "All UI requirements mapped to Next.js/shadcn/ui + React Native"},
+      "API": {"total": 13, "covered": 13, "details": "All API endpoints defined in API strategy section"},
+      "Backend/Data": {"total": 26, "covered": 26, "details": "All backend services and data models defined"},
+      "Commerce/Monetization": {"total": 10, "covered": 10, "details": "Subscription plans, commission, Razorpay integration"},
+      "Infrastructure/Security": {"total": 11, "covered": 11, "details": "Full security framework, RLS, rate limiting"},
+      "Performance/Scale": {"total": 3, "covered": 3, "details": "Auto-scaling rules, caching strategy, CDN"},
+      "Maintenance/Lifecycle": {"total": 5, "covered": 5, "details": "CI/CD, backup, DR procedures"},
+      "Disaster_Recovery": {"total": 4, "covered": 4, "details": "Backup strategy, recovery procedures, SLA"},
+      "Funnels/Onboarding": {"total": 4, "covered": 4, "details": "Merchant onboarding flow, referral system"},
+      "Merchant_Microsite": {"total": 8, "covered": 8, "details": "Store microsite, customization, QR code"},
+      "Data_Privacy/Compliance": {"total": 3, "covered": 3, "details": "DPDP Act, PCI-DSS via Razorpay, audit logging"}
+    }
+  }
+}

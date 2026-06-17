@@ -1,0 +1,52 @@
+{
+  "version": "1.0",
+  "project": "agentic-console",
+  "lastUpdated": "2026-06-16T19:00:00.000Z",
+  "testTypes": {
+    "unit": {
+      "label": "Unit Tests",
+      "description": "Utility functions, helpers, constants, pipeline graph layout, and defect tracking",
+      "pattern": "__tests__/agentic-console/unit/",
+      "fileCount": 6,
+      "estimatedTests": 113,
+      "icon": "FileText",
+      "order": 1
+    },
+    "component": {
+      "label": "Component Tests",
+      "description": "Dashboard, agent detail, quality, health, operations, logs, MCP, pipeline graph, onboarding",
+      "pattern": "__tests__/agentic-console/comp/",
+      "fileCount": 11,
+      "estimatedTests": 177,
+      "icon": "Layout",
+      "order": 2
+    },
+    "api-contract": {
+      "label": "API Contract + Integration Tests",
+      "description": "All 32 API routes — state, agents, pipeline, data, external, security",
+      "pattern": "__tests__/agentic-console/api/",
+      "fileCount": 6,
+      "estimatedTests": 164,
+      "icon": "FileJson",
+      "order": 3
+    },
+    "sse": {
+      "label": "SSE/Streaming Tests",
+      "description": "Events SSE and supervisor SSE streaming endpoints",
+      "pattern": "__tests__/agentic-console/sse/",
+      "fileCount": 2,
+      "estimatedTests": 15,
+      "icon": "Radio",
+      "order": 4
+    },
+    "security": {
+      "label": "Security Tests",
+      "description": "CORS, input sanitization, path traversal, credential exposure",
+      "pattern": "__tests__/agentic-console/security/",
+      "fileCount": 1,
+      "estimatedTests": 29,
+      "icon": "Shield",
+      "order": 5
+    }
+  }
+}

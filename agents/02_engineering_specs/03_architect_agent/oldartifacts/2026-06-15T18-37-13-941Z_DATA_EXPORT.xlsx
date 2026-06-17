@@ -1,0 +1,147 @@
+{
+  "sheets": [
+    {
+      "name": "POC Cost Model",
+      "data": [
+        {"Service": "Vercel", "Tier": "Hobby (Free)", "Monthly_INR": 0, "Annual_INR": 0, "Merchant_Capacity": "8 pilots", "Notes": "petemart-pilot.vercel.app"},
+        {"Service": "Supabase", "Tier": "Free", "Monthly_INR": 0, "Annual_INR": 0, "Merchant_Capacity": "8 pilots", "Notes": "500MB DB, 1GB storage"},
+        {"Service": "GitHub", "Tier": "Free", "Monthly_INR": 0, "Annual_INR": 0, "Merchant_Capacity": "8 pilots", "Notes": "Private repos"},
+        {"Service": "Expo", "Tier": "Free", "Monthly_INR": 0, "Annual_INR": 0, "Merchant_Capacity": "8 pilots", "Notes": "Development builds"},
+        {"Service": "DeepSeek API", "Tier": "Free Tier", "Monthly_INR": 0, "Annual_INR": 0, "Merchant_Capacity": "8 pilots", "Notes": "100K tokens/day"},
+        {"Service": "Razorpay", "Tier": "Free", "Monthly_INR": 0, "Annual_INR": 0, "Merchant_Capacity": "8 pilots", "Notes": "Standard integration"},
+        {"Service": "TOTAL", "Tier": "", "Monthly_INR": 0, "Annual_INR": 0, "Merchant_Capacity": "8 pilots", "Notes": "₹0/month POC"}
+      ]
+    },
+    {
+      "name": "Production Cost Model",
+      "data": [
+        {"Service": "Vercel", "Min_Tier": "Pro", "Max_Tier": "Enterprise", "Min_Monthly_INR": 1700, "Max_Monthly_INR": 34000, "Min_Annual_INR": 20400, "Max_Annual_INR": 408000, "Min_Merchants": 100, "Max_Merchants": 5000},
+        {"Service": "Supabase", "Min_Tier": "Pro", "Max_Tier": "Enterprise", "Min_Monthly_INR": 2100, "Max_Monthly_INR": 42000, "Min_Annual_INR": 25200, "Max_Annual_INR": 504000, "Min_Merchants": 100, "Max_Merchants": 5000},
+        {"Service": "Upstash Redis", "Min_Tier": "Pay-as-you-go", "Max_Tier": "Pay-as-you-go", "Min_Monthly_INR": 850, "Max_Monthly_INR": 8500, "Min_Annual_INR": 10200, "Max_Annual_INR": 102000, "Min_Merchants": 500, "Max_Merchants": 5000},
+        {"Service": "DeepSeek API", "Min_Tier": "Pay-per-token", "Max_Tier": "Pay-per-token", "Min_Monthly_INR": 4250, "Max_Monthly_INR": 42500, "Min_Annual_INR": 51000, "Max_Annual_INR": 510000, "Min_Merchants": 100, "Max_Merchants": 5000},
+        {"Service": "WhatsApp Business", "Min_Tier": "Pay-per-conversation", "Max_Tier": "Pay-per-conversation", "Min_Monthly_INR": 850, "Max_Monthly_INR": 8500, "Min_Annual_INR": 10200, "Max_Annual_INR": 102000, "Min_Merchants": 100, "Max_Merchants": 5000},
+        {"Service": "ShipRocket", "Min_Tier": "Pay-per-shipment", "Max_Tier": "Pay-per-shipment", "Min_Monthly_INR": 1700, "Max_Monthly_INR": 17000, "Min_Annual_INR": 20400, "Max_Annual_INR": 204000, "Min_Merchants": 100, "Max_Merchants": 5000},
+        {"Service": "Google Maps API", "Min_Tier": "Pay-as-you-go", "Max_Tier": "Pay-as-you-go", "Min_Monthly_INR": 850, "Max_Monthly_INR": 4250, "Min_Annual_INR": 10200, "Max_Annual_INR": 51000, "Min_Merchants": 100, "Max_Merchants": 5000},
+        {"Service": "Sentry", "Min_Tier": "Team", "Max_Tier": "Business", "Min_Monthly_INR": 2170, "Max_Monthly_INR": 8500, "Min_Annual_INR": 26040, "Max_Annual_INR": 102000, "Min_Merchants": 100, "Max_Merchants": 5000},
+        {"Service": "PostHog", "Min_Tier": "Free", "Max_Tier": "Scale", "Min_Monthly_INR": 0, "Max_Monthly_INR": 8500, "Min_Annual_INR": 0, "Max_Annual_INR": 102000, "Min_Merchants": 100, "Max_Merchants": 5000},
+        {"Service": "Elasticsearch", "Min_Tier": "None", "Max_Tier": "Managed", "Min_Monthly_INR": 0, "Max_Monthly_INR": 17000, "Min_Annual_INR": 0, "Max_Annual_INR": 204000, "Min_Merchants": 2500, "Max_Merchants": 5000},
+        {"Service": "TOTAL", "Min_Tier": "", "Max_Tier": "", "Min_Monthly_INR": 14470, "Max_Monthly_INR": 191250, "Min_Annual_INR": 173640, "Max_Annual_INR": 2295000, "Min_Merchants": 100, "Max_Merchants": 5000}
+      ]
+    },
+    {
+      "name": "Unit Economics",
+      "data": [
+        {"Plan": "Starter", "Monthly_Platform_Cost_INR": 85, "Subscription_Revenue_INR": 499, "Gross_Margin_Pct": 83},
+        {"Plan": "Growth", "Monthly_Platform_Cost_INR": 170, "Subscription_Revenue_INR": 999, "Gross_Margin_Pct": 83},
+        {"Plan": "Premium", "Monthly_Platform_Cost_INR": 250, "Subscription_Revenue_INR": 2499, "Gross_Margin_Pct": 90},
+        {"Breakeven": "Fixed Infa/mo", "Value": 14470},
+        {"Breakeven": "Merchants at Starter", "Value": 29},
+        {"Breakeven": "Merchants at Growth", "Value": 15},
+        {"Breakeven": "Revenue at 5000 merchants", "Value": 8325000},
+        {"Breakeven": "Revenue at 1000 merchants", "Value": 1665000}
+      ]
+    },
+    {
+      "name": "Scaling Thresholds",
+      "data": [
+        {"Merchants": 100, "Infra_Tier": "Vercel Pro + Supabase Pro", "Monthly_INR": 4500, "Action": "Initial production deployment"},
+        {"Merchants": 500, "Infra_Tier": "Add Redis + Background Workers", "Monthly_INR": 12000, "Action": "Scale caching and async processing"},
+        {"Merchants": 1000, "Infra_Tier": "Vercel Enterprise + Supabase Team + PG replication", "Monthly_INR": 35000, "Action": "Add read replicas for DB scaling"},
+        {"Merchants": 2500, "Infra_Tier": "Add Elasticsearch + Read replicas + CDN optimization", "Monthly_INR": 80000, "Action": "Full-text search at scale"},
+        {"Merchants": 5000, "Infra_Tier": "Multi-region PG + Dedicated AI infra", "Monthly_INR": 200000, "Action": "Enterprise-grade HA setup"},
+        {"Merchants": "Per city", "Infra_Tier": "Dedicated Supabase + Local micro-hub", "Monthly_INR": 50000, "Action": "Multi-city expansion"}
+      ]
+    },
+    {
+      "name": "API Endpoint Catalog",
+      "data": [
+        {"Group": "Products", "Path": "/api/v1/products", "Method": "GET", "Purpose": "List/search products", "Rate_Limit": "100/min"},
+        {"Group": "Products", "Path": "/api/v1/products/:id", "Method": "GET", "Purpose": "Product detail", "Rate_Limit": "100/min"},
+        {"Group": "Cart", "Path": "/api/v1/cart", "Method": "GET/POST/PUT/DELETE", "Purpose": "Cart operations", "Rate_Limit": "60/min"},
+        {"Group": "Checkout", "Path": "/api/v1/checkout/calculate", "Method": "POST", "Purpose": "Calculate fees", "Rate_Limit": "30/min"},
+        {"Group": "Checkout", "Path": "/api/v1/checkout/confirm", "Method": "POST", "Purpose": "Confirm order", "Rate_Limit": "10/min"},
+        {"Group": "Orders", "Path": "/api/v1/orders", "Method": "GET", "Purpose": "List user orders", "Rate_Limit": "60/min"},
+        {"Group": "Payment", "Path": "/api/v1/payment/create", "Method": "POST", "Purpose": "Create payment session", "Rate_Limit": "20/min"},
+        {"Group": "Payment", "Path": "/api/v1/payment/webhook", "Method": "POST", "Purpose": "Razorpay webhook", "Rate_Limit": "200/min"},
+        {"Group": "Merchant", "Path": "/api/v1/merchant/products", "Method": "CRUD", "Purpose": "Merchant catalog mgmt", "Rate_Limit": "60/min"},
+        {"Group": "Delivery", "Path": "/api/v1/delivery/status", "Method": "PUT", "Purpose": "Courier status update", "Rate_Limit": "120/min"},
+        {"Group": "AI", "Path": "/api/v1/ai/try-on", "Method": "POST", "Purpose": "Virtual try-on", "Rate_Limit": "5/min/user"},
+        {"Group": "Bullion", "Path": "/api/v1/bullion/rates", "Method": "GET", "Purpose": "Live gold/silver rates", "Rate_Limit": "20/min"},
+        {"Group": "WhatsApp", "Path": "/api/v1/whatsapp/link", "Method": "GET", "Purpose": "Generate deep link", "Rate_Limit": "60/min"}
+      ]
+    },
+    {
+      "name": "Testing Architecture",
+      "data": [
+        {"Layer": "Unit", "Tool": "Jest + Vitest", "Scope": "Services, utilities, models", "Frequency": "Per commit", "Coverage_Target": "80%+"},
+        {"Layer": "Component", "Tool": "React Testing Library + Storybook", "Scope": "UI components, forms", "Frequency": "Per PR", "Coverage_Target": "All stories pass"},
+        {"Layer": "Integration", "Tool": "Supertest + TestContainers", "Scope": "API endpoints, db queries", "Frequency": "Per PR", "Coverage_Target": "All endpoints pass"},
+        {"Layer": "E2E", "Tool": "Cypress / Playwright", "Scope": "20 critical flows", "Frequency": "Per staging deploy", "Coverage_Target": "100% pass rate"},
+        {"Layer": "Performance", "Tool": "k6 / Artillery", "Scope": "API under load", "Frequency": "Weekly", "Coverage_Target": "p95 < 500ms"},
+        {"Layer": "Load", "Tool": "Locust / k6", "Scope": "5000 concurrent users", "Frequency": "Monthly", "Coverage_Target": "No degradation"},
+        {"Layer": "Security", "Tool": "OWASP ZAP + Snyk", "Scope": "DAST + SAST", "Frequency": "Per release", "Coverage_Target": "Zero critical/high"},
+        {"Layer": "Accessibility", "Tool": "axe-core + Lighthouse", "Scope": "All pages WCAG 2.1 AA", "Frequency": "Per PR", "Coverage_Target": "No violations"}
+      ]
+    },
+    {
+      "name": "Integration Points",
+      "data": [
+        {"Integration": "Razorpay", "Protocol": "REST + Webhooks", "Auth": "API Key + HMAC", "Min_Volume": "10K txns/mo", "Max_Volume": "500K txns/mo", "SLA": "99.9%"},
+        {"Integration": "WhatsApp Business", "Protocol": "REST API", "Auth": "API Token", "Min_Volume": "1K conv/mo", "Max_Volume": "50K conv/mo", "SLA": "99.5%"},
+        {"Integration": "ShipRocket", "Protocol": "REST API", "Auth": "API Key", "Min_Volume": "500 orders/mo", "Max_Volume": "25K orders/mo", "SLA": "99.5%"},
+        {"Integration": "Google Maps", "Protocol": "REST + JS SDK", "Auth": "API Key", "Min_Volume": "10K req/day", "Max_Volume": "100K req/day", "SLA": "99.9%"},
+        {"Integration": "DeepSeek", "Protocol": "REST API", "Auth": "API Key", "Min_Volume": "100K inferences/mo", "Max_Volume": "1M inferences/mo", "SLA": "99.5%"},
+        {"Integration": "IBJA/MCX", "Protocol": "REST API", "Auth": "API Key", "Min_Volume": "1K req/day", "Max_Volume": "10K req/day", "SLA": "99.0%"},
+        {"Integration": "Jitsi/Daily.co", "Protocol": "REST + WebRTC", "Auth": "API Key", "Min_Volume": "100 calls/mo", "Max_Volume": "5K calls/mo", "SLA": "99.5%"},
+        {"Integration": "PostHog", "Protocol": "REST + SDK", "Auth": "API Key", "Min_Volume": "All events", "Max_Volume": "All events", "SLA": "99.9%"}
+      ]
+    },
+    {
+      "name": "ADR Log",
+      "data": [
+        {"ADR_ID": "ADR-001", "Decision": "Next.js over separate BE+FE", "Rationale": "Unified API surface, SSR for SEO, reduced DevOps", "Alternatives": "React + Express, Django REST"},
+        {"ADR_ID": "ADR-002", "Decision": "Supabase over custom PostgreSQL", "Rationale": "Built-in auth, RLS, realtime, storage, cheaper", "Alternatives": "AWS RDS, Neon, PlanetScale"},
+        {"ADR_ID": "ADR-003", "Decision": "DeepSeek API over self-hosted model", "Rationale": "No GPU infra, pay-per-token, rapid iteration", "Alternatives": "Stable Diffusion, Replicate"},
+        {"ADR_ID": "ADR-004", "Decision": "pgmq over dedicated queue", "Rationale": "Less infra, integrated with PostgreSQL", "Alternatives": "Redis Queue, BullMQ, RabbitMQ"},
+        {"ADR_ID": "ADR-005", "Decision": "Zustand over Redux", "Rationale": "Lighter bundle, simpler API, sufficient scale", "Alternatives": "Redux Toolkit, Jotai, Pinia"},
+        {"ADR_ID": "ADR-006", "Decision": "Razorpay over Stripe", "Rationale": "Indian market leader, UPI support, INR rates", "Alternatives": "Stripe, Instamojo, Cashfree"},
+        {"ADR_ID": "ADR-007", "Decision": "ShipRocket over custom delivery", "Rationale": "National scale, multiple partners, lower rates", "Alternatives": "Custom fleet, Dunzo, Shadowfax"},
+        {"ADR_ID": "ADR-008", "Decision": "Meilisearch over Elasticsearch", "Rationale": "Simpler, lower cost, sufficient for 5K", "Alternatives": "Elasticsearch, Algolia, Typesense"},
+        {"ADR_ID": "ADR-009", "Decision": "next-intl over react-i18next", "Rationale": "Next.js native, server components compatible", "Alternatives": "react-i18next, FormatJS"},
+        {"ADR_ID": "ADR-010", "Decision": "Expo over bare React Native", "Rationale": "Faster development, OTA updates", "Alternatives": "Bare RN, Flutter, Kotlin Multiplatform"}
+      ]
+    },
+    {
+      "name": "Technology Stack",
+      "data": [
+        {"Layer": "Frontend Web", "Technology": "Next.js 14", "Version": "14.x", "Purpose": "Web app (SSR + PWA)"},
+        {"Layer": "Frontend Mobile", "Technology": "React Native (Expo)", "Version": "50.x", "Purpose": "Mobile apps (iOS + Android)"},
+        {"Layer": "UI Framework", "Technology": "Tailwind CSS", "Version": "3.x", "Purpose": "Styling system"},
+        {"Layer": "UI Components", "Technology": "Radix UI / shadcn", "Version": "Latest", "Purpose": "Accessible component primitives"},
+        {"Layer": "State Management", "Technology": "Zustand", "Version": "4.x", "Purpose": "Client-side state"},
+        {"Layer": "Server State", "Technology": "TanStack Query", "Version": "5.x", "Purpose": "Server state caching"},
+        {"Layer": "Forms", "Technology": "React Hook Form + Zod", "Version": "Latest", "Purpose": "Form validation"},
+        {"Layer": "i18n", "Technology": "next-intl", "Version": "3.x", "Purpose": "Internationalization"},
+        {"Layer": "Backend API", "Technology": "Next.js API Routes", "Version": "14.x", "Purpose": "Serverless API"},
+        {"Layer": "Backend Services", "Technology": "Node.js + Express", "Version": "20 LTS", "Purpose": "Background services"},
+        {"Layer": "AI Service", "Technology": "Python FastAPI", "Version": "Latest", "Purpose": "AI inference service"},
+        {"Layer": "Database", "Technology": "PostgreSQL (Supabase)", "Version": "15.x", "Purpose": "Primary database"},
+        {"Layer": "Cache", "Technology": "Redis (Upstash)", "Version": "7.x", "Purpose": "Caching + session store"},
+        {"Layer": "Search", "Technology": "Meilisearch", "Version": "Latest", "Purpose": "Full-text search"},
+        {"Layer": "Queue", "Technology": "pgmq / RabbitMQ", "Version": "Latest", "Purpose": "Async message processing"},
+        {"Layer": "ORM", "Technology": "Prisma", "Version": "5.x", "Purpose": "Database access"},
+        {"Layer": "Auth", "Technology": "NextAuth.js + Supabase Auth", "Version": "Latest", "Purpose": "Authentication"},
+        {"Layer": "Payment", "Technology": "Razorpay", "Version": "Latest", "Purpose": "Payment gateway"},
+        {"Layer": "Shipping", "Technology": "ShipRocket API", "Version": "Latest", "Purpose": "National shipping"},
+        {"Layer": "Maps", "Technology": "Google Maps API", "Version": "Latest", "Purpose": "Geocoding, routing"},
+        {"Layer": "AI", "Technology": "DeepSeek API + ONNX Runtime", "Version": "Latest", "Purpose": "Virtual Try-On"},
+        {"Layer": "Analytics", "Technology": "PostHog", "Version": "Latest", "Purpose": "Product analytics"},
+        {"Layer": "Monitoring", "Technology": "Sentry + Grafana", "Version": "Latest", "Purpose": "Error tracking"},
+        {"Layer": "CI/CD", "Technology": "GitHub Actions", "Version": "Latest", "Purpose": "Automated testing & deploy"},
+        {"Layer": "Hosting", "Technology": "Vercel", "Version": "Latest", "Purpose": "Frontend + API hosting"},
+        {"Layer": "DB Hosting", "Technology": "Supabase", "Version": "Latest", "Purpose": "Managed PostgreSQL"},
+        {"Layer": "CDN", "Technology": "Vercel Edge Network", "Version": "Latest", "Purpose": "Global content delivery"}
+      ]
+    }
+  ]
+}

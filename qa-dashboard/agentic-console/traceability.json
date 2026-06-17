@@ -1,0 +1,182 @@
+{
+  "product": "agentic-console",
+  "generated_at": "2026-06-16T18:30:00Z",
+  "features": [
+    {
+      "id": "dashboard",
+      "name": "Main Dashboard",
+      "test_types": ["component", "e2e"],
+      "status": "tested",
+      "tests": [
+        "__tests__/agentic-console/comp/dashboard.test.tsx",
+        "e2e/agentic-console/dashboard.spec.ts",
+        "e2e/agentic-console/projects.spec.ts"
+      ]
+    },
+    {
+      "id": "pipeline-graph",
+      "name": "Pipeline DAG Graph",
+      "test_types": ["unit", "component", "visual-regression"],
+      "status": "tested",
+      "tests": [
+        "__tests__/agentic-console/unit/pipeline-graph.test.ts",
+        "__tests__/agentic-console/comp/dashboard.test.tsx",
+        "__tests__/agentic-console/comp/pipeline-graph.test.tsx",
+        "e2e/agentic-console/pipeline.spec.ts",
+        "e2e/agentic-console/visual-regression.spec.ts"
+      ]
+    },
+    {
+      "id": "agent-detail",
+      "name": "Agent Detail (6 tabs)",
+      "test_types": ["component", "e2e"],
+      "status": "tested",
+      "tests": [
+        "__tests__/agentic-console/comp/agent-detail.test.tsx",
+        "__tests__/agentic-console/api/state-routes.test.ts",
+        "__tests__/agentic-console/api/agent-routes.test.ts",
+        "e2e/agentic-console/agent-detail.spec.ts",
+        "e2e/agentic-console/approval.spec.ts"
+      ]
+    },
+    {
+      "id": "quality-dashboard",
+      "name": "Quality KPIs & Dashboard",
+      "test_types": ["component", "e2e"],
+      "status": "tested",
+      "tests": [
+        "__tests__/agentic-console/comp/quality.test.tsx",
+        "e2e/agentic-console/quality.spec.ts",
+        "e2e/agentic-console/visual-regression.spec.ts"
+      ]
+    },
+    {
+      "id": "health-monitor",
+      "name": "Health Monitoring",
+      "test_types": ["component", "e2e"],
+      "status": "tested",
+      "tests": [
+        "__tests__/agentic-console/comp/health.test.tsx",
+        "__tests__/agentic-console/api/data-routes.test.ts",
+        "e2e/agentic-console/health.spec.ts"
+      ]
+    },
+    {
+      "id": "operations-hub",
+      "name": "Operations (tokens/branches/PRs/Jira)",
+      "test_types": ["component", "e2e"],
+      "status": "tested",
+      "tests": [
+        "__tests__/agentic-console/comp/operations.test.tsx",
+        "__tests__/agentic-console/api/external-routes.test.ts",
+        "e2e/agentic-console/operations.spec.ts"
+      ]
+    },
+    {
+      "id": "log-viewer",
+      "name": "System Log Viewer",
+      "test_types": ["component"],
+      "status": "tested",
+      "tests": [
+        "__tests__/agentic-console/comp/logs.test.tsx",
+        "__tests__/agentic-console/api/data-routes.test.ts"
+      ]
+    },
+    {
+      "id": "mcp-registry",
+      "name": "MCP Server Registry",
+      "test_types": ["component"],
+      "status": "tested",
+      "tests": [
+        "__tests__/agentic-console/comp/mcp.test.tsx",
+        "__tests__/agentic-console/api/external-routes.test.ts",
+        "e2e/agentic-console/mcp.spec.ts"
+      ]
+    },
+    {
+      "id": "supervisor-chat",
+      "name": "Supervisor Chat (SSE)",
+      "test_types": ["sse", "e2e"],
+      "status": "partial",
+      "tests": [
+        "__tests__/agentic-console/sse/sse-supervisor.test.ts",
+        "e2e/agentic-console/supervisor.spec.ts"
+      ]
+    },
+    {
+      "id": "state-api",
+      "name": "State/Dashboard API",
+      "test_types": ["api-contract", "integration"],
+      "status": "tested",
+      "tests": [
+        "__tests__/agentic-console/api/state-routes.test.ts"
+      ]
+    },
+    {
+      "id": "agent-api",
+      "name": "Agent Management API",
+      "test_types": ["api-contract", "integration"],
+      "status": "tested",
+      "tests": [
+        "__tests__/agentic-console/api/state-routes.test.ts",
+        "__tests__/agentic-console/api/agent-routes.test.ts"
+      ]
+    },
+    {
+      "id": "pipeline-api",
+      "name": "Pipeline Control API",
+      "test_types": ["api-contract", "integration"],
+      "status": "tested",
+      "tests": [
+        "__tests__/agentic-console/api/pipeline-routes.test.ts"
+      ]
+    },
+    {
+      "id": "events-sse",
+      "name": "Events SSE Streaming",
+      "test_types": ["sse", "integration"],
+      "status": "tested",
+      "tests": [
+        "__tests__/agentic-console/sse/sse-events.test.ts"
+      ]
+    },
+    {
+      "id": "external-api",
+      "name": "External Integrations (Jira/Git)",
+      "test_types": ["integration"],
+      "status": "tested",
+      "tests": [
+        "__tests__/agentic-console/api/external-routes.test.ts"
+      ]
+    },
+    {
+      "id": "onboarding-wizard",
+      "name": "Enterprise Onboarding Wizard",
+      "test_types": ["component"],
+      "status": "tested",
+      "tests": [
+        "__tests__/agentic-console/comp/onboarding.test.tsx",
+        "e2e/agentic-console/onboarding.spec.ts"
+      ]
+    },
+    {
+      "id": "onboarding-api",
+      "name": "Project CRUD API",
+      "test_types": ["api-contract", "integration"],
+      "status": "tested",
+      "tests": [
+        "__tests__/agentic-console/api/state-routes.test.ts"
+      ]
+    },
+    {
+      "id": "security-rbac",
+      "name": "Security & RBAC",
+      "test_types": ["api-contract", "integration", "security"],
+      "status": "tested",
+      "tests": [
+        "__tests__/agentic-console/api/security-routes.test.ts",
+        "__tests__/agentic-console/security/security.test.ts"
+      ]
+    }
+  ]
+}

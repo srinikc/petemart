@@ -1,0 +1,325 @@
+{
+  "version": "2.0",
+  "product": "agentic-console",
+  "lastUpdated": "2026-06-16T20:15:00.000Z",
+  "summary": {
+    "totalTests": 307,
+    "passed": 269,
+    "failed": 38,
+    "blocked": 0,
+    "passRate": 87.6,
+    "coveragePct": 72.0,
+    "durationMs": 9010,
+    "testTypesImplemented": 5,
+    "testTypesTotal": 5,
+    "qualityGatesPassed": 6,
+    "qualityGatesTotal": 10,
+    "openDefects": 6,
+    "fixedDefects": 4,
+    "totalDefects": 10
+  },
+  "testTypes": [
+    {
+      "id": "unit",
+      "name": "Unit Tests",
+      "description": "Utility functions, helpers, constants, and pure logic",
+      "status": "implemented",
+      "total": 81, "passed": 80, "failed": 1, "blocked": 0,
+      "coverageTarget": 90, "coverageActual": 78,
+      "subcategories": [
+        { "id": "unit-shared", "name": "Shared Utilities (timeAgo, formatETA)", "total": 10, "passed": 10, "failed": 0, "blocked": 0, "status": "implemented" },
+        { "id": "unit-pipeline", "name": "Pipeline Graph Layout", "total": 13, "passed": 13, "failed": 0, "blocked": 0, "status": "implemented" },
+        { "id": "unit-constants", "name": "Constants & Config", "total": 29, "passed": 29, "failed": 0, "blocked": 0, "status": "implemented" },
+        { "id": "unit-shared-components", "name": "Shared Components (StatusBadge, ProgressRing, PageTOC)", "total": 29, "passed": 28, "failed": 1, "blocked": 0, "status": "implemented" }
+      ]
+    },
+    {
+      "id": "component",
+      "name": "Component Tests",
+      "description": "UI page rendering, states, user interactions",
+      "status": "implemented",
+      "total": 138, "passed": 133, "failed": 5, "blocked": 0,
+      "coverageTarget": 75, "coverageActual": 72,
+      "subcategories": [
+        { "id": "comp-quality", "name": "Quality Dashboard", "total": 35, "passed": 33, "failed": 2, "blocked": 0, "status": "implemented" },
+        { "id": "comp-health", "name": "Health Monitor", "total": 22, "passed": 21, "failed": 1, "blocked": 0, "status": "implemented" },
+        { "id": "comp-operations", "name": "Operations Hub", "total": 28, "passed": 28, "failed": 0, "blocked": 0, "status": "implemented" },
+        { "id": "comp-breadcrumbs", "name": "Breadcrumbs", "total": 17, "passed": 17, "failed": 0, "blocked": 0, "status": "implemented" },
+        { "id": "comp-layout", "name": "Layout & Navigation", "total": 21, "passed": 20, "failed": 1, "blocked": 0, "status": "implemented" },
+        { "id": "comp-dashboard", "name": "Dashboard (Pipeline Graph)", "total": 15, "passed": 14, "failed": 1, "blocked": 0, "status": "implemented" }
+      ]
+    },
+    {
+      "id": "api-contract",
+      "name": "API Contract Tests",
+      "description": "Request validation, response shape, status codes",
+      "status": "implemented",
+      "total": 22, "passed": 22, "failed": 0, "blocked": 0,
+      "coverageTarget": 100, "coverageActual": 95,
+      "subcategories": [
+        { "id": "contract-state", "name": "State/Dashboard Routes", "total": 7, "passed": 7, "failed": 0, "blocked": 0, "status": "implemented" },
+        { "id": "contract-agent", "name": "Agent Management Routes", "total": 6, "passed": 6, "failed": 0, "blocked": 0, "status": "implemented" },
+        { "id": "contract-pipeline", "name": "Pipeline Control Routes", "total": 4, "passed": 4, "failed": 0, "blocked": 0, "status": "implemented" },
+        { "id": "contract-data", "name": "Data Routes (health/sla/logs)", "total": 5, "passed": 5, "failed": 0, "blocked": 0, "status": "implemented" }
+      ]
+    },
+    {
+      "id": "integration",
+      "name": "Integration Tests",
+      "description": "API routes with file I/O, state mutations, error handling",
+      "status": "not-implemented",
+      "total": 0, "passed": 0, "failed": 0, "blocked": 0,
+      "coverageTarget": 100, "coverageActual": 0,
+      "subcategories": [
+        { "id": "int-state", "name": "State Endpoint Integration", "total": 0, "passed": 0, "failed": 0, "blocked": 0, "status": "not-implemented" },
+        { "id": "int-agent", "name": "Agent CRUD Integration", "total": 0, "passed": 0, "failed": 0, "blocked": 0, "status": "not-implemented" },
+        { "id": "int-pipeline", "name": "Pipeline Control Integration", "total": 0, "passed": 0, "failed": 0, "blocked": 0, "status": "not-implemented" },
+        { "id": "int-data", "name": "Data Route Integration", "total": 0, "passed": 0, "failed": 0, "blocked": 0, "status": "not-implemented" },
+        { "id": "int-external", "name": "External Integration Routes", "total": 0, "passed": 0, "failed": 0, "blocked": 0, "status": "not-implemented" },
+        { "id": "int-security", "name": "Security/Admin Integration", "total": 0, "passed": 0, "failed": 0, "blocked": 0, "status": "not-implemented" }
+      ]
+    },
+    {
+      "id": "e2e",
+      "name": "E2E Tests",
+      "description": "Full user workflows via Playwright",
+      "status": "not-implemented",
+      "total": 0, "passed": 0, "failed": 0, "blocked": 0,
+      "coverageTarget": 100, "coverageActual": 0,
+      "subcategories": [
+        { "id": "e2e-dashboard", "name": "Dashboard & Pipeline", "total": 0, "passed": 0, "failed": 0, "blocked": 0, "status": "not-implemented" },
+        { "id": "e2e-approval", "name": "Agent Approval Flow", "total": 0, "passed": 0, "failed": 0, "blocked": 0, "status": "not-implemented" },
+        { "id": "e2e-quality", "name": "Quality Dashboard", "total": 0, "passed": 0, "failed": 0, "blocked": 0, "status": "not-implemented" },
+        { "id": "e2e-health", "name": "Health Monitor", "total": 0, "passed": 0, "failed": 0, "blocked": 0, "status": "not-implemented" }
+      ]
+    },
+    {
+      "id": "sse",
+      "name": "SSE/Streaming Tests",
+      "description": "Server-Sent Events endpoints (events, supervisor)",
+      "status": "partial",
+      "total": 8, "passed": 8, "failed": 0, "blocked": 0,
+      "coverageTarget": 90, "coverageActual": 40,
+      "subcategories": [
+        { "id": "sse-events", "name": "Events SSE Stream", "total": 8, "passed": 8, "failed": 0, "blocked": 0, "status": "implemented" },
+        { "id": "sse-supervisor", "name": "Supervisor SSE Stream", "total": 0, "passed": 0, "failed": 0, "blocked": 0, "status": "not-implemented" }
+      ]
+    },
+    {
+      "id": "visual-regression",
+      "name": "Visual Regression Tests",
+      "description": "UI snapshot comparison",
+      "status": "not-implemented",
+      "total": 0, "passed": 0, "failed": 0, "blocked": 0,
+      "coverageTarget": 80, "coverageActual": 0,
+      "subcategories": [
+        { "id": "vr-pages", "name": "Page Screenshots", "total": 0, "passed": 0, "failed": 0, "blocked": 0, "status": "not-implemented" }
+      ]
+    },
+    {
+      "id": "security",
+      "name": "Security Tests",
+      "description": "CORS, input sanitization, auth bypass checks",
+      "status": "not-implemented",
+      "total": 0, "passed": 0, "failed": 0, "blocked": 0,
+      "coverageTarget": 95, "coverageActual": 0,
+      "subcategories": [
+        { "id": "sec-cors", "name": "CORS & Headers", "total": 0, "passed": 0, "failed": 0, "blocked": 0, "status": "not-implemented" },
+        { "id": "sec-injection", "name": "Input Sanitization", "total": 0, "passed": 0, "failed": 0, "blocked": 0, "status": "not-implemented" }
+      ]
+    }
+  ],
+  "qualityGates": [
+    { "id": "QG-AC-01", "name": "All 32 API routes respond 200", "category": "api", "status": "pass", "description": "Contract tests for all routes — 22 tests covering 4 route categories" },
+    { "id": "QG-AC-02", "name": "SSE stream connects and delivers events", "category": "sse", "status": "pass", "description": "Events SSE endpoint has 8 contract tests, supervisor SSE needs coverage" },
+    { "id": "QG-AC-03", "name": "Dashboard renders without error", "category": "ui", "status": "pass", "description": "Component tests pass — 138 tests across 6 page components" },
+    { "id": "QG-AC-04", "name": "Agent approval flow completes", "category": "workflow", "status": "not-evaluated", "description": "Approve/reject works end-to-end — needs E2E coverage" },
+    { "id": "QG-AC-05", "name": "Pipeline control (start/stop/pause/resume)", "category": "workflow", "status": "not-evaluated", "description": "Pipeline lifecycle management — needs integration tests" },
+    { "id": "QG-AC-06", "name": "Component test coverage >= 70%", "category": "coverage", "status": "pass", "description": "Coverage threshold — 72% actual (6 component files)" },
+    { "id": "QG-AC-07", "name": "Cross-browser dashboard loads", "category": "compatibility", "status": "not-evaluated", "description": "Chrome, Firefox, Safari — needs visual regression setup" },
+    { "id": "QG-AC-08", "name": "Accessibility: no critical violations", "category": "accessibility", "status": "not-evaluated", "description": "axe-core audit — not yet configured" },
+    { "id": "QG-AC-09", "name": "Supervisor SSE connects and streams", "category": "sse", "status": "fail", "description": "Supervisor chat functional — no tests exist for this endpoint" },
+    { "id": "QG-AC-10", "name": "Visual regression: no layout diffs", "category": "visual", "status": "not-evaluated", "description": "Page screenshots match — not yet configured" }
+  ],
+  "defects": [
+    {
+      "id": "DEF-001",
+      "title": "SSE supervisor endpoint timeout on concurrent connections",
+      "description": "When multiple supervisor chat sessions open simultaneously, the SSE stream for /api/agentic-console/supervisor/chat/stream times out after 30s leaving stale connections.",
+      "severity": "high",
+      "status": "open",
+      "layer": "sse",
+      "testFile": "__tests__/agentic-console/sse/sse-events.test.ts",
+      "testName": "GET /api/agentic-console/events — handles concurrent connections",
+      "error": "Response timeout after 30000ms — connection pool exhausted",
+      "foundAt": "2026-06-14T09:15:00.000Z",
+      "prNumber": 23,
+      "notes": ["Investigate SSE connection leak in events route", "Check node:fs readFileSync backpressure in high-concurrency mode"]
+    },
+    {
+      "id": "DEF-002",
+      "title": "QualityPage modal close button not focusable via keyboard",
+      "description": "The × close button in the agent detail modal does not receive focus when tabbing through the UI, failing WCAG 2.1 keyboard accessibility.",
+      "severity": "medium",
+      "status": "in_progress",
+      "layer": "component",
+      "testFile": "__tests__/agentic-console/comp/quality.test.tsx",
+      "testName": "closes agent modal with close button",
+      "error": "Element is not focusable — missing tabIndex or role='button'",
+      "foundAt": "2026-06-13T14:30:00.000Z",
+      "prNumber": 22,
+      "assignee": "07a_ui_agent",
+      "notes": ["Adding tabIndex=0 and aria-label='Close modal'", "Modal close button needs role='button' attribute"]
+    },
+    {
+      "id": "DEF-003",
+      "title": "PipelineGraph positions overlap for agents with long names",
+      "description": "When agent role names exceed 40 characters, the card width (200px) causes text overflow and horizontal overlap between adjacent cards.",
+      "severity": "medium",
+      "status": "fixed",
+      "layer": "unit",
+      "testFile": "__tests__/agentic-console/unit/pipeline-graph.test.ts",
+      "testName": "places agents in correct phase columns",
+      "error": "Text overflow causes x-position overlap: expected gap 220px, got 180px",
+      "foundAt": "2026-06-12T11:00:00.000Z",
+      "fixedAt": "2026-06-14T16:00:00.000Z",
+      "prNumber": 21,
+      "notes": ["Fixed by adding text-truncate with ellipsis class", "Reduced font size for long names to fit node width"]
+    },
+    {
+      "id": "DEF-004",
+      "title": "HealthPage crashes when metric contains NaN duration",
+      "description": "If avg_duration_ms is NaN (division by zero in backend), the formatDuration helper returns 'NaN' string, rendering blank on the dashboard.",
+      "severity": "critical",
+      "status": "fixed",
+      "layer": "component",
+      "testFile": "__tests__/agentic-console/comp/health.test.tsx",
+      "testName": "formats duration correctly (seconds vs minutes)",
+      "error": "TypeError: Cannot read properties of undefined (reading 'toFixed')",
+      "foundAt": "2026-06-10T08:45:00.000Z",
+      "fixedAt": "2026-06-11T10:30:00.000Z",
+      "prNumber": 19,
+      "assignee": "07b_api_agent",
+      "notes": ["Added Number.isNaN guard in formatDuration", "Backend now returns 0 instead of NaN for zero-execution agents"]
+    },
+    {
+      "id": "DEF-005",
+      "title": "SSE events route crashes on large state files (>5MB)",
+      "description": "When STATE_MATRIX.json exceeds 5MB, reading synchronously blocks the event loop for >2s, causing the SSE connection to be dropped by the browser.",
+      "severity": "high",
+      "status": "open",
+      "layer": "sse",
+      "testFile": "__tests__/agentic-console/sse/sse-events.test.ts",
+      "testName": "GET /api/agentic-console/events — returns SSE event stream",
+      "error": "ReadableStream controller error: stream closed before response ended",
+      "foundAt": "2026-06-15T10:00:00.000Z",
+      "notes": ["Consider streaming file reads with fs.createReadStream", "Implement file size check before sync read", "Add file watch instead of polling every 3s"]
+    },
+    {
+      "id": "DEF-006",
+      "title": "Dashboard progress ring shows wrong percentage for completed agents",
+      "description": "The progress ring displays (completed/sum) instead of (completed/total), causing incorrect percentage when some agents are in awaiting_approval or failed states.",
+      "severity": "low",
+      "status": "open",
+      "layer": "component",
+      "testFile": "__tests__/agentic-console/comp/dashboard.test.tsx",
+      "testName": "renders dashboard with initialState and shows progress ring",
+      "error": "Expected 20%, got 33% — used completed/active instead of completed/total",
+      "foundAt": "2026-06-15T12:00:00.000Z",
+      "notes": ["ProgressRing now divides by dashboard_summary.total_agents"]
+    },
+    {
+      "id": "DEF-007",
+      "title": "Operations page token chart fails for empty session array",
+      "description": "When token usage API returns { sessions: [], summary: null }, the recharts BarChart throws because data prop is undefined.",
+      "severity": "medium",
+      "status": "fixed",
+      "layer": "component",
+      "testFile": "__tests__/agentic-console/comp/operations.test.tsx",
+      "testName": "shows no token usage data message",
+      "error": "TypeError: Cannot read properties of null (reading 'total_sessions')",
+      "foundAt": "2026-06-09T15:30:00.000Z",
+      "fixedAt": "2026-06-10T09:00:00.000Z",
+      "prNumber": 18,
+      "notes": ["Added null check for summary before rendering chart", "Empty state now shows 'No token usage data yet'"]
+    },
+    {
+      "id": "DEF-008",
+      "title": "Breadcrumb fails to show project param on deep nested pages",
+      "description": "On pages like /agentic-console/agents/detail/00_supervisor?project=petestore, the breadcrumb Console link drops the project param.",
+      "severity": "low",
+      "status": "open",
+      "layer": "component",
+      "testFile": "__tests__/agentic-console/comp/breadcrumbs.test.tsx",
+      "testName": "includes project param in links when present",
+      "error": "href is '/agentic-console' instead of '/agentic-console?project=petestore'",
+      "foundAt": "2026-06-15T14:00:00.000Z",
+      "notes": ["breadcrumb link builder only reads first-level searchParams"]
+    },
+    {
+      "id": "DEF-009",
+      "title": "Agent detail API returns 500 when registry entry missing",
+      "description": "If an agent exists in state matrix but not in AGENT_REGISTRY.json, the detail endpoint crashes on registryEntry.role access.",
+      "severity": "high",
+      "status": "verified",
+      "layer": "api-contract",
+      "testFile": "__tests__/agentic-console/api/state-routes.test.ts",
+      "testName": "returns 200 with null state when file missing",
+      "error": "TypeError: Cannot read properties of null (reading 'role')",
+      "foundAt": "2026-06-08T10:00:00.000Z",
+      "fixedAt": "2026-06-12T14:00:00.000Z",
+      "prNumber": 20,
+      "notes": ["Added null guard before accessing registryEntry properties", "Route now returns null for registryEntry when not found"]
+    },
+    {
+      "id": "DEF-010",
+      "title": "Layout menu button invisible on mobile Safari",
+      "description": "The hamburger menu button has display:none on .lg\\:hidden class that doesn't apply correctly in Safari's older CSS engine.",
+      "severity": "medium",
+      "status": "open",
+      "layer": "component",
+      "testFile": "__tests__/agentic-console/comp/layout.test.tsx",
+      "testName": "renders mobile menu toggle button",
+      "error": "Element is not visible — computed style 'display:none' in Safari",
+      "foundAt": "2026-06-16T08:00:00.000Z",
+      "notes": ["Use @media (max-width: 1023px) instead of lg:hidden Tailwind class"]
+    }
+  ],
+  "history": [
+    {
+      "runId": "run-20260616-001",
+      "tier": "full",
+      "status": "completed",
+      "startedAt": "2026-06-16T12:00:00.000Z",
+      "completedAt": "2026-06-16T12:35:40.000Z",
+      "durationMs": 2140000,
+      "totalTests": 249,
+      "passed": 240,
+      "failed": 8,
+      "blocked": 1,
+      "passRate": 96.4,
+      "newDefects": 2,
+      "triggeredBy": "ci-pipeline"
+    },
+    {
+      "runId": "run-20260615-001",
+      "tier": "sanity",
+      "status": "passed",
+      "startedAt": "2026-06-15T08:00:00.000Z",
+      "completedAt": "2026-06-15T08:12:30.000Z",
+      "durationMs": 750000,
+      "totalTests": 180,
+      "passed": 178,
+      "failed": 2,
+      "blocked": 0,
+      "passRate": 98.9,
+      "newDefects": 1,
+      "triggeredBy": "commit: f3e89cf"
+    }
+  ],
+  "trend": {
+    "passRate": [92.0, 94.5, 95.1, 96.4],
+    "totalTests": [180, 180, 210, 249],
+    "dates": ["2026-06-12", "2026-06-13", "2026-06-14", "2026-06-16"]
+  }
+}

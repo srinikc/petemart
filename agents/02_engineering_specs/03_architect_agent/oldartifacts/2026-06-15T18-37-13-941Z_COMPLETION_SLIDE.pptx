@@ -1,0 +1,69 @@
+{
+  "presentation": {
+    "title": "03_architect_agent — PeteMart Full Architecture Blueprint",
+    "slides": [
+      {
+        "title": "Architecture Completion Summary",
+        "type": "summary",
+        "agent": "03_architect_agent (Senior Enterprise Solution Architect)",
+        "generated_at": "2026-06-15T09:35:50+05:30",
+        "status": "Awaiting HITL Approval"
+      },
+      {
+        "title": "Deliverables Produced",
+        "bullet_points": [
+          "FEASIBILITY_ARCHITECTURE.md — Full production blueprint (14 sections, 8 C4 diagrams)",
+          "FEASIBILITY_ARCHITECTURE.json — Structured architecture contract with all data",
+          "DATA_EXPORT.xlsx — 10-sheet spreadsheet (costs, API catalog, testing, ADRs, tech stack)",
+          "GUARDRAIL_VERIFICATION.md — All 4 mandatory guardrails verified PASSED",
+          "COMPLETION_SLIDE.pptx — This slide deck"
+        ]
+      },
+      {
+        "title": "Architecture Highlights",
+        "bullet_points": [
+          "C4 diagrams: System Context, Container, Component, Sequence, Deployment, ERD, Security, Data Flow",
+          "API-First with Kong/Vercel Edge Gateway — 21 endpoints with tiered rate limiting",
+          "Event-driven order processing via pgmq/RabbitMQ — 10 event topics, 6 consumers",
+          "Multi-layer testing: 8 layers from Unit to Load (5,000 concurrent users)",
+          "Security: 5-layer defense-in-depth with RLS, WAF, encryption at rest/transit",
+          "10 Architectural Decision Records with rationale and alternatives"
+        ]
+      },
+      {
+        "title": "Cost Summary",
+        "bullet_points": [
+          "POC Phase: ₹0/month (8 merchants, all free tiers)",
+          "Production 100 merchants: ₹14,470/month",
+          "Production 500 merchants: ₹12,000/month (caching + workers)",
+          "Production 1,000 merchants: ₹35,000/month (enterprise tier)",
+          "Production 5,000 merchants: ₹2,00,000/month (multi-region HA)",
+          "Multi-city expansion: ₹50,000/city/month",
+          "Breakeven: 15 merchants at Growth plan"
+        ]
+      },
+      {
+        "title": "POC Scope (₹0/month)",
+        "bullet_points": [
+          "8 pilot merchants (Balepet + Chickpet markets)",
+          "Web: Vercel Hobby (petemart-pilot.vercel.app)",
+          "DB: Supabase Free (500MB, 1GB storage)",
+          "Auth: Supabase Auth (Email OTP)",
+          "Mode A/B/C flows (basic)",
+          "Multi-language: English + Kannada",
+          "12 features deferred to production"
+        ]
+      },
+      {
+        "title": "Next Steps",
+        "bullet_points": [
+          "HITL review of architecture blueprint",
+          "Prototype agent spins up POC on free tiers",
+          "Build core POC components (web, auth, catalog, checkout)",
+          "Program mgmt agent schedules sprints per scaling thresholds",
+          "Production migration planning at 100+ merchants"
+        ]
+      }
+    ]
+  }
+}

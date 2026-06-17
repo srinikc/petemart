@@ -1,0 +1,48 @@
+{
+  "project": "PeteMart",
+  "version": "2.0",
+  "generated_by": "03_architect_agent",
+  "requirement_count": 0,
+  "categories": [],
+  "tech_stack": {
+    "frontend": {
+      "web": "React 18 / Next.js 14",
+      "mobile": "React Native / Expo"
+    },
+    "backend": "Next.js API Routes",
+    "database": "PostgreSQL (Supabase)",
+    "auth": "Supabase Auth (Email + OTP)",
+    "deployment": {
+      "web": "Vercel",
+      "mobile": "Expo / App Store",
+      "db": "Supabase"
+    },
+    "ai": "OpenCode / DeepSeek",
+    "ci_cd": "GitHub Actions"
+  },
+  "architecture": {
+    "pattern": "API-First, Monorepo (Next.js)",
+    "api_gateway": "Next.js API Routes with rate limiting",
+    "caching": "SWR (stale-while-revalidate) + Supabase Realtime",
+    "message_queue": "pgmq (PostgreSQL message queue)",
+    "event_driven": "Supabase webhooks + pgmq",
+    "testing": "Vitest (unit) + Playwright (E2E) + k6 (load)"
+  },
+  "poc": {
+    "merchants": 8,
+    "markets": [
+      "Balepet",
+      "Chickpet"
+    ],
+    "cost_per_month": 0,
+    "free_tiers": [
+      "Vercel Hobby",
+      "Supabase Free"
+    ],
+    "subdomains": [
+      "*.vercel.app",
+      "*.supabase.co",
+      "*.railway.app"
+    ]
+  }
+}

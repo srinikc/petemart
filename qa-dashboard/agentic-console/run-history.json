@@ -1,0 +1,107 @@
+[
+  {
+    "runId": "run-20260616-001",
+    "tier": "full",
+    "tierLabel": "Full",
+    "status": "completed",
+    "started": "2026-06-16T12:00:00.000Z",
+    "completed": "2026-06-16T12:35:40.000Z",
+    "allPassed": false,
+    "summary": {
+      "total": 249,
+      "passed": 240,
+      "failed": 8,
+      "blocked": 1,
+      "passRate": 96.4,
+      "durationMs": 2140000,
+      "newDefects": 2
+    },
+    "tests": {
+      "unit": { "total": 81, "passed": 80, "failed": 1, "blocked": 0, "status": "implemented" },
+      "component": { "total": 138, "passed": 133, "failed": 5, "blocked": 0, "status": "implemented" },
+      "api-contract": { "total": 22, "passed": 22, "failed": 0, "blocked": 0, "status": "implemented" },
+      "sse": { "total": 8, "passed": 8, "failed": 0, "blocked": 0, "status": "partial" },
+      "integration": { "total": 0, "passed": 0, "failed": 0, "blocked": 0, "status": "not-implemented" },
+      "e2e": { "total": 0, "passed": 0, "failed": 0, "blocked": 0, "status": "not-implemented" },
+      "visual-regression": { "total": 0, "passed": 0, "failed": 0, "blocked": 0, "status": "not-implemented" },
+      "security": { "total": 0, "passed": 0, "failed": 0, "blocked": 0, "status": "not-implemented" }
+    },
+    "metadata": {
+      "buildLabel": "v2.0.0-rc.1",
+      "triggeredBy": "ci-pipeline",
+      "commitSha": "a1b2c3d4e5f6",
+      "branch": "develop",
+      "durationMs": 2140000
+    },
+    "source": "ci-pipeline",
+    "defectsFound": ["DEF-005", "DEF-008"]
+  },
+  {
+    "runId": "run-20260615-001",
+    "tier": "sanity",
+    "tierLabel": "Sanity",
+    "status": "passed",
+    "started": "2026-06-15T08:00:00.000Z",
+    "completed": "2026-06-15T08:12:30.000Z",
+    "allPassed": true,
+    "summary": {
+      "total": 180,
+      "passed": 178,
+      "failed": 2,
+      "blocked": 0,
+      "passRate": 98.9,
+      "durationMs": 750000,
+      "newDefects": 1
+    },
+    "tests": {
+      "unit": { "total": 60, "passed": 59, "failed": 1, "blocked": 0, "status": "implemented" },
+      "component": { "total": 90, "passed": 89, "failed": 1, "blocked": 0, "status": "implemented" },
+      "api-contract": { "total": 22, "passed": 22, "failed": 0, "blocked": 0, "status": "implemented" },
+      "sse": { "total": 8, "passed": 8, "failed": 0, "blocked": 0, "status": "partial" }
+    },
+    "metadata": {
+      "buildLabel": "v2.0.0-beta.3",
+      "triggeredBy": "commit: f3e89cf",
+      "commitSha": "f3e89cf",
+      "branch": "feature/agent-detail-and-mcp-registry",
+      "durationMs": 750000
+    },
+    "source": "ci-pipeline",
+    "defectsFound": ["DEF-003"]
+  },
+  {
+    "runId": "run-20260613-001",
+    "tier": "release",
+    "tierLabel": "Release",
+    "status": "failed",
+    "started": "2026-06-13T14:00:00.000Z",
+    "completed": "2026-06-13T14:45:20.000Z",
+    "allPassed": false,
+    "summary": {
+      "total": 210,
+      "passed": 195,
+      "failed": 12,
+      "blocked": 3,
+      "passRate": 92.9,
+      "durationMs": 2720000,
+      "newDefects": 3
+    },
+    "tests": {
+      "unit": { "total": 60, "passed": 58, "failed": 2, "blocked": 0, "status": "implemented" },
+      "component": { "total": 90, "passed": 86, "failed": 3, "blocked": 1, "status": "implemented" },
+      "api-contract": { "total": 22, "passed": 22, "failed": 0, "blocked": 0, "status": "implemented" },
+      "sse": { "total": 8, "passed": 8, "failed": 0, "blocked": 0, "status": "partial" },
+      "e2e": { "total": 15, "passed": 10, "failed": 5, "blocked": 2, "status": "partial" },
+      "visual-regression": { "total": 15, "passed": 11, "failed": 2, "blocked": 0, "status": "partial" }
+    },
+    "metadata": {
+      "buildLabel": "v2.0.0-beta.2",
+      "triggeredBy": "human-gatekeeper",
+      "commitSha": "b0d1e2f3",
+      "branch": "release/v2.0.0-beta",
+      "durationMs": 2720000
+    },
+    "source": "ci-pipeline",
+    "defectsFound": ["DEF-004", "DEF-007", "DEF-009"]
+  }
+]

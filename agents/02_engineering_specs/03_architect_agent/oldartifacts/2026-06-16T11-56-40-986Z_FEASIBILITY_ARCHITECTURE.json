@@ -1,0 +1,233 @@
+{
+  "document_metadata": {
+    "title": "PeteMart Full Product Enterprise Architecture Blueprint",
+    "version": "1.0",
+    "author": "Senior Enterprise Solution Architect (Agent 03)",
+    "date": "2026-06-15",
+    "status": "Final",
+    "derived_from": ["PRD v2.0", "Idea Proposal v1.3", "Business Revenue Model v1.4", "PRD Config v1.0"]
+  },
+  "architecture_overview": {
+    "pattern": "API-first, Event-driven, Cloud-native Microservices",
+    "frontend": "Next.js 14 (Web) + React Native (Mobile)",
+    "backend": "NestJS (Node.js) + Python FastAPI (AI)",
+    "database": "PostgreSQL 16 + MongoDB + Redis + Elasticsearch",
+    "infrastructure": "AWS EKS (Kubernetes) + RDS + ElastiCache + S3 + CloudFront",
+    "api_gateway": "Kong (Open Source)",
+    "message_queue": "RabbitMQ (Amazon MQ)",
+    "target_merchants": 5000,
+    "target_markets": 21,
+    "target_cities": "Bangalore (primary) → Chennai, Hyderabad, Mumbai (expansion)",
+    "cost_at_scale": "~₹7,78,000/month (5,000 merchants)"
+  },
+  "architecture_principles": [
+    "API-First: All capabilities exposed via RESTful APIs before UI",
+    "Event-Driven: Async message passing for cross-service communication",
+    "Cloud-Native: Horizontal scaling, containerized microservices on Kubernetes",
+    "Offline-First: Mobile apps work with degraded connectivity via SQLite local cache",
+    "Multi-Tenant: Isolated merchant data with shared infrastructure using RLS",
+    "Observability: OpenTelemetry tracing, Prometheus metrics, ELK logging",
+    "Secure by Default: Defense in depth, zero-trust network, encryption everywhere",
+    "Cost-Optimized: Auto-scaling, spot instances, CDN caching, read replicas"
+  ],
+  "personas": [
+    {"id": "PERS-CUST-001", "name": "Priya Sharma", "role": "Hyperlocal Customer", "channels": ["Web", "Mobile", "WhatsApp"]},
+    {"id": "PERS-MER-001", "name": "Ramesh Gupta", "role": "Traditional Pete Merchant", "channels": ["Web (Merchant Dashboard)", "Mobile"]},
+    {"id": "PERS-DLV-001", "name": "Vinay Kumar", "role": "Delivery Partner", "channels": ["Courier Mobile App"]},
+    {"id": "PERS-ADM-001", "name": "Ananya Rao", "role": "Platform Admin", "channels": ["Admin Console"]},
+    {"id": "PERS-B2B-001", "name": "Deepa Patel", "role": "B2B Bulk Buyer", "channels": ["Web", "Mobile", "WhatsApp"]}
+  ],
+  "interaction_modes": [
+    {"mode": "A", "name": "Direct Purchase", "description": "Full e-commerce checkout with Razorpay payment", "commission": {"b2c": "4%", "b2b": "1.5%"}, "prerequisites": ["Razorpay account", "Product catalog"]},
+    {"mode": "B", "name": "WhatsApp Enquiry", "description": "Deep link to WhatsApp for price negotiation", "commission": "0% (discovery only)", "prerequisites": ["WhatsApp Business number"]},
+    {"mode": "C", "name": "Visit Store", "description": "Google Maps directions to physical store", "commission": "0% (footfall generation)", "prerequisites": ["Google Maps pin", "Store address"]}
+  ],
+  "system_context": {
+    "internal_systems": [
+      {"name": "Web Application", "technology": "Next.js 14", "purpose": "Customer browsing, purchasing, merchant management"},
+      {"name": "Mobile Apps", "technology": "React Native", "purpose": "iOS & Android native apps for customers, couriers"},
+      {"name": "API Gateway & Services", "technology": "Kong + NestJS Microservices", "purpose": "API routing, auth, rate limiting, business logic"},
+      {"name": "Admin Console", "technology": "Next.js", "purpose": "Platform administration, merchant management, analytics"},
+      {"name": "Courier App", "technology": "React Native", "purpose": "Delivery partner order management"}
+    ],
+    "external_systems": [
+      {"name": "Razorpay", "purpose": "Payment processing, subscriptions"},
+      {"name": "WhatsApp Business API", "purpose": "Messaging, enquiry tracking, OTP"},
+      {"name": "Google Maps API", "purpose": "Geocoding, distance matrix, directions"},
+      {"name": "ShipRocket", "purpose": "National shipping logistics"},
+      {"name": "MCX/IBJA", "purpose": "Live bullion rates for gold/silver"},
+      {"name": "Jitsi/WebRTC", "purpose": "Video call appointments"}
+    ]
+  },
+  "microservices": [
+    {"service": "User Service", "technology": "NestJS", "database": "PostgreSQL", "replicas": {"min": 2, "max": 8}, "responsibilities": ["Auth (OTP/JWT)", "User profiles", "Addresses"]},
+    {"service": "Product Service", "technology": "NestJS", "database": "MongoDB + Elasticsearch", "replicas": {"min": 2, "max": 10}, "responsibilities": ["Catalog CRUD", "Inventory", "Full-text search", "Product images"]},
+    {"service": "Order Service", "technology": "NestJS", "database": "PostgreSQL + Redis", "replicas": {"min": 2, "max": 12}, "responsibilities": ["Multi-store cart", "Checkout engine", "Consolidation logic", "Order lifecycle"]},
+    {"service": "Merchant Service", "technology": "NestJS", "database": "PostgreSQL", "replicas": {"min": 2, "max": 8}, "responsibilities": ["Store management", "Subscription plans", "Onboarding workflow"]},
+    {"service": "Payment Service", "technology": "NestJS", "database": "PostgreSQL", "replicas": {"min": 2, "max": 6}, "responsibilities": ["Razorpay integration", "Payment reconciliation", "Merchant settlements"]},
+    {"service": "Delivery Service", "technology": "NestJS", "database": "PostgreSQL + Redis", "replicas": {"min": 2, "max": 8}, "responsibilities": ["Zone management", "Courier dispatch", "Route optimization", "Live tracking"]},
+    {"service": "Notification Service", "technology": "NestJS", "database": "Redis", "replicas": {"min": 2, "max": 10}, "responsibilities": ["Push (FCM)", "Email (SendGrid)", "SMS (Twilio)", "WhatsApp"]},
+    {"service": "AI Service", "technology": "Python FastAPI", "database": "PostgreSQL (pgvector) + S3", "replicas": {"min": 1, "max": 6}, "responsibilities": ["Virtual try-on", "Recommendations", "Similar products", "Semantic search"]},
+    {"service": "Bullion Service", "technology": "NestJS", "database": "TimescaleDB + Redis", "replicas": {"min": 1, "max": 4}, "responsibilities": ["Live rate fetching", "Rate caching", "Price recalculation"]},
+    {"service": "Analytics Service", "technology": "NestJS", "database": "ClickHouse/PostgreSQL", "replicas": {"min": 2, "max": 6}, "responsibilities": ["Event processing", "Merchant analytics", "Admin dashboards", "BI exports"]}
+  ],
+  "api_endpoints": {
+    "user": ["POST /api/v1/auth/login", "POST /api/v1/auth/register", "GET /api/v1/users/profile", "PUT /api/v1/users/addresses"],
+    "product": ["GET /api/v1/products", "GET /api/v1/products/:id", "GET /api/v1/products/search", "GET /api/v1/products/:id/try-on"],
+    "merchant": ["GET /api/v1/merchants/:slug", "GET /api/v1/merchants/:id/products", "POST /api/v1/merchants/register", "PUT /api/v1/merchants/subscription"],
+    "cart": ["POST /api/v1/cart/add", "PUT /api/v1/cart/update", "DELETE /api/v1/cart/:item", "GET /api/v1/cart/summary"],
+    "order": ["POST /api/v1/orders/checkout", "GET /api/v1/orders/:id", "GET /api/v1/orders/history", "PUT /api/v1/orders/:id/status"],
+    "payment": ["POST /api/v1/payments/initiate", "POST /api/v1/payments/razorpay/webhook", "GET /api/v1/payments/:id"],
+    "delivery": ["POST /api/v1/delivery/assign", "GET /api/v1/delivery/:id/track", "PUT /api/v1/delivery/:id/status", "GET /api/v1/delivery/zones"],
+    "notification": ["POST /api/v1/notifications/send", "PUT /api/v1/notifications/device-token", "GET /api/v1/notifications/history"],
+    "ai": ["POST /api/v1/ai/try-on", "POST /api/v1/ai/recommendations", "GET /api/v1/ai/similar/:id"],
+    "bullion": ["GET /api/v1/bullion/rates", "GET /api/v1/bullion/history"],
+    "analytics": ["GET /api/v1/analytics/merchant/:id/sales", "GET /api/v1/analytics/admin/revenue"],
+    "admin": ["GET /api/v1/admin/merchants/pending", "PUT /api/v1/admin/merchants/:id/approve", "GET /api/v1/admin/system/health"]
+  },
+  "webhook_events": [
+    {"event": "order.created", "publisher": "Order Service", "consumers": ["Notification", "Delivery", "Analytics"]},
+    {"event": "order.payment_confirmed", "publisher": "Payment Service", "consumers": ["Order", "Notification", "Analytics"]},
+    {"event": "order.shipped", "publisher": "Delivery Service", "consumers": ["Order", "Notification"]},
+    {"event": "order.delivered", "publisher": "Delivery Service", "consumers": ["Order", "Notification", "Analytics"]},
+    {"event": "merchant.registered", "publisher": "Merchant Service", "consumers": ["Admin", "Notification"]},
+    {"event": "merchant.subscription_changed", "publisher": "Merchant Service", "consumers": ["Billing", "Analytics"]},
+    {"event": "product.out_of_stock", "publisher": "Product Service", "consumers": ["Merchant", "Notification"]},
+    {"event": "bullion.rate_updated", "publisher": "Bullion Service", "consumers": ["Product"]},
+    {"event": "payment.dispute", "publisher": "Payment Service", "consumers": ["Admin", "Merchant"]}
+  ],
+  "data_architecture": {
+    "primary_database": "PostgreSQL 16 (AWS RDS)",
+    "document_store": "MongoDB (AWS DocumentDB)",
+    "cache": "Redis 7 (AWS ElastiCache Cluster)",
+    "search": "Elasticsearch (AWS OpenSearch)",
+    "object_storage": "AWS S3 + CloudFront",
+    "time_series": "TimescaleDB (PostgreSQL extension)",
+    "key_tables": [
+      "users", "merchants", "products", "product_variants", "product_images",
+      "orders", "order_items", "order_status_history",
+      "payments", "payment_transactions",
+      "deliveries", "delivery_stops", "delivery_tracking",
+      "cart_items", "coupons",
+      "subscriptions", "subscription_plans",
+      "reviews", "bullion_rates",
+      "try_on_results", "video_call_appointments",
+      "feature_flags", "audit_logs"
+    ]
+  },
+  "security": {
+    "authentication": ["Phone OTP", "JWT (access + refresh)", "OAuth2 (Google)", "MFA (Admin)"],
+    "authorization": "RBAC (customer, merchant, courier, admin, super_admin)",
+    "data_protection": ["Encryption at rest (AES-256)", "Encryption in transit (TLS 1.3)", "PII masking", "Razorpay tokenization"],
+    "rate_limiting": [
+      {"tier": "Anonymous", "limit": "30 req/min"},
+      {"tier": "Customer", "limit": "200 req/min"},
+      {"tier": "Merchant", "limit": "500 req/min"},
+      {"tier": "Admin", "limit": "1000 req/min"},
+      {"tier": "Premium Merchant", "limit": "1000 req/min"}
+    ],
+    "compliance": ["GDPR", "DPDP Act 2023 (India)", "PCI DSS (via Razorpay)"]
+  },
+  "testing_architecture": {
+    "unit_tests": {"tool": "Jest/Vitest", "coverage": ">85%", "frequency": "Every commit"},
+    "integration_tests": {"tool": "Supertest/TestContainers", "coverage": ">70%", "frequency": "Every PR"},
+    "e2e_tests": {"tool": "Cypress (Web) / Detox (Mobile)", "coverage": "Critical paths", "frequency": "Nightly"},
+    "api_contract_tests": {"tool": "Pact/Dredd", "coverage": "100% endpoints", "frequency": "Every deploy"},
+    "performance_tests": {"tool": "k6/Artillery", "target": "Peak load + 2x", "frequency": "Weekly"},
+    "security_tests": {"tool": "OWASP ZAP / SonarQube", "target": "All endpoints", "frequency": "Daily"},
+    "accessibility_tests": {"tool": "axe-core/Lighthouse", "standard": "WCAG 2.1 AA", "frequency": "Every PR"}
+  },
+  "scaling_strategy": {
+    "launch": {"merchants": "50-100", "monthly_orders": 1000, "eks_nodes": "2 x m6g.large", "monthly_cost_inr": 65000},
+    "growth": {"merchants": "100-500", "monthly_orders": 10000, "eks_nodes": "4 x m6g.xlarge", "monthly_cost_inr": 180000},
+    "scale": {"merchants": "500-2000", "monthly_orders": 50000, "eks_nodes": "8 x m6g.2xlarge", "monthly_cost_inr": 420000},
+    "enterprise": {"merchants": "2000-5000", "monthly_orders": 200000, "eks_nodes": "16 x m6g.2xlarge", "monthly_cost_inr": 778000},
+    "multi_city": {"merchants": "5000-15000", "monthly_orders": 500000, "monthly_cost_inr": 1500000}
+  },
+  "implementation_roadmap": {
+    "phase_1_foundation": {"duration": "Months 1-2", "focus": "Platform core, 50 merchants, Mode A", "key_deliverables": ["Next.js web app", "User auth", "Product service", "Order service (single-store)", "Razorpay integration", "Merchant onboarding", "Admin console", "PostgreSQL + Redis", "Kong API Gateway", "CI/CD pipeline"]},
+    "phase_2_channels": {"duration": "Months 3-4", "focus": "Mobile apps, Mode B/C, multi-store cart", "key_deliverables": ["React Native apps (iOS + Android)", "WhatsApp deep link", "Google Maps integration", "Multi-store cart consolidation", "Delivery zone management", "Courier app", "Push notifications", "i18n support"]},
+    "phase_3_intelligence": {"duration": "Months 5-6", "focus": "AI, analytics, scaling", "key_deliverables": ["AI virtual try-on", "Live bullion rates", "Elasticsearch", "Recommendation engine", "Merchant analytics", "Event analytics pipeline", "CDN caching", "Auto-scaling"]},
+    "phase_4_enterprise": {"duration": "Months 7-9", "focus": "Premium features, national shipping", "key_deliverables": ["Video call appointments", "White-label branding", "ShipRocket integration", "Feature flags", "Review moderation", "Subscription billing", "360° product view", "Multi-city selector", "B2B bulk ordering"]},
+    "phase_5_visionary": {"duration": "Months 10-12", "focus": "Advanced experiences, scale to 2000+", "key_deliverables": ["Virtual Walk", "Live Bazaar", "Co-shopping", "Loyalty program", "Try-on gallery", "Pete Tapestry landing", "Performance testing", "DR drills", "Penetration testing"]}
+  },
+  "costing": {
+    "infrastructure_monthly_5000_merchants": {
+      "compute_eks_cpu": {"cost_inr": 210000, "config": "8 x m6i.2xlarge"},
+      "compute_eks_gpu": {"cost_inr": 85000, "config": "2 x g5.xlarge"},
+      "database_rds_primary": {"cost_inr": 120000, "config": "db.r6g.4xlarge"},
+      "database_rds_replica": {"cost_inr": 55000, "config": "db.r6g.2xlarge"},
+      "database_redis": {"cost_inr": 45000, "config": "cache.r6g.xlarge cluster (3 nodes)"},
+      "database_documentdb": {"cost_inr": 60000, "config": "db.r6g.2xlarge (3 replicas)"},
+      "database_opensearch": {"cost_inr": 35000, "config": "2 x r6g.large.search"},
+      "storage_s3_cloudfront": {"cost_inr": 15000, "config": "500 GB media + CDN"},
+      "messaging_rabbitmq": {"cost_inr": 25000, "config": "mq.m5.large"},
+      "networking_alb_nat": {"cost_inr": 30000, "config": "Standard"},
+      "monitoring": {"cost_inr": 5000, "config": "Self-hosted"},
+      "ai_inference": {"cost_inr": 40000, "config": "1 x ml.g5.xlarge"},
+      "third_party_google_maps": {"cost_inr": 20000, "config": "Geocoding + Distance Matrix"},
+      "third_party_whatsapp": {"cost_inr": 15000, "config": "Per conversation"},
+      "third_party_sms_otp": {"cost_inr": 5000, "config": "~50,000 OTPs/month"},
+      "third_party_sentry": {"cost_inr": 8000, "config": "Team plan"},
+      "total": 778000
+    },
+    "development_team_monthly": {
+      "senior_full_stack_engineers": {"count": 4, "monthly_cost_inr": 560000},
+      "mobile_engineers": {"count": 2, "monthly_cost_inr": 240000},
+      "backend_api_engineers": {"count": 3, "monthly_cost_inr": 360000},
+      "ml_ai_engineer": {"count": 1, "monthly_cost_inr": 150000},
+      "devops_engineer": {"count": 1, "monthly_cost_inr": 120000},
+      "qa_engineer": {"count": 1, "monthly_cost_inr": 80000},
+      "ui_ux_designer": {"count": 1, "monthly_cost_inr": 100000},
+      "product_manager": {"count": 1, "monthly_cost_inr": 150000},
+      "total": {"count": 14, "monthly_cost_inr": 1760000}
+    },
+    "revenue_projections": {
+      "year_1": {"total_revenue_cr": 2.1, "total_cost_cr": 1.8, "gross_margin_pct": 14},
+      "year_2": {"total_revenue_cr": 9.2, "total_cost_cr": 4.5, "gross_margin_pct": 51}
+    }
+  },
+  "requirement_traceability": [
+    {"req_id": "REQ-UI-001", "title": "Landing Page with Pete Tapestry", "priority": "P0", "service": "Web App", "feature_group": "Browse & Discovery"},
+    {"req_id": "REQ-UI-002", "title": "Product Catalog & Search", "priority": "P0", "service": "Product Service", "feature_group": "Browse & Discovery"},
+    {"req_id": "REQ-UI-003", "title": "Mode A Product Card & In-App Cart", "priority": "P0", "service": "Order Service", "feature_group": "Mode A"},
+    {"req_id": "REQ-UI-004", "title": "Mode B WhatsApp Enquiry Button", "priority": "P0", "service": "Product Service", "feature_group": "Mode B"},
+    {"req_id": "REQ-UI-005", "title": "Mode C Visit Store Interface", "priority": "P0", "service": "Web/Mobile", "feature_group": "Mode C"},
+    {"req_id": "REQ-UI-006", "title": "Multi-Store Checkout Flow", "priority": "P0", "service": "Order Service", "feature_group": "Checkout"},
+    {"req_id": "REQ-UI-007", "title": "Order Tracking Dashboard", "priority": "P1", "service": "Order/Delivery", "feature_group": "Tracking"},
+    {"req_id": "REQ-UI-008", "title": "Merchant Store Microsite", "priority": "P0", "service": "Merchant Service", "feature_group": "Storefront"},
+    {"req_id": "REQ-UI-009", "title": "Mobile App (iOS)", "priority": "P1", "service": "Mobile App", "feature_group": "Channel"},
+    {"req_id": "REQ-UI-010", "title": "Mobile App (Android)", "priority": "P1", "service": "Mobile App", "feature_group": "Channel"},
+    {"req_id": "REQ-UI-011", "title": "Merchant Onboarding Dashboard", "priority": "P0", "service": "Merchant Service", "feature_group": "Onboarding"},
+    {"req_id": "REQ-UI-012", "title": "Admin/Operator Dashboard", "priority": "P1", "service": "Admin Console", "feature_group": "Admin"},
+    {"req_id": "REQ-UI-013", "title": "Multi-Language / i18n", "priority": "P0", "service": "Web/Mobile", "feature_group": "Internationalization"},
+    {"req_id": "REQ-UI-014", "title": "Merchant Analytics Dashboard", "priority": "P1", "service": "Analytics Service", "feature_group": "Analytics"},
+    {"req_id": "REQ-UI-015", "title": "AI Virtual Try-On (Apparel)", "priority": "P1", "service": "AI Service", "feature_group": "AI Features"},
+    {"req_id": "REQ-UI-016", "title": "AI Virtual Try-On (Jewellery)", "priority": "P1", "service": "AI Service", "feature_group": "AI Features"},
+    {"req_id": "REQ-UI-017", "title": "Live Bullion Rate Integration", "priority": "P0", "service": "Bullion Service", "feature_group": "Jewellery"},
+    {"req_id": "REQ-API-001", "title": "Product Search API", "priority": "P0", "service": "Product Service", "feature_group": "API Layer"},
+    {"req_id": "REQ-API-002", "title": "Cart Management API", "priority": "P0", "service": "Order Service", "feature_group": "API Layer"},
+    {"req_id": "REQ-API-003", "title": "Checkout & Payment API", "priority": "P0", "service": "Order/Payment", "feature_group": "API Layer"},
+    {"req_id": "REQ-API-004", "title": "WhatsApp Deep Link API", "priority": "P0", "service": "Product Service", "feature_group": "API Layer"},
+    {"req_id": "REQ-API-005", "title": "Geolocation & Maps API", "priority": "P0", "service": "Delivery Service", "feature_group": "API Layer"},
+    {"req_id": "REQ-API-006", "title": "Merchant Store API", "priority": "P0", "service": "Merchant Service", "feature_group": "API Layer"},
+    {"req_id": "REQ-API-007", "title": "Order Tracking API", "priority": "P1", "service": "Delivery Service", "feature_group": "API Layer"},
+    {"req_id": "REQ-API-008", "title": "Auth & User API", "priority": "P0", "service": "User Service", "feature_group": "API Layer"},
+    {"req_id": "REQ-API-009", "title": "Push Notification API", "priority": "P1", "service": "Notification Service", "feature_group": "API Layer"},
+    {"req_id": "REQ-API-010", "title": "Admin & Configuration API", "priority": "P1", "service": "Admin Service", "feature_group": "API Layer"},
+    {"req_id": "REQ-API-011", "title": "Settlement & Payout API", "priority": "P1", "service": "Payment Service", "feature_group": "API Layer"},
+    {"req_id": "REQ-API-012", "title": "Bullion Rate API", "priority": "P0", "service": "Bullion Service", "feature_group": "API Layer"},
+    {"req_id": "REQ-API-013", "title": "National Shipping API (ShipRocket)", "priority": "P1", "service": "Delivery Service", "feature_group": "API Layer"},
+    {"req_id": "REQ-INFRA-001", "title": "Cloud Infrastructure Setup", "priority": "P0", "service": "DevOps", "feature_group": "Infrastructure"},
+    {"req_id": "REQ-INFRA-002", "title": "CI/CD Pipeline", "priority": "P0", "service": "DevOps", "feature_group": "Infrastructure"},
+    {"req_id": "REQ-INFRA-003", "title": "Monitoring & Alerting", "priority": "P0", "service": "DevOps", "feature_group": "Infrastructure"},
+    {"req_id": "REQ-INFRA-004", "title": "Backup & Restore Strategy", "priority": "P0", "service": "DevOps", "feature_group": "Infrastructure"},
+    {"req_id": "REQ-INFRA-005", "title": "Disaster Recovery Plan", "priority": "P0", "service": "DevOps", "feature_group": "Infrastructure"},
+    {"req_id": "REQ-INFRA-006", "title": "SSL/TLS Certificate Management", "priority": "P0", "service": "DevOps", "feature_group": "Security"},
+    {"req_id": "REQ-INFRA-007", "title": "Secrets Management", "priority": "P0", "service": "DevOps", "feature_group": "Security"},
+    {"req_id": "REQ-INFRA-008", "title": "WAF & DDoS Protection", "priority": "P0", "service": "DevOps", "feature_group": "Security"},
+    {"req_id": "REQ-INFRA-009", "title": "VPC & Network Security", "priority": "P0", "service": "DevOps", "feature_group": "Security"},
+    {"req_id": "REQ-INFRA-010", "title": "Database Encryption & RLS", "priority": "P0", "service": "DevOps", "feature_group": "Security"},
+    {"req_id": "REQ-INFRA-011", "title": "Feature Flag & Kill Switch", "priority": "P1", "service": "Admin Service", "feature_group": "Infrastructure"}
+  ]
+}
