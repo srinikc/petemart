@@ -1,14 +1,14 @@
 ﻿'use client';
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import {
   CheckCircle, XCircle, AlertCircle, Loader2, Shield,
   Bot, Activity, ExternalLink, RefreshCw, FileText,
   AlertTriangle, ArrowRight, X, Radio, Monitor, Code, Database,
   Layers, Server, Globe, BookOpen, UserCheck, Camera, Settings,
   Coins, Lock, Lightbulb, Layout, Truck, GitMerge, Bell, Play,
-  ChevronRight, Clock, BarChart3,
+  ChevronRight, Clock, BarChart3, MessageSquare, Square, Send,
 } from 'lucide-react';
 
 import {
@@ -149,6 +149,28 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
   const actCounter = useRef(0);
   const activityRef = useRef<HTMLDivElement>(null);
 
+  // Supervisor chat
+  const [showSupervisorChat, setShowSupervisorChat] = useState(false);
+  const [supervisorChatInput, setSupervisorChatInput] = useState('');
+  const [showLlmDropdown, setShowLlmDropdown] = useState(false);
+  const llmDropdownRef = useRef<HTMLDivElement>(null);
+  const CHAT_STORAGE_KEY = 'petemart_supervisor_chat';
+  const getSavedChat = (): { role: string; content: string; timestamp: number }[] => {
+    try { const s = localStorage.getItem(CHAT_STORAGE_KEY); return s ? JSON.parse(s) : []; } catch { return []; }
+  };
+  const welcomeMsg = { role: 'assistant', content: 'Agent 00 Supervisor ready. I respond to commands like:\n\n\u2022 "run agent 03" — launch a specific agent\n\u2022 "show dashboard" — current pipeline state\n\u2022 "pause / resume" — pipeline control\n\u2022 "run compliance audit" — check all agents\n\u2022 "approve agent 07a" — approve a waiting agent\n\u2022 "run full pipeline" — auto-dispatch all eligible\n\u2022 "health check" — re-run diagnostics\n\nType your first command above \u2192', timestamp: Date.now() };
+  const savedChat = getSavedChat();
+  const [supervisorChatMessages, setSupervisorChatMessages] = useState<{ role: string; content: string; timestamp: number }[]>(savedChat.length > 0 ? savedChat : [welcomeMsg]);
+  const supervisorChatRef = useRef<HTMLDivElement>(null);
+  const [supervisorStartedAt, setSupervisorStartedAt] = useState<number | null>(null);
+  const [llmProviderLabel, setLlmProviderLabel] = useState('opencode/deepseek-v4-flash');
+  const LLM_OPTIONS = [
+    { value: 'opencode-go/deepseek-v4-flash', label: 'DeepSeek V4 Flash' },
+    { value: 'openrouter/anthropic/claude-sonnet', label: 'Claude Sonnet' },
+    { value: 'openrouter/openai/gpt-4o', label: 'GPT-4o' },
+    { value: 'ollama/llama3', label: 'Llama 3 (Local)' },
+  ];
+
   const addActivity = useCallback((agentId: string, action: string, detail: string, type: ActivityEntry['type'], severity: ActivityEntry['severity']) => {
     actCounter.current++;
     const entry: ActivityEntry = { id: `act-${actCounter.current}`, agentId, action, detail, type, severity, timestamp: Date.now() };
@@ -285,6 +307,67 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
     return () => { es.close(); clearTimeout(reconnectTimer); };
   }, [addActivity, flashAgent]);
 
+  // Supervisor chat SSE connection
+  useEffect(() => {
+    if (!showSupervisorChat) return;
+    const es = new EventSource('/api/agentic-console/supervisor');
+    es.addEventListener('message', (e) => {
+      try {
+        const data = JSON.parse(e.data);
+        setSupervisorChatMessages(prev => [...prev, { role: 'assistant', content: data.content || data.message || JSON.stringify(data), timestamp: Date.now() }]);
+      } catch { }
+    });
+    es.addEventListener('log', (e) => {
+      try {
+        const data = JSON.parse(e.data);
+        setSupervisorChatMessages(prev => [...prev, { role: 'assistant', content: `[System] ${data.message}`, timestamp: Date.now() }]);
+      } catch { }
+    });
+    es.addEventListener('agent_completed', (e) => {
+      try {
+        const data = JSON.parse(e.data);
+        setSupervisorChatMessages(prev => [...prev, { role: 'assistant', content: `\u2713 Agent ${data.agent_id} completed (${data.duration}ms)`, timestamp: Date.now() }]);
+      } catch { }
+    });
+    es.addEventListener('agent_failed', (e) => {
+      try {
+        const data = JSON.parse(e.data);
+        setSupervisorChatMessages(prev => [...prev, { role: 'assistant', content: `\u2717 Agent ${data.agent_id} failed: ${data.error}`, timestamp: Date.now() }]);
+      } catch { }
+    });
+    es.addEventListener('health_check', (e) => {
+      try {
+        const data = JSON.parse(e.data);
+        const lines = data.checks.map((c: any) => `${c.passed ? '\u2713' : '\u2717'} ${c.check}${c.error ? ': ' + c.error : ''}`).join('\n');
+        const time = data.startedAt ? `Started: ${data.startedAt}` : '';
+        const llm = data.llm ? `${data.llm.provider}/${data.llm.model}` : '';
+        setSupervisorStartedAt(Date.now());
+        if (llm) setLlmProviderLabel(llm);
+        setSupervisorChatMessages(prev => [...prev, { role: 'assistant', content: `**Supervisor Started** - ${time}${llm ? ` | LLM: ${llm}` : ''}\n${data.summary}\n${lines}`, timestamp: Date.now() }]);
+      } catch { }
+    });
+    return () => es.close();
+  }, [showSupervisorChat]);
+
+  // Persist chat messages
+  useEffect(() => {
+    try { localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(supervisorChatMessages)); } catch { }
+  }, [supervisorChatMessages]);
+
+  // Scroll chat to bottom
+  useEffect(() => {
+    if (supervisorChatRef.current) supervisorChatRef.current.scrollTop = supervisorChatRef.current.scrollHeight;
+  }, [supervisorChatMessages]);
+
+  // Close LLM dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (llmDropdownRef.current && !llmDropdownRef.current.contains(e.target as Node)) setShowLlmDropdown(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
   // Close notification dropdown on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -375,9 +458,9 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
     if (!agentId) return;
     setFlyoutActionLoading(action);
     try {
-      const isRerun = action === 'rerun';
-      const body: any = isRerun
-        ? { action: 'rerun_agent', agentId }
+      const isPipelineAction = action === 'rerun' || action === 'cancel';
+      const body: any = isPipelineAction
+        ? { action: action === 'rerun' ? 'rerun_agent' : 'cancel_agent', agentId }
         : { agentId, action, feedback: flyoutInstruction || `${action} via Cockpit` };
       if (action === 'provide-input') {
         const agent = agentStates[agentId];
@@ -389,7 +472,7 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
         });
         body.inputs = values;
       }
-      const endpoint = isRerun ? '/api/agentic-console/pipeline' : '/api/agentic-console/approve';
+      const endpoint = isPipelineAction ? '/api/agentic-console/pipeline' : '/api/agentic-console/approve';
       const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       if (res.ok) { setTimeout(() => window.location.reload(), 1000); }
     } catch { }
@@ -748,6 +831,60 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
               </div>
             </div>
             <div className="flex items-center gap-2 text-[10px] shrink-0">
+              {/* LLM Provider display + dropdown */}
+              <div className="relative" ref={llmDropdownRef}>
+                <button onClick={() => setShowLlmDropdown(v => !v)}
+                  className="flex items-center gap-1 px-2 py-1 rounded-md bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border border-indigo-200 font-mono text-[9px] transition-all active:scale-95">
+                  <Activity size={9} /> {llmProviderLabel.split('/').pop()}
+                </button>
+                {showLlmDropdown && (
+                  <div className="absolute right-0 top-full mt-1 bg-white border rounded-xl shadow-lg z-50 py-1 w-48">
+                    {LLM_OPTIONS.map(opt => (
+                      <button key={opt.value} onClick={async () => {
+                        const [provider, model] = opt.value.split('/');
+                        await fetch('/api/agentic-console/pipeline', {
+                          method: 'POST', headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ action: 'select_llm', provider, model, project }),
+                        });
+                        setLlmProviderLabel(opt.value);
+                        setShowLlmDropdown(false);
+                      }}
+                        className={`w-full text-left px-3 py-1.5 text-[11px] hover:bg-indigo-50 transition-colors ${llmProviderLabel === opt.value ? 'text-indigo-700 font-semibold bg-indigo-50' : 'text-gray-600'}`}>
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {/* Chat button */}
+              <button onClick={() => setShowSupervisorChat(true)}
+                className="flex items-center gap-1 px-2 py-1 rounded-md bg-indigo-100 text-indigo-700 hover:bg-indigo-200 font-medium transition-all active:scale-95">
+                <MessageSquare size={10} /> Chat
+              </button>
+              {/* Start / Stop supervisor */}
+              {(supervisorControl as any)?.agent_00_supervisor?.status === 'active' ? (
+                <button onClick={async () => {
+                  await fetch('/api/agentic-console/pipeline', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'stop_supervisor', project }),
+                  });
+                  setTimeout(() => window.location.reload(), 500);
+                }}
+                  className="flex items-center gap-1 px-2 py-1 rounded-md bg-red-100 text-red-600 hover:bg-red-200 font-medium transition-all active:scale-95">
+                  <Square size={9} /> Stop
+                </button>
+              ) : (
+                <button onClick={async () => {
+                  await fetch('/api/agentic-console/pipeline', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'start_supervisor', project }),
+                  });
+                  setTimeout(() => window.location.reload(), 500);
+                }}
+                  className="flex items-center gap-1 px-2 py-1 rounded-md bg-green-100 text-green-600 hover:bg-green-200 font-medium transition-all active:scale-95">
+                  <Play size={9} /> Start
+                </button>
+              )}
               <span className={`flex items-center gap-1 ${liveConnected ? 'text-green-600' : 'text-red-500'}`}>
                 <span className={`w-1.5 h-1.5 rounded-full ${liveConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
                 {liveConnected ? 'Connected' : 'Offline'}
@@ -1127,6 +1264,11 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
                       className="flex-1 flex items-center justify-center gap-1 text-xs font-medium py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all active:scale-[0.97]">
                       {flyoutActionLoading === 'rerun' ? <Loader2 size={12} className="animate-spin" /> : <RefreshCw size={12} />} Rerun
                     </button>
+                    <button onClick={() => handleFlyoutAction('cancel')}
+                      className="flex items-center justify-center gap-1 text-xs font-medium py-2 px-2 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 transition-all active:scale-[0.97]"
+                      title="Cancel this agent">
+                      {flyoutActionLoading === 'cancel' ? <Loader2 size={12} className="animate-spin" /> : <XCircle size={12} />}
+                    </button>
                     <button onClick={() => handleFlyoutAction((agent as any).disabled ? 'enable' : 'disable')}
                       className={`flex items-center justify-center gap-1 text-xs font-medium py-2 px-2 rounded-xl border transition-all active:scale-[0.97] ${(agent as any).disabled ? 'bg-green-50 border-green-200 text-green-700 hover:bg-green-100' : 'bg-red-50 border-red-200 text-red-600 hover:bg-red-100'}`}
                       title={(agent as any).disabled ? 'Enable this agent' : 'Disable/skip this agent'}>
@@ -1139,6 +1281,89 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
           </>
         );
       })()}
+
+      {/* ═══ Supervisor Chat Modal ═══ */}
+      {showSupervisorChat && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setShowSupervisorChat(false)}>
+          <div className="bg-white rounded-2xl shadow-2xl border w-full sm:w-[560px] h-[80vh] sm:h-[600px] flex flex-col overflow-hidden sm:mb-0 mb-0" onClick={e => e.stopPropagation()}>
+            {/* Header */}
+            <div className="bg-gradient-to-r from-indigo-600 to-indigo-800 px-5 py-3 flex items-center gap-3 shrink-0">
+              <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
+                <Bot size={18} className="text-white" />
+              </div>
+              <div className="flex-1">
+                <div className="text-sm font-bold text-white">Supervisor Chat</div>
+                <div className="text-[10px] text-indigo-200">
+                  {supervisorStartedAt ? `Running since ${timeAgo(supervisorStartedAt)}` : 'Standby'} · LLM: {llmProviderLabel}
+                </div>
+              </div>
+              <button onClick={() => setShowSupervisorChat(false)} className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+                <X size={14} className="text-white" />
+              </button>
+            </div>
+            {/* Messages */}
+            <div ref={supervisorChatRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-2" style={{ scrollbarWidth: 'thin' }}>
+              {supervisorChatMessages.map((msg, i) => (
+                <div key={i} className={`flex gap-2 ${msg.role === 'user' ? 'justify-end' : ''}`}>
+                  {msg.role !== 'user' && (
+                    <div className="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center shrink-0 mt-0.5">
+                      <Bot size={12} className="text-indigo-600" />
+                    </div>
+                  )}
+                  <div className={`max-w-[80%] rounded-xl px-3.5 py-2 text-[11px] leading-relaxed whitespace-pre-wrap ${msg.role === 'user' ? 'bg-indigo-600 text-white rounded-br-sm' : 'bg-gray-100 text-gray-700 rounded-bl-sm'}`}>
+                    {msg.content}
+                  </div>
+                  {msg.role === 'user' && (
+                    <div className="w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center shrink-0 mt-0.5">
+                      <span className="text-[9px] text-white font-bold">U</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+              {supervisorChatMessages.length === 0 && (
+                <div className="flex items-center justify-center h-full text-[11px] text-gray-400 italic">No messages. Type a command below.</div>
+              )}
+            </div>
+            {/* Input */}
+            <div className="border-t px-4 py-3 shrink-0 bg-gray-50">
+              <div className="flex gap-2">
+                <input
+                  value={supervisorChatInput}
+                  onChange={e => setSupervisorChatInput(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' && supervisorChatInput.trim()) {
+                      const msg = supervisorChatInput.trim();
+                      setSupervisorChatMessages(prev => [...prev, { role: 'user', content: msg, timestamp: Date.now() }]);
+                      setSupervisorChatInput('');
+                      fetch('/api/agentic-console/supervisor', {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'run_agent', agent_id: '00_supervisor_agent', instruction: msg, project }),
+                      }).catch(() => {});
+                    }
+                  }}
+                  placeholder="Type a command (e.g. 'run agent 03', 'show dashboard', 'health check')..."
+                  className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-[11px] bg-white focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent"
+                />
+                <button
+                  onClick={() => {
+                    const msg = supervisorChatInput.trim();
+                    if (!msg) return;
+                    setSupervisorChatMessages(prev => [...prev, { role: 'user', content: msg, timestamp: Date.now() }]);
+                    setSupervisorChatInput('');
+                    fetch('/api/agentic-console/supervisor', {
+                      method: 'POST', headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ action: 'run_agent', agent_id: '00_supervisor_agent', instruction: msg, project }),
+                    }).catch(() => {});
+                  }}
+                  className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center hover:bg-indigo-700 transition-all active:scale-95 disabled:opacity-50"
+                  disabled={!supervisorChatInput.trim()}>
+                  <Send size={14} />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
