@@ -1,11 +1,25 @@
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 const vlog = require('./VerboseLogger');
 const { getInstance: getTracer } = require('./TraceLogger');
 const { LLMProvider } = require('./LLMProvider');
 const { saveStateSync } = require('./StateFile');
 
 const ROOT = process.cwd();
+
+/**
+ * Check if a file is tracked by git (committed to the repository).
+ * Returns true if the file is git-tracked, false otherwise.
+ * Stale agent sandbox files (old generated artifacts) are NOT tracked and will be archived.
+ * Committed deliverables (specs, READMEs, etc.) ARE tracked and must NOT be moved.
+ */
+function isGitTracked(filePath) {
+  try {
+    execSync(`git -C "${ROOT}" ls-files --error-unmatch "${filePath}"`, { stdio: 'pipe', timeout: 3000, windowsHide: true });
+    return true;
+  } catch { return false; }
+}
 const STATE_PATH = () => path.join(ROOT, '00_state_ledger/STATE_MATRIX.json');
 const REGISTRY_PATH = () => path.join(ROOT, '00_state_ledger/AGENT_REGISTRY.json');
 const EVENTS_PATH = () => path.join(ROOT, '00_state_ledger/PIPELINE_EVENTS.jsonl');
@@ -187,7 +201,8 @@ class AgentRuntime {
         }
       } catch {}
 
-      // Archive existing sandbox files to oldartifacts/<timestamp>_<name> before LLM regenerates them
+      // Archive stale sandbox files to oldartifacts/ before LLM regenerates them.
+      // Committed (git-tracked) files are skipped — only generated artifacts from previous runs are moved.
       try {
         const ws = resolveWorkspaceRoot(agentDef, agentId);
         const sbx = path.join(ROOT, ws);
@@ -198,6 +213,7 @@ class AgentRuntime {
           const files = fs.readdirSync(sbx).filter(f => !f.startsWith('oldartifacts') && f !== '.' && f !== '..');
           for (const f of files) {
             const src = path.join(sbx, f);
+            if (isGitTracked(src)) { vlog.write('RUNTIME', agentId, `Skip archive: ${f} (git-tracked)`); continue; }
             const dst = path.join(archiveDir, `${ts}_${f}`);
             try { fs.renameSync(src, dst); vlog.write('RUNTIME', agentId, `Archived: ${f} → oldartifacts/${ts}_${f}`); } catch {}
           }
