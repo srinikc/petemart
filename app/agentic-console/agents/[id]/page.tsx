@@ -51,6 +51,25 @@ export default function AgentDetailPage() {
   const [codeReviewLoading, setCodeReviewLoading] = useState(true);
   const [showTrace, setShowTrace] = useState(false);
   const [traces, setTraces] = useState<any[]>([]);
+  const [lifecycleData, setLifecycleData] = useState<any>(null);
+  const [expandedSteps, setExpandedSteps] = useState<Set<string>>(new Set());
+  const [expandedIterations, setExpandedIterations] = useState<Set<string>>(new Set());
+
+  const toggleStep = (id: string) => {
+    setExpandedSteps(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleIteration = (id: string) => {
+    setExpandedIterations(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
 
   const loadTraces = useCallback(async () => {
     try {
@@ -111,6 +130,21 @@ export default function AgentDetailPage() {
     return () => { es.close(); };
   }, [agentId]);
 
+  // Fetch lifecycle data
+  useEffect(() => {
+    if (!agentId) return;
+    let cancelled = false;
+    const fetchLifecycle = async () => {
+      try {
+        const res = await fetch(`/api/agentic-console/agent-lifecycle?agentId=${agentId}`);
+        if (res.ok && !cancelled) setLifecycleData(await res.json());
+      } catch {}
+    };
+    fetchLifecycle();
+    const iv = setInterval(fetchLifecycle, 3000);
+    return () => { cancelled = true; clearInterval(iv); };
+  }, [agentId]);
+
   const agent = data?.agentState;
   const registry = data?.registryEntry;
   const systemPrompt = data?.systemPrompt || '';
@@ -123,15 +157,16 @@ export default function AgentDetailPage() {
   const handleAction = async (action: string) => {
     setActionLoading(action);
     try {
-      const endpoint = action === 'rerun' ? '/api/agentic-console/pipeline' : '/api/agentic-console/approve';
-      const body = action === 'rerun'
-        ? JSON.stringify({ action: 'rerun_agent', agentId })
+      const isPipelineAction = action === 'rerun' || action === 'cancel';
+      const endpoint = isPipelineAction ? '/api/agentic-console/pipeline' : '/api/agentic-console/approve';
+      const body = isPipelineAction
+        ? JSON.stringify({ action: action === 'rerun' ? 'rerun_agent' : 'cancel_agent', agentId })
         : JSON.stringify({ agentId, action, feedback: instruction || `${action} via Agent Detail` });
       const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
       if (res.ok) {
-        showToast(`${action === 'approve' ? 'Approved' : action === 'reject' ? 'Rejected' : 'Queued'} ${agentId}`);
+        showToast(`${action === 'approve' ? 'Approved' : action === 'reject' ? 'Rejected' : action === 'cancel' ? 'Cancelled' : 'Queued'} ${agentId}`);
         setInstruction('');
-        if (action === 'rerun') setTimeout(() => window.location.reload(), 1000);
+        if (action === 'rerun' || action === 'cancel') setTimeout(() => window.location.reload(), 1000);
       }
     } catch { showToast('Action failed'); }
     setActionLoading(null);
@@ -778,60 +813,218 @@ export default function AgentDetailPage() {
 
           {/* ═══ RUN LOGS TAB ═══ */}
           {activeTab === 'logs' && (
-            <div>
-              <h3 className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1.5">
-                <Terminal size={12} /> Execution Timeline
-              </h3>
-              <div className="space-y-1 max-h-96 overflow-y-auto">
-                {/* Show agent state changes from events */}
-                {agent.execution_count === 0 ? (
-                  <p className="text-xs text-gray-400 text-center py-4">No execution history yet.</p>
-                ) : (
-                  <div className="space-y-1">
-                    {/* Current state card */}
-                    <div className="flex gap-3 px-3 py-2 rounded-lg bg-blue-50 border border-blue-200">
-                      <div className="flex flex-col items-center gap-0.5">
-                        <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
-                        <div className="w-0.5 flex-1 bg-blue-200" />
+            <div className="space-y-3">
+              {/* Header */}
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-semibold text-gray-500 flex items-center gap-1.5">
+                  <Terminal size={12} /> Execution Timeline
+                </h3>
+                {(lifecycleData?.runs?.length > 0 || lifecycleData?.supervisor_events?.length > 0) && (
+                  <span className="text-[9px] text-gray-400">
+                    {lifecycleData.runs.length} run(s) &middot; {lifecycleData.supervisor_events.length} supervisor events
+                  </span>
+                )}
+              </div>
+
+              <div className="space-y-2 max-h-[500px] overflow-y-auto text-[10px]">
+                {/* Agent status summary */}
+                <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-blue-50 border border-blue-200">
+                  <div className={`w-2 h-2 rounded-full ${lifecycleData?.is_running ? 'bg-green-500 animate-pulse' : agent?.status === 'failed' ? 'bg-red-500' : 'bg-blue-500'}`} />
+                  <span className="font-semibold text-gray-700">{agentId}</span>
+                  <StatusBadge status={agent?.status} />
+                  <span className="text-gray-400">{agent?.step_label && ` &middot; ${agent.step_label}`}</span>
+                  {lifecycleData?.is_running && <span className="flex items-center gap-1 ml-auto text-green-700"><Loader2 size={9} className="animate-spin" /> Running</span>}
+                  {!lifecycleData?.is_running && agent?.last_activity_timestamp && (
+                    <span className="ml-auto text-gray-400">{new Date(agent.last_activity_timestamp).toLocaleString()}</span>
+                  )}
+                  {agent?.last_error && (
+                    <div className="text-red-500 flex items-center gap-1 mt-0.5">
+                      <AlertTriangle size={9} /> {agent.last_error}
+                    </div>
+                  )}
+                </div>
+
+                {/* Supervisor Events */}
+                {lifecycleData?.supervisor_events?.length > 0 && (
+                  <div className="border rounded-lg overflow-hidden">
+                    <button onClick={() => toggleStep('supervisor')}
+                      className="w-full flex items-center gap-1.5 px-2.5 py-1.5 bg-amber-50 text-amber-800 text-[9px] font-medium hover:bg-amber-100 transition-colors">
+                      <span className={`text-[8px] transition-transform ${expandedSteps.has('supervisor') ? 'rotate-90' : ''}`}>&#9656;</span>
+                      Supervisor Events ({lifecycleData.supervisor_events.length})
+                    </button>
+                    {expandedSteps.has('supervisor') && (
+                      <div className="max-h-40 overflow-y-auto divide-y divide-gray-100">
+                        {lifecycleData.supervisor_events.map((ev: string, i: number) => {
+                          const m = ev.match(/^\[([^\]]+)\]\s*\[([^\]]+)\]\s*\[([^\]]+)\]\s*(.+)/);
+                          const ts = m?.[1] || ''; const comp = m?.[2] || ''; const agentTag = m?.[3] || ''; const msg = m?.[4] || ev;
+                          return (
+                            <div key={i} className="px-2.5 py-1.5 text-[9px] font-mono text-gray-600 hover:bg-gray-50">
+                              <span className="text-gray-400">{ts}</span>
+                              {' '}<span className={`px-1 rounded text-[8px] ${comp === 'DAEMON' ? 'bg-amber-100 text-amber-700' : 'bg-purple-100 text-purple-700'}`}>{comp}</span>
+                              {' '}{msg}
+                            </div>
+                          );
+                        })}
                       </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-0.5">
-                          <span className="text-[10px] font-mono font-bold text-blue-700">Current State</span>
-                          <StatusBadge status={agent.status} />
-                        </div>
-                        <p className="text-[10px] text-gray-500">
-                          Executed {agent.execution_count} time(s) · Last active: {agent.last_activity_timestamp ? new Date(agent.last_activity_timestamp).toLocaleString() : 'Never'}
-                        </p>
-                        {agent.last_error && (
-                          <p className="text-[9px] text-red-500 mt-1 flex items-center gap-1">
-                            <AlertTriangle size={9} /> {agent.last_error}
-                          </p>
-                        )}
+                    )}
+                  </div>
+                )}
+
+                {/* Pipeline Events */}
+                {lifecycleData?.pipeline_events?.length > 0 && (
+                  <div className="border rounded-lg overflow-hidden">
+                    <button onClick={() => toggleStep('pipeline_events')}
+                      className="w-full flex items-center gap-1.5 px-2.5 py-1.5 bg-indigo-50 text-indigo-800 text-[9px] font-medium hover:bg-indigo-100 transition-colors">
+                      <span className={`text-[8px] transition-transform ${expandedSteps.has('pipeline_events') ? 'rotate-90' : ''}`}>&#9656;</span>
+                      Pipeline Events ({lifecycleData.pipeline_events.length})
+                    </button>
+                    {expandedSteps.has('pipeline_events') && (
+                      <div className="max-h-40 overflow-y-auto divide-y divide-gray-100">
+                        {lifecycleData.pipeline_events.map((ev: any, i: number) => (
+                          <div key={i} className="px-2.5 py-1.5 text-[9px] text-gray-600 hover:bg-gray-50">
+                            <span className="text-gray-400">{ev.timestamp ? new Date(ev.timestamp).toLocaleTimeString() : ''}</span>
+                            {' '}<span className="font-semibold">{ev.type}</span>
+                            {ev.agent_id && <span className="text-gray-400"> &middot; {ev.agent_id}</span>}
+                            {ev.label && <span> &middot; {ev.label}</span>}
+                          </div>
+                        ))}
                       </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Current State Summary */}
+                <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-gray-50 border border-gray-200">
+                  <div className="w-2 h-2 rounded-full bg-gray-400" />
+                  <span className="text-gray-500">Executed {agent?.execution_count || 0} time(s)</span>
+                  {agent?.compliance_checklist?.length > 0 && <span className="text-gray-400">&middot; {agent.compliance_checklist.filter((c: any) => typeof c === 'string' ? c.startsWith('✅') : true).length}/{agent.compliance_checklist.length} compliance checks</span>}
+                </div>
+
+                {/* Run Steps (Expandable Tree) */}
+                {lifecycleData?.runs?.length > 0 && lifecycleData.runs.map((run: any, ri: number) => (
+                  <div key={ri} className="border rounded-lg overflow-hidden">
+                    {/* Run header */}
+                    <div className="flex items-center gap-2 px-2.5 py-1.5 bg-gray-100 text-gray-700 text-[9px] font-medium">
+                      <span className="font-semibold">Run #{ri + 1}</span>
+                      <span className="text-gray-400">&middot;</span>
+                      <span className={run.status === 'failed' ? 'text-red-600' : run.status === 'running' ? 'text-green-600' : 'text-gray-600'}>{run.status}</span>
+                      {run.total_duration_ms > 0 && <span className="text-gray-400">&middot; {run.total_duration_ms}ms</span>}
+                      {run.started_at && <span className="text-gray-400 ml-auto">{new Date(run.started_at).toLocaleTimeString()}</span>}
+                      {run.ended_at && <span className="text-gray-400"> &rarr; {new Date(run.ended_at).toLocaleTimeString()}</span>}
                     </div>
 
-                    {/* Artifact timeline */}
-                    {artifactStatus.filter((a: any) => a.exists).map((a: any, i: number) => (
-                      <div key={i} className="flex gap-3 px-3 py-1.5 rounded-lg hover:bg-gray-50">
-                        <div className="flex flex-col items-center gap-0.5">
-                          <div className="w-2 h-2 rounded-full bg-green-400" />
-                          {i < artifactStatus.filter((x: any) => x.exists).length - 1 && <div className="w-0.5 flex-1 bg-gray-100" />}
-                        </div>
-                        <div className="flex-1">
-                          <div className="text-[10px] font-mono text-gray-700 truncate">{a.file}</div>
-                          <div className="text-[8px] text-gray-400">Created during execution · {a.size > 1024 ? `${(a.size / 1024).toFixed(1)} KB` : `${a.size} B`}</div>
-                        </div>
-                      </div>
-                    ))}
+                    {/* Steps */}
+                    {run.steps?.length > 0 && (
+                      <div className="divide-y divide-gray-100">
+                        {run.steps.map((step: any, si: number) => {
+                          const stepKey = `r${ri}-s${si}`;
+                          const stepIcon = step.id === 'llm' ? '🧠' : step.id === 'writing' ? '💾' : step.id === 'processing' ? '✓' : step.id === 'initializing' ? '⚙' : step.id === 'gather_deps' ? '⬇' : step.id === 'checkpoint' ? '◇' : '○';
+                          const hasExpandable = (step.iterations?.length > 0) || (step.details?.length > 0);
 
-                    {/* Initial state */}
-                    <div className="flex gap-3 px-3 py-2 rounded-lg bg-gray-50">
-                      <div className="w-2.5 h-2.5 rounded-full bg-gray-400 mt-0.5" />
-                      <div>
-                        <div className="text-[10px] font-mono text-gray-500">Initial state</div>
-                        <div className="text-[8px] text-gray-400">Agent registered with {agent.compliance_checklist?.length || 0} compliance checks</div>
+                          return (
+                            <div key={stepKey}>
+                              {/* Step header - clickable if expandable */}
+                              <button
+                                onClick={() => hasExpandable && toggleStep(stepKey)}
+                                className={`w-full flex items-center gap-2 px-2.5 py-2 text-left transition-colors ${hasExpandable ? 'hover:bg-gray-50 cursor-pointer' : 'cursor-default'}`}>
+                                {hasExpandable ? (
+                                  <span className={`text-[8px] text-gray-400 transition-transform shrink-0 ${expandedSteps.has(stepKey) ? 'rotate-90' : ''}`}>&#9656;</span>
+                                ) : (
+                                  <span className="w-[8px] shrink-0" />
+                                )}
+                                <span>{stepIcon}</span>
+                                <span className="font-medium text-gray-700">{step.label}</span>
+                                <span className="text-gray-400 text-[9px]">{step.duration_ms > 0 ? `${step.duration_ms}ms` : ''}</span>
+                                {step.started_at && <span className="text-gray-400 text-[8px]">{new Date(step.started_at).toLocaleTimeString()}</span>}
+                                {step.iterations && (
+                                  <span className="text-[9px] text-gray-400 ml-auto">
+                                    {step.iterations_success || 0}/{step.iterations_total || step.iterations.length} iters
+                                    {step.llm_duration_ms > 0 && ` · ${step.llm_duration_ms}ms LLM`}
+                                  </span>
+                                )}
+                                {step.details?.length > 0 && !step.iterations && (
+                                  <span className="text-[9px] text-gray-400 ml-auto">{step.details.length} event(s)</span>
+                                )}
+                              </button>
+
+                              {/* Expanded content: iterations + details */}
+                              {expandedSteps.has(stepKey) && (
+                                <div className="border-t border-gray-100 bg-gray-50/50">
+                                  {/* LLM Iterations */}
+                                  {step.iterations?.map((iter: any, ii: number) => {
+                                    const iterKey = `${stepKey}-iter${ii}`;
+                                    return (
+                                      <div key={iterKey} className="border-b border-gray-100 last:border-b-0">
+                                        <button
+                                          onClick={() => toggleIteration(iterKey)}
+                                          className="w-full flex items-center gap-2 px-4 py-1.5 text-left hover:bg-gray-100 transition-colors">
+                                          <span className={`text-[7px] text-gray-400 transition-transform ${expandedIterations.has(iterKey) ? 'rotate-90' : ''}`}>&#9656;</span>
+                                          <span className={`w-1.5 h-1.5 rounded-full ${iter.type === 'error' ? 'bg-red-400' : iter.type === 'done' ? 'bg-green-400' : 'bg-blue-400'}`} />
+                                          <span className="font-mono text-[9px] text-gray-700">Iter {iter.number}/{iter.total}</span>
+                                          {iter.started_at && <span className="text-gray-400 text-[8px]">{new Date(iter.started_at).toLocaleTimeString()}</span>}
+                                          {iter.checkpoint && <span className="text-[8px] text-purple-600 bg-purple-50 px-1 rounded">cp {iter.checkpoint}</span>}
+                                          {iter.duration_ms > 0 && <span className="text-gray-400 text-[9px]">{iter.duration_ms}ms</span>}
+                                          {iter.tokens_input && <span className="text-gray-400 text-[8px]">in:{iter.tokens_input}</span>}
+                                          {iter.tokens_output && <span className="text-gray-400 text-[8px]">out:{iter.tokens_output}</span>}
+                                          {iter.tool_count > 0 && (
+                                            <span className="text-amber-700 bg-amber-50 text-[8px] px-1 rounded ml-auto">{iter.tool_count} tool(s)</span>
+                                          )}
+                                          {iter.error && <span className="text-red-500 text-[8px] ml-auto">Error</span>}
+                                        </button>
+                                        {expandedIterations.has(iterKey) && (
+                                          <div className="px-6 pb-1.5 space-y-0.5">
+                                            {iter.error && (
+                                              <div className="text-[8px] text-red-500 bg-red-50 px-1.5 py-0.5 rounded">{iter.error}</div>
+                                            )}
+                                            {iter.tool_names?.length > 0 && (
+                                              <div className="flex flex-wrap gap-1">
+                                                {iter.tool_names.map((tn: string, ti: number) => (
+                                                  <span key={ti} className="text-[8px] bg-gray-100 text-gray-600 px-1 rounded">{tn}</span>
+                                                ))}
+                                              </div>
+                                            )}
+                                          </div>
+                                        )}
+                                      </div>
+                                    );
+                                  })}
+
+                                  {/* Details (checkpoints, events, raw msgs) */}
+                                  {step.details?.map((d: any, di: number) => (
+                                    <div key={di} className="px-4 py-1 text-[8px] text-gray-500 border-b border-gray-100 last:border-b-0 font-mono flex items-start gap-1.5">
+                                      {d.is_checkpoint && <span className="text-purple-500 shrink-0">◇</span>}
+                                      {d.is_transition && <span className="text-amber-500 shrink-0">↻</span>}
+                                      {!d.is_checkpoint && !d.is_transition && <span className="text-gray-300 shrink-0">·</span>}
+                                      <span>
+                                        {typeof d === 'string' ? d : d.text || JSON.stringify(d)}
+                                        {d.duration_ms != null && <span className="text-gray-400 ml-1">({d.duration_ms}ms)</span>}
+                                        {d.artifacts != null && <span className="text-green-500 ml-1">{d.artifacts} artifacts</span>}
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
-                    </div>
+                    )}
+
+                    {/* Run error */}
+                    {run.error && (
+                      <div className="px-2.5 py-1.5 bg-red-50 border-t border-red-100 text-[9px] text-red-600 flex items-center gap-1">
+                        <AlertTriangle size={9} /> {run.error}
+                      </div>
+                    )}
+                  </div>
+                ))}
+
+                {/* No data fallback */}
+                {(!lifecycleData?.runs?.length && !lifecycleData?.supervisor_events?.length) && (
+                  <div className="text-center py-6">
+                    <Terminal size={20} className="text-gray-300 mx-auto mb-1" />
+                    <p className="text-xs text-gray-400">No execution history yet.</p>
+                    <p className="text-[9px] text-gray-400 mt-0.5">Agent will populate here when it runs.</p>
                   </div>
                 )}
               </div>
@@ -1038,9 +1231,14 @@ export default function AgentDetailPage() {
               </>
             )}
             <button onClick={() => handleAction('rerun')}
-              className="flex items-center gap-1 text-xs px-3 py-2 rounded-lg bg-gray-600 text-white hover:bg-gray-700 disabled:opacity-50">
+              className="flex items-center gap-1 text-xs px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50">
               {actionLoading === 'rerun' ? <Loader2 size={12} className="animate-spin" /> : <RefreshCw size={12} />}
               Rerun
+            </button>
+            <button onClick={() => handleAction('cancel')}
+              className="flex items-center gap-1 text-xs px-3 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-50">
+              {actionLoading === 'cancel' ? <Loader2 size={12} className="animate-spin" /> : <XCircle size={12} />}
+              Cancel
             </button>
           </div>
         </div>

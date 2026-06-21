@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "node dev-server.js -p 3000",
     "dev:clean": "node -e \"const f=require('fs');['.next','dev-err.log','dev-out.log','dev-server.log'].forEach(p=>f.existsSync(p)&&f.rmSync(p,{recursive:true,force:true}))\"",
+    "dev:bg": "powershell -File scripts/start-dev.ps1",
+    "dev:stop": "powershell -File scripts/stop-dev.ps1",
+    "stop:all": "powershell -File scripts/stop-all.ps1",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
