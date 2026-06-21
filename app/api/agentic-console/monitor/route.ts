@@ -21,7 +21,13 @@ function readState(project?: string | null): any {
 }
 
 function writeState(project: string | null | undefined, state: any): boolean {
-  try { fs.writeFileSync(statePath(project), JSON.stringify(state, null, 2), 'utf-8'); return true; } catch { return false; }
+  try {
+    const p = statePath(project);
+    const tmp = p + '.__tmp';
+    fs.writeFileSync(tmp, JSON.stringify(state, null, 2), 'utf-8');
+    fs.renameSync(tmp, p);
+    return true;
+  } catch { return false; }
 }
 
 function appendEvent(event: any): void {

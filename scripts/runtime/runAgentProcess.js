@@ -2,29 +2,28 @@ const fs = require('fs');
 const path = require('path');
 const { AgentRuntime } = require('./AgentRuntime');
 const vlog = require('./VerboseLogger');
+const { readState: sfRead, saveStateSync } = require('./StateFile');
 
 const ROOT = process.cwd();
 
 async function runAgentProcess(agentId, taskManifest) {
   vlog.write('PROCESS', agentId, `Process started | task=${taskManifest?.agent_id}`);
 
-  // Read state and set in_progress
-  const statePath = path.join(ROOT, '00_state_ledger/STATE_MATRIX.json');
-  const projPath = path.join(ROOT, '00_state_ledger/projects/petemart/STATE_MATRIX.json');
-
   function readState() {
-    try { return JSON.parse(fs.readFileSync(statePath, 'utf-8')); } catch { return null; }
+    return sfRead();
   }
 
   function saveState(state) {
-    try {
-      fs.writeFileSync(statePath, JSON.stringify(state, null, 2), 'utf-8');
-      try { fs.writeFileSync(projPath, JSON.stringify(state, null, 2), 'utf-8'); } catch {}
-    } catch {}
+    try { saveStateSync(state); } catch {}
   }
 
   const state = readState();
   if (state?.agent_states?.[agentId]) {
+    // Don't overwrite if already failed/cancelled by user
+    if (state.agent_states[agentId].status === 'failed' || state.agent_states[agentId].status === 'cancelled') {
+      vlog.write('PROCESS', agentId, `Skipping launch — agent was ${state.agent_states[agentId].status} (likely cancelled by user)`);
+      return { agentId, status: state.agent_states[agentId].status, artifacts: [], content: '', usage: {} };
+    }
     state.agent_states[agentId].status = 'in_progress';
     state.agent_states[agentId].started_at = new Date().toISOString();
     saveState(state);
@@ -35,6 +34,13 @@ async function runAgentProcess(agentId, taskManifest) {
   const context = { ...(taskManifest || {}), user_instruction: taskManifest?.user_instruction || null };
 
   try {
+    // Re-check for cancel before running (cancel might have come in during setup)
+    const preState = readState();
+    if (preState?.agent_states?.[agentId] && (preState.agent_states[agentId].status === 'failed' || preState.agent_states[agentId].status === 'cancelled')) {
+      vlog.write('PROCESS', agentId, `Aborting launch — agent was ${preState.agent_states[agentId].status} (cancelled during setup)`);
+      return { agentId, status: preState.agent_states[agentId].status, artifacts: [], content: '', usage: {} };
+    }
+
     const result = await runtime.runAgent(agentId, context);
 
     // Update state with result
@@ -42,9 +48,9 @@ async function runAgentProcess(agentId, taskManifest) {
     if (finalState?.agent_states?.[agentId]) {
       const ag = finalState.agent_states[agentId];
 
-      // Only update if not already set by runtime
-      if (!ag.last_run_id || ag.last_run_id !== result.runId) {
-        ag.status = result.status || 'completed';
+      // Only update if not already finalized by runtime
+      if (!ag.last_run_id || ag.last_run_id !== result.runId || ag.status === 'in_progress' || ag.status === 'active') {
+        ag.status = result.status || (ag.requires_human_approval ? 'awaiting_approval' : 'completed');
         ag.last_error = result.error || null;
         ag.last_run_id = result.runId;
         ag.run_id = result.runId;

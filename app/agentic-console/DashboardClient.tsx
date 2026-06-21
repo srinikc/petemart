@@ -64,7 +64,7 @@ function AgentMiniCard({
 }) {
   const cfg = STATUS_DOT[agent.status] || STATUS_DOT.pending;
   const shortId = agent.agent_id.replace('_agent', '').split('_').join(' ');
-  const shortRole = agent.role.split('/')[0].replace('&', 'and').trim();
+  const shortRole = agent.role.split('/')[0].replace('&', 'and').trim().replace(/^(Senior |Lead )/, '');
   const awaiting = agent.status === 'awaiting_approval';
   const needsInput = agent.status === 'awaiting_input';
   const failed = agent.status === 'failed' || agent.status === 'blocked';
@@ -149,6 +149,10 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
   const flashTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
   const actCounter = useRef(0);
   const activityRef = useRef<HTMLDivElement>(null);
+  const stateRef = useRef<any>(null);
+
+  // Keep stateRef in sync with state for use in event handlers
+  stateRef.current = state;
 
   // Supervisor chat
   const [showSupervisorChat, setShowSupervisorChat] = useState(false);
@@ -165,17 +169,28 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
   const supervisorChatRef = useRef<HTMLDivElement>(null);
   const [supervisorStartedAt, setSupervisorStartedAt] = useState<number | null>(null);
   const [llmProviderLabel, setLlmProviderLabel] = useState('opencode-go/deepseek-v4-flash');
-  const LLM_OPTIONS = [
-    { value: 'opencode-go/deepseek-v4-flash', label: 'opencode-go / deepseek-v4-flash' },
-    { value: 'openrouter/deepseek/deepseek-v4-flash', label: 'openrouter / deepseek/deepseek-v4-flash' },
-    { value: 'opencode/deepseek-v4-flash-free', label: 'opencode / deepseek-v4-flash-free (Zen)' },
-    { value: 'openrouter/openrouter/free', label: 'openrouter / openrouter/free' },
-  ];
+  // Build per-provider model presets for inline model switching
+  const MODEL_PRESETS: Record<string, string[]> = {
+    'opencode-go': ['deepseek-v4-flash', 'deepseek-v4-flash-free', 'deepseek-coder-v2', 'deepseek-r1'],
+    'openrouter': ['deepseek/deepseek-v4-flash', 'openai/gpt-4o', 'openai/gpt-4o-mini', 'anthropic/claude-3-5-sonnet', 'google/gemini-2.0-flash'],
+    'opencode': ['deepseek-v4-flash-free', 'deepseek-v4-flash'],
+    'openai': ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo'],
+    'google': ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-pro'],
+    'gemini': ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-pro'],
+    'anthropic': ['claude-3-5-sonnet-20241022', 'claude-3-haiku-20240307', 'claude-3-opus-20240229'],
+    'claude': ['claude-3-5-sonnet-20241022', 'claude-3-haiku-20240307', 'claude-3-opus-20240229'],
+    'ollama': ['llama3', 'llama3-70b', 'mixtral', 'codellama', 'mistral'],
+  };
 
   const addActivity = useCallback((agentId: string, action: string, detail: string, type: ActivityEntry['type'], severity: ActivityEntry['severity']) => {
-    actCounter.current++;
-    const entry: ActivityEntry = { id: `act-${actCounter.current}`, agentId, action, detail, type, severity, timestamp: Date.now() };
-    setActivities(prev => [entry, ...prev].slice(0, 20));
+    setActivities(prev => {
+      // Deduplicate: skip if last entry for same agent has same action
+      const last = prev.find(a => a.agentId === agentId);
+      if (last && last.action === action && (Date.now() - last.timestamp) < 60000) return prev;
+      actCounter.current++;
+      const entry: ActivityEntry = { id: `act-${actCounter.current}`, agentId, action, detail, type, severity, timestamp: Date.now() };
+      return [entry, ...prev].slice(0, 10);
+    });
   }, []);
 
   const flashAgent = useCallback((agentId: string) => {
@@ -252,8 +267,14 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
       try {
         const data = JSON.parse(e.data);
         if (Array.isArray(data)) {
+          const currentStates = stateRef.current?.agent_states || stateRef.current?.stateMatrix?.agent_states || {};
           data.forEach((evt: any) => {
             const short = (evt.agent_id || '').replace('_agent', '').replace(/^0+/, '');
+            const currentStatus = currentStates[evt.agent_id]?.status;
+            // Skip stale events: if event says awaiting_approval but agent is now pending, skip
+            if (evt.type === 'agent_awaiting_approval' && currentStatus !== 'awaiting_approval') return;
+            if (evt.type === 'compliance_failed' && currentStatus !== 'failed') return;
+            if (evt.type === 'stuck_agent_detected' && currentStatus !== 'failed' && currentStatus !== 'stuck') return;
             if (evt.type === 'agent_awaiting_approval') {
               addActivity(evt.agent_id, `${short} awaiting approval`, evt.notes?.slice(0, 80) || '', 'approval', 'warning');
               flashAgent(evt.agent_id);
@@ -475,7 +496,29 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
       }
       const endpoint = isPipelineAction ? '/api/agentic-console/pipeline' : '/api/agentic-console/approve';
       const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      if (res.ok) { setTimeout(() => window.location.reload(), 1000); }
+      if (res.ok) {
+        // Optimistically update local state — SSE will reconcile within 5s
+        setState((prev: any) => {
+          if (!prev) return prev;
+          const clone = JSON.parse(JSON.stringify(prev));
+          const targetState = clone?.stateMatrix?.agent_states?.[agentId] || clone?.agent_states?.[agentId];
+          if (targetState) {
+            if (action === 'cancel') {
+              targetState.status = 'failed';
+              targetState.last_error = 'CANCELLED_BY_USER';
+              targetState.started_at = null;
+            } else if (action === 'approve') {
+              targetState.approved = true;
+              targetState.requires_human_approval = false;
+            } else if (action === 'reject') {
+              targetState.status = 'pending';
+              targetState.approved = false;
+              targetState.last_error = 'REJECTED_BY_USER';
+            }
+          }
+          return clone;
+        });
+      }
     } catch { }
     setFlyoutActionLoading(null);
   };
@@ -488,6 +531,13 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
     total_agents: 16, agents_completed: 8, agents_in_progress: 0, agents_pending: 5,
     agents_awaiting_review: 2, agents_awaiting_input: 0, agents_failed: 0, overall_progress_pct: 69, last_milestone: '',
   };
+  // Sync LLM provider label from state when state loads
+  const llmOverride = (supervisorControl as any)?.agent_00_supervisor?.llm_override;
+  useEffect(() => {
+    if (llmOverride?.provider && llmOverride?.model) {
+      setLlmProviderLabel(`${llmOverride.provider}/${llmOverride.model}`);
+    }
+  }, [llmOverride?.provider, llmOverride?.model]);
   const gates: ApprovalGate[] = supervisorControl?.approval_gates || [];
   const supervisor = agentStates['00_supervisor_agent'];
   const circuitBreaker = supervisorControl?.loop_guardrails;
@@ -502,7 +552,7 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
     const needsInput = entries.filter(([, v]) => v.status === 'awaiting_input').length;
     const failed = entries.filter(([, v]) => (v.status === 'failed' || v.status === 'blocked') && !(v as any).disabled).length;
     const dlq = entries.filter(([, v]) => (v as any).dlq_entry || (v.status === 'failed' && v.stuck_detected_at && (v.execution_count || 0) >= 2)).length;
-    const pending = entries.filter(([, v]) => v.status === 'pending' || v.status === 'idle').length;
+    const pending = entries.filter(([k, v]) => (v.status === 'pending' || v.status === 'idle') && k !== '00_supervisor_agent').length;
     const total = entries.length;
     const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
     return {
@@ -611,12 +661,12 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
         allIds: failedAgentList,
       };
     }
-    // Check disabled agents
+    // Check disabled agents — don't flag as attention required (intentionally skipped)
     const disabledIds = Object.entries(agentStates).filter(([, v]) => (v as any).disabled).map(([k]) => k);
     if (disabledIds.length > 0) {
       return {
         agentId: disabledIds[0],
-        label: `${disabledIds.length} agent(s) disabled`,
+        label: `${disabledIds.length} agent(s) disabled — skipped`,
         type: 'rerun',
         severity: 'low',
         count: disabledIds.length,
@@ -838,29 +888,53 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
                   <Activity size={9} className="shrink-0" />
                   <span className="truncate">{llmProviderLabel.split('/').pop()}</span>
                 </button>
-                {showLlmDropdown && (
-                  <div className="absolute right-0 top-full mt-1 bg-white border rounded-xl shadow-lg z-50 py-1 w-64">
-                    {LLM_OPTIONS.map(opt => {
-                      const isActive = llmProviderLabel === opt.value;
-                      return (
-                        <button key={opt.value} onClick={async () => {
-                          const [provider, ...modelParts] = opt.value.split('/');
-                          const model = modelParts.join('/');
-                          await fetch('/api/agentic-console/pipeline', {
-                            method: 'POST', headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ action: 'select_llm', provider, model, project }),
-                          });
-                          setLlmProviderLabel(opt.value);
-                          setShowLlmDropdown(false);
-                        }}
-                          className={`w-full text-left px-3 py-1.5 text-[11px] hover:bg-indigo-50 transition-colors flex items-center gap-2 ${isActive ? 'text-indigo-700 font-semibold bg-indigo-50' : 'text-gray-600'}`}>
-                          <span className="flex-1 truncate">{opt.label}</span>
-                          {isActive && <span className="text-[9px] text-green-600 font-bold shrink-0">● ACTIVE</span>}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
+                {showLlmDropdown && (() => {
+                  const currentProvider = llmProviderLabel.split('/')[0];
+                  const presets = MODEL_PRESETS[currentProvider] || [llmProviderLabel.split('/').slice(1).join('/')];
+                  return (
+                    <div className="absolute right-0 top-full mt-1 bg-white border rounded-xl shadow-lg z-50 py-1 w-64">
+                      <div className="px-3 py-1 text-[9px] font-semibold text-gray-400 uppercase tracking-widest border-b border-gray-100 mb-1">{currentProvider}</div>
+                      {presets.map(model => {
+                        const label = `${currentProvider}/${model}`;
+                        const isActive = llmProviderLabel === label;
+                        return (
+                          <button key={model} onClick={async () => {
+                            await fetch('/api/agentic-console/pipeline', {
+                              method: 'POST', headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ action: 'select_llm', provider: currentProvider, model, project }),
+                            });
+                            setLlmProviderLabel(label);
+                            setShowLlmDropdown(false);
+                          }}
+                            className={`w-full text-left px-3 py-1.5 text-[11px] hover:bg-indigo-50 transition-colors flex items-center gap-2 ${isActive ? 'text-indigo-700 font-semibold bg-indigo-50' : 'text-gray-600'}`}>
+                            <span className="flex-1 truncate">{model}</span>
+                            {isActive && <span className="text-[9px] text-green-600 font-bold shrink-0">● ACTIVE</span>}
+                          </button>
+                        );
+                      })}
+                      {/* Custom model input */}
+                      <div className="border-t border-gray-100 mt-1 pt-1 px-3 pb-2">
+                        <input type="text" placeholder="Custom model..."
+                          className="w-full text-[10px] px-2 py-1 rounded border border-gray-200 focus:outline-none focus:border-indigo-300"
+                          onKeyDown={async (e) => {
+                            if (e.key === 'Enter') {
+                              const customModel = (e.target as HTMLInputElement).value.trim();
+                              if (customModel) {
+                                const label = `${currentProvider}/${customModel}`;
+                                await fetch('/api/agentic-console/pipeline', {
+                                  method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({ action: 'select_llm', provider: currentProvider, model: customModel, project }),
+                                });
+                                setLlmProviderLabel(label);
+                                setShowLlmDropdown(false);
+                              }
+                            }
+                          }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
               {/* Chat button */}
               <button onClick={() => setShowSupervisorChat(true)}
@@ -967,7 +1041,7 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
                           <div className="flex items-center gap-1.5">
                             <Loader2 size={11} className="text-blue-600 animate-spin shrink-0" />
                             <span className="text-[11px] font-semibold text-blue-800 truncate">{runningAgent.agent_id}</span>
-                            <span className="text-[8px] font-mono text-blue-500 bg-blue-100 px-1.5 py-0.5 rounded-full shrink-0">{runningAgent.role?.split(' ').slice(0, 2).join(' ')}</span>
+                            <span className="text-[8px] font-mono text-blue-500 bg-blue-100 px-1.5 py-0.5 rounded-full shrink-0">{runningAgent.role?.replace(/^(Senior |Lead )/, '').split(' ').slice(0, 2).join(' ')}</span>
                           </div>
                           <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                             {step && <span className="text-[9px] font-mono text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">{step}</span>}
@@ -996,12 +1070,12 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
                           {nextUpId ? 'Next: ' + nextUpId.replace('_agent','') : 'Pipeline Idle'}
                         </div>
                         <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                          {nextUpAgent && <span className="text-[9px] text-indigo-600">{nextUpAgent.role?.split(' ').slice(0,2).join(' ')}</span>}
-                          <span className="text-[9px] text-gray-500">{agents_pending} queued</span>
-                          {agents_awaiting_review > 0 && <span className="text-[9px] text-amber-600">{agents_awaiting_review} awaiting</span>}
-                          {blocked > 0 && <span className="text-[9px] text-orange-500">{blocked} blocked</span>}
-                          {agents_failed > 0 && <span className="text-[9px] text-red-600">{agents_failed} failed</span>}
+                          {nextUpAgent && <span className="text-[9px] text-indigo-600">{nextUpAgent.role?.replace(/^(Senior |Lead )/, '').split(' ').slice(0,2).join(' ')}</span>}
                           <span className="text-[9px] text-green-600">{agents_completed} done</span>
+                          <span className="text-[9px] text-gray-500">{agents_pending} queued</span>
+                          {blocked > 0 && <span className="text-[9px] text-orange-500">({blocked} waiting on deps)</span>}
+                          {agents_awaiting_review > 0 && <span className="text-[9px] text-amber-600">{agents_awaiting_review} awaiting</span>}
+                          {agents_failed > 0 && <span className="text-[9px] text-red-600">{agents_failed} failed</span>}
                         </div>
                       </>
                     );
@@ -1292,18 +1366,18 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
                       <ExternalLink size={12} /> Full Details
                     </button>
                     <button onClick={() => handleFlyoutAction('rerun')}
-                      className="flex-1 flex items-center justify-center gap-1 text-xs font-medium py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all active:scale-[0.97]">
+                      className="flex-1 flex items-center justify-center gap-1 text-xs font-medium py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all active:scale-[0.97]">
                       {flyoutActionLoading === 'rerun' ? <Loader2 size={12} className="animate-spin" /> : <RefreshCw size={12} />} Rerun
                     </button>
                     <button onClick={() => handleFlyoutAction('cancel')}
-                      className="flex items-center justify-center gap-1 text-xs font-medium py-2 px-2 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 transition-all active:scale-[0.97]"
+                      className="flex items-center justify-center gap-1 text-xs font-medium py-2 px-2.5 rounded-xl bg-red-600 text-white hover:bg-red-700 transition-all active:scale-[0.97]"
                       title="Cancel this agent">
-                      {flyoutActionLoading === 'cancel' ? <Loader2 size={12} className="animate-spin" /> : <XCircle size={12} />}
+                      {flyoutActionLoading === 'cancel' ? <Loader2 size={12} className="animate-spin" /> : <XCircle size={12} />} Cancel
                     </button>
                     <button onClick={() => handleFlyoutAction((agent as any).disabled ? 'enable' : 'disable')}
-                      className={`flex items-center justify-center gap-1 text-xs font-medium py-2 px-2 rounded-xl border transition-all active:scale-[0.97] ${(agent as any).disabled ? 'bg-green-50 border-green-200 text-green-700 hover:bg-green-100' : 'bg-red-50 border-red-200 text-red-600 hover:bg-red-100'}`}
+                      className={`flex items-center justify-center gap-1 text-xs font-medium py-2 px-2.5 rounded-xl transition-all active:scale-[0.97] ${(agent as any).disabled ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-orange-500 text-white hover:bg-orange-600'}`}
                       title={(agent as any).disabled ? 'Enable this agent' : 'Disable/skip this agent'}>
-                      {(agent as any).disabled ? <CheckCircle size={12} /> : <XCircle size={12} />}
+                      {(agent as any).disabled ? <CheckCircle size={12} /> : <XCircle size={12} />} {(agent as any).disabled ? 'Enable' : 'Disable'}
                     </button>
                   </div>
                 </div>

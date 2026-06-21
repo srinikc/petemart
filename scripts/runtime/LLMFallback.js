@@ -1,4 +1,4 @@
-const { spawnSync } = require('child_process');
+const { spawn } = require('child_process');
 const vlog = require('./VerboseLogger');
 
 /**
@@ -96,6 +96,7 @@ class LLMFallback {
         encoding: 'utf-8',
         maxBuffer: 1024 * 1024,
         windowsHide: true,
+        shell: true,
         timeout: 15000,
       });
 
@@ -144,6 +145,7 @@ class LLMFallback {
         encoding: 'utf-8',
         maxBuffer: 1024 * 1024,
         windowsHide: true,
+        shell: true,
         timeout: 30000,
       });
 
@@ -258,7 +260,7 @@ class LLMFallback {
       for (let attempt = 0; attempt <= maxRetries; attempt++) {
         try {
           const truncated = this.truncatePrompt(systemPrompt, entry.model, options.reservedTokens || 0);
-          const result = await this._callProvider(truncated, messages, entry, options);
+          const result = await this._callProvider(truncated, messages, entry, options, tools);
           vlog.write('FALLBACK', agentId, `Success: ${entry.label} ${entry.provider}/${entry.model}`);
           return { ...result, provider: entry.provider, model: entry.model, fallbackLabel: entry.label };
         } catch (err) {
@@ -306,35 +308,82 @@ class LLMFallback {
     return chain.filter(entry => !this._isOnCooldown(entry.provider, entry.model));
   }
 
-  _callProvider(systemPrompt, messages, entry, options) {
-    const fullPrompt = systemPrompt + '\n\n' + (messages || []).map(m => {
+  async _callProvider(systemPrompt, messages, entry, options, tools) {
+    let augmentedPrompt = systemPrompt;
+
+    // Embed tool definitions so LLM can respond with function calls
+    if (tools && tools.length > 0) {
+      const toolDefs = tools.map(t => {
+        const fn = t.function || t;
+        const params = fn.parameters?.properties ? '\n' + Object.entries(fn.parameters.properties).map(([k, v]) =>
+          `    ${k} (${v.type}${fn.parameters.required?.includes(k) ? ', required' : ''}): ${v.description || ''}`
+        ).join('\n') : '';
+        return `  - ${fn.name}: ${fn.description || ''}${params}`;
+      }).join('\n');
+      augmentedPrompt += `\n\n## Available Tools\nYou MUST call one of these tools by responding with EXACTLY:\n\n<function_call>\nname: <tool_name>\narguments: <JSON args>\n</function_call>\n\nTools:\n${toolDefs}\n\nDo NOT describe what you will do — just output the function call.`;
+    }
+
+    const fullPrompt = augmentedPrompt + '\n\n' + (messages || []).map(m => {
       const role = m.role === 'assistant' ? 'Assistant' : 'User';
       return `${role}: ${typeof m.content === 'string' ? m.content : JSON.stringify(m.content)}`;
     }).join('\n');
 
     const args = ['run', fullPrompt, '--model', `${entry.provider}/${entry.model}`];
-    const result = spawnSync('opencode', args, {
-      encoding: 'utf-8',
-      maxBuffer: 10 * 1024 * 1024,
-      windowsHide: true,
-      timeout: options.timeout || 120000,
+    const isWin = process.platform === 'win32';
+
+    return new Promise((resolve, reject) => {
+      const opts = {
+        encoding: 'utf-8',
+        maxBuffer: 10 * 1024 * 1024,
+        windowsHide: true,
+        shell: isWin,
+        timeout: options.timeout || 120000,
+      };
+
+      const proc = spawn('opencode', args, opts);
+      let stdout = '';
+      let stderr = '';
+
+      proc.stdout.on('data', (chunk) => { stdout += chunk; });
+      proc.stderr.on('data', (chunk) => { stderr += chunk; });
+      proc.on('error', (err) => reject(err));
+
+      const timer = setTimeout(() => {
+        proc.kill();
+        reject(new Error(`spawn opencode timed out after ${opts.timeout}ms`));
+      }, opts.timeout);
+
+      proc.on('close', (code) => {
+        clearTimeout(timer);
+        if (code !== 0 && stderr) reject(new Error(stderr.trim().slice(0, 500)));
+        const content = stdout?.trim() || '';
+
+        // Parse tool calls from response
+        const toolCalls = [];
+        const fcRegex = /<function_call>\s*name:\s*(\S+)\s*arguments:\s*(\{[\s\S]*?\})\s*<\/function_call>/gi;
+        let match;
+        while ((match = fcRegex.exec(content)) !== null) {
+          try {
+            const args = JSON.parse(match[2]);
+            toolCalls.push({ function: { name: match[1], arguments: match[2] } });
+          } catch {}
+        }
+
+        // Strip tool call markup from content for clean text
+        const cleanContent = content.replace(/<function_call>[\s\S]*?<\/function_call>/gi, '').trim();
+
+        const estimatedTokens = Math.ceil(cleanContent.length / 3.5);
+        resolve({
+          content: cleanContent,
+          toolCalls,
+          usage: {
+            prompt_tokens: Math.ceil(fullPrompt.length / 3.5),
+            completion_tokens: estimatedTokens,
+            total_tokens: Math.ceil(fullPrompt.length / 3.5) + estimatedTokens,
+          },
+        });
+      });
     });
-
-    if (result.error) throw new Error(result.error.message);
-    if (result.status !== 0 && result.stderr) throw new Error(result.stderr.trim().slice(0, 500));
-
-    const content = result.stdout?.trim() || '';
-    const estimatedTokens = Math.ceil(content.length / 3.5);
-
-    return {
-      content,
-      toolCalls: [],
-      usage: {
-        prompt_tokens: Math.ceil(fullPrompt.length / 3.5),
-        completion_tokens: estimatedTokens,
-        total_tokens: Math.ceil(fullPrompt.length / 3.5) + estimatedTokens,
-      },
-    };
   }
 }
 

@@ -216,7 +216,7 @@ export default function HealthPage() {
                                 <tr key={m.id} className="border-b hover:bg-gray-50/50 transition-colors">
                                     <td className="px-4 py-2.5">
                                         <div className="font-medium text-gray-800">{m.id.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</div>
-                                        <div className="text-[10px] text-gray-400 truncate max-w-[220px]">{m.role}</div>
+                                        <div className="text-[10px] text-gray-400 truncate max-w-[220px]">{m.role?.replace(/^(Senior |Lead )/, '')}</div>
                                     </td>
                                     <td className="px-4 py-2.5">
                                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium border ${statusColor(m.status)}`}>

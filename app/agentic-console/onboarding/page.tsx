@@ -10,12 +10,31 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
+const LLM_CATEGORIES = [
+  { id: 'opencode-go', label: 'OpenAI Compatible', desc: 'OpenAI, DeepSeek, OpenRouter, vLLM, any OpenAI-compatible API' },
+  { id: 'google', label: 'Google Gemini', desc: 'Gemini 2.0 Flash, Gemini 1.5 Pro' },
+  { id: 'anthropic', label: 'Anthropic Claude', desc: 'Claude 3.5 Sonnet, Claude 3 Haiku, Claude 3 Opus' },
+  { id: 'ollama', label: 'Ollama (Local)', desc: 'Run local models via Ollama' },
+];
+
+const MODEL_SUGGESTIONS: Record<string, string[]> = {
+  'opencode-go': 'deepseek-v4-flash, gpt-4o, gpt-4o-mini, deepseek-coder-v2'.split(', '),
+  'google': 'gemini-2.0-flash, gemini-2.0-flash-lite, gemini-1.5-pro'.split(', '),
+  'anthropic': 'claude-3-5-sonnet-20241022, claude-3-haiku-20240307, claude-3-opus-20240229'.split(', '),
+  'ollama': 'llama3, mixtral, codellama, mistral'.split(', '),
+};
+
 export default function EnterpriseOnboardingCockpit() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [idea, setIdea] = useState("");
   const [billingModel, setBillingModel] = useState("byok");
   const [logs, setLogs] = useState<{time: string, agent: string, msg: string}[]>([]);
+  const [llmProvider, setLlmProvider] = useState('opencode-go');
+  const [llmApiKey, setLlmApiKey] = useState('');
+  const [llmModel, setLlmModel] = useState('deepseek-v4-flash');
+  const [llmBaseUrl, setLlmBaseUrl] = useState('');
+  const [llmConfigSaved, setLlmConfigSaved] = useState(false);
 
   // Simulation for active logs
   useEffect(() => {
@@ -41,12 +60,24 @@ export default function EnterpriseOnboardingCockpit() {
     }
   }, [step]);
 
-  const handleLaunch = () => {
+  const handleLaunch = async () => {
     setLoading(true);
+    try {
+      if (llmApiKey || llmProvider === 'ollama') {
+        const body: any = { action: 'select_llm', provider: llmProvider, model: llmModel };
+        if (llmApiKey) body.apiKey = llmApiKey;
+        if (llmBaseUrl) body.baseURL = llmBaseUrl;
+        await fetch('/api/agentic-console/pipeline', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        setLlmConfigSaved(true);
+      }
+    } catch {}
     setTimeout(() => {
       setLoading(false);
       setStep(4); 
-    }, 2000);
+    }, 1000);
   };
 
   return (
@@ -177,15 +208,49 @@ export default function EnterpriseOnboardingCockpit() {
                   </div>
 
                   {billingModel === 'byok' && (
-                    <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-4">
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">OpenAI Key</label>
-                        <input type="password" placeholder="sk-..." className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-sm focus:ring-1 focus:ring-indigo-500 focus:outline-none transition-all" />
+                    <div className="space-y-4 animate-in fade-in slide-in-from-top-4">
+                      <div>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block">LLM Provider</label>
+                        <div className="grid grid-cols-2 gap-3">
+                          {LLM_CATEGORIES.map(cat => (
+                            <button key={cat.id} type="button" onClick={() => { setLlmProvider(cat.id); setLlmModel(MODEL_SUGGESTIONS[cat.id][0]); }}
+                              className={`p-3 rounded-xl border text-left transition-all ${llmProvider === cat.id ? 'bg-indigo-500/10 border-indigo-500' : 'bg-black/40 border-white/10 hover:border-white/30'}`}>
+                              <div className="font-bold text-xs text-white">{cat.label}</div>
+                              <div className="text-[9px] text-slate-500 mt-0.5 leading-tight">{cat.desc}</div>
+                            </button>
+                          ))}
+                        </div>
                       </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">GitHub Org</label>
-                        <input type="text" placeholder="enterprise-repo" className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-sm focus:ring-1 focus:ring-indigo-500 focus:outline-none transition-all" />
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">API Key</label>
+                          <input type="password" value={llmApiKey} onChange={e => setLlmApiKey(e.target.value)}
+                            placeholder={llmProvider === 'ollama' ? '(not needed for local)' : 'sk-...'}
+                            className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-sm focus:ring-1 focus:ring-indigo-500 focus:outline-none transition-all" />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Model</label>
+                          <input type="text" value={llmModel} onChange={e => setLlmModel(e.target.value)}
+                            placeholder="e.g., deepseek-v4-flash"
+                            className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-sm focus:ring-1 focus:ring-indigo-500 focus:outline-none transition-all" />
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {(MODEL_SUGGESTIONS[llmProvider] || []).map(m => (
+                              <button key={m} type="button" onClick={() => setLlmModel(m)}
+                                className={`text-[9px] px-2 py-0.5 rounded-full border transition-all ${llmModel === m ? 'bg-indigo-500/20 border-indigo-500 text-indigo-300' : 'border-white/10 text-slate-500 hover:border-white/30'}`}>
+                                {m}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
                       </div>
+                      {llmProvider === 'opencode-go' && (
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Base URL (optional)</label>
+                          <input type="text" value={llmBaseUrl} onChange={e => setLlmBaseUrl(e.target.value)}
+                            placeholder="https://api.openai.com/v1 (defaults to OpenAI)"
+                            className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-sm focus:ring-1 focus:ring-indigo-500 focus:outline-none transition-all" />
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -219,6 +284,17 @@ export default function EnterpriseOnboardingCockpit() {
                         <div className="text-lg font-black text-white">45 MINS</div>
                       </div>
                     </div>
+
+                    {billingModel === 'byok' && (
+                      <div className="mt-6 p-4 bg-slate-900/60 rounded-2xl border border-white/10">
+                        <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">LLM Configuration</h3>
+                        <div className="grid grid-cols-3 gap-4 text-xs">
+                          <div><span className="text-slate-500 block">Provider</span><span className="text-white font-semibold">{LLM_CATEGORIES.find(c => c.id === llmProvider)?.label || llmProvider}</span></div>
+                          <div><span className="text-slate-500 block">Model</span><span className="text-white font-semibold">{llmModel}</span></div>
+                          <div><span className="text-slate-500 block">API Key</span><span className="text-white font-semibold">{llmApiKey ? '••••••••' + llmApiKey.slice(-4) : 'N/A'}</span></div>
+                        </div>
+                      </div>
+                    )}
 
                     <div className="mt-10 p-4 bg-indigo-500/10 rounded-2xl border border-indigo-500/20 flex items-center space-x-4 text-sm text-indigo-200">
                       <Shield className="w-5 h-5 text-indigo-400" />

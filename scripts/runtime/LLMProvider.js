@@ -1,132 +1,243 @@
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 const vlog = require('./VerboseLogger');
-const { LLMFallback, FALLBACK_CHAIN, STATIC_MODEL_LIMITS } = require('./LLMFallback');
+const { LLMOpenAIProvider } = require('./LLMOpenAIProvider');
+const { LLMOpenCodeProvider } = require('./LLMOpenCodeProvider');
+const { LLMGoogleProvider } = require('./LLMGoogleProvider');
+const { LLMAnthropicProvider } = require('./LLMAnthropicProvider');
+const { LLMOllamaProvider } = require('./LLMOllamaProvider');
 
 const SPEND_LOG_PATH = path.join(process.cwd(), '00_state_ledger', 'token_spend_log.json');
 
+// Maps provider names to their backend class and default config
+const PROVIDER_REGISTRY = {
+  'opencode-go': { cls: LLMOpenAIProvider, config: { baseURL: 'https://opencode.ai/zen/go/v1', authKey: 'opencode-go' } },
+  'openrouter': { cls: LLMOpenAIProvider, config: { baseURL: 'https://openrouter.ai/api/v1', authKey: 'openrouter' } },
+  'opencode': { cls: LLMOpenAIProvider, config: { baseURL: 'https://opencode.ai/zen/v1', authKey: 'opencode-go' } },
+  'openai': { cls: LLMOpenAIProvider, config: { baseURL: 'https://api.openai.com/v1', authKey: 'openai' } },
+  'google': { cls: LLMGoogleProvider, config: {} },
+  'gemini': { cls: LLMGoogleProvider, config: {} },
+  'anthropic': { cls: LLMAnthropicProvider, config: {} },
+  'claude': { cls: LLMAnthropicProvider, config: {} },
+  'ollama': { cls: LLMOllamaProvider, config: {} },
+};
+
+// Map provider aliases to canonical names
+const PROVIDER_ALIASES = {
+  'gemini': 'google',
+  'claude': 'anthropic',
+  'gpt': 'openai',
+  'chatgpt': 'openai',
+};
+
+function readAuthKeys() {
+  const candidates = [
+    path.join(os.homedir(), '.local', 'share', 'opencode', 'auth.json'),
+    path.join(process.env.LOCALAPPDATA || '', 'opencode', 'auth.json'),
+    path.join(process.env.APPDATA || '', 'opencode', 'auth.json'),
+  ];
+  for (const fp of candidates) {
+    try {
+      if (fs.existsSync(fp)) return JSON.parse(fs.readFileSync(fp, 'utf-8'));
+    } catch {}
+  }
+  return {};
+}
+
+/**
+ * Embed tool definitions as text instructions in the system prompt so that
+ * ANY LLM (regardless of native function-calling support) understands how to
+ * call tools. The LLM responds with <function_call> tags which we parse from
+ * the raw text content. This is the provider-agnostic approach.
+ */
+function embedToolsInPrompt(systemPrompt, tools) {
+  if (!tools || tools.length === 0) return systemPrompt;
+  const toolDefs = tools.map(t => {
+    const fn = t.function || t;
+    const params = fn.parameters?.properties
+      ? '\n' + Object.entries(fn.parameters.properties).map(([k, v]) =>
+          `    ${k} (${v.type}${fn.parameters.required?.includes(k) ? ', required' : ''}): ${v.description || ''}`
+        ).join('\n')
+      : '';
+    return `  - ${fn.name}: ${fn.description || ''}${params}`;
+  }).join('\n');
+  return systemPrompt + `\n\n## Available Tools\nYou MUST use these tools to complete your task. Every response MUST begin with a tool call. Never just describe what you will do — execute it immediately.\n\n### Format — call tools like this (EXACT format required):\n<function_call>\nname: write_artifact\narguments: { "name": "output.md", "data": "# Content here...", "type": "markdown" }\n</function_call>\n\n### Tools:\n${toolDefs}\n\n### Rules:\n- Call write_artifact for EVERY output file. Do NOT output file contents as text — always use write_artifact.\n- Call read_dependency to read upstream artifacts before starting.\n- One tool call per <function_call> block. You can make multiple <function_call> blocks in one response.`;
+}
+
+/**
+ * Parse embedded <function_call> tags from raw text content.
+ * This is the universal fallback for providers without native function calling.
+ */
+function parseEmbeddedToolCalls(content) {
+  const toolCalls = [];
+  const fcRegex = /<function_call>\s*name:\s*(\S+)\s*arguments:\s*(\{[\s\S]*?\})\s*<\/function_call>/gi;
+  let match;
+  while ((match = fcRegex.exec(content)) !== null) {
+    try {
+      JSON.parse(match[2]);
+      toolCalls.push({
+        id: `fc_${toolCalls.length}`,
+        type: 'function',
+        function: { name: match[1], arguments: match[2] },
+      });
+    } catch {}
+  }
+  return toolCalls;
+}
+
+/**
+ * Strip <function_call> markup from text content for clean output.
+ */
+function stripToolMarkup(content) {
+  return content.replace(/<function_call>[\s\S]*?<\/function_call>/gi, '').trim();
+}
+
 class LLMProvider {
   constructor(options = {}) {
-    this.provider = options.provider || 'opencode-go';
-    this.model = options.model || 'deepseek-v4-flash';
-    this.fallback = new LLMFallback();
-    this._client = null;
+    const cfg = this._resolveConfig(options);
+    this._backend = cfg.backend;
+    this._providerName = cfg.provider;
+    this._model = cfg.model;
     this._initialized = false;
+    this._initResult = null;
   }
 
-  static fromEnv() {
-    return new LLMProvider({
-      provider: process.env.LLM_PROVIDER || 'opencode-go',
-      model: process.env.LLM_MODEL || 'deepseek-v4-flash',
-    });
+  _resolveConfig(options) {
+    let rawProvider = (options.provider || process.env.LLM_PROVIDER || 'opencode-go').toLowerCase();
+    let model = options.model || process.env.LLM_MODEL || 'deepseek-v4-flash';
+    let apiKey = options.apiKey || process.env.LLM_API_KEY || process.env.OPENAI_API_KEY || '';
+    let baseURL = options.baseURL || process.env.LLM_BASE_URL || '';
+
+    // STATE_MATRIX llm_override fills in anything not set by options/env
+    try {
+      const statePath = path.join(process.cwd(), '00_state_ledger/STATE_MATRIX.json');
+      if (fs.existsSync(statePath)) {
+        const state = JSON.parse(fs.readFileSync(statePath, 'utf-8'));
+        const ov = state?.supervisor_control?.agent_00_supervisor?.llm_override;
+        if (ov) {
+          if (!options.provider && ov.provider) rawProvider = ov.provider;
+          if (!options.model && ov.model) model = ov.model;
+          if (!options.apiKey && ov.apiKey) apiKey = ov.apiKey;
+          if (!options.baseURL && ov.baseURL) baseURL = ov.baseURL;
+        }
+      }
+    } catch {}
+
+    // Resolve alias (e.g. gemini -> google, claude -> anthropic)
+    let provider = PROVIDER_ALIASES[rawProvider] || rawProvider;
+
+    // Look up provider in registry
+    const entry = PROVIDER_REGISTRY[provider];
+    if (!entry) {
+      vlog.write('LLM', 'CONFIG', `Unknown provider "${provider}", falling back to opencode CLI`);
+      return { backend: new LLMOpenCodeProvider({ provider, model }), provider, model };
+    }
+
+    // Apply default baseURL and auth key from registry config
+    if (entry.config) {
+      if (!baseURL && entry.config.baseURL) baseURL = entry.config.baseURL;
+      if (!apiKey && entry.config.authKey) {
+        const auth = readAuthKeys();
+        const authEntry = auth[entry.config.authKey];
+        if (authEntry && authEntry.key) apiKey = authEntry.key;
+      }
+    }
+
+    // For OpenAI-compatible providers: need both apiKey + baseURL
+    if (entry.cls === LLMOpenAIProvider) {
+      if (apiKey && baseURL) {
+        vlog.write('LLM', 'CONFIG', `OpenAI-compatible: ${provider}/${model} via ${baseURL}`);
+        return { backend: new LLMOpenAIProvider({ apiKey, model, baseURL, toolChoice: 'auto' }), provider, model };
+      }
+      vlog.write('LLM', 'CONFIG', `No API key for ${provider}, falling back to CLI mode`);
+      return { backend: new LLMOpenCodeProvider({ provider, model }), provider, model };
+    }
+
+    // Ollama: no API key required
+    if (entry.cls === LLMOllamaProvider) {
+      vlog.write('LLM', 'CONFIG', `Native: ${provider}/${model}`);
+      const opts = { model };
+      if (baseURL) opts.baseURL = baseURL;
+      return { backend: new entry.cls(opts), provider, model };
+    }
+
+    // Native providers (Google, Anthropic): need API key
+    const providerApiKey = apiKey || process.env[`${provider.toUpperCase()}_API_KEY`] || '';
+    if (providerApiKey) {
+      vlog.write('LLM', 'CONFIG', `Native: ${provider}/${model}`);
+      const opts = { model, apiKey: providerApiKey };
+      if (baseURL) opts.baseURL = baseURL;
+      return { backend: new entry.cls(opts), provider, model };
+    }
+
+    vlog.write('LLM', 'CONFIG', `No API key for ${provider}, falling back to CLI mode`);
+    return { backend: new LLMOpenCodeProvider({ provider, model }), provider, model };
   }
 
-  /**
-   * Initialize LLM: run health check + probe context window.
-   * Call before any agent work to confirm provider is alive.
-   * Returns { provider, model, contextWindow, error? }
-   */
+  static fromEnv(options = {}) { return new LLMProvider(options); }
+
   async initialize() {
     if (this._initialized) return this._initResult;
-    vlog.write('LLM', 'SYSTEM', `Initializing LLM: ${this.provider}/${this.model}`);
-    this._initResult = await this.fallback.initialize({
-      provider: this.provider,
-      model: this.model,
-    });
+    this._initResult = await this._backend.initialize();
     this._initialized = true;
-    this.provider = this._initResult.provider;
-    this.model = this._initResult.model;
     if (this._initResult.contextWindow) {
-      vlog.write('LLM', 'SYSTEM', `Context window: ${this._initResult.contextWindow} tokens`);
+      vlog.write('LLM', 'SYSTEM', 'Context window: ' + this._initResult.contextWindow + ' tokens');
     }
     if (this._initResult.error) {
-      vlog.write('LLM', 'SYSTEM', `Init warning: ${this._initResult.error}`);
+      vlog.write('LLM', 'SYSTEM', 'Init warning: ' + this._initResult.error);
     }
     return this._initResult;
   }
 
-  // ── Public API ──
-
   async complete(systemPrompt, messages = [], tools = [], options = {}) {
     const agentId = options.agentId || 'SYSTEM';
-
-    // Auto-initialize on first call if not done
     if (!this._initialized) await this.initialize();
 
     try {
-      // Use fallback chain with context width management
-      const result = await this.fallback.callWithFallback(systemPrompt, messages, tools, {
-        ...options,
-        provider: this.provider,
-        model: this.model,
-        agentId,
-      });
+      // Step 1: Embed tool definitions as text in the system prompt.
+      // This works with ANY LLM — no native function-calling support needed.
+      const augmentedPrompt = embedToolsInPrompt(systemPrompt, tools);
 
-      // Log token usage
+      // Step 2: Send to the backend. The backend may ALSO use native tools
+      // parameter if it supports it (bonus), but the text embedding is the
+      // universal fallback.
+      const result = await this._backend.complete(augmentedPrompt, messages, tools, options);
+
       if (result.usage) {
-        this._logTokenUsage(result.usage.prompt_tokens, result.usage.completion_tokens, result.model);
+        this._logTokenUsage(result.usage.prompt_tokens, result.usage.completion_tokens, this._model);
       }
 
-      vlog.write('LLM', agentId, `Returned from ${result.fallbackLabel}: ${result.provider}/${result.model} | content=${(result.content || '').length} chars | toolCalls=${(result.toolCalls || []).length}`);
+      // Step 3: Parse tool calls from the response.
+      // Native tool_calls (OpenAI-compatible APIs) take priority.
+      const nativeToolCalls = result.toolCalls || [];
+      // Embedded <function_call> tags work with ANY provider.
+      const embeddedToolCalls = parseEmbeddedToolCalls(result.content || '');
+      const toolCalls = nativeToolCalls.length > 0 ? nativeToolCalls : embeddedToolCalls;
+
+      // Strip <function_call> markup from content for clean text
+      const cleanContent = stripToolMarkup(result.content || '');
+
+      vlog.write('LLM', agentId, `Returned from ${this._providerName}/${this._model} | content=${cleanContent.length} chars | toolCalls=${toolCalls.length} (native=${nativeToolCalls.length} embedded=${embeddedToolCalls.length})`);
 
       return {
-        content: result.content,
-        toolCalls: result.toolCalls || [],
+        content: cleanContent,
+        toolCalls,
         usage: result.usage || { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
-        model: `${result.provider}/${result.model}`,
+        model: this._providerName + '/' + this._model,
       };
     } catch (err) {
-      // Last resort: try with maximum truncation
-      vlog.write('LLM', agentId, `Fallback chain exhausted, trying emergency truncation: ${err.message}`);
-      return this._emergencyCall(systemPrompt, messages, options);
+      vlog.write('LLM', agentId, 'Provider failed, trying emergency: ' + err.message);
+      if (this._backend.emergencyCall) {
+        return this._backend.emergencyCall(systemPrompt, messages, options);
+      }
+      return { content: '', toolCalls: [], usage: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 }, model: this._providerName + '/' + this._model, error: err.message };
     }
   }
 
-  // ── Emergency fallback (maximum truncation, last resort) ──
-
-  async _emergencyCall(systemPrompt, messages, options) {
-    const { spawnSync } = require('child_process');
-
-    // Aggressively truncate: keep first 30% and last 20%
-    const maxChars = 8000;
-    let truncated = systemPrompt;
-    if (truncated.length > maxChars) {
-      const keepStart = Math.floor(maxChars * 0.6);
-      const keepEnd = Math.floor(maxChars * 0.2);
-      truncated = truncated.slice(0, keepStart) +
-        `\n[... truncated to ${maxChars} chars ...]\n` +
-        truncated.slice(truncated.length - keepEnd);
-    }
-
-    const args = ['run', truncated, '--model', `${this.provider}/${this.model}`];
-
-    try {
-      const result = spawnSync('opencode', args, {
-        encoding: 'utf-8',
-        maxBuffer: 10 * 1024 * 1024,
-        windowsHide: true,
-        timeout: options.timeout || 120000,
-      });
-
-      const content = result.stdout?.trim() || '';
-      return {
-        content,
-        toolCalls: [],
-        usage: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
-        model: `${this.provider}/${this.model}`,
-      };
-    } catch (err) {
-      vlog.write('LLM', 'SYSTEM', `Emergency call also failed: ${err.message}`);
-      return {
-        content: '',
-        toolCalls: [],
-        usage: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
-        model: `${this.provider}/${this.model}`,
-      };
-    }
-  }
-
-  // ── Token Cost Logging ──
+  get provider() { return this._providerName; }
+  get model() { return this._model; }
+  set model(m) { this._model = m; if (this._backend.setModel) this._backend.setModel(m); }
 
   _logTokenUsage(promptTokens, completionTokens, model) {
     try {
@@ -137,9 +248,9 @@ class LLMProvider {
       const cost = ((promptTokens || 0) + (completionTokens || 0)) / 1000 * costPer1K;
       log[month] = (log[month] || 0) + cost;
       fs.writeFileSync(SPEND_LOG_PATH, JSON.stringify(log, null, 2), 'utf-8');
-      vlog.write('LLM', 'SYSTEM', `Token cost: $${cost.toFixed(6)} (${(promptTokens || 0) + (completionTokens || 0)} tok @ ${costPer1K}/1K)`);
+      vlog.write('LLM', 'SYSTEM', 'Token cost: $' + cost.toFixed(6) + ' (' + ((promptTokens || 0) + (completionTokens || 0)) + ' tok @ ' + costPer1K + '/1K)');
     } catch {}
-    this._updateStateMatrix(this.provider, this.model);
+    this._updateStateMatrix(this._providerName, this._model);
   }
 
   _updateStateMatrix(provider, model) {
@@ -149,12 +260,12 @@ class LLMProvider {
         const data = JSON.parse(fs.readFileSync(matrixPath, 'utf8'));
         Object.keys(data.agent_states || {}).forEach(aid => {
           if (data.agent_states[aid].status === 'in_progress') {
-            data.agent_states[aid].active_llm = `${provider}/${model}`;
+            data.agent_states[aid].active_llm = provider + '/' + model;
           }
         });
         fs.writeFileSync(matrixPath, JSON.stringify(data, null, 2));
       }
-    } catch (e) { vlog.write('LLM', 'SYSTEM', `Failed to update state matrix: ${e.message}`); }
+    } catch (e) { vlog.write('LLM', 'SYSTEM', 'Failed to update state matrix: ' + e.message); }
   }
 }
 

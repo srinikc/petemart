@@ -27,6 +27,7 @@ const CANONICAL_STEPS = [
   { id: 'initializing', label: 'Initializing', icon: '⚙' },
   { id: 'gather_deps', label: 'Gathering Dependencies', icon: '⬇' },
   { id: 'llm', label: 'LLM Execution', icon: '🧠' },
+  { id: 'checkpoint', label: 'Checkpoint', icon: '◇' },
   { id: 'processing', label: 'Processing Results', icon: '✓' },
   { id: 'writing', label: 'Writing Artifacts', icon: '💾' },
   { id: 'done', label: 'Complete', icon: '✅' },
@@ -71,11 +72,19 @@ export async function GET(req: NextRequest) {
   // Current agent-level status
   const agentStatus = agent.status === 'in_progress' || agent.status === 'active' ? 'running' : (agent.status || 'unknown');
 
+  // Include supervisor entries (DAEMON + SUPERVISOR components) for this agent
+  const supervisorEntries = lines.filter(l => l.includes('[DAEMON]') || l.includes('[SUPERVISOR]')).slice(-50);
+
+  // Also include pipeline events from PIPELINE_EVENTS.jsonl
+  const pipelineEvents = readPipelineEvents(agentId);
+
   return NextResponse.json({
     agent_id: agentId,
     agent_status: agentStatus,
     is_running: agent.status === 'in_progress' || agent.status === 'active',
     runs,
+    supervisor_events: supervisorEntries,
+    pipeline_events: pipelineEvents,
   });
 }
 
@@ -163,6 +172,12 @@ function buildRunTimeline(run: any, agent: any) {
       if (currentStep?.id === 'llm') currentStep.details.push({ text: msg, is_checkpoint: true, checkpoint_type: 'timing', phase: m ? parseInt(m[1]) : 0, total_phases: m ? parseInt(m[2]) : 0, name: m?.[3] || '', duration_ms: m ? parseInt(m[4]) : 0, artifacts: m ? parseInt(m[5]) : 0 });
     } else if (msg.startsWith('LLM Tool Loop finished')) {
       if (currentStep?.id === 'llm') currentStep.details.push({ text: msg });
+    } else if (msg.startsWith('Step: processing results')) {
+      closeStep(currentStep, tsMs, steps);
+      currentStep = { id: 'processing', label: 'Processing Results', started_at: ev.ts, start_ms: tsMs, ended_at: null, end_ms: null, details: [] };
+    } else if (msg.startsWith('Step: checkpoint')) {
+      // Checkpoint step entries go under LLM as details
+      if (currentStep) currentStep.details.push({ text: msg, is_checkpoint: true });
     } else if (msg.startsWith('Step: writing artifacts')) {
       closeStep(currentStep, tsMs, steps);
       currentStep = { id: 'writing', label: 'Writing Artifacts', started_at: ev.ts, start_ms: tsMs, ended_at: null, end_ms: null, details: [] };
@@ -237,7 +252,11 @@ function buildRunTimeline(run: any, agent: any) {
     status: run.status,
     error: runError,
     total_duration_ms: Math.max(totalMs, 0),
-    steps: merged,
+    steps: merged.map(s => ({
+      ...s,
+      // Expose timestamps for frontend display
+      time: s.started_at ? new Date(s.started_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : null,
+    })),
   };
 }
 
@@ -258,6 +277,19 @@ function closeStep(step: any, tsMs: number, steps: any[]) {
   if (step.duration_ms > 0 || step.details.length > 0 || step.iterations?.length > 0) {
     steps.push(step);
   }
+}
+
+function readPipelineEvents(agentId: string) {
+  try {
+    const eventsPath = path.join(ROOT, '00_state_ledger/PIPELINE_EVENTS.jsonl');
+    if (!fs.existsSync(eventsPath)) return [];
+    const content = fs.readFileSync(eventsPath, 'utf-8');
+    const lines = content.trim().split('\n').filter(Boolean);
+    const agentEvents = lines.filter(l => l.includes(agentId)).slice(-30);
+    return agentEvents.map(l => {
+      try { return JSON.parse(l); } catch { return { raw: l }; }
+    });
+  } catch { return []; }
 }
 
 function safeParseJSON(s: string) {

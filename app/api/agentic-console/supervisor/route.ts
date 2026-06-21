@@ -9,9 +9,27 @@ const COMMANDS_PATH = path.join(ROOT, '00_state_ledger/SUPERVISOR_COMMANDS.jsonl
 const RESPONSES_PATH = path.join(ROOT, '00_state_ledger/SUPERVISOR_RESPONSES.jsonl');
 const DASHBOARD_PATH = path.join(ROOT, '00_state_ledger/SUPERVISOR_DASHBOARD.json');
 
-// ── SSE endpoint: UI connects here for real-time supervisor responses ──
+// ── GET endpoint: returns supervisor dashboard JSON (plain) or SSE stream ──
 
 export async function GET(req: NextRequest) {
+  const format = req.nextUrl.searchParams.get('format');
+
+  // Plain JSON snapshot (used by Logs page Supervisor tab)
+  if (format === 'json') {
+    try {
+      if (fs.existsSync(DASHBOARD_PATH)) {
+        const dashboard = JSON.parse(fs.readFileSync(DASHBOARD_PATH, 'utf-8'));
+        return NextResponse.json(dashboard, {
+          headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
+        });
+      }
+      return NextResponse.json({ error: 'No dashboard data' }, { status: 404 });
+    } catch (err: any) {
+      return NextResponse.json({ error: err.message }, { status: 500 });
+    }
+  }
+
+  // SSE stream (real-time, used by Supervisor Chat)
   const encoder = new TextEncoder();
   const stream = new ReadableStream({
     async start(controller) {

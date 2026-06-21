@@ -247,7 +247,7 @@ export default function AgentsPage() {
                                                 <AgentIcon size={15} className="text-gray-500 shrink-0" />
                                                 <span className="font-medium text-[11px] cursor-pointer" onClick={() => setSelectedAgent(a)}>{a.agent_id}</span>
                                             </div>
-                                            <p className="text-[9px] text-gray-500 line-clamp-1 mb-1.5 cursor-pointer" onClick={() => setSelectedAgent(a)}>{a.role}</p>
+                                            <p className="text-[9px] text-gray-500 line-clamp-1 mb-1.5 cursor-pointer" onClick={() => setSelectedAgent(a)}>{a.role?.replace(/^(Senior |Lead )/, '')}</p>
                                             <div className="flex items-center gap-1.5 flex-wrap">
                                                 <StatusBadge status={a.status} />
                                                 {total > 0 && (

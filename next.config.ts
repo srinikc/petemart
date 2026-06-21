@@ -6,6 +6,24 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '2mb',
     },
   },
+  webpack: (config, { dev }) => {
+    if (dev) {
+      // Ignore runtime state/agent directories from hot-reload watching.
+      // The daemon writes STATE_MATRIX.json every 2s which triggers
+      // full Webpack recompilation and locks the dev server.
+      config.watchOptions = {
+        ...config.watchOptions,
+        ignored: [
+          '**/00_state_ledger/**',
+          '**/agents/**',
+          '**/logs/**',
+          '**/oldartifacts/**',
+          '**/context_lake/**',
+        ],
+      };
+    }
+    return config;
+  },
   async headers() {
     return [
       {

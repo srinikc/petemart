@@ -139,9 +139,6 @@ function NodeCard({
           </span>
         </div>
 
-        {/* Row 2: Role */}
-        <div className="text-[9px] text-gray-400 truncate">{agent.role}</div>
-
         {/* Phase context */}
         <div className="text-[8px] text-gray-300 truncate">{phaseLabel}</div>
 
