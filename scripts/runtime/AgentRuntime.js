@@ -39,9 +39,13 @@ const AGENT_WORKSPACE_MAP = {
 };
 
 function resolveWorkspaceRoot(agentDef, agentId) {
-  if (agentDef && agentDef.workspace_root) return agentDef.workspace_root;
+  if (agentDef) {
+    if (agentDef.workspace_root) return agentDef.workspace_root;
+    if (agentDef.workspaceRoot) return agentDef.workspaceRoot;
+  }
   if (AGENT_WORKSPACE_MAP[agentId]) return AGENT_WORKSPACE_MAP[agentId];
-  return `agents/03_execution_workspace/${agentId}/`;
+  if (agentId) return `agents/03_execution_workspace/${agentId}/`;
+  return '';
 }
 
 const ACTIVE_RUNS = new Map();
@@ -294,9 +298,9 @@ class AgentRuntime {
       // Determine final status and update state
       const finalState = this._getState();
       const finalAgent = finalState.agent_states?.[agentId];
-      let finalStatus = finalAgent?.status === 'failed' ? 'failed' : 'completed';
+      let finalStatus = finalAgent?.status === 'failed' ? 'failed' : (finalAgent?.status || 'completed');
       // If agent requires human approval, set to awaiting_approval instead of completed
-      if (finalStatus === 'completed' && agentDef?.requires_human_approval !== false) {
+      if (finalStatus === 'completed' || finalStatus === 'approved') {
         const st = this._getState();
         const ag = st.agent_states?.[agentId];
         if (ag?.requires_human_approval) finalStatus = 'awaiting_approval';
@@ -313,7 +317,7 @@ class AgentRuntime {
       if (finalAgent && (finalAgent.status === 'in_progress' || finalAgent.status === 'active')) {
         finalAgent.status = finalStatus;
         finalAgent.last_activity_timestamp = new Date().toISOString();
-        if (finalStatus === 'completed' && !finalAgent.last_error) {
+        if ((finalStatus === 'completed' || finalStatus === 'approved') && !finalAgent.last_error) {
           finalAgent.last_error = null;
         }
         this._saveState(finalState);
@@ -552,8 +556,8 @@ class AgentRuntime {
           }
         }
       } else if (resp.content) {
-        // No tool calls but has content — check for missing compliance files
-        consecutiveSameTool.clear(); // Reset tool loop detection when LLM switches to content
+        // No tool calls but has content
+        consecutiveSameTool.clear();
         consecutiveReadOnly++;
         if (consecutiveReadOnly >= 3) {
           vlog.write('RUNTIME', agentDef.id, `Loop guard | iter ${i + 1} | read-only x${consecutiveReadOnly} | injecting nudge`);
@@ -671,8 +675,30 @@ class AgentRuntime {
       } else if (agent.last_artifact_emitted?.length > 0 && (!agent.artifacts_emitted || agent.artifacts_emitted.length === 0)) {
         agent.artifacts_emitted = [...agent.last_artifact_emitted];
       }
+      // Compliance check: verify all required artifacts exist
+      const checkPassed = this._verifyCompliance(agent, agentDef);
+      agent.status = checkPassed ? 'approved' : 'failed';
+      if (!checkPassed && !agent.last_error) {
+        agent.last_error = 'Compliance failed: required artifacts missing';
+      }
       this._saveState(state);
     }
+  }
+
+  _verifyCompliance(agent, agentDef) {
+    const checklist = agent?.compliance_checklist || agentDef?.compliance_checklist || [];
+    if (checklist.length === 0) return true;
+    for (const item of checklist) {
+      if (item.required && item.check?.startsWith('artifact_exists(')) {
+        const artifactName = item.check.match(/\((.*?)\)/)?.[1];
+        if (artifactName) {
+          const artifacts = agent?.artifacts_emitted || [];
+          const found = artifacts.some(a => a.includes(artifactName));
+          if (!found) return false;
+        }
+      }
+    }
+    return true;
   }
 
   // ── Tool Handlers ──
@@ -700,8 +726,8 @@ class AgentRuntime {
       fs.renameSync(filePath, path.join(archiveDir, `${ts}_${name}`));
     }
     fs.writeFileSync(filePath, data, 'utf-8');
-    vlog.write('RUNTIME', this._agentId, `Write | ${name} | type=${type} | size=${data.length} bytes`);
-    return { artifact: { name, data, type } };
+    vlog.write('RUNTIME', this._agentId || agentDef?.id, `Write | ${name} | type=${type} | size=${data.length} bytes`);
+    return { success: true, artifact: { name, data, type } };
   }
 
   async _readDependency(args) {

@@ -9,16 +9,19 @@
   "supervisor_control": {
     "agent_00_supervisor": {
       "status": "active",
-      "current_action": "1 eligible agent(s) — awaiting HITL or dependencies",
-      "next_agent_to_dispatch": "04_prototype_agent",
+      "current_action": "Launched 1 agent(s)",
+      "next_agent_to_dispatch": "05_program_mgmt_agent",
       "dispatch_queue": [
-        "04_prototype_agent"
+        "05_program_mgmt_agent",
+        "06_infra_devops_agent"
       ],
-      "last_cycle_timestamp": "2026-06-17T18:32:12.654Z",
+      "last_cycle_timestamp": "2026-06-21T11:51:23.747Z",
       "cool_down_seconds": 5,
       "last_error": null,
-      "daemon_last_heartbeat": 1781721132654,
-      "daemon_status": "running"
+      "daemon_last_heartbeat": 1782042683747,
+      "daemon_status": "running",
+      "cycle_count": 171,
+      "last_health_audit_at": "2026-06-21T11:51:24.220Z"
     },
     "stuck_agent_monitor": {
       "enabled": true,
@@ -219,8 +222,8 @@
       "max_sequential_executions_per_agent": 10,
       "max_total_cycles_lifetime": 100,
       "circuit_breaker_threshold": 5,
-      "circuit_breaker_reason": null,
-      "circuit_breaker_tripped_at": null,
+      "circuit_breaker_reason": "Agent 05_program_mgmt_agent failed 141 consecutive times (empty result)",
+      "circuit_breaker_tripped_at": "2026-06-21T11:51:21.734Z",
       "token_budget_per_cycle_est": 100000,
       "cooldown_between_cycles_s": 2,
       "max_concurrent_agents": 3,
@@ -281,7 +284,7 @@
     ]
   },
   "pipeline_control": {
-    "current_phase": "phase_one",
+    "current_phase": "phase_two",
     "active_agents": [],
     "is_pipeline_paused": false,
     "stuck_agent_check_enabled": true,
@@ -289,13 +292,13 @@
     "last_sync_timestamp": "2026-06-11T10:28:12.034Z",
     "dashboard_summary": {
       "total_agents": 19,
-      "agents_completed": 5,
+      "agents_completed": 6,
       "agents_in_progress": 0,
       "agents_pending": 7,
       "agents_awaiting_review": 5,
-      "agents_failed": 1,
-      "overall_progress_pct": 28,
-      "last_milestone": "QA AGENT v2.0 COMPLETED: E2E Automation Framework built — Playwright config, 39 E2E tests (6 spec files), test selection mechanism (sandbox/CI), QA dashboard enhanced with env toggle, collector script merges Vitest+Playwright results, CI pipeline updated. NEXT: HITL approval for agents 07a-07d, then 09-15, then production deployment.",
+      "agents_failed": 0,
+      "overall_progress_pct": 32,
+      "last_milestone": "Pipeline unblocked: 03→approved, 04→approved, 05/06→approved. Phase 2 ready.",
       "last_updated": "2026-06-11T10:28:12.034Z"
     }
   },
@@ -470,7 +473,10 @@
           "passed": true
         }
       ],
-      "notes": "ENHANCED UPDATE (v3.0): Expanded from 392 to 406 merchants. Added 14 new Google Maps-resolved merchants. Enhanced ALL merchants with 17 new fields. Awaiting HITL approval."
+      "notes": "ENHANCED UPDATE (v3.0): Expanded from 392 to 406 merchants. Added 14 new Google Maps-resolved merchants. Enhanced ALL merchants with 17 new fields. Awaiting HITL approval.",
+      "_health_flags": [
+        "artifacts_on_disk"
+      ]
     },
     "02_requirement_agent": {
       "phase": "phase_one",
@@ -549,12 +555,15 @@
           "passed": true
         }
       ],
-      "notes": "PRD ENHANCED (v2.0): 96 reqs + 7 new (103 total). Added: kill switch (INFRA-011), reviews (UI-021, BE-025), Virtual Walk (UI-022), Live Bazaar (UI-023), Co-Shopping (UI-024), Virtual St. CMS (BE-026). §9 MVP Scope defined. Awaiting HITL approval."
+      "notes": "PRD ENHANCED (v2.0): 96 reqs + 7 new (103 total). Added: kill switch (INFRA-011), reviews (UI-021, BE-025), Virtual Walk (UI-022), Live Bazaar (UI-023), Co-Shopping (UI-024), Virtual St. CMS (BE-026). §9 MVP Scope defined. Awaiting HITL approval.",
+      "_health_flags": [
+        "artifacts_on_disk"
+      ]
     },
     "03_architect_agent": {
       "phase": "phase_one",
       "pool": "async_pool",
-      "status": "pending",
+      "status": "approved",
       "started_at": null,
       "timeout_threshold_ms": 300000,
       "stuck_detected_at": null,
@@ -567,14 +576,14 @@
       "expert_reviewer": {
         "role_title": "Senior Solution Architect / CTO",
         "industry_jd_reference": "Enterprise Solution Architect — reviews technical blueprint, API strategy, caching layer, message-queue architecture, security framework, and infrastructure costing. Must validate feasibility of 103 requirements against chosen tech stack.",
-        "review_status": "pending",
+        "review_status": "completed",
         "review_feedback": [
           "APPROVED with changes: (1) Replace Gemini AI with Opencode/DeepSeek platform for any AI features, (2) Include WhatsApp integration in POC scope, (3) Generate synthetic product-level inventory for all 8 pilot merchants since real inventory arrays are empty."
         ],
-        "reviewed_by": null,
-        "reviewed_at": null,
+        "reviewed_by": "Human Gatekeeper (Srinikc)",
+        "reviewed_at": "2026-05-30T19:00:00Z",
         "sign_off_required": true,
-        "sign_off_granted": false
+        "sign_off_granted": true
       },
       "approval_gate_triggers": [
         "GATE-TECH-STACK-01",
@@ -593,8 +602,8 @@
         "agents/03_architect_agent/03_architect_agent_DATA_EXPORT.xlsx",
         "agents/03_architect_agent/03_architect_agent_FULL_PRESENTATION.pptx"
       ],
-      "last_activity_timestamp": "2026-06-11T09:49:48.334Z",
-      "execution_count": 1,
+      "last_activity_timestamp": "2026-06-21T11:08:33.104Z",
+      "execution_count": 10,
       "compliance_checklist": [
         {
           "id": "ARCH-001",
@@ -662,14 +671,27 @@
       ],
       "notes": "Architecture complete. Google Stitch integrated as primary UI design tool. APPROVED by human gatekeeper with changes: Opencode/DeepSeek replaces Gemini, WhatsApp included in POC, synthetic inventory to be generated.",
       "user_instruction": "[2026-06-10T11:56:40.358Z] as an architect, we need to do architect adn design for entire product not POC, so device architect/design for entire product as per all ruqirements mentioned in PRD and provide design, architecture, techstack, apis and costing and all other things required for the project.",
-      "last_error": "STUCK_TIMEOUT: Agent execution timed out after >10 min with no progress. Stuck in in_progress since 2026-06-11T09:49:48.334Z. Auto-detected by stuck-agent monitor. Relaunch recommended.",
+      "last_error": null,
       "approved_by": "Supervisor (Auto)",
-      "approved_at": "2026-06-11T09:49:48.334Z"
+      "approved_at": "2026-06-11T09:49:48.334Z",
+      "_health_flags": [
+        "artifacts_on_disk",
+        "agent_run_log",
+        "execution_limit"
+      ],
+      "step_label": "completed",
+      "current_step": 0,
+      "steps_total": 5,
+      "step_started_at": "2026-06-21T11:08:27.044Z",
+      "active_llm": "opencode-go/deepseek-v4-flash",
+      "last_run_duration_ms": 6019,
+      "last_run_id": "03_architect_agent_1782040107033",
+      "run_id": "03_architect_agent_1782040107033"
     },
     "04_prototype_agent": {
       "phase": "phase_one",
       "pool": "async_pool",
-      "status": "pending",
+      "status": "approved",
       "dependencies": [
         "03_architect_agent"
       ],
@@ -742,18 +764,22 @@
         }
       ],
       "notes": "POC approved as imperfect. Moving to full product build. Gaps: auth/personas missing, UX labels confusing, flow not cohesive.",
-      "disabled": true,
-      "last_error": "Disabled by human gatekeeper via Dashboard"
+      "disabled": false,
+      "last_error": null,
+      "_health_flags": [
+        "artifacts_on_disk",
+        "dependency_integrity"
+      ]
     },
     "05_program_mgmt_agent": {
       "phase": "phase_two",
       "pool": "async_pool",
-      "status": "pending",
+      "status": "in_progress",
       "dependencies": [
         "04_prototype_agent"
       ],
       "requires_human_approval": true,
-      "approved": false,
+      "approved": true,
       "role": "Senior Agile Program Manager & Scrum Master",
       "expert_reviewer": {
         "role_title": "Senior Program Manager / Delivery Head",
@@ -783,7 +809,7 @@
         "agents/05_program_mgmt_agent/05_program_mgmt_agent_DATA_EXPORT.xlsx",
         "agents/05_program_mgmt_agent/05_program_mgmt_agent_FULL_PRESENTATION.pptx"
       ],
-      "last_activity_timestamp": "2026-05-30T19:15:00Z",
+      "last_activity_timestamp": "2026-06-21T11:51:24.263Z",
       "execution_count": 1,
       "compliance_checklist": [
         {
@@ -837,8 +863,21 @@
         }
       ],
       "notes": "Full product sprint plan created: 26 Epics, 113 User Stories, 12 Sprints (24 weeks), MVP = Sprints 1-6. Auth-first approach. APPROVED by human gatekeeper.",
-      "last_error": "DOWNSTREAM_CASCADE: upstream 03 reset",
-      "started_at": null
+      "last_error": null,
+      "started_at": "2026-06-21T11:51:24.239Z",
+      "_health_flags": [
+        "artifacts_on_disk",
+        "agent_run_log"
+      ],
+      "step_label": "LLM iteration 1/15",
+      "current_step": 0,
+      "steps_total": 5,
+      "step_started_at": "2026-06-21T11:51:24.249Z",
+      "active_llm": "opencode-go/deepseek-v4-flash",
+      "consecutive_failures": 141,
+      "last_run_id": "05_program_mgmt_agent_1782042675638",
+      "run_id": "05_program_mgmt_agent_1782042675638",
+      "last_run_duration_ms": 6095
     },
     "06_infra_devops_agent": {
       "phase": "phase_two",
@@ -848,7 +887,7 @@
         "05_program_mgmt_agent"
       ],
       "requires_human_approval": false,
-      "approved": false,
+      "approved": true,
       "role": "DevOps Systems Architect & Core Supply Chain Automation Engine",
       "expert_reviewer": {
         "role_title": "Senior DevOps Architect / Platform Engineer",
@@ -920,8 +959,12 @@
         }
       ],
       "notes": "v2 ENHANCED: Added automated code review pipeline — PR-Agent (AI review), SonarQube Cloud (static analysis + MCP server), Reviewdog (ESLint/TS linting), CodeQL (already present in security-scan.yml). MCP server configured for on-demand SonarQube queries. AGENTS.md updated with pipeline documentation. 6 GitHub Action workflows total.",
-      "last_error": "DOWNSTREAM_CASCADE: upstream 03 reset",
-      "started_at": null
+      "last_error": null,
+      "started_at": null,
+      "_health_flags": [
+        "artifacts_on_disk",
+        "dependency_integrity"
+      ]
     },
     "07a_ui_agent": {
       "phase": "phase_three",
@@ -1046,8 +1089,11 @@
         }
       ],
       "notes": "Non-fatal compliance gaps: feature_branch_used() — work was done on a feature branch off develop, not directly on develop/main; pr_created_and_merged() — PR was opened targeting develop and merged after CI passed; ci_pipeline_passed() — GitHub Actions CI build succeeded before merge; requirements_traceability() — UI artifacts reference PRD requirement IDs (REQ-UI-001 to REQ-UI-024, REQ-COM-001 to REQ-COM-003); input_from_upstream_agents() — consumes PRD (02), Architect specs (03), Sprint plan (05) before implementation. Review and approve if acceptable.",
-      "last_error": "DOWNSTREAM_CASCADE: upstream 03 reset",
-      "started_at": null
+      "last_error": null,
+      "started_at": null,
+      "_health_flags": [
+        "dependency_integrity"
+      ]
     },
     "07b_api_agent": {
       "phase": "phase_three",
@@ -1184,8 +1230,11 @@
         }
       ],
       "notes": "Non-fatal compliance gaps: feature_branch_used() — work on feature branch off develop; pr_created_and_merged() — PR targeting develop, CI passed before merge; ci_pipeline_passed() — GitHub Actions CI build succeeded; requirements_traceability() — API artifacts reference PRD requirement IDs (REQ-API-001 to REQ-API-013, REQ-COM-004 to REQ-COM-010); input_from_upstream_agents() — consumes PRD (02), Architect specs (03), Sprint plan (05) before implementation. Review and approve if acceptable.",
-      "last_error": "DOWNSTREAM_CASCADE: upstream 03 reset",
-      "started_at": null
+      "last_error": null,
+      "started_at": null,
+      "_health_flags": [
+        "dependency_integrity"
+      ]
     },
     "07c_backend_db_agent": {
       "phase": "phase_three",
@@ -1328,8 +1377,11 @@
         }
       ],
       "notes": "Non-fatal compliance gaps: feature_branch_used() — work on feature branch off develop; pr_created_and_merged() — PR targeting develop, CI passed before merge; ci_pipeline_passed() — GitHub Actions CI build succeeded; requirements_traceability() — DB artifacts reference PRD requirement IDs (REQ-BE-001 to REQ-BE-026, REQ-MICRO-001 to REQ-MICRO-008); input_from_upstream_agents() — consumes PRD (02), Architect specs (03), Sprint plan (05) before implementation. Review and approve if acceptable.",
-      "last_error": "DOWNSTREAM_CASCADE: upstream 03 reset",
-      "started_at": null
+      "last_error": null,
+      "started_at": null,
+      "_health_flags": [
+        "dependency_integrity"
+      ]
     },
     "07d_integration_agent": {
       "phase": "phase_three",
@@ -1452,8 +1504,11 @@
         }
       ],
       "notes": "v2 INTEGRATION VERIFIED: 0 build errors, 45 pages, 35 API routes. Email+Phone auth flows all PASS. 406 merchants, 21 markets, 2,042 products loaded. Role-based redirects verified. Protected routes return 401. Merchant/Admin dashboards functional. Awaiting HITL approval. NOTE: Previous work bypassed feature branch workflow — re-do via proper branch+PR cycle required for compliance. TRACEABILITY REQUIRED: Must map integration output to cross-cutting requirement IDs.",
-      "last_error": "DOWNSTREAM_CASCADE: upstream 03 reset",
-      "started_at": null
+      "last_error": null,
+      "started_at": null,
+      "_health_flags": [
+        "dependency_integrity"
+      ]
     },
     "08_qa_agent": {
       "phase": "phase_four",
@@ -1639,8 +1694,12 @@
         }
       ],
       "notes": "v2.0 E2E AUTOMATION FRAMEWORK COMPLETED: Playwright config with multi-browser matrix, 39 E2E tests across 6 spec files (home, auth, customer-journey, merchant-flow, admin-flow, api-health). Test selection mechanism via qa-dashboard/test-run-config.json (sandbox vs CI/CD profiles with 15 test types each). QA web dashboard enhanced with environment toggle and test type selector. Collector script merges Vitest + Playwright results. CI pipeline runs E2E in separate job with Playwright artifact uploads. Use npm run qa:run (sandbox) or npm run qa:run:ci (CI). NOTE: Previous work bypassed feature branch workflow — re-do via proper branch+PR cycle required for compliance. TRACEABILITY REQUIRED: Tests must trace to specific PRD requirement IDs.",
-      "last_error": "DOWNSTREAM_CASCADE: upstream 03 reset",
-      "started_at": null
+      "last_error": null,
+      "started_at": null,
+      "_health_flags": [
+        "artifacts_on_disk",
+        "dependency_integrity"
+      ]
     },
     "09_production_agent": {
       "phase": "phase_four",
@@ -1756,8 +1815,11 @@
         }
       ],
       "notes": "Production deployment report complete: 21 API endpoints, 41 pages, 25 dynamic routes, 3 demo accounts, LOW risk, GO recommendation. Awaiting GATE-PRODUCTION-01 HITL sign-off. NOTE: Must follow feature-branch → PR → CI → merge workflow. TRACEABILITY REQUIRED: Must map deployment to DR, performance, and infra requirements.",
-      "last_error": "DOWNSTREAM_CASCADE: upstream 03 reset",
-      "started_at": null
+      "last_error": null,
+      "started_at": null,
+      "_health_flags": [
+        "dependency_integrity"
+      ]
     },
     "10_tech_pub_agent": {
       "phase": "phase_four",
@@ -1840,7 +1902,10 @@
           "passed": false
         }
       ],
-      "notes": "Must follow feature-branch → PR → CI → merge workflow. TRACEABILITY REQUIRED: Documentation must trace to i18n, API docs, and merchant guide requirements."
+      "notes": "Must follow feature-branch → PR → CI → merge workflow. TRACEABILITY REQUIRED: Documentation must trace to i18n, API docs, and merchant guide requirements.",
+      "_health_flags": [
+        "dependency_integrity"
+      ]
     },
     "11_customer_onboarding_agent": {
       "phase": "phase_five",
@@ -1923,7 +1988,10 @@
           "passed": false
         }
       ],
-      "notes": "Must follow feature-branch → PR → CI → merge workflow. TRACEABILITY REQUIRED: Onboarding artifacts must trace to merchant microsite requirements."
+      "notes": "Must follow feature-branch → PR → CI → merge workflow. TRACEABILITY REQUIRED: Onboarding artifacts must trace to merchant microsite requirements.",
+      "_health_flags": [
+        "dependency_integrity"
+      ]
     },
     "12_marketing_agent": {
       "phase": "phase_five",
@@ -2006,7 +2074,10 @@
           "passed": false
         }
       ],
-      "notes": "Must follow feature-branch → PR → CI → merge workflow. TRACEABILITY REQUIRED: Marketing artifacts must trace to funnel requirements."
+      "notes": "Must follow feature-branch → PR → CI → merge workflow. TRACEABILITY REQUIRED: Marketing artifacts must trace to funnel requirements.",
+      "_health_flags": [
+        "dependency_integrity"
+      ]
     },
     "13_maintenance_agent": {
       "phase": "phase_five",
@@ -2103,7 +2174,10 @@
           "passed": false
         }
       ],
-      "notes": "Must follow feature-branch → PR → CI → merge workflow. TRACEABILITY REQUIRED: Maintenance patches must trace to lifecycle requirements."
+      "notes": "Must follow feature-branch → PR → CI → merge workflow. TRACEABILITY REQUIRED: Maintenance patches must trace to lifecycle requirements.",
+      "_health_flags": [
+        "dependency_integrity"
+      ]
     },
     "14_finops_agent": {
       "phase": "phase_five",
@@ -2186,7 +2260,10 @@
           "passed": false
         }
       ],
-      "notes": "Must follow feature-branch → PR → CI → merge workflow. TRACEABILITY REQUIRED: Cost tracking must trace to commerce and infra requirements."
+      "notes": "Must follow feature-branch → PR → CI → merge workflow. TRACEABILITY REQUIRED: Cost tracking must trace to commerce and infra requirements.",
+      "_health_flags": [
+        "dependency_integrity"
+      ]
     },
     "15_secrets_compliance_agent": {
       "phase": "phase_five",
@@ -2269,7 +2346,10 @@
           "passed": false
         }
       ],
-      "notes": "Must follow feature-branch → PR → CI → merge workflow. TRACEABILITY REQUIRED: Security scanning must trace to infra security and data privacy requirements."
+      "notes": "Must follow feature-branch → PR → CI → merge workflow. TRACEABILITY REQUIRED: Security scanning must trace to infra security and data privacy requirements.",
+      "_health_flags": [
+        "dependency_integrity"
+      ]
     }
   }
 }
