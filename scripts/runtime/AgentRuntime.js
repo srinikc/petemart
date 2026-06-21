@@ -3,6 +3,7 @@ const path = require('path');
 const vlog = require('./VerboseLogger');
 const { getInstance: getTracer } = require('./TraceLogger');
 const { LLMProvider } = require('./LLMProvider');
+const { saveStateSync } = require('./StateFile');
 
 const ROOT = process.cwd();
 const STATE_PATH = () => path.join(ROOT, '00_state_ledger/STATE_MATRIX.json');
@@ -14,6 +15,35 @@ const MEMORY_DIR = () => path.join(ROOT, '00_state_ledger/memory_store');
 const SNAPSHOT_DIR = () => path.join(ROOT, '00_state_ledger/prompt_snapshots');
 const TRACES_PATH = () => path.join(ROOT, '00_state_ledger/traces.jsonl');
 
+// Map agent IDs to their correct workspace paths (fallback if AGENT_REGISTRY is stale)
+const AGENT_WORKSPACE_MAP = {
+  '00_supervisor_agent': '00_state_ledger/',
+  '01_ideation_agent': 'agents/01_front_office/01_ideation_agent/',
+  '02_requirement_agent': 'agents/01_front_office/02_requirement_agent/',
+  '03_architect_agent': 'agents/02_engineering_specs/03_architect_agent/',
+  '04_prototype_agent': 'agents/02_engineering_specs/04_prototype_agent/',
+  '05_program_mgmt_agent': 'agents/02_engineering_specs/05_program_mgmt_agent/',
+  '06_infra_devops_agent': 'agents/03_execution_workspace/06_infra_devops_agent/',
+  '07a_ui_agent': 'agents/03_execution_workspace/07a_ui_agent/',
+  '07b_api_agent': 'agents/03_execution_workspace/07b_api_agent/',
+  '07c_backend_db_agent': 'agents/03_execution_workspace/07c_backend_db_agent/',
+  '07d_integration_agent': 'agents/03_execution_workspace/07d_integration_agent/',
+  '08_qa_agent': 'agents/03_execution_workspace/08_qa_agent/',
+  '09_production_agent': 'agents/03_execution_workspace/09_production_agent/',
+  '10_tech_pub_agent': 'agents/03_execution_workspace/10_tech_pub_agent/',
+  '11_customer_onboarding_agent': 'agents/03_execution_workspace/11_customer_onboarding_agent/',
+  '12_marketing_agent': 'agents/03_execution_workspace/12_marketing_agent/',
+  '13_maintenance_agent': 'agents/03_execution_workspace/13_maintenance_agent/',
+  '14_finops_agent': 'agents/03_execution_workspace/14_finops_agent/',
+  '15_secrets_compliance_agent': 'agents/03_execution_workspace/15_secrets_compliance_agent/',
+};
+
+function resolveWorkspaceRoot(agentDef, agentId) {
+  if (agentDef && agentDef.workspace_root) return agentDef.workspace_root;
+  if (AGENT_WORKSPACE_MAP[agentId]) return AGENT_WORKSPACE_MAP[agentId];
+  return `agents/03_execution_workspace/${agentId}/`;
+}
+
 const ACTIVE_RUNS = new Map();
 
 function localTimestamp() {
@@ -23,14 +53,14 @@ function localTimestamp() {
 }
 
 function dynamicLLMTimeout(promptLength) {
-  const base = 60000;
-  const extra = promptLength > 5000 ? Math.floor((promptLength - 5000) / 1000) * 1000 : 0;
-  return Math.min(base + extra, 120000);
+  const base = 120000;
+  const extra = promptLength > 5000 ? Math.floor((promptLength - 5000) / 1000) * 500 : 0;
+  return Math.min(base + extra, 300000);
 }
 
 class AgentRuntime {
   constructor(options = {}) {
-    this.llm = new LLMProvider({
+    this.llm = options.llm || new LLMProvider({
       provider: options.provider || 'opencode-go',
       model: options.model || 'deepseek-v4-flash',
     });
@@ -54,7 +84,7 @@ class AgentRuntime {
     return false;
   }
 
-  // ── Progress Label (writes to state for UI) ──
+  // ── Progress Label (writes to state + VLOG for lifecycle view) ──
 
   _updateStepLabel(agentId, label, resetCounters = false) {
     try {
@@ -69,6 +99,8 @@ class AgentRuntime {
       }
       agent.last_activity_timestamp = new Date().toISOString();
       this._saveState(state);
+      vlog.write('RUNTIME', agentId, `Step: ${label}`);
+      this._logEvent({ type: 'step_label', agent_id: agentId, label, timestamp: new Date().toISOString() });
     } catch {}
   }
 
@@ -97,6 +129,7 @@ class AgentRuntime {
     const runSpan = traceLogger.startSpan('agent_run', { agentId });
     const startTime = Date.now();
     const agentDef = this.loadAgentDef(agentId);
+    agentDef.id = agentId;
     const runId = `${agentId}_${Date.now()}`;
 
     this._logToFile('LOG', `runAgent started, runId=${runId}`);
@@ -134,6 +167,38 @@ class AgentRuntime {
         return { agentId, runId, status: 'failed', artifacts: [], content: '', usage: {}, error: guardrailError, complianceResult: { allPassed: false, items: [], error: guardrailError } };
       }
       vlog.write('RUNTIME', agentId, `Guardrail check: passed`);
+
+      // Clean any stale incorrectly-named sandbox directories (wrong paths from old code)
+      try {
+        const correct = path.join(ROOT, resolveWorkspaceRoot(agentDef, agentId));
+        const candidates = [
+          path.join(ROOT, `agents/03_execution_workspace/${agentId}/`),
+          path.join(ROOT, `agents/${agentId}/`),
+        ];
+        for (const candidate of candidates) {
+          if (candidate !== correct && fs.existsSync(candidate)) {
+            vlog.write('RUNTIME', agentId, `Removing stale wrong-path sandbox: ${candidate}`);
+            fs.rmSync(candidate, { recursive: true, force: true });
+          }
+        }
+      } catch {}
+
+      // Archive existing sandbox files to oldartifacts/<timestamp>_<name> before LLM regenerates them
+      try {
+        const ws = resolveWorkspaceRoot(agentDef, agentId);
+        const sbx = path.join(ROOT, ws);
+        if (fs.existsSync(sbx)) {
+          const archiveDir = path.join(sbx, 'oldartifacts');
+          if (!fs.existsSync(archiveDir)) fs.mkdirSync(archiveDir, { recursive: true });
+          const ts = localTimestamp();
+          const files = fs.readdirSync(sbx).filter(f => !f.startsWith('oldartifacts') && f !== '.' && f !== '..');
+          for (const f of files) {
+            const src = path.join(sbx, f);
+            const dst = path.join(archiveDir, `${ts}_${f}`);
+            try { fs.renameSync(src, dst); vlog.write('RUNTIME', agentId, `Archived: ${f} → oldartifacts/${ts}_${f}`); } catch {}
+          }
+        }
+      } catch {}
 
       const llmInfo = `${this.llm.provider}/${this.llm.model}`;
       this._logEvent({ type: 'agent_started', agent_id: agentId, run_id: runId, llm: llmInfo, context });
@@ -226,10 +291,33 @@ class AgentRuntime {
       this._logEvent({ type: 'step_label', agent_id: agentId, run_id: runId, label: 'processing results' });
       await this._runPipeline(agentId, runId, agentDef, result, systemPrompt, duration, startTime);
 
-      // Determine final status
+      // Determine final status and update state
       const finalState = this._getState();
       const finalAgent = finalState.agent_states?.[agentId];
-      const finalStatus = finalAgent?.status === 'failed' ? 'failed' : 'completed';
+      let finalStatus = finalAgent?.status === 'failed' ? 'failed' : 'completed';
+      // If agent requires human approval, set to awaiting_approval instead of completed
+      if (finalStatus === 'completed' && agentDef?.requires_human_approval !== false) {
+        const st = this._getState();
+        const ag = st.agent_states?.[agentId];
+        if (ag?.requires_human_approval) finalStatus = 'awaiting_approval';
+      }
+      // Empty artifact guard: if LLM returned content but ZERO artifacts, fail instead of awaiting_approval
+      if (finalStatus === 'awaiting_approval' && result.content && (!result.artifacts || result.artifacts.length === 0)) {
+        finalStatus = 'failed';
+        if (!finalAgent.last_error) {
+          finalAgent.last_error = 'LLM completed but generated no artifacts — write_artifact was not called. Ensure the system prompt includes the list of files to create.';
+        }
+        this._logToFile('WARN', `Empty artifact guard: ${agentId} LLM produced ${(result.content || '').length} chars of text but 0 artifacts — failing instead of pending review`);
+        vlog.write('RUNTIME', agentId, `EMPTY ARTIFACT GUARD: LLM returned text-only response, no write_artifact calls`);
+      }
+      if (finalAgent && (finalAgent.status === 'in_progress' || finalAgent.status === 'active')) {
+        finalAgent.status = finalStatus;
+        finalAgent.last_activity_timestamp = new Date().toISOString();
+        if (finalStatus === 'completed' && !finalAgent.last_error) {
+          finalAgent.last_error = null;
+        }
+        this._saveState(finalState);
+      }
 
       this._logToFile('LOG', `runAgent completed: status=${finalStatus}, artifacts=${(result.artifacts || []).length}, duration=${duration}ms`);
       vlog.write('RUNTIME', agentId, `runAgent finished | status=${finalStatus} | artifacts=${(result.artifacts || []).length} | total_duration=${duration}ms`);
@@ -275,6 +363,7 @@ class AgentRuntime {
     const budget = Math.max(3, Math.floor(defaultMaxIter / checkpointCount));
     vlog.write('RUNTIME', agentDef.id, `Checkpoints: ${agentDef.checkpoints.map(c => c.name).join(' → ')} | budget=${budget} iter/phase`);
 
+    let globalIter = 0;
     for (let cpIdx = 0; cpIdx < checkpointCount; cpIdx++) {
       const cp = agentDef.checkpoints[cpIdx];
       let prompt;
@@ -297,7 +386,8 @@ class AgentRuntime {
       this._updateStepLabel(agentDef.id, `checkpoint ${cpIdx + 1}/${checkpointCount}: ${cp.name}`);
 
       const cpStart = Date.now();
-      const result = await this._llmToolLoop(agentDef, prompt, budget, allArtifacts);
+      const result = await this._llmToolLoop(agentDef, prompt, budget, allArtifacts, globalIter);
+      globalIter += (result._iterationsUsed || budget);
       const cpDuration = Date.now() - cpStart;
 
       allContent += (result.content || '') + '\n';
@@ -318,12 +408,13 @@ class AgentRuntime {
 
   // ── LLM Tool Loop ──
 
-  async _llmToolLoop(agentDef, systemPrompt, maxIterations = 15, priorArtifacts = []) {
+  async _llmToolLoop(agentDef, systemPrompt, maxIterations = 15, priorArtifacts = [], globalIterOffset = 0) {
     const messages = [];
     const artifacts = [];
     let content = '';
     let usage = {};
     let consecutiveEmpty = 0;
+    let iterationsUsed = 0;
     const MAX_ITERATIONS = maxIterations;
     const checkpointCount = (agentDef.checkpoints || []).length;
     let currentCheckpoint = 1;
@@ -345,17 +436,19 @@ class AgentRuntime {
     const allTools = [...agentTools, ...commonTools.filter(t => !toolNames.has(t.function?.name))];
 
     for (let i = 0; i < MAX_ITERATIONS; i++) {
-      this._updateStepLabel(agentDef.id, `LLM iteration ${i + 1}/${MAX_ITERATIONS}`);
-      const iterInfo = { type: 'llm_iteration', agent_id: agentDef.id, iteration: i + 1, max_iterations: MAX_ITERATIONS, checkpoint: currentCheckpoint, checkpoint_total: checkpointCount };
+      iterationsUsed = i + 1;
+      const globalIterNum = globalIterOffset + i + 1;
+      this._updateStepLabel(agentDef.id, `LLM iteration ${globalIterNum}/${MAX_ITERATIONS}`);
+      const iterInfo = { type: 'llm_iteration', agent_id: agentDef.id, iteration: globalIterNum, max_iterations: MAX_ITERATIONS, checkpoint: currentCheckpoint, checkpoint_total: checkpointCount };
       this._logEvent(iterInfo);
 
       if (this._abortSignal?.aborted) {
-        vlog.write('RUNTIME', agentDef.id, `LLM iter ${i + 1}/${MAX_ITERATIONS} | ABORTED`);
+        vlog.write('RUNTIME', agentDef.id, `LLM iter ${globalIterNum}/${MAX_ITERATIONS} | ABORTED`);
         this._logEvent({ type: 'agent_cancelled', agent_id: agentDef.id });
         break;
       }
 
-      vlog.write('RUNTIME', agentDef.id, `LLM iter ${i + 1}/${MAX_ITERATIONS} | cp ${currentCheckpoint}/${checkpointCount} | calling provider=${this.llm.provider}/${this.llm.model}...`);
+      vlog.write('RUNTIME', agentDef.id, `LLM iter ${globalIterNum}/${MAX_ITERATIONS} | cp ${currentCheckpoint}/${checkpointCount} | calling provider=${this.llm.provider}/${this.llm.model}...`);
       const iterStart = Date.now();
       const timeout = dynamicLLMTimeout(systemPrompt.length + messages.reduce((s, m) => s + (typeof m.content === 'string' ? m.content.length : JSON.stringify(m.content).length), 0));
 
@@ -363,8 +456,8 @@ class AgentRuntime {
       try {
         resp = await this.llm.complete(systemPrompt, messages, allTools, { timeout, signal: this._abortSignal || this._abortCtrl?.signal });
       } catch (err) {
-        vlog.write('RUNTIME', agentDef.id, `LLM iter ${i + 1}/${MAX_ITERATIONS} | ERROR: ${err.message}`);
-        this._logEvent({ type: 'llm_iteration_error', agent_id: agentDef.id, iteration: i + 1, error: err.message });
+        vlog.write('RUNTIME', agentDef.id, `LLM iter ${globalIterNum}/${MAX_ITERATIONS} | ERROR: ${err.message}`);
+        this._logEvent({ type: 'llm_iteration_error', agent_id: agentDef.id, iteration: globalIterNum, error: err.message });
         if (i < MAX_ITERATIONS - 1) {
           await new Promise(r => setTimeout(r, 2000));
           continue;
@@ -373,9 +466,9 @@ class AgentRuntime {
       }
 
       const iterDuration = Date.now() - iterStart;
-      vlog.write('RUNTIME', agentDef.id, `LLM iter ${i + 1}/${MAX_ITERATIONS} | done | duration=${iterDuration}ms | content=${(resp.content || '').length} chars | tool_calls=${(resp.toolCalls || []).length}`);
+      vlog.write('RUNTIME', agentDef.id, `LLM iter ${globalIterNum}/${MAX_ITERATIONS} | done | duration=${iterDuration}ms | content=${(resp.content || '').length} chars | tool_calls=${(resp.toolCalls || []).length}`);
       if (!resp.content) {
-        this._logToFile('WARN', `LLM iter ${i + 1}: content empty, toolCalls=${(resp.toolCalls || []).length}`);
+        this._logToFile('WARN', `LLM iter ${globalIterNum}: content empty, toolCalls=${(resp.toolCalls || []).length}`);
       }
 
       if (resp.content) content += resp.content + '\n';
@@ -424,6 +517,8 @@ class AgentRuntime {
               const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error(`Tool ${name} timed out after 60s`)), 60000));
               const toolResult = await Promise.race([toolPromise, timeoutPromise]);
 
+              vlog.write('RUNTIME', agentDef.id, `Tool exec | iter ${i + 1} | tool=${name} | args=${JSON.stringify(args).slice(0, 200)} | ok`);
+
               // Cache the result for deduplication
               toolCallCache.set(cacheK, toolResult);
 
@@ -438,12 +533,20 @@ class AgentRuntime {
               }
 
               messages.push({ role: 'tool', tool_call_id: tc.id, content: JSON.stringify(toolResult) });
-              if (name === 'write_artifact' && toolResult?.artifact) artifacts.push(toolResult.artifact);
+              if (name === 'write_artifact') {
+                if (toolResult?.artifact) {
+                  artifacts.push(toolResult.artifact);
+                  vlog.write('RUNTIME', agentDef.id, `Artifact tracked: ${toolResult.artifact.name}`);
+                } else {
+                  vlog.write('RUNTIME', agentDef.id, `Artifact NOT tracked: toolResult.artifact is missing`);
+                }
+              }
             } catch (e) {
               vlog.write('RUNTIME', agentDef.id, `Tool exec | iter ${i + 1} | tool=${name} | ERROR: ${e.message}`);
               messages.push({ role: 'tool', tool_call_id: tc.id, content: `Error: ${e.message}` });
             }
           } else {
+            vlog.write('RUNTIME', agentDef.id, `Tool UNKNOWN | iter ${i + 1} | name="${name}"`);
             consecutiveSameTool.set(name, (consecutiveSameTool.get(name) || 0) + 1);
             messages.push({ role: 'tool', tool_call_id: tc.id, content: `Tool ${name} not found` });
           }
@@ -457,15 +560,13 @@ class AgentRuntime {
           messages.push({ role: 'user', content: 'You have been responding with text-only for several iterations. Call write_artifact to save your output as files.' });
         }
         const missing = this._getMissingComplianceFiles(agentDef?.id, artifacts, priorArtifacts);
+        // Only re-prompt if files are STILL missing AND we have budget left
         if (missing.length > 0 && i < MAX_ITERATIONS - 1) {
           vlog.write('RUNTIME', agentDef.id, `Missing files re-prompt | ${missing.length} missing: ${missing.join(', ')}`);
           messages.push({ role: 'user', content: `You did not call write_artifact for these required files: ${missing.join(', ')}. Please use write_artifact to create each of them now. Do NOT output text — only use write_artifact tool calls.` });
           continue;
         }
-        if (i < MAX_ITERATIONS - 1) {
-          messages.push({ role: 'user', content: 'You wrote text but did not call write_artifact. Use write_artifact now to save your output as files.' });
-          continue;
-        }
+        // All required files written — accept content and stop looping
         break;
       } else {
         // No content, no tool calls
@@ -485,35 +586,34 @@ class AgentRuntime {
       }
     }
 
-    return { content, artifacts, usage };
+    return { content, artifacts, usage, _iterationsUsed: iterationsUsed };
   }
 
   // ── Cross-Cutting Pipeline ──
 
   async _runPipeline(agentId, runId, agentDef, result, systemPrompt, duration, startTs) {
-    // Write artifacts with timestamped filenames
+    // Verify artifacts were written (by _writeArtifact during tool loop)
     this._updateStepLabel(agentId, 'writing artifacts');
     this._logEvent({ type: 'artifact_generation_start', agent_id: agentId, run_id: runId, artifact_count: (result.artifacts || []).length });
-    const workspaceRoot = agentDef?.workspace_root || `agents/03_execution_workspace/${agentId}/`;
+    const workspaceRoot = resolveWorkspaceRoot(agentDef, agentId);
     const sandboxDir = path.join(ROOT, workspaceRoot);
     if (!fs.existsSync(sandboxDir)) fs.mkdirSync(sandboxDir, { recursive: true });
 
     for (const art of result.artifacts || []) {
-      if (!art.name || art._written) continue;
-      const ext = art.name.split('.').pop()?.toLowerCase();
-      const ts = localTimestamp();
-      const baseName = art.name.replace(/\.[^.]+$/, '');
-      const tsName = `${baseName}_${ts}.${ext}`;
-      const fp = path.join(sandboxDir, tsName);
-      this._logEvent({ type: 'artifact_writing', agent_id: agentId, run_id: runId, artifact: tsName });
-      if (ext === 'json') {
-        fs.writeFileSync(fp, typeof art.data === 'string' ? art.data : JSON.stringify(art.data, null, 2), 'utf-8');
-      } else if (ext === 'pptx' || ext === 'xlsx') {
-        fs.writeFileSync(fp, typeof art.data === 'string' ? Buffer.from(art.data, 'base64') : Buffer.from(String(art.data)));
-      } else {
-        fs.writeFileSync(fp, String(art.data), 'utf-8');
+      if (!art.name) continue;
+      const fp = path.join(sandboxDir, art.name);
+      if (!fs.existsSync(fp)) {
+        // _writeArtifact didn't save this — write it now
+        const ext = art.name.split('.').pop()?.toLowerCase();
+        this._logEvent({ type: 'artifact_writing', agent_id: agentId, run_id: runId, artifact: art.name });
+        if (ext === 'json') {
+          fs.writeFileSync(fp, typeof art.data === 'string' ? art.data : JSON.stringify(art.data, null, 2), 'utf-8');
+        } else if (ext === 'pptx' || ext === 'xlsx') {
+          fs.writeFileSync(fp, typeof art.data === 'string' ? Buffer.from(art.data, 'base64') : Buffer.from(String(art.data)));
+        } else {
+          fs.writeFileSync(fp, String(art.data), 'utf-8');
+        }
       }
-      art._written = true;
     }
 
     this._logEvent({ type: 'artifact_generation_done', agent_id: agentId, run_id: runId, artifact_count: (result.artifacts || []).length });
@@ -564,7 +664,12 @@ class AgentRuntime {
           const p = path.join(workspaceRoot, art.name).replace(/\\/g, '/');
           if (!agent.artifacts_emitted.includes(p)) agent.artifacts_emitted.push(p);
         }
+      }
+      // Preserve last known artifacts even on empty runs
+      if (result.artifacts?.length > 0) {
         agent.last_artifact_emitted = agent.artifacts_emitted;
+      } else if (agent.last_artifact_emitted?.length > 0 && (!agent.artifacts_emitted || agent.artifacts_emitted.length === 0)) {
+        agent.artifacts_emitted = [...agent.last_artifact_emitted];
       }
       this._saveState(state);
     }
@@ -573,10 +678,18 @@ class AgentRuntime {
   // ── Tool Handlers ──
 
   async _writeArtifact(args, agentDef) {
-    const name = args.name;
+    let name = args.name;
     const data = args.data || '';
     const type = args.type || 'markdown';
-    const sandbox = agentDef.workspace_root || `agents/03_execution_workspace/${this._agentId}/`;
+    const sandbox = resolveWorkspaceRoot(agentDef, this._agentId);
+
+    // Safety: strip path traversal — only bare filename allowed
+    const normalized = path.normalize(name).replace(/\\/g, '/');
+    if (normalized.includes('/') || normalized.includes('..')) {
+      vlog.write('RUNTIME', this._agentId, `SANITIZED write_artifact name: "${name}" → "${path.basename(name)}" (path traversal blocked)`);
+      name = path.basename(name);
+    }
+
     const filePath = path.join(ROOT, sandbox, name);
     const dir = path.dirname(filePath);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
@@ -621,9 +734,7 @@ class AgentRuntime {
 
   _saveState(state) {
     try {
-      fs.writeFileSync(STATE_PATH(), JSON.stringify(state, null, 2), 'utf-8');
-      const proj = path.join(ROOT, `00_state_ledger/projects/${this.project}/STATE_MATRIX.json`);
-      try { fs.writeFileSync(proj, JSON.stringify(state, null, 2), 'utf-8'); } catch {}
+      saveStateSync(state);
     } catch {}
   }
 
@@ -646,15 +757,46 @@ class AgentRuntime {
   _buildSystemPrompt(agentDef, depContext, context) {
     let prompt = agentDef.system_prompt || '';
 
-    // 2.1: Build-Verify Prompt Injection — PLAN → TEST FIRST → BUILD → VERIFY
+    // Add dependency mapping so LLM knows correct agent_id for read_dependency calls
+    const depMapping = this._getDependencyMapping(agentDef);
+    if (depMapping) prompt += `\n\n## Available Upstream Dependencies\n${depMapping}`;
+
     prompt += `\n\n## Engineering Workflow\nFollow this build-verify loop for every change:\n1. PLAN: Understand what needs to be done. List the files you need to create or modify.\n2. TEST FIRST: Write the test or assertion BEFORE implementing the logic.\n3. BUILD: Implement the logic to make the test pass.\n4. VERIFY: Confirm the output is correct. Do NOT exit without verification.\n5. NO EXIT WITHOUT VERIFICATION: Every file must be written using write_artifact and verified.`;
 
-    // 8.4: Test-Driven Generation — write test/assertion before implementation
     prompt += `\n\n## Test-Driven Generation\nFor every deliverable:\n- Write the assertion or validation rule BEFORE implementing the logic.\n- If creating a JSON schema, define the structure first, then populate data.\n- If generating code, write the unit test signature first, then implement.`;
+
+    // Inject checkpoint instructions so LLM knows what to produce in each phase
+    if (agentDef.checkpoints && agentDef.checkpoints.length > 0) {
+      prompt += `\n\n## Checkpoint Plan (Execute in Order)`;
+      for (let i = 0; i < agentDef.checkpoints.length; i++) {
+        const cp = agentDef.checkpoints[i];
+        prompt += `\n### Phase ${i + 1}/${agentDef.checkpoints.length}: ${cp.name}\n${cp.instruction}`;
+      }
+      prompt += `\n\nCRITICAL: You MUST call write_artifact for EVERY file listed in the checkpoints above. Do NOT skip any file. Do NOT output file contents as text — always use write_artifact.`;
+    }
 
     if (depContext) prompt += `\n\n## Dependency Context\n${depContext}`;
     if (context?.user_instruction) prompt += `\n\n## User Instruction\n${context.user_instruction}`;
     return prompt;
+  }
+
+  _getDependencyMapping(agentDef) {
+    const deps = agentDef.dependencies || [];
+    if (deps.length === 0) return '';
+    const reg = this._safeReadJSON(REGISTRY_PATH());
+    if (!reg?.agents) return '';
+    const lines = [];
+    for (const dep of deps) {
+      // dep is a file path like "agents/01_front_office/02_requirement_agent/PRD_ENTERPRISE.json"
+      // Extract agent ID from path: match the folder name that looks like an agent ID
+      const match = dep.match(/(\d\d_\w+_agent)\//);
+      const agentId = match ? match[1] : null;
+      if (agentId && reg.agents[agentId]) {
+        const fileName = dep.split('/').pop();
+        lines.push(`- agent_id="${agentId}", artifact="${fileName}" (${reg.agents[agentId].role})`);
+      }
+    }
+    return lines.join('\n') + '\n\nUse read_dependency({ agent_id: \"<id>\", artifact: \"<file>\" }) to read upstream files.';
   }
 
   _gatherDependencyContext(agentDef) {
@@ -677,7 +819,12 @@ class AgentRuntime {
     const agent = state.agent_states?.[agentId];
     if (!agent) return null;
     const maxExec = state.supervisor_control?.loop_guardrails?.max_sequential_executions_per_agent || 10;
-    if ((agent.execution_count || 0) >= maxExec) return `Max executions (${maxExec}) reached for ${agentId}`;
+    if ((agent.execution_count || 0) >= maxExec) {
+      // Allow through if manually triggered (status already set to in_progress by rerun API)
+      // This lets the human gatekeeper override the limit for re-runs
+      if (agent.status === 'in_progress' || agent.status === 'active') return null;
+      return `Max executions (${maxExec}) reached for ${agentId}`;
+    }
     return null;
   }
 

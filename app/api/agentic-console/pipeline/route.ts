@@ -21,11 +21,15 @@ function readState(project?: string | null): any {
 
 function writeState(project: string | null | undefined, data: any) {
   const p = statePath(project);
-  fs.writeFileSync(p, JSON.stringify(data, null, 2), 'utf-8');
+  const tmp = p + '.__tmp';
+  fs.writeFileSync(tmp, JSON.stringify(data, null, 2), 'utf-8');
+  fs.renameSync(tmp, p);
   if (project) {
     const root = path.join(ROOT, '00_state_ledger/STATE_MATRIX.json');
     if (fs.existsSync(root)) {
-      fs.writeFileSync(root, JSON.stringify(data, null, 2), 'utf-8');
+      const rtmp = root + '.__tmp';
+      fs.writeFileSync(rtmp, JSON.stringify(data, null, 2), 'utf-8');
+      fs.renameSync(rtmp, root);
     }
   }
 }
@@ -97,13 +101,15 @@ export async function POST(req: NextRequest) {
       }
 
       case 'select_llm': {
-        const { provider, model } = body;
+        const { provider, model, apiKey, baseURL } = body;
         if (!state.supervisor_control.agent_00_supervisor) {
           state.supervisor_control.agent_00_supervisor = {};
         }
         state.supervisor_control.agent_00_supervisor.llm_override = { provider, model };
+        if (apiKey) state.supervisor_control.agent_00_supervisor.llm_override.apiKey = apiKey;
+        if (baseURL) state.supervisor_control.agent_00_supervisor.llm_override.baseURL = baseURL;
         writeState(project, state);
-        return NextResponse.json({ success: true, llm: { provider, model } });
+        return NextResponse.json({ success: true, llm: { provider, model, apiKey: !!apiKey, baseURL } });
       }
 
       case 'set_supervisor_prompt': {
@@ -145,14 +151,16 @@ export async function POST(req: NextRequest) {
           } catch { /* ignore */ }
         }
         const now = new Date().toISOString();
-        agent.status = 'in_progress';
+        agent.status = 'pending';
         agent.approved = true;
         agent.last_error = null;
         agent.started_at = now;
         agent.stuck_detected_at = null;
         agent.dlq_entry = null;
         agent.last_activity_timestamp = now;
-        agent.execution_count = (agent.execution_count || 0) + 1;
+        // Reset execution count so daemon eligibility check (maxExec) doesn't block re-launch
+        agent.execution_count = 0;
+        // Don't increment execution_count here — runAgent() does it internally
         // Deduplicate user_instructions (keep last 20)
         if (instruction) {
           const existing = agent.user_instruction || '';
@@ -200,21 +208,15 @@ export async function POST(req: NextRequest) {
         writeState(project, state);
         appendEvent({
           type: 'rerun_agent', agent_id: agentKey,
-          status: 'in_progress', cascaded_count: cascaded.length,
+          status: 'pending', cascaded_count: cascaded.length,
           timestamp: now,
         });
         appendTrace({
           type: 'action', action: 'rerun_agent', agent_id: agentKey,
           cascaded, instruction, timestamp: now,
         });
-        // Run via AgentRuntime (in-process, fire-and-forget)
-        const { AgentRuntime } = require('../../../../scripts/runtime/AgentRuntime');
-        const { LLMProvider } = require('../../../../scripts/runtime/LLMProvider');
-        const runtime = new AgentRuntime({ llm: LLMProvider.fromEnv() });
-        runtime.runAgent(agentKey, { userInstruction: instruction }).catch((err: any) => {
-          console.error(`[AgentRuntime] ${agentKey} failed:`, err.message);
-        });
-        return NextResponse.json({ success: true, agentId: agentKey, newStatus: 'in_progress', cascaded });
+        // Daemon will pick up pending status in next cycle — no direct runAgent call
+        return NextResponse.json({ success: true, agentId: agentKey, newStatus: 'pending', cascaded });
       }
 
       case 'cancel_agent': {

@@ -3,14 +3,40 @@ const path = require('path');
 
 const ROOT = process.cwd();
 const LOG_DIR = path.join(ROOT, 'logs');
+const MAX_LOG_FILES = 2;
 
 if (!fs.existsSync(LOG_DIR)) {
   try { fs.mkdirSync(LOG_DIR, { recursive: true }); } catch {}
 }
 
+// Rotate logs on load: keep only MAX_LOG_FILES most recent
+try {
+  const files = fs.readdirSync(LOG_DIR)
+    .filter(f => f.startsWith('lifecycle-') && f.endsWith('.log'))
+    .sort()
+    .reverse();
+  for (const f of files.slice(MAX_LOG_FILES)) {
+    try { fs.unlinkSync(path.join(LOG_DIR, f)); } catch {}
+  }
+} catch {}
+
 function logFile() {
   const d = new Date().toISOString().slice(0, 10);
-  return path.join(LOG_DIR, `lifecycle-${d}.log`);
+  const fp = path.join(LOG_DIR, `lifecycle-${d}.log`);
+  return fp;
+}
+
+// Rotate on every write: purge files beyond MAX_LOG_FILES
+function rotate() {
+  try {
+    const files = fs.readdirSync(LOG_DIR)
+      .filter(f => f.startsWith('lifecycle-') && f.endsWith('.log'))
+      .sort()
+      .reverse();
+    for (const f of files.slice(MAX_LOG_FILES)) {
+      try { fs.unlinkSync(path.join(LOG_DIR, f)); } catch {}
+    }
+  } catch {}
 }
 
 function write(component, agentId, message) {
@@ -18,6 +44,7 @@ function write(component, agentId, message) {
     const ts = new Date().toISOString();
     const line = `[${ts}] [${component}] [${agentId}] ${message}\n`;
     fs.appendFileSync(logFile(), line, 'utf-8');
+    rotate();
   } catch {}
 }
 

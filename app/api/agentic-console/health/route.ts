@@ -15,46 +15,55 @@ function statePath(project?: string | null): string {
     return path.join(ROOT, '00_state_ledger/STATE_MATRIX.json');
 }
 
-function readEvents(agentId: string): { durations: number[]; stateChanges: any[] } {
+function readAllEvents(): Map<string, { durations: number[]; stateChanges: any[] }> {
     const eventsPath = path.join(ROOT, '00_state_ledger/PIPELINE_EVENTS.jsonl');
-    if (!fs.existsSync(eventsPath)) return { durations: [], stateChanges: [] };
+    const result = new Map<string, { durations: number[]; stateChanges: any[] }>();
 
-    const durations: number[] = [];
-    const stateChanges: any[] = [];
-    let lastEventForAgent: any = null;
+    if (!fs.existsSync(eventsPath)) return result;
 
-    const lines = fs.readFileSync(eventsPath, 'utf-8').split('\n').filter(Boolean);
-    for (const line of lines) {
+    const raw = fs.readFileSync(eventsPath, 'utf-8');
+    const lines = raw.split('\n').filter(Boolean);
+
+    // If > 10000 lines, only parse the last 10000 (recent events suffice for health)
+    const tail = lines.length > 10000 ? lines.slice(-10000) : lines;
+
+    const perAgent: Record<string, any[]> = {};
+    for (const line of tail) {
         try {
             const ev = JSON.parse(line);
-            if (ev.agent_id === agentId) {
-                stateChanges.push(ev);
-                lastEventForAgent = ev;
-
-                if (ev.type === 'agent_state_change' && ev.from && ev.to && ev.timestamp && lastEventForAgent?.timestamp) {
-                }
-            }
+            const aid = ev.agent_id;
+            if (!aid) continue;
+            if (!perAgent[aid]) perAgent[aid] = [];
+            perAgent[aid].push(ev);
         } catch { }
     }
 
-    for (let i = 0; i < stateChanges.length; i++) {
-        const ev = stateChanges[i];
-        if (ev.from === 'in_progress' || ev.from === 'active') {
-            for (let j = i + 1; j < stateChanges.length; j++) {
-                const next = stateChanges[j];
-                if (next.type === 'agent_state_change' && next.agent_id === agentId) {
-                    const start = new Date(ev.timestamp).getTime();
-                    const end = new Date(next.timestamp).getTime();
-                    if (end > start) {
-                        durations.push(end - start);
+    for (const [agentId, events] of Object.entries(perAgent)) {
+        const durations: number[] = [];
+        const stateChanges: any[] = [];
+        for (const ev of events) {
+            stateChanges.push(ev);
+        }
+        for (let i = 0; i < events.length; i++) {
+            const ev = events[i];
+            if (ev.from === 'in_progress' || ev.from === 'active') {
+                for (let j = i + 1; j < events.length; j++) {
+                    const next = events[j];
+                    if (next.type === 'agent_state_change' && next.agent_id === agentId) {
+                        const start = new Date(ev.timestamp).getTime();
+                        const end = new Date(next.timestamp).getTime();
+                        if (end > start) {
+                            durations.push(end - start);
+                        }
+                        break;
                     }
-                    break;
                 }
             }
         }
+        result.set(agentId, { durations, stateChanges });
     }
 
-    return { durations, stateChanges };
+    return result;
 }
 
 export async function GET(req: NextRequest) {
@@ -75,6 +84,9 @@ export async function GET(req: NextRequest) {
 
     const agents = state.agent_states || {};
     const agentIds = Object.keys(agents);
+
+    // Read events file ONCE
+    const eventsMap = readAllEvents();
 
     const metrics: Record<string, {
         error_rate: number;
@@ -103,7 +115,8 @@ export async function GET(req: NextRequest) {
 
         if (status === 'failed') totalFailed++;
 
-        const { durations } = readEvents(agentId);
+        const agentEvents = eventsMap.get(agentId);
+        const durations = agentEvents?.durations || [];
         const avgDuration = durations.length > 0
             ? Math.round(durations.reduce((a: number, b: number) => a + b, 0) / durations.length)
             : 0;

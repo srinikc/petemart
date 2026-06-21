@@ -7,19 +7,10 @@ export const runtime = 'nodejs';
 
 const ROOT = process.cwd();
 const EVENTS_PATH = path.join(ROOT, '00_state_ledger/PIPELINE_EVENTS.jsonl');
-const CACHE_TTL = 5000;
 
-let stateCache: { data: any; timestamp: number; path: string } | null = null;
-
-function readStateCached(statePath: string): any {
-  const now = Date.now();
-  if (stateCache && stateCache.path === statePath && (now - stateCache.timestamp) < CACHE_TTL) {
-    return stateCache.data;
-  }
+function readState(statePath: string): any {
   const raw = fs.readFileSync(statePath, 'utf-8');
-  const data = JSON.parse(raw);
-  stateCache = { data, timestamp: now, path: statePath };
-  return data;
+  return JSON.parse(raw);
 }
 
 function statePath(project?: string | null): string {
@@ -49,7 +40,7 @@ export async function GET(req: NextRequest) {
       // Detect stuck agents
       const checkStuckAgents = () => {
         try {
-          const state = readStateCached(STATE_PATH);
+          const state = readState(STATE_PATH);
           const now = Date.now();
           const threshold = state.pipeline_control?.stuck_agent_timeout_ms || 300000;
           const stuck: any[] = [];
@@ -78,7 +69,7 @@ export async function GET(req: NextRequest) {
 
       // Send initial state snapshot
       try {
-        const state = readStateCached(STATE_PATH);
+        const state = readState(STATE_PATH);
         sendEvent('state_snapshot', {
           stateMatrix: state,
           timestamp: new Date().toISOString(),
@@ -100,8 +91,8 @@ export async function GET(req: NextRequest) {
             }
           }
 
-          // Also send fresh state periodically (uses cache, TTL 5s)
-          const state = readStateCached(STATE_PATH);
+          // Send fresh state snapshot every poll cycle
+          const state = readState(STATE_PATH);
           sendEvent('state_update', {
             stateMatrix: state,
             timestamp: new Date().toISOString(),

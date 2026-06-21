@@ -14,8 +14,8 @@ $existing = netstat -ano | Select-String ":$Port" | Select-String "LISTENING"
 if ($existing) {
   Write-Host "Port $Port in use. Killing existing process..." -ForegroundColor Yellow
   $existing | ForEach-Object {
-    $pid = $_ -replace '.*\s+(\d+)$', '$1'
-    if ($pid -match '^\d+$') { taskkill /F /PID $pid 2>$null }
+    $foundPid = $_ -replace '.*\s+(\d+)$', '$1'
+    if ($foundPid -match '^\d+$') { taskkill /F /PID $foundPid 2>$null }
   }
   Start-Sleep -Seconds 2
 }
@@ -36,15 +36,7 @@ if (!(Test-Path $nextBin)) {
   Write-Host "ERROR: next.cmd not found at $nextBin" -ForegroundColor Red
   exit 1
 }
-$psi = New-Object System.Diagnostics.ProcessStartInfo
-$psi.FileName = $nextBin
-$psi.Arguments = "start -p $Port"
-$psi.WorkingDirectory = $root
-$psi.UseShellExecute = $false
-$psi.CreateNoWindow = $true
-$psi.RedirectStandardOutput = $true
-$psi.RedirectStandardError = $true
-$proc = [System.Diagnostics.Process]::Start($psi)
+$proc = Start-Process -FilePath $nextBin -ArgumentList "start -p $Port" -WorkingDirectory $root -WindowStyle Hidden -PassThru
 
 # Save PID
 $proc.Id | Out-File -FilePath $pidFile -Encoding ascii

@@ -11,7 +11,9 @@ function readState(): any {
 }
 
 function writeState(data: any) {
-  fs.writeFileSync(STATE_PATH, JSON.stringify(data, null, 2), 'utf-8');
+  const tmp = STATE_PATH + '.__tmp';
+  fs.writeFileSync(tmp, JSON.stringify(data, null, 2), 'utf-8');
+  fs.renameSync(tmp, STATE_PATH);
 }
 
 export async function POST(req: NextRequest) {
@@ -32,6 +34,7 @@ export async function POST(req: NextRequest) {
     if (action === 'approve') {
       agent.approved = true;
       agent.status = 'pending';
+      agent.requires_human_approval = false;
       agent.approved_by = 'Human Gatekeeper (via Agentic Console)';
       agent.approved_at = new Date().toISOString();
       if (agent.expert_reviewer) {
