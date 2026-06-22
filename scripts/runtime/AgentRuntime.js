@@ -573,19 +573,19 @@ class AgentRuntime {
         consecutiveReadOnly++;
         const sandbox = resolveWorkspaceRoot(agentDef, this._agentId);
         // Regex: ## filename.ext or ### filename.ext at start of line
-        const headerRegex = /(?:^|\n)(#{1,3})\s+([\w-]+\.(md|json))([\s\S]*?)(?=\n#{1,3}\s+[\w-]+\.(?:md|json)|$)/g;
-        let match;
-        while ((match = headerRegex.exec(resp.content)) !== null) {
-          const name = match[2].trim();
-          const data = match[3].trim();
-          if (data.length > 0) {
+        // Split on ## filename.md headers, extract name + content between them
+        const headerParts = resp.content.split(/(?:^|\n)(#{1,3})\s+([\w-]+\.(md|json))\s*/);
+        for (let i = 0; i < headerParts.length - 2; i += 3) {
+          const name = headerParts[i + 1];
+          const data = (headerParts[i + 2] || '').trim();
+          if (name && /\.(md|json)$/.test(name) && data.length > 20) {
             const filePath = path.join(ROOT, sandbox, name);
             const dir = path.dirname(filePath);
             if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
             fs.writeFileSync(filePath, data, 'utf-8');
             const ext = name.split('.').pop();
             artifacts.push({ name, data, type: ext === 'json' ? 'json' : 'markdown' });
-            vlog.write('RUNTIME', agentDef.id, `Header-parsed artifact: ${name} (${data.length} bytes, ${((Date.now() - iterStart) / 1000).toFixed(1)}s)`);
+            vlog.write('RUNTIME', agentDef.id, `Header-parsed: ${name} (${data.length} bytes)`);
           }
         }
         const stillMissing = this._getMissingComplianceFiles(agentDef?.id, artifacts, priorArtifacts);
