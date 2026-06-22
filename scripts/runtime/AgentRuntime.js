@@ -527,7 +527,7 @@ class AgentRuntime {
             // 3.1: Consecutive Same-Tool Call Detection
             const consec = (consecutiveSameTool.get(name) || 0) + 1;
             consecutiveSameTool.set(name, consec);
-            if (consec >= 5 && name !== 'write_artifact') {
+            if (consec >= 5 && name !== 'write_artifact' && name !== 'browse_files' && name !== 'read_file') {
               throw new Error(`StuckError: Agent called ${name} ${consec} consecutive times — hard stop`);
             }
 

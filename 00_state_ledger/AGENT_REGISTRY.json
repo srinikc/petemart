@@ -72,19 +72,16 @@
       "human_in_the_loop_gate": true,
       "checkpoints": [
         {
-          "name": "Architecture Design & Diagrams",
-          "instruction": "Output EACH file with a ## header. Do NOT call write_artifact — just output text with headers.\n\n## FEASIBILITY_ARCHITECTURE.md\nFull system design: context, containers, components, API-first strategy, caching, message queues, security, testing layers, deployment topology\n\n## FEASIBILITY_ARCHITECTURE.json\nStructured architecture data (JSON format)\n\n## DIAGRAMS.md\nMermaid.js C4 diagrams (system context, container, component, data flow, deployment)\n\n## POC_SCOPE.md\n8-merchant pilot architecture (subset of full design)\n\n## COST_MODELS.md\nPOC free-tier and full production scale costing"
+          "name": "Architecture Design & Output",
+          "instruction": "Output EACH file below with a ## filename header. Only text, no tool calls.\n\n## FEASIBILITY_ARCHITECTURE.md\nFull system design: context, containers, components, API-first strategy, caching, message queues, security, testing layers, deployment topology\n\n## FEASIBILITY_ARCHITECTURE.json\n{\"architecture\": \"Structured data for the above\"}\n\n## DIAGRAMS.md\nMermaid.js C4 diagrams\n\n## POC_SCOPE.md\n8-merchant pilot architecture\n\n## COST_MODELS.md\nPOC free-tier and production costing"
         },
         {
-          "name": "Guardrails, Integration & Final Outputs",
-          "instruction": "Output EACH file with a ## header.\n\n## GUARDRAIL_VERIFICATION.md\nAll quality guardrails documented as met\n\n## STITCH_INTEGRATION_GUIDE.md\nUI-API-DB integration patterns\n\nFor COMPLETION_SLIDE.pptx and DATA_EXPORT.xlsx, use write_artifact with base64-encoded data.\nIf you cannot generate them, just note it — they will be created automatically."
+          "name": "Guardrails & Integration",
+          "instruction": "Output EACH file with a ## header:\n\n## GUARDRAIL_VERIFICATION.md\nAll quality guardrails documented as met\n\n## STITCH_INTEGRATION_GUIDE.md\nUI-API-DB integration patterns\n\nBinary files (COMPLETION_SLIDE.pptx, DATA_EXPORT.xlsx) will be generated automatically."
         }
       ],
-      "disable_tools": ["read_dependency"],
-      "tools": [
-        { "type": "function", "function": { "name": "write_artifact", "description": "Write a deliverable file to agent sandbox. Use this for ALL output.", "parameters": { "type": "object", "properties": { "name": { "type": "string" }, "data": { "type": "string" }, "type": { "type": "string", "enum": ["markdown", "json", "pptx", "xlsx"] } }, "required": ["name", "data"] } } },
-        { "type": "function", "function": { "name": "browse_files", "description": "List files in a directory", "parameters": { "type": "object", "properties": { "path": { "type": "string" } }, "required": ["path"] } } }
-      ]
+      "disable_tools": ["read_dependency", "write_artifact"],
+      "tools": []
     },
     "04_prototype_agent": {
       "role": "Senior Rapid-Prototyping Engineer",
