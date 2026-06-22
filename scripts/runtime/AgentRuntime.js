@@ -79,8 +79,8 @@ function dynamicLLMTimeout(promptLength) {
 class AgentRuntime {
   constructor(options = {}) {
     this.llm = options.llm || new LLMProvider({
-      provider: options.provider || 'opencode-go',
-      model: options.model || 'deepseek-v4-flash',
+      provider: options.provider,
+      model: options.model,
     });
     this.project = options.project || 'petemart';
     this._abortCtrl = null;
