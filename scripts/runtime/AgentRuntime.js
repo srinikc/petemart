@@ -521,11 +521,7 @@ class AgentRuntime {
             // 3.1: Consecutive Same-Tool Call Detection
             const consec = (consecutiveSameTool.get(name) || 0) + 1;
             consecutiveSameTool.set(name, consec);
-            if (consec === 3) {
-              vlog.write('RUNTIME', agentDef.id, `Loop guard | iter ${i + 1} | tool=${name} | consec=${consec} | injecting nudge`);
-              messages.push({ role: 'user', content: `You have called ${name} ${consec} times consecutively. Stop repeating the same action. Verify your work and proceed to the next step.` });
-            }
-            if (consec >= 5) {
+            if (consec >= 5 && name !== 'write_artifact') {
               throw new Error(`StuckError: Agent called ${name} ${consec} consecutive times — hard stop`);
             }
 
