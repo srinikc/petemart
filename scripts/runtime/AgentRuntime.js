@@ -589,13 +589,21 @@ class AgentRuntime {
         // All required files written — accept content and stop looping
         break;
       } else {
-        // No content, no tool calls — allow retries up to 3 consecutive empty responses
+        // No content, no tool calls — inject re-prompt to push LLM toward write_artifact
         consecutiveEmpty++;
         if (consecutiveEmpty >= 3) {
           vlog.write('RUNTIME', agentDef.id, `Loop guard | ${consecutiveEmpty} consecutive empty responses — stopping`);
           break;
         }
-        vlog.write('RUNTIME', agentDef.id, `Empty response #${consecutiveEmpty} — retrying...`);
+        const completedArtifacts = artifacts.concat(priorArtifacts || []);
+        const missing = this._getMissingComplianceFiles(agentDef?.id, completedArtifacts, priorArtifacts);
+        if (missing.length > 0) {
+          vlog.write('RUNTIME', agentDef.id, `Re-prompting for ${missing.length} missing files: ${missing.join(', ')}`);
+          messages.push({ role: 'user', content: `You must call write_artifact now for these files: ${missing.join(', ')}. Do NOT output text — only use write_artifact tool calls.` });
+        } else {
+          vlog.write('RUNTIME', agentDef.id, `Empty response #${consecutiveEmpty} — retrying...`);
+          messages.push({ role: 'user', content: 'Please use write_artifact to save your output as files. Do NOT continue without calling write_artifact.' });
+        }
         continue;
       }
 
