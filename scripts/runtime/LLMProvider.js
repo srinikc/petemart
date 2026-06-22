@@ -239,6 +239,7 @@ class LLMProvider {
         toolCalls,
         usage: result.usage || { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
         model: this._providerName + '/' + this._model,
+        reasoningContent: result.reasoningContent || null,
       };
     } catch (err) {
       vlog.write('LLM', agentId, 'Provider failed, trying emergency: ' + err.message);

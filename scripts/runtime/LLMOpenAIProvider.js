@@ -84,6 +84,7 @@ class LLMOpenAIProvider {
                   arguments: tc.function?.arguments || '{}',
                 },
               })),
+              reasoningContent: choice.delta?.reasoning_content || msg.reasoning_content || null,
               usage: json.usage || { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
             });
           } catch (e) {

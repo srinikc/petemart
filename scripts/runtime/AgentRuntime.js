@@ -607,7 +607,7 @@ class AgentRuntime {
         continue;
       }
 
-      messages.push({ role: 'assistant', content: resp.content || '', tool_calls: resp.toolCalls });
+      messages.push({ role: 'assistant', content: resp.content || '', tool_calls: resp.toolCalls, reasoning_content: resp.reasoningContent || undefined });
 
       // Keep message window manageable (preserve first 2, keep last 30)
       if (messages.length > 32) {
