@@ -80,7 +80,7 @@
           "instruction": "Output EACH file with a ## header:\n\n## GUARDRAIL_VERIFICATION.md\nAll quality guardrails documented as met\n\n## STITCH_INTEGRATION_GUIDE.md\nUI-API-DB integration patterns\n\nBinary files (COMPLETION_SLIDE.pptx, DATA_EXPORT.xlsx) will be generated automatically."
         }
       ],
-      "disable_tools": ["read_dependency", "write_artifact"],
+      "disable_tools": ["read_dependency", "write_artifact", "browse_files", "read_file"],
       "tools": []
     },
     "04_prototype_agent": {
