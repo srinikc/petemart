@@ -72,16 +72,12 @@
       "human_in_the_loop_gate": true,
       "checkpoints": [
         {
-          "name": "Full Architecture Design",
-          "instruction": "The PRD dependency summary is already in the system prompt context below. Do NOT call read_dependency — the data is already available.\n\nCall write_artifact to save requirement analysis and full architecture to FEASIBILITY_ARCHITECTURE.md (sections: system context, container diagram, component design, API strategy, security framework, testing layers).\n\nThen call write_artifact to save structured architecture data to FEASIBILITY_ARCHITECTURE.json."
+          "name": "Architecture Design & Diagrams",
+          "instruction": "Create these files using write_artifact. Do NOT call read_dependency.\n\n1. FEASIBILITY_ARCHITECTURE.md — full architecture with system context, containers, components, API strategy, security, testing layers, deployment topology\n2. FEASIBILITY_ARCHITECTURE.json — structured architecture data\n3. DIAGRAMS.md — Mermaid.js C4 diagrams (system context, container, component, data flow, deployment)\n4. POC_SCOPE.md — 8-merchant pilot scope\n5. COST_MODELS.md — POC free-tier and production costing"
         },
         {
-          "name": "POC Scope & Diagrams",
-          "instruction": "Do NOT call read_dependency — all context is already in the prompt.\n\nCall write_artifact for EACH file below:\n\n1. DIAGRAMS.md with Mermaid.js C4 diagrams (system context, container, component, data flow, deployment)\n2. POC_SCOPE.md describing the 8-merchant pilot architecture (subset of full design)\n3. COST_MODELS.md with infrastructure costing for POC (free tiers) and production scale"
-        },
-        {
-          "name": "Guardrails, Integration, Slides & Data",
-          "instruction": "Do NOT call read_dependency — all context is already in the prompt.\n\nCall write_artifact for EACH file below:\n\n1. GUARDRAIL_VERIFICATION.md documenting all quality guardrails met\n2. STITCH_INTEGRATION_GUIDE.md with integration patterns between UI-API-DB layers\n3. COMPLETION_SLIDE.pptx with summary slide deck\n4. DATA_EXPORT.xlsx with cost estimates and resource tables"
+          "name": "Guardrails, Integration & Final Outputs",
+          "instruction": "Create these files using write_artifact. Do NOT call read_dependency.\n\n1. GUARDRAIL_VERIFICATION.md — all quality guardrails met\n2. STITCH_INTEGRATION_GUIDE.md — UI-API-DB integration patterns\n3. COMPLETION_SLIDE.pptx — summary slide deck\n4. DATA_EXPORT.xlsx — cost estimates and resource tables"
         }
       ],
       "tools": [
