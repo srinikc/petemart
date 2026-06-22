@@ -202,7 +202,19 @@ class LLMProvider {
       // Step 2: Send to the backend. The backend may ALSO use native tools
       // parameter if it supports it (bonus), but the text embedding is the
       // universal fallback.
-      const result = await this._backend.complete(augmentedPrompt, messages, tools, options);
+      let result;
+      try {
+        result = await this._backend.complete(augmentedPrompt, messages, tools, options);
+      } catch (err) {
+        // If native tool calling failed (e.g. API doesn't support it), retry without tools
+        // Embedded <function_call> instructions in the prompt still work.
+        if (tools && tools.length > 0) {
+          vlog.write('LLM', agentId, `Native tool call failed, retrying without native tools: ${err.message.slice(0, 100)}`);
+          result = await this._backend.complete(augmentedPrompt, messages, [], options);
+        } else {
+          throw err;
+        }
+      }
 
       if (result.usage) {
         this._logTokenUsage(result.usage.prompt_tokens, result.usage.completion_tokens, this._model);
