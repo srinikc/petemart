@@ -730,6 +730,9 @@ class AgentRuntime {
       // Compliance check: verify artifacts from THIS run only (not stale accumulated artifacts)
       const currentArtifacts = (result.artifacts || []).filter(a => a && a.name);
       const checkPassed = currentArtifacts.length > 0 ? this._verifyCompliance(agent, agentDef) : false;
+      if (currentArtifacts.length > 0) {
+        vlog.write('RUNTIME', agentId, `Compliance: ${checkPassed ? 'PASSED' : 'FAILED'} | artifacts=${currentArtifacts.length} | status will be ${checkPassed ? 'approved' : 'awaiting_approval'}`);
+      }
       if (!checkPassed && currentArtifacts.length === 0) {
         if (!agent.last_error) agent.last_error = 'No artifacts produced — LLM did not call write_artifact';
         // Clear stale artifacts to prevent daemon downstream queue from re-launching
@@ -747,17 +750,18 @@ class AgentRuntime {
   _verifyCompliance(agent, agentDef) {
     const checklist = agent?.compliance_checklist || agentDef?.compliance_checklist || [];
     if (checklist.length === 0) return true;
+    let allOk = true;
     for (const item of checklist) {
       if (item.required && item.check?.startsWith('artifact_exists(')) {
         const artifactName = item.check.match(/\((.*?)\)/)?.[1];
         if (artifactName) {
           const artifacts = agent?.artifacts_emitted || [];
           const found = artifacts.some(a => a.includes(artifactName));
-          if (!found) return false;
+          if (!found) { allOk = false; vlog.write('RUNTIME', this._agentId || 'SYSTEM', `Compliance fail: ${artifactName} not in artifacts`); }
         }
       }
     }
-    return true;
+    return allOk;
   }
 
   // ── Tool Handlers ──
