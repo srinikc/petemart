@@ -72,12 +72,16 @@
       "human_in_the_loop_gate": true,
       "checkpoints": [
         {
-          "name": "Read PRD & Design Full Architecture",
-          "instruction": "Read the PRD dependency artifacts using read_dependency. Call write_artifact to save requirement analysis and full architecture to FEASIBILITY_ARCHITECTURE.md sections #1-6. Call write_artifact to save structured architecture data to FEASIBILITY_ARCHITECTURE.json."
+          "name": "Full Architecture Design",
+          "instruction": "The PRD dependency summary is already in the system prompt context below. Do NOT call read_dependency — the data is already available.\n\nCall write_artifact to save requirement analysis and full architecture to FEASIBILITY_ARCHITECTURE.md (sections: system context, container diagram, component design, API strategy, security framework, testing layers).\n\nThen call write_artifact to save structured architecture data to FEASIBILITY_ARCHITECTURE.json."
         },
         {
-          "name": "POC, Diagrams, Costing & Final Outputs",
-          "instruction": "Use write_artifact to create each of the following files. Do NOT output file contents as text — call write_artifact for each one:\n- write_artifact('DIAGRAMS.md', <mermaid_c4_diagrams>)\n- write_artifact('POC_SCOPE.md', <poc_architecture>)\n- write_artifact('COST_MODELS.md', <infrastructure_costing>)\n- write_artifact('COMPLETION_SLIDE.pptx', <slide_summary>)\n- write_artifact('DATA_EXPORT.xlsx', <cost_and_resource_data>)\n- write_artifact('GUARDRAIL_VERIFICATION.md', <guardrail_check>)\n- write_artifact('STITCH_INTEGRATION_GUIDE.md', <integration_patterns>)"
+          "name": "POC Scope & Diagrams",
+          "instruction": "Do NOT call read_dependency — all context is already in the prompt.\n\nCall write_artifact for EACH file below:\n\n1. DIAGRAMS.md with Mermaid.js C4 diagrams (system context, container, component, data flow, deployment)\n2. POC_SCOPE.md describing the 8-merchant pilot architecture (subset of full design)\n3. COST_MODELS.md with infrastructure costing for POC (free tiers) and production scale"
+        },
+        {
+          "name": "Guardrails, Integration, Slides & Data",
+          "instruction": "Do NOT call read_dependency — all context is already in the prompt.\n\nCall write_artifact for EACH file below:\n\n1. GUARDRAIL_VERIFICATION.md documenting all quality guardrails met\n2. STITCH_INTEGRATION_GUIDE.md with integration patterns between UI-API-DB layers\n3. COMPLETION_SLIDE.pptx with summary slide deck\n4. DATA_EXPORT.xlsx with cost estimates and resource tables"
         }
       ],
       "tools": [
