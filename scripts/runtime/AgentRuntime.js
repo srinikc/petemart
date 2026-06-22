@@ -757,7 +757,11 @@ class AgentRuntime {
     if (!agentDef) throw new Error(`Upstream agent ${args.agent_id} not found`);
     const depPath = path.join(ROOT, agentDef.workspace_root || '', args.artifact);
     if (!fs.existsSync(depPath)) throw new Error(`Dependency ${depPath} not found`);
-    return { text: fs.readFileSync(depPath, 'utf-8') };
+    const content = fs.readFileSync(depPath, 'utf-8');
+    // Truncate large files to prevent overwhelming the LLM context
+    const MAX_CHARS = 8000;
+    const text = content.length > MAX_CHARS ? content.slice(0, MAX_CHARS) + '\n\n[... truncated ' + (content.length - MAX_CHARS) + ' more chars ...]' : content;
+    return { text };
   }
 
   async _browseFiles(args) {
