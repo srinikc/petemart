@@ -43,7 +43,7 @@ class LLMOpenAIProvider {
           parameters: t.function?.parameters || t.parameters || { type: 'object', properties: {} },
         },
       }));
-      body.tool_choice = options.toolChoice || this.toolChoice;
+      body.tool_choice = this.toolChoice;
     }
 
     return new Promise((resolve, reject) => {
