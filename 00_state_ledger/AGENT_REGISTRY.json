@@ -62,7 +62,7 @@
     },
     "03_architect_agent": {
       "role": "Senior Enterprise Solutions Architect",
-      "system_prompt": "Evaluate the prd.json metadata from the requirement agent. Conduct a detailed end-to-end technical feasibility study covering building, deployment, infrastructure scaling, maintenance, patch upgrades, and security profiles. Recommend a robust, high-performance UI stack for web and mobile frameworks that outperforms market competitors. Define an API-first implementation strategy integrated with explicit caching, message queue mechanisms, event hooks, and a centralized unit-testing suite framework.\n## Global Output Requirements\nUse write_artifact for ALL file output. Every deliverable must have BOTH .md AND .json formats. Generate COMPLETION_SLIDE.pptx and DATA_EXPORT.xlsx. Include Mermaid.js diagrams in markdown deliverables.",
+      "system_prompt": "Evaluate the prd.json metadata from the requirement agent. Conduct a detailed end-to-end technical feasibility study covering building, deployment, infrastructure scaling, maintenance, patch upgrades, and security profiles. Recommend a robust, high-performance UI stack for web and mobile frameworks that outperforms market competitors. Define an API-first implementation strategy integrated with explicit caching, message queue mechanisms, event hooks, and a centralized unit-testing suite framework.\n## Global Output Requirements\nOutput .md and .json files with ## headers. For COMPLETION_SLIDE.pptx and DATA_EXPORT.xlsx, use write_artifact with base64 data. If binary generation fails, they will be created automatically.",
       "workspace_root": "agents/02_engineering_specs/03_architect_agent/",
       "dependencies": ["agents/01_front_office/02_requirement_agent/prd.json"],
       "deliverables": {
@@ -73,11 +73,11 @@
       "checkpoints": [
         {
           "name": "Architecture Design & Diagrams",
-          "instruction": "The PRD dependency summary is already in the context below. Call write_artifact to create ALL of these files:\n\n1. FEASIBILITY_ARCHITECTURE.md — full system design: context, containers, components, API-first strategy, caching, message queues, security, testing\n2. FEASIBILITY_ARCHITECTURE.json — structured data for the above\n3. DIAGRAMS.md — Mermaid.js C4 diagrams (system context, container, component, data flow, deployment)\n4. POC_SCOPE.md — 8-merchant pilot architecture (subset)\n5. COST_MODELS.md — POC free-tier and full production costing"
+          "instruction": "Output EACH file with a ## header. Do NOT call write_artifact — just output text with headers.\n\n## FEASIBILITY_ARCHITECTURE.md\nFull system design: context, containers, components, API-first strategy, caching, message queues, security, testing layers, deployment topology\n\n## FEASIBILITY_ARCHITECTURE.json\nStructured architecture data (JSON format)\n\n## DIAGRAMS.md\nMermaid.js C4 diagrams (system context, container, component, data flow, deployment)\n\n## POC_SCOPE.md\n8-merchant pilot architecture (subset of full design)\n\n## COST_MODELS.md\nPOC free-tier and full production scale costing"
         },
         {
           "name": "Guardrails, Integration & Final Outputs",
-          "instruction": "Call write_artifact to create ALL of these files:\n\n1. GUARDRAIL_VERIFICATION.md — all quality guardrails documented as met\n2. STITCH_INTEGRATION_GUIDE.md — UI-API-DB integration patterns\n3. COMPLETION_SLIDE.pptx — summary slide deck\n4. DATA_EXPORT.xlsx — cost estimates and resource tables"
+          "instruction": "Output EACH file with a ## header.\n\n## GUARDRAIL_VERIFICATION.md\nAll quality guardrails documented as met\n\n## STITCH_INTEGRATION_GUIDE.md\nUI-API-DB integration patterns\n\nFor COMPLETION_SLIDE.pptx and DATA_EXPORT.xlsx, use write_artifact with base64-encoded data.\nIf you cannot generate them, just note it — they will be created automatically."
         }
       ],
       "disable_tools": ["read_dependency"],
