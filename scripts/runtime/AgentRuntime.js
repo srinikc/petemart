@@ -566,7 +566,7 @@ class AgentRuntime {
         }
         continue; // Assistant already pushed above, skip the general push at end of loop
       } else if (resp.content) {
-        // No tool calls but has content
+        // No tool calls but has content — save it as artifact if files are still missing
         consecutiveSameTool.clear();
         consecutiveReadOnly++;
         if (consecutiveReadOnly >= 3) {
@@ -574,13 +574,26 @@ class AgentRuntime {
           messages.push({ role: 'user', content: 'You have been responding with text-only for several iterations. Call write_artifact to save your output as files.' });
         }
         const missing = this._getMissingComplianceFiles(agentDef?.id, artifacts, priorArtifacts);
-        // Only re-prompt if files are STILL missing AND we have budget left
-        if (missing.length > 0 && i < MAX_ITERATIONS - 1) {
-          vlog.write('RUNTIME', agentDef.id, `Missing files re-prompt | ${missing.length} missing: ${missing.join(', ')}`);
-          messages.push({ role: 'user', content: `You did not call write_artifact for these required files: ${missing.join(', ')}. Please use write_artifact to create each of them now. Do NOT output text — only use write_artifact tool calls.` });
+        // Auto-save: if LLM outputs text without write_artifact, save content as the first missing file
+        if (missing.length > 0) {
+          const targetFile = missing[0];
+          const ext = targetFile.split('.').pop()?.toLowerCase();
+          if (ext !== 'pptx' && ext !== 'xlsx') {
+            const sandbox = resolveWorkspaceRoot(agentDef, this._agentId);
+            const filePath = path.join(ROOT, sandbox, targetFile);
+            const dir = path.dirname(filePath);
+            if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+            fs.writeFileSync(filePath, resp.content, 'utf-8');
+            artifacts.push({ name: targetFile, data: resp.content, type: ext === 'json' ? 'json' : 'markdown' });
+            vlog.write('RUNTIME', agentDef.id, `Auto-saved artifact: ${targetFile} (${resp.content.length} bytes) — LLM output text instead of write_artifact`);
+          }
+        }
+        const stillMissing = this._getMissingComplianceFiles(agentDef?.id, artifacts, priorArtifacts);
+        if (stillMissing.length > 0 && i < MAX_ITERATIONS - 1) {
+          vlog.write('RUNTIME', agentDef.id, `Missing files re-prompt | ${stillMissing.length} missing: ${stillMissing.join(', ')}`);
+          messages.push({ role: 'user', content: `You did not call write_artifact for these required files: ${stillMissing.join(', ')}. Please use write_artifact to create each of them now. Do NOT output text — only use write_artifact tool calls.` });
           continue;
         }
-        // All required files written — accept content and stop looping
         break;
       } else {
         consecutiveEmpty++;
