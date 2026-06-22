@@ -207,7 +207,6 @@ class LLMProvider {
         result = await this._backend.complete(augmentedPrompt, messages, tools, options);
       } catch (err) {
         // If native tool calling failed (e.g. API doesn't support it), retry without tools
-        // Embedded <function_call> instructions in the prompt still work.
         if (tools && tools.length > 0) {
           vlog.write('LLM', agentId, `Native tool call failed, retrying without native tools: ${err.message.slice(0, 100)}`);
           result = await this._backend.complete(augmentedPrompt, messages, [], options);

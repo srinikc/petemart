@@ -444,6 +444,7 @@ class AgentRuntime {
     const consecutiveSameTool = new Map();   // "tool" → consecutive count
     const fileEditCount = new Map();         // "filename" → edit count in this run
     let consecutiveReadOnly = 0;             // read-only iteration counter
+    let forceToolCall = false;               // next iteration uses tool_choice='required'
 
     function toolCallKey(name, args) {
       return `${name}:${JSON.stringify(args)}`;
@@ -476,8 +477,13 @@ class AgentRuntime {
       const timeout = dynamicLLMTimeout(systemPrompt.length + messages.reduce((s, m) => s + (typeof m.content === 'string' ? m.content.length : JSON.stringify(m.content).length), 0));
 
       let resp;
+      const llmOptions = { timeout, signal: this._abortSignal || this._abortCtrl?.signal };
+      if (forceToolCall && allTools.length > 0) {
+        llmOptions.toolChoice = 'required';
+        forceToolCall = false;
+      }
       try {
-        resp = await this.llm.complete(systemPrompt, messages, allTools, { timeout, signal: this._abortSignal || this._abortCtrl?.signal });
+        resp = await this.llm.complete(systemPrompt, messages, allTools, llmOptions);
       } catch (err) {
         vlog.write('RUNTIME', agentDef.id, `LLM iter ${globalIterNum}/${MAX_ITERATIONS} | ERROR: ${err.message}`);
         this._logToFile('ERR', `LLM iter ${globalIterNum}: ${err.message}`);
@@ -566,32 +572,18 @@ class AgentRuntime {
         }
         continue; // Assistant already pushed above, skip the general push at end of loop
       } else if (resp.content) {
-        // No tool calls but has content — save it as artifact if files are still missing
+        // No tool calls but has content — push a system-level re-prompt
         consecutiveSameTool.clear();
         consecutiveReadOnly++;
         if (consecutiveReadOnly >= 3) {
-          vlog.write('RUNTIME', agentDef.id, `Loop guard | iter ${i + 1} | read-only x${consecutiveReadOnly} | injecting nudge`);
-          messages.push({ role: 'user', content: 'You have been responding with text-only for several iterations. Call write_artifact to save your output as files.' });
+          messages.push({ role: 'system', content: 'You have been responding with text-only for several iterations. Call write_artifact with <function_call> tags to save your output.' });
+          forceToolCall = true;
         }
         const missing = this._getMissingComplianceFiles(agentDef?.id, artifacts, priorArtifacts);
-        // Auto-save: if LLM outputs text without write_artifact, save content as the first missing file
-        if (missing.length > 0) {
-          const targetFile = missing[0];
-          const ext = targetFile.split('.').pop()?.toLowerCase();
-          if (ext !== 'pptx' && ext !== 'xlsx') {
-            const sandbox = resolveWorkspaceRoot(agentDef, this._agentId);
-            const filePath = path.join(ROOT, sandbox, targetFile);
-            const dir = path.dirname(filePath);
-            if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-            fs.writeFileSync(filePath, resp.content, 'utf-8');
-            artifacts.push({ name: targetFile, data: resp.content, type: ext === 'json' ? 'json' : 'markdown' });
-            vlog.write('RUNTIME', agentDef.id, `Auto-saved artifact: ${targetFile} (${resp.content.length} bytes) — LLM output text instead of write_artifact`);
-          }
-        }
-        const stillMissing = this._getMissingComplianceFiles(agentDef?.id, artifacts, priorArtifacts);
-        if (stillMissing.length > 0 && i < MAX_ITERATIONS - 1) {
-          vlog.write('RUNTIME', agentDef.id, `Missing files re-prompt | ${stillMissing.length} missing: ${stillMissing.join(', ')}`);
-          messages.push({ role: 'user', content: `You did not call write_artifact for these required files: ${stillMissing.join(', ')}. Please use write_artifact to create each of them now. Do NOT output text — only use write_artifact tool calls.` });
+        if (missing.length > 0 && i < MAX_ITERATIONS - 1) {
+          vlog.write('RUNTIME', agentDef.id, `Missing files re-prompt | ${missing.length} missing: ${missing.join(', ')}`);
+          messages.push({ role: 'system', content: `You must call write_artifact to save these files: ${missing.join(', ')}. Use <function_call> tags. Do NOT output text — only call write_artifact.` });
+          forceToolCall = true;
           continue;
         }
         break;
