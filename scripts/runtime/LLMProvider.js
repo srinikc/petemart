@@ -147,11 +147,6 @@ class LLMProvider {
     // For OpenAI-compatible providers: need both apiKey + baseURL
     if (entry.cls === LLMOpenAIProvider) {
       if (apiKey && baseURL) {
-        // opencode-go/openprovider: use CLI mode (DeepSeek multi-turn tool calling unreliable via HTTP)
-        if (provider === 'opencode-go' || provider === 'opencode') {
-          vlog.write('LLM', 'CONFIG', `${provider}/${model} — using CLI mode (reliable multi-turn tool calling)`);
-          return { backend: new LLMOpenCodeProvider({ provider, model }), provider, model };
-        }
         vlog.write('LLM', 'CONFIG', `OpenAI-compatible: ${provider}/${model} via ${baseURL}`);
         return { backend: new LLMOpenAIProvider({ apiKey, model, baseURL, toolChoice: 'auto' }), provider, model };
       }
