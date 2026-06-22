@@ -589,10 +589,14 @@ class AgentRuntime {
         // All required files written — accept content and stop looping
         break;
       } else {
-        // No content, no tool calls
+        // No content, no tool calls — allow retries up to 3 consecutive empty responses
         consecutiveEmpty++;
-        if (consecutiveEmpty >= 3) break;
-        break;
+        if (consecutiveEmpty >= 3) {
+          vlog.write('RUNTIME', agentDef.id, `Loop guard | ${consecutiveEmpty} consecutive empty responses — stopping`);
+          break;
+        }
+        vlog.write('RUNTIME', agentDef.id, `Empty response #${consecutiveEmpty} — retrying...`);
+        continue;
       }
 
       messages.push({ role: 'assistant', content: resp.content || '', tool_calls: resp.toolCalls });
@@ -685,17 +689,21 @@ class AgentRuntime {
           if (!agent.artifacts_emitted.includes(p)) agent.artifacts_emitted.push(p);
         }
       }
-      // Preserve last known artifacts even on empty runs
+      // Compliance check: verify artifacts from THIS run only (not stale accumulated artifacts)
+      const currentArtifacts = (result.artifacts || []).filter(a => a && a.name);
+      const checkPassed = currentArtifacts.length > 0 ? this._verifyCompliance(agent, agentDef) : false;
+      if (!checkPassed && currentArtifacts.length === 0) {
+        // Don't override a more specific error already set by the runtime
+        if (!agent.last_error) agent.last_error = 'No artifacts produced — LLM did not call write_artifact';
+      }
+      if (checkPassed) {
+        agent.status = 'approved';
+      } else if (agent.status !== 'failed' && agent.status !== 'cancelled') {
+        agent.status = (currentArtifacts.length > 0) ? 'awaiting_approval' : 'failed';
+      }
+      // Preserve last known artifacts even on empty runs (after compliance, for reference only)
       if (result.artifacts?.length > 0) {
         agent.last_artifact_emitted = agent.artifacts_emitted;
-      } else if (agent.last_artifact_emitted?.length > 0 && (!agent.artifacts_emitted || agent.artifacts_emitted.length === 0)) {
-        agent.artifacts_emitted = [...agent.last_artifact_emitted];
-      }
-      // Compliance check: verify all required artifacts exist
-      const checkPassed = this._verifyCompliance(agent, agentDef);
-      agent.status = checkPassed ? 'approved' : 'failed';
-      if (!checkPassed && !agent.last_error) {
-        agent.last_error = 'Compliance failed: required artifacts missing';
       }
       this._saveState(state);
     }

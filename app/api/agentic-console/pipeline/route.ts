@@ -152,7 +152,7 @@ export async function POST(req: NextRequest) {
         }
         const now = new Date().toISOString();
         agent.status = 'pending';
-        agent.approved = true;
+        agent.approved = false;
         agent.last_error = null;
         agent.started_at = now;
         agent.stuck_detected_at = null;
