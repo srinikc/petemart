@@ -508,6 +508,12 @@ class AgentRuntime {
           const name = tc.function?.name || tc.function?.function;
           let args = {};
           try { args = JSON.parse(tc.function?.arguments || '{}'); } catch {}
+          // Validate required args before calling
+          if (name === 'write_artifact' && !args.name) {
+            vlog.write('RUNTIME', agentDef.id, `Tool SKIP: write_artifact called without 'name' argument — telling LLM to retry`);
+            messages.push({ role: 'tool', tool_call_id: tc.id, content: 'Error: write_artifact requires a "name" argument (the filename). Provide name, data, and type.' });
+            continue;
+          }
           const handler = this._toolHandlers[name];
           if (handler) {
             // 3.2: Tool Deduplication — cache identical (tool, args) calls
