@@ -768,9 +768,8 @@ class AgentRuntime {
     const depPath = path.join(ROOT, agentDef.workspace_root || '', args.artifact);
     if (!fs.existsSync(depPath)) throw new Error(`Dependency ${depPath} not found`);
     const content = fs.readFileSync(depPath, 'utf-8');
-    // Truncate large files to prevent overwhelming the LLM context
-    const MAX_CHARS = 8000;
-    const text = content.length > MAX_CHARS ? content.slice(0, MAX_CHARS) + '\n\n[... truncated ' + (content.length - MAX_CHARS) + ' more chars ...]' : content;
+    // Return a concise summary to keep LLM context manageable
+    const text = `File: ${depPath.replace(/\\/g, '/')}\nSize: ${(content.length / 1024).toFixed(1)} KB\nType: ${depPath.endsWith('.json') ? 'JSON' : 'Markdown'}\n\nFirst 800 chars:\n${content.slice(0, 800)}${content.length > 800 ? '\n[...]' : ''}`;
     return { text };
   }
 
@@ -869,8 +868,7 @@ class AgentRuntime {
         const depPath = path.join(ROOT, dep);
         if (fs.existsSync(depPath)) {
           const full = fs.readFileSync(depPath, 'utf-8');
-          // Summary: show filename and key stats instead of raw content
-          const keyInfo = `File: ${dep}\nSize: ${(full.length / 1024).toFixed(1)} KB\nType: ${dep.endsWith('.json') ? 'JSON' : 'Markdown'}\n\nFirst 500 chars:\n${full.slice(0, 500)}${full.length > 500 ? '\n[...]' : ''}`;
+          const keyInfo = `File: ${dep}\nSize: ${(full.length / 1024).toFixed(1)} KB\nType: ${dep.endsWith('.json') ? 'JSON structured data' : 'Markdown document'}\n\nFirst 600 chars:\n${full.slice(0, 600)}${full.length > 600 ? '\n[...]' : ''}`;
           parts.push(`--- ${dep} ---\n${keyInfo}`);
         }
       } catch {}
