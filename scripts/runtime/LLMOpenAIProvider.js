@@ -9,6 +9,7 @@ class LLMOpenAIProvider {
     this.baseURL = (options.baseURL || process.env.LLM_BASE_URL || 'https://api.openai.com/v1').replace(/\/+$/, '');
     this.maxTokens = options.maxTokens || 8192;
     this.toolChoice = options.toolChoice || 'auto';   // 'auto' works with all providers; 'required' may fail on DeepSeek
+    this.skipNativeTools = options.skipNativeTools === true;  // skip native tools param, rely on embedded <function_call> tags
     this._initialized = false;
   }
 
@@ -33,7 +34,7 @@ class LLMOpenAIProvider {
       max_tokens: this.maxTokens,
     };
 
-    if (tools && tools.length > 0) {
+    if (tools && tools.length > 0 && !this.skipNativeTools) {
       body.tools = tools.map(t => ({
         type: 'function',
         function: {
