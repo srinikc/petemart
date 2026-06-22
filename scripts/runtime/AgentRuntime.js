@@ -499,6 +499,8 @@ class AgentRuntime {
       if (resp.toolCalls && resp.toolCalls.length > 0) {
         consecutiveEmpty = 0;
         consecutiveReadOnly = 0;
+        // Push assistant message with tool_calls FIRST — API requires tool messages to follow a tool_calls message
+        messages.push({ role: 'assistant', content: resp.content || '', tool_calls: resp.toolCalls, reasoning_content: resp.reasoningContent || undefined });
         for (const tc of resp.toolCalls) {
           const name = tc.function?.name || tc.function?.function;
           let args = {};
@@ -511,13 +513,6 @@ class AgentRuntime {
               const cached = toolCallCache.get(cacheK);
               vlog.write('RUNTIME', agentDef.id, `Tool dedup | iter ${i + 1} | tool=${name} | cache HIT`);
               messages.push({ role: 'tool', tool_call_id: tc.id, content: JSON.stringify(cached) });
-              // Track consecutive same-tool for loop detection
-              const consec = (consecutiveSameTool.get(name) || 0) + 1;
-              consecutiveSameTool.set(name, consec);
-              // 3.4: Proactive Termination — hard stop after 5 consecutive same-tool
-              if (consec >= 5) {
-                throw new Error(`StuckError: Agent called ${name} 5 consecutive times — hard stop`);
-              }
               continue;
             }
             // 3.1: Consecutive Same-Tool Call Detection
@@ -525,31 +520,25 @@ class AgentRuntime {
             consecutiveSameTool.set(name, consec);
             if (consec === 3) {
               vlog.write('RUNTIME', agentDef.id, `Loop guard | iter ${i + 1} | tool=${name} | consec=${consec} | injecting nudge`);
-              messages.push({ role: 'user', content: `You have called ${name} ${consec} times consecutively. Stop repeating the same action. Verify your work and proceed to the next step. Do NOT call ${name} again without justification.` });
+              messages.push({ role: 'user', content: `You have called ${name} ${consec} times consecutively. Stop repeating the same action. Verify your work and proceed to the next step.` });
             }
             if (consec >= 5) {
-              vlog.write('RUNTIME', agentDef.id, `Loop guard | iter ${i + 1} | tool=${name} | consec=${consec} | HARD STOP`);
               throw new Error(`StuckError: Agent called ${name} ${consec} consecutive times — hard stop`);
             }
 
             try {
-              // 3.3: Tool Timeout — Promise.race per tool invocation (60s)
               const toolPromise = handler(args, agentDef);
               const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error(`Tool ${name} timed out after 60s`)), 60000));
               const toolResult = await Promise.race([toolPromise, timeoutPromise]);
+              vlog.write('RUNTIME', agentDef.id, `Tool exec | iter ${i + 1} | tool=${name} | ok`);
 
-              vlog.write('RUNTIME', agentDef.id, `Tool exec | iter ${i + 1} | tool=${name} | args=${JSON.stringify(args).slice(0, 200)} | ok`);
-
-              // Cache the result for deduplication
               toolCallCache.set(cacheK, toolResult);
 
-              // 2.2: Loop Detection Middleware — track per-file edit counts
               if (name === 'write_artifact' && args.name) {
                 const editCount = (fileEditCount.get(args.name) || 0) + 1;
                 fileEditCount.set(args.name, editCount);
                 if (editCount === 3) {
-                  vlog.write('RUNTIME', agentDef.id, `Loop guard | iter ${i + 1} | ${args.name} edited ${editCount}x | injecting nudge`);
-                  messages.push({ role: 'user', content: `You have edited ${args.name} ${editCount} times. Verify the content is correct before making further changes.` });
+                  messages.push({ role: 'user', content: `You have edited ${args.name} ${editCount} times. Verify before making further changes.` });
                 }
               }
 
@@ -572,6 +561,7 @@ class AgentRuntime {
             messages.push({ role: 'tool', tool_call_id: tc.id, content: `Tool ${name} not found` });
           }
         }
+        continue; // Assistant already pushed above, skip the general push at end of loop
       } else if (resp.content) {
         // No tool calls but has content
         consecutiveSameTool.clear();
