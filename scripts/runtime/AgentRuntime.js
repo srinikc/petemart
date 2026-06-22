@@ -379,7 +379,7 @@ class AgentRuntime {
       return { content: result.content, artifacts: result.artifacts, usage: result.usage };
     }
 
-    const defaultMaxIter = 40;
+    const defaultMaxIter = 80;
     const budget = Math.max(3, Math.floor(defaultMaxIter / checkpointCount));
     vlog.write('RUNTIME', agentDef.id, `Checkpoints: ${agentDef.checkpoints.map(c => c.name).join(' → ')} | budget=${budget} iter/phase`);
 
