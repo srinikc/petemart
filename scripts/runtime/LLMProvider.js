@@ -147,10 +147,8 @@ class LLMProvider {
     // For OpenAI-compatible providers: need both apiKey + baseURL
     if (entry.cls === LLMOpenAIProvider) {
       if (apiKey && baseURL) {
-        // opencode-go and opencode APIs don't support native tool calling reliably — use embedded <function_call> tags instead
-        const skipNativeTools = provider === 'opencode-go' || provider === 'opencode' || baseURL.includes('opencode.ai');
-        vlog.write('LLM', 'CONFIG', `OpenAI-compatible: ${provider}/${model} via ${baseURL}${skipNativeTools ? ' (embedded tools)' : ''}`);
-        return { backend: new LLMOpenAIProvider({ apiKey, model, baseURL, toolChoice: 'auto', skipNativeTools }), provider, model };
+        vlog.write('LLM', 'CONFIG', `OpenAI-compatible: ${provider}/${model} via ${baseURL}`);
+        return { backend: new LLMOpenAIProvider({ apiKey, model, baseURL, toolChoice: 'auto' }), provider, model };
       }
       vlog.write('LLM', 'CONFIG', `No API key for ${provider}, falling back to CLI mode`);
       return { backend: new LLMOpenCodeProvider({ provider, model }), provider, model };
