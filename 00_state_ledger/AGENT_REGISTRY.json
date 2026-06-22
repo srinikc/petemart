@@ -73,16 +73,15 @@
       "checkpoints": [
         {
           "name": "Architecture Design & Diagrams",
-          "instruction": "Create these files using write_artifact. Do NOT call read_dependency.\n\n1. FEASIBILITY_ARCHITECTURE.md — full architecture with system context, containers, components, API strategy, security, testing layers, deployment topology\n2. FEASIBILITY_ARCHITECTURE.json — structured architecture data\n3. DIAGRAMS.md — Mermaid.js C4 diagrams (system context, container, component, data flow, deployment)\n4. POC_SCOPE.md — 8-merchant pilot scope\n5. COST_MODELS.md — POC free-tier and production costing"
+          "instruction": "The PRD dependency summary is already in the context below. Call write_artifact to create ALL of these files:\n\n1. FEASIBILITY_ARCHITECTURE.md — full system design: context, containers, components, API-first strategy, caching, message queues, security, testing\n2. FEASIBILITY_ARCHITECTURE.json — structured data for the above\n3. DIAGRAMS.md — Mermaid.js C4 diagrams (system context, container, component, data flow, deployment)\n4. POC_SCOPE.md — 8-merchant pilot architecture (subset)\n5. COST_MODELS.md — POC free-tier and full production costing"
         },
         {
           "name": "Guardrails, Integration & Final Outputs",
-          "instruction": "Create these files using write_artifact. Do NOT call read_dependency.\n\n1. GUARDRAIL_VERIFICATION.md — all quality guardrails met\n2. STITCH_INTEGRATION_GUIDE.md — UI-API-DB integration patterns\n3. COMPLETION_SLIDE.pptx — summary slide deck\n4. DATA_EXPORT.xlsx — cost estimates and resource tables"
+          "instruction": "Call write_artifact to create ALL of these files:\n\n1. GUARDRAIL_VERIFICATION.md — all quality guardrails documented as met\n2. STITCH_INTEGRATION_GUIDE.md — UI-API-DB integration patterns\n3. COMPLETION_SLIDE.pptx — summary slide deck\n4. DATA_EXPORT.xlsx — cost estimates and resource tables"
         }
       ],
       "tools": [
-        { "type": "function", "function": { "name": "write_artifact", "description": "Write a deliverable file to agent sandbox", "parameters": { "type": "object", "properties": { "name": { "type": "string" }, "data": { "type": "string" }, "type": { "type": "string", "enum": ["markdown", "json", "pptx", "xlsx"] } }, "required": ["name", "data"] } } },
-        { "type": "function", "function": { "name": "read_dependency", "description": "Read upstream artifact", "parameters": { "type": "object", "properties": { "agent_id": { "type": "string" }, "artifact": { "type": "string" } }, "required": ["agent_id", "artifact"] } } },
+        { "type": "function", "function": { "name": "write_artifact", "description": "Write a deliverable file to agent sandbox. Use this for ALL output.", "parameters": { "type": "object", "properties": { "name": { "type": "string" }, "data": { "type": "string" }, "type": { "type": "string", "enum": ["markdown", "json", "pptx", "xlsx"] } }, "required": ["name", "data"] } } },
         { "type": "function", "function": { "name": "browse_files", "description": "List files in a directory", "parameters": { "type": "object", "properties": { "path": { "type": "string" } }, "required": ["path"] } } }
       ]
     },
