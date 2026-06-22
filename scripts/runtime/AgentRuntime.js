@@ -571,11 +571,11 @@ class AgentRuntime {
         consecutiveReadOnly++;
         const sandbox = resolveWorkspaceRoot(agentDef, this._agentId);
         // Regex: ## filename.ext or ### filename.ext at start of line
-        const headerRegex = /^#{1,3}\s+([\w-]+\.(md|json))[\s\S]*?(?=^#{1,3}\s+[\w-]+\.(?:md|json)|\z)/gm;
+        const headerRegex = /(?:^|\n)(#{1,3})\s+([\w-]+\.(md|json))([\s\S]*?)(?=\n#{1,3}\s+[\w-]+\.(?:md|json)|$)/g;
         let match;
         while ((match = headerRegex.exec(resp.content)) !== null) {
-          const name = match[1].trim();
-          const data = match[0].replace(/^#{1,3}\s+[\w-]+\.(?:md|json)\s*/m, '').trim();
+          const name = match[2].trim();
+          const data = match[3].trim();
           if (data.length > 0) {
             const filePath = path.join(ROOT, sandbox, name);
             const dir = path.dirname(filePath);
