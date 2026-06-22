@@ -477,6 +477,7 @@ class AgentRuntime {
         resp = await this.llm.complete(systemPrompt, messages, allTools, { timeout, signal: this._abortSignal || this._abortCtrl?.signal });
       } catch (err) {
         vlog.write('RUNTIME', agentDef.id, `LLM iter ${globalIterNum}/${MAX_ITERATIONS} | ERROR: ${err.message}`);
+        this._logToFile('ERR', `LLM iter ${globalIterNum}: ${err.message}`);
         this._logEvent({ type: 'llm_iteration_error', agent_id: agentDef.id, iteration: globalIterNum, error: err.message });
         if (i < MAX_ITERATIONS - 1) {
           await new Promise(r => setTimeout(r, 2000));
@@ -589,7 +590,6 @@ class AgentRuntime {
         // All required files written — accept content and stop looping
         break;
       } else {
-        // No content, no tool calls — inject re-prompt to push LLM toward write_artifact
         consecutiveEmpty++;
         if (consecutiveEmpty >= 3) {
           vlog.write('RUNTIME', agentDef.id, `Loop guard | ${consecutiveEmpty} consecutive empty responses — stopping`);
@@ -598,11 +598,13 @@ class AgentRuntime {
         const completedArtifacts = artifacts.concat(priorArtifacts || []);
         const missing = this._getMissingComplianceFiles(agentDef?.id, completedArtifacts, priorArtifacts);
         if (missing.length > 0) {
-          vlog.write('RUNTIME', agentDef.id, `Re-prompting for ${missing.length} missing files: ${missing.join(', ')}`);
-          messages.push({ role: 'user', content: `You must call write_artifact now for these files: ${missing.join(', ')}. Do NOT output text — only use write_artifact tool calls.` });
+          vlog.write('RUNTIME', agentDef.id, `Missing files: ${missing.join(', ')} — injecting tool-use reminder`);
+          messages.push({ role: 'system', content: `IMPORTANT: You have NOT yet called write_artifact for these required files: ${missing.join(', ')}. You MUST call write_artifact now with the complete content for each file. Use the <function_call> format. Do NOT describe what you will do — execute write_artifact immediately.` });
         } else {
-          vlog.write('RUNTIME', agentDef.id, `Empty response #${consecutiveEmpty} — retrying...`);
-          messages.push({ role: 'user', content: 'Please use write_artifact to save your output as files. Do NOT continue without calling write_artifact.' });
+          vlog.write('RUNTIME', agentDef.id, `Empty response #${consecutiveEmpty}`);
+          if (consecutiveEmpty === 1) {
+            messages.push({ role: 'system', content: 'You must call write_artifact to save your output as files. Call write_artifact now with the appropriate file name, content, and type.' });
+          }
         }
         continue;
       }
