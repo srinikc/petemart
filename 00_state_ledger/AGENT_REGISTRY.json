@@ -80,6 +80,7 @@
           "instruction": "Call write_artifact to create ALL of these files:\n\n1. GUARDRAIL_VERIFICATION.md — all quality guardrails documented as met\n2. STITCH_INTEGRATION_GUIDE.md — UI-API-DB integration patterns\n3. COMPLETION_SLIDE.pptx — summary slide deck\n4. DATA_EXPORT.xlsx — cost estimates and resource tables"
         }
       ],
+      "disable_tools": ["read_dependency"],
       "tools": [
         { "type": "function", "function": { "name": "write_artifact", "description": "Write a deliverable file to agent sandbox. Use this for ALL output.", "parameters": { "type": "object", "properties": { "name": { "type": "string" }, "data": { "type": "string" }, "type": { "type": "string", "enum": ["markdown", "json", "pptx", "xlsx"] } }, "required": ["name", "data"] } } },
         { "type": "function", "function": { "name": "browse_files", "description": "List files in a directory", "parameters": { "type": "object", "properties": { "path": { "type": "string" } }, "required": ["path"] } } }

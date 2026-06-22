@@ -379,7 +379,7 @@ class AgentRuntime {
       return { content: result.content, artifacts: result.artifacts, usage: result.usage };
     }
 
-    const defaultMaxIter = 24;
+    const defaultMaxIter = 40;
     const budget = Math.max(3, Math.floor(defaultMaxIter / checkpointCount));
     vlog.write('RUNTIME', agentDef.id, `Checkpoints: ${agentDef.checkpoints.map(c => c.name).join(' → ')} | budget=${budget} iter/phase`);
 
@@ -449,11 +449,14 @@ class AgentRuntime {
       return `${name}:${JSON.stringify(args)}`;
     }
 
-    // Merge agent tools with common tools
-    const agentTools = agentDef.tools || [];
+    // Merge agent tools with common tools, respecting disable_tools
+    const disabled = new Set(agentDef.disable_tools || []);
+    const agentToolNames = new Set((agentDef.tools || []).map(t => t.function?.name).filter(Boolean));
     const commonTools = this._commonTools();
-    const toolNames = new Set(agentTools.map(t => t.function?.name).filter(Boolean));
-    const allTools = [...agentTools, ...commonTools.filter(t => !toolNames.has(t.function?.name))];
+    const allTools = [...(agentDef.tools || []), ...commonTools.filter(t => {
+      const name = t.function?.name;
+      return name && !disabled.has(name) && !agentToolNames.has(name);
+    })];
 
     for (let i = 0; i < MAX_ITERATIONS; i++) {
       iterationsUsed = i + 1;
