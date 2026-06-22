@@ -859,9 +859,9 @@ class AgentRuntime {
         const depPath = path.join(ROOT, dep);
         if (fs.existsSync(depPath)) {
           const full = fs.readFileSync(depPath, 'utf-8');
-          const MAX = 8000;
-          const content = full.length > MAX ? full.slice(0, MAX) + '\n[... truncated ' + (full.length - MAX) + ' more chars ...]' : full;
-          parts.push(`--- ${dep} ---\n${content}`);
+          // Summary: show filename and key stats instead of raw content
+          const keyInfo = `File: ${dep}\nSize: ${(full.length / 1024).toFixed(1)} KB\nType: ${dep.endsWith('.json') ? 'JSON' : 'Markdown'}\n\nFirst 500 chars:\n${full.slice(0, 500)}${full.length > 500 ? '\n[...]' : ''}`;
+          parts.push(`--- ${dep} ---\n${keyInfo}`);
         }
       } catch {}
     }
