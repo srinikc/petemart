@@ -857,7 +857,11 @@ class AgentRuntime {
     for (const dep of deps) {
       try {
         const depPath = path.join(ROOT, dep);
-        if (fs.existsSync(depPath)) parts.push(`--- ${dep} ---\n${fs.readFileSync(depPath, 'utf-8').slice(0, 50000)}`);
+        if (fs.existsSync(depPath)) {
+          const full = fs.readFileSync(depPath, 'utf-8');
+          const truncated = full.length > 3000 ? full.slice(0, 3000) + '\n[... truncated ' + (full.length - 3000) + ' more chars ...]' : full;
+          parts.push(`--- ${dep} ---\n${truncated}`);
+        }
       } catch {}
     }
     return parts.join('\n\n');
