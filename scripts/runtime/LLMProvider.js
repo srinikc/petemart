@@ -145,12 +145,15 @@ class LLMProvider {
     }
 
     // For OpenAI-compatible providers: need both apiKey + baseURL
+    // NOTE: opencode-go and opencode providers use CLI mode instead of HTTP
+    // because the DeepSeek model doesn't handle multi-turn native tool calling well.
     if (entry.cls === LLMOpenAIProvider) {
-      if (apiKey && baseURL) {
+      const useCLI = provider === 'opencode-go' || provider === 'opencode';
+      if (apiKey && baseURL && !useCLI) {
         vlog.write('LLM', 'CONFIG', `OpenAI-compatible: ${provider}/${model} via ${baseURL}`);
         return { backend: new LLMOpenAIProvider({ apiKey, model, baseURL, toolChoice: 'auto' }), provider, model };
       }
-      vlog.write('LLM', 'CONFIG', `No API key for ${provider}, falling back to CLI mode`);
+      vlog.write('LLM', 'CONFIG', `${provider}/${model} — using CLI mode (opencode-go uses stdin pipe for reliable tool calling)`);
       return { backend: new LLMOpenCodeProvider({ provider, model }), provider, model };
     }
 
