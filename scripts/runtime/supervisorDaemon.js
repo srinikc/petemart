@@ -194,8 +194,8 @@ async function runCycle() {
     if (depAgent.status === 'pending' || depAgent.status === 'idle') continue;
     if (depAgent.status === 'approved' || depAgent.status === 'completed') continue;
     if (depAgent.status === 'in_progress' || depAgent.status === 'active') continue;
-    // Don't re-activate agents that ran but produced zero artifacts (prevents re-launch loop)
-    if (depAgent.status === 'failed' && (depAgent.execution_count || 0) > 0 && (!depAgent.artifacts_emitted || depAgent.artifacts_emitted.length === 0)) {
+    // Don't re-activate agents that have already run (prevents re-launch loops)
+    if (depAgent.status === 'failed' && (depAgent.execution_count || 0) > 0) {
       removedCount++;
       continue;
     }

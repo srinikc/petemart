@@ -693,17 +693,14 @@ class AgentRuntime {
       const currentArtifacts = (result.artifacts || []).filter(a => a && a.name);
       const checkPassed = currentArtifacts.length > 0 ? this._verifyCompliance(agent, agentDef) : false;
       if (!checkPassed && currentArtifacts.length === 0) {
-        // Don't override a more specific error already set by the runtime
         if (!agent.last_error) agent.last_error = 'No artifacts produced — LLM did not call write_artifact';
+        // Clear stale artifacts to prevent daemon downstream queue from re-launching
+        agent.artifacts_emitted = [];
       }
       if (checkPassed) {
         agent.status = 'approved';
       } else if (agent.status !== 'failed' && agent.status !== 'cancelled') {
         agent.status = (currentArtifacts.length > 0) ? 'awaiting_approval' : 'failed';
-      }
-      // Preserve last known artifacts even on empty runs (after compliance, for reference only)
-      if (result.artifacts?.length > 0) {
-        agent.last_artifact_emitted = agent.artifacts_emitted;
       }
       this._saveState(state);
     }
