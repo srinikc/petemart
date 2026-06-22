@@ -549,7 +549,7 @@ class AgentRuntime {
               if (name === 'write_artifact') {
                 if (toolResult?.artifact) {
                   artifacts.push(toolResult.artifact);
-                  vlog.write('RUNTIME', agentDef.id, `Artifact tracked: ${toolResult.artifact.name}`);
+                  vlog.write('RUNTIME', agentDef.id, `Artifact tracked: ${toolResult.artifact.name} (${((Date.now() - iterStart) / 1000).toFixed(1)}s)`);
                 } else {
                   vlog.write('RUNTIME', agentDef.id, `Artifact NOT tracked: toolResult.artifact is missing`);
                 }
@@ -583,7 +583,7 @@ class AgentRuntime {
             fs.writeFileSync(filePath, data, 'utf-8');
             const ext = name.split('.').pop();
             artifacts.push({ name, data, type: ext === 'json' ? 'json' : 'markdown' });
-            vlog.write('RUNTIME', agentDef.id, `Header-parsed artifact: ${name} (${data.length} bytes)`);
+            vlog.write('RUNTIME', agentDef.id, `Header-parsed artifact: ${name} (${data.length} bytes, ${((Date.now() - iterStart) / 1000).toFixed(1)}s)`);
           }
         }
         const stillMissing = this._getMissingComplianceFiles(agentDef?.id, artifacts, priorArtifacts);
@@ -668,7 +668,7 @@ class AgentRuntime {
           execSync(`python -c "${pyScript.replace(/"/g, '\\"').replace('FILEPATH', fp.replace(/\\/g, '/'))}"`, { stdio: 'pipe', timeout: 10000, windowsHide: true });
           if (fs.existsSync(fp) && fs.statSync(fp).size > 0) {
             result.artifacts.push({ name: 'DATA_EXPORT.xlsx', data: '', type: 'xlsx' });
-            vlog.write('RUNTIME', agentId, 'Generated DATA_EXPORT.xlsx with cost data');
+            vlog.write('RUNTIME', agentId, `Generated DATA_EXPORT.xlsx with cost data (${((Date.now() - startTime) / 1000).toFixed(0)}s from run start)`);
           }
         } catch (pyErr) { vlog.write('RUNTIME', agentId, `xlsx fallback failed: ${pyErr.message}`); }
       }
@@ -682,7 +682,7 @@ class AgentRuntime {
           execSync(`python -c "${pyScript.replace(/"/g, '\\"').replace('FILEPATH', fp.replace(/\\/g, '/'))}"`, { stdio: 'pipe', timeout: 10000, windowsHide: true });
           if (fs.existsSync(fp) && fs.statSync(fp).size > 0) {
             result.artifacts.push({ name: 'COMPLETION_SLIDE.pptx', data: '', type: 'pptx' });
-            vlog.write('RUNTIME', agentId, 'Generated COMPLETION_SLIDE.pptx');
+            vlog.write('RUNTIME', agentId, `Generated COMPLETION_SLIDE.pptx (${((Date.now() - startTime) / 1000).toFixed(0)}s from run start)`);
           }
         } catch (pyErr) { vlog.write('RUNTIME', agentId, `pptx fallback failed: ${pyErr.message}`); }
       }
