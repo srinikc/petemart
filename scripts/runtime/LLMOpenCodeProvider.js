@@ -26,8 +26,9 @@ class LLMOpenCodeProvider {
       return `${role}: ${typeof m.content === 'string' ? m.content : JSON.stringify(m.content)}`;
     }).join('\n');
 
-    const args = ['run', fullPrompt, '--model', `${this.provider}/${this.model}`];
+    // Use stdin pipe instead of command-line argument to avoid Windows 8191-char limit
     const isWin = process.platform === 'win32';
+    const args = ['run', '--model', `${this.provider}/${this.model}`];
 
     return new Promise((resolve, reject) => {
       const opts = {
@@ -36,6 +37,7 @@ class LLMOpenCodeProvider {
         windowsHide: true,
         shell: isWin,
         timeout: options.timeout || 300000,
+        stdio: ['pipe', 'pipe', 'pipe'],
       };
 
       const proc = spawn('opencode', args, opts);
@@ -45,6 +47,8 @@ class LLMOpenCodeProvider {
       proc.stdout.on('data', (chunk) => { stdout += chunk; });
       proc.stderr.on('data', (chunk) => { stderr += chunk; });
       proc.on('error', (err) => reject(err));
+      proc.stdin.write(fullPrompt);
+      proc.stdin.end();
 
       const timer = setTimeout(() => {
         proc.kill();
@@ -65,17 +69,13 @@ class LLMOpenCodeProvider {
 
   async emergencyCall(systemPrompt, messages, options) {
     const { spawnSync } = require('child_process');
-    const maxChars = 8000;
-    let truncated = systemPrompt;
-    if (truncated.length > maxChars) {
-      const keepStart = Math.floor(maxChars * 0.6);
-      const keepEnd = Math.floor(maxChars * 0.2);
-      truncated = truncated.slice(0, keepStart) + '\n[... truncated to ' + maxChars + ' chars ...]\n' + truncated.slice(truncated.length - keepEnd);
-    }
-
-    const args = ['run', truncated, '--model', `${this.provider}/${this.model}`];
+    const args = ['run', '--model', `${this.provider}/${this.model}`];
+    const input = systemPrompt + '\n\n' + (messages || []).map(m => {
+      const role = m.role === 'assistant' ? 'Assistant' : 'User';
+      return `${role}: ${typeof m.content === 'string' ? m.content : JSON.stringify(m.content)}`;
+    }).join('\n');
     try {
-      const result = spawnSync('opencode', args, { encoding: 'utf-8', maxBuffer: 10 * 1024 * 1024, windowsHide: true, shell: true, timeout: options.timeout || 300000 });
+      const result = spawnSync('opencode', args, { encoding: 'utf-8', maxBuffer: 10 * 1024 * 1024, windowsHide: true, shell: true, timeout: options.timeout || 300000, input });
       return { content: result.stdout?.trim() || '', toolCalls: [], usage: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 } };
     } catch (err) {
       return { content: '', toolCalls: [], usage: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 } };
