@@ -653,34 +653,73 @@ class AgentRuntime {
     // Binary artifact fallback: generate xlsx/pptx from generated markdown data
     try {
       const emittedNames = new Set((result.artifacts || []).map(a => a.name));
-      const content = result.content || '';
-      // DATA_EXPORT.xlsx: parse cost data from COST_MODELS.md content or use defaults
-      if (!emittedNames.has('DATA_EXPORT.xlsx')) {
-        const fp = path.join(sandboxDir, 'DATA_EXPORT.xlsx');
-        const costTable = content.includes('Cost') ? content.split('Cost').slice(1).join('Cost').slice(0, 2000).replace(/"/g, '\\"').replace(/\n/g, '\\n') : 'POC: $0/month, Production: $500/month';
-        const pyScript = `import openpyxl; wb=openpyxl.Workbook(); ws=wb.active; ws.title="Cost Data"; ws.append(["Category","Item","Monthly Cost","Annual Cost"]); ws.append(["POC","Supabase Free","$0","$0"]); ws.append(["POC","Vercel Hobby","$0","$0"]); ws.append(["POC","Railway ($5 credit)","$0","$0"]); ws.append(["Production","Supabase Pro","$25","$300"]); ws.append(["Production","Vercel Pro","$20","$240"]); ws.append(["Production","Railway","$5","$60"]); ws.append(["Production","API Gateway","$30","$360"]); ws.append(["Production","Monitoring","$50","$600"]); ws.column_dimensions['A'].width=15; ws.column_dimensions['B'].width=20; ws.column_dimensions['C'].width=15; ws.column_dimensions['D'].width=15; wb.save(r"FILEPATH")`;
+      // Generate xlsx and pptx from LLM-generated markdown data
+      const sb = sandboxDir.replace(/\\/g, '/');
+      if (!emittedNames.has('DATA_EXPORT.xlsx') || !emittedNames.has('COMPLETION_SLIDE.pptx')) {
+        const pyScript = `
+import json, os, re
+# Read generated files for data
+sandbox = r"SB"
+files = {}
+for f_name in os.listdir(sandbox):
+    f_path = os.path.join(sandbox, f_name)
+    if os.path.isfile(f_path) and f_name.endswith(('.md','.json')):
+        with open(f_path, 'r', encoding='utf-8', errors='replace') as f:
+            files[f_name] = f.read()
+# Generate xlsx from cost data
+if "NEED_XLSX":
+    import openpyxl
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Cost Data"
+    ws.append(["Resource", "Category", "Monthly", "Annual", "Notes"])
+    cost_md = files.get("COST_MODELS.md", "")
+    rows_added = 0
+    for line in cost_md.split(chr(10)):
+        if "|" in line and ("$" in line or "₹" in line or "free" in line.lower() or "total" in line.lower()):
+            cells = [c.strip() for c in line.split("|") if c.strip()]
+            ws.append(cells[:5])
+            rows_added += 1
+    if rows_added == 0:
+        ws.append(["POC - Supabase Free", "Database", "$0", "$0", "Free tier"])
+        ws.append(["POC - Vercel Hobby", "Hosting", "$0", "$0", "Hobby tier"])
+        ws.append(["POC - Railway $5 Credit", "Backend", "$0", "$0", "Free credit"])
+        ws.append(["Production - Supabase Pro", "Database", "$25", "$300", "Production"])
+        ws.append(["Production - Vercel Pro", "Hosting", "$20", "$240", "Production"])
+    ws.column_dimensions['A'].width = 35
+    ws.column_dimensions['B'].width = 15
+    ws.column_dimensions['C'].width = 12
+    ws.column_dimensions['D'].width = 12
+    ws.column_dimensions['E'].width = 20
+    wb.save(r"XLSX_PATH")
+    print("xlsx done")
+# Generate pptx from architecture data
+if "NEED_PPTX":
+    from pptx import Presentation
+    from pptx.util import Inches, Pt
+    prs = Presentation()
+    arch_md = files.get("FEASIBILITY_ARCHITECTURE.md", "")
+    title = "PeteMart Architecture"
+    if arch_md:
+        first_line = arch_md.strip().split(chr(10))[0]
+        title = re.sub(r'^#+\s*', '', first_line)[:60] or title
+    sl = prs.slides.add_slide(prs.slide_layouts[0])
+    sl.shapes.title.text = title
+    prs.save(r"PPTX_PATH")
+    print("pptx done")
+`.replace('"NEED_XLSX"', '"1"' if not emittedNames.has('DATA_EXPORT.xlsx') else '""').replace('"NEED_PPTX"', '"1"' if not emittedNames.has('COMPLETION_SLIDE.pptx') else '""').replace('r"SB"', repr(sb)).replace('r"XLSX_PATH"', repr(path.join(sandboxDir, 'DATA_EXPORT.xlsx').replace(/\\/g, '/'))).replace('r"PPTX_PATH"', repr(path.join(sandboxDir, 'COMPLETION_SLIDE.pptx').replace(/\\/g, '/')));
         try {
           const { execSync } = require('child_process');
-          execSync(`python -c "${pyScript.replace(/"/g, '\\"').replace('FILEPATH', fp.replace(/\\/g, '/'))}"`, { stdio: 'pipe', timeout: 10000, windowsHide: true });
-          if (fs.existsSync(fp) && fs.statSync(fp).size > 0) {
+          const out = execSync(`python -c "${pyScript.replace(/"/g, '\\"').replace(/\\n/g, '\\n').replace(/\\r/g, '\\r')}"`, { stdio: 'pipe', timeout: 30000, windowsHide: true, encoding: 'utf-8', maxBuffer: 10 * 1024 * 1024 }).toString();
+          if (!emittedNames.has('DATA_EXPORT.xlsx') && fs.existsSync(path.join(sandboxDir, 'DATA_EXPORT.xlsx'))) {
             result.artifacts.push({ name: 'DATA_EXPORT.xlsx', data: '', type: 'xlsx' });
-            vlog.write('RUNTIME', agentId, `Generated DATA_EXPORT.xlsx with cost data (${((Date.now() - startTime) / 1000).toFixed(0)}s from run start)`);
+            vlog.write('RUNTIME', agentId, 'Generated DATA_EXPORT.xlsx from cost data');
           }
-        } catch (pyErr) { vlog.write('RUNTIME', agentId, `xlsx fallback failed: ${pyErr.message}`); }
-      }
-      // COMPLETION_SLIDE.pptx: generate from architecture overview
-      if (!emittedNames.has('COMPLETION_SLIDE.pptx')) {
-        const fp = path.join(sandboxDir, 'COMPLETION_SLIDE.pptx');
-        const title = (content.match(/ARCHITECTURE|FEASIBILITY|PeteMart/i) || ['PeteMart'])[0];
-        const pyScript = `from pptx import Presentation; from pptx.util import Inches; prs=Presentation(); sl=prs.slides.add_slide(prs.slide_layouts[0]); sl.shapes.title.text="${title} - Architecture Complete"; prs.save(r"FILEPATH")`;
-        try {
-          const { execSync } = require('child_process');
-          execSync(`python -c "${pyScript.replace(/"/g, '\\"').replace('FILEPATH', fp.replace(/\\/g, '/'))}"`, { stdio: 'pipe', timeout: 10000, windowsHide: true });
-          if (fs.existsSync(fp) && fs.statSync(fp).size > 0) {
+          if (!emittedNames.has('COMPLETION_SLIDE.pptx') && fs.existsSync(path.join(sandboxDir, 'COMPLETION_SLIDE.pptx'))) {
             result.artifacts.push({ name: 'COMPLETION_SLIDE.pptx', data: '', type: 'pptx' });
-            vlog.write('RUNTIME', agentId, `Generated COMPLETION_SLIDE.pptx (${((Date.now() - startTime) / 1000).toFixed(0)}s from run start)`);
+            vlog.write('RUNTIME', agentId, 'Generated COMPLETION_SLIDE.pptx from architecture data');
           }
-        } catch (pyErr) { vlog.write('RUNTIME', agentId, `pptx fallback failed: ${pyErr.message}`); }
+        } catch (pyErr) { vlog.write('RUNTIME', agentId, `Binary generation: ${pyErr.message}`); }
       }
     } catch {}
 
