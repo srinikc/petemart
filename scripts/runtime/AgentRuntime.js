@@ -73,7 +73,7 @@ function localTimestamp() {
 function dynamicLLMTimeout(promptLength) {
   const base = 120000;
   const extra = promptLength > 5000 ? Math.floor((promptLength - 5000) / 1000) * 500 : 0;
-  return Math.min(base + extra, 300000);
+  return Math.min(base + extra, 600000);
 }
 
 class AgentRuntime {
