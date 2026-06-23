@@ -849,7 +849,7 @@ class AgentRuntime {
     let prompt = agentDef.system_prompt || '';
 
     // Add dependency mapping so LLM knows correct agent_id for read_dependency calls
-    const depMapping = this._getDependencyMapping(agentDef);
+    const depMapping = (agentDef.disable_tools || []).includes('read_dependency') ? '' : this._getDependencyMapping(agentDef);
     if (depMapping) prompt += `\n\n## Available Upstream Dependencies\n${depMapping}`;
 
     prompt += `\n\n## Engineering Workflow\nFollow this build-verify loop for every change:\n1. PLAN: Understand what needs to be done. List the files you need to create or modify.\n2. TEST FIRST: Write the test or assertion BEFORE implementing the logic.\n3. BUILD: Implement the logic to make the test pass.\n4. VERIFY: Confirm the output is correct. Do NOT exit without verification.\n5. NO EXIT WITHOUT VERIFICATION: Every file must be written using write_artifact and verified.`;
