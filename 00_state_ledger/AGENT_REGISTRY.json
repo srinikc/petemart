@@ -80,10 +80,8 @@
           "instruction": "Output EACH file with a ## header:\n\n## GUARDRAIL_VERIFICATION.md\nAll quality guardrails documented as met\n\n## STITCH_INTEGRATION_GUIDE.md\nUI-API-DB integration patterns\n\nBinary files (COMPLETION_SLIDE.pptx, DATA_EXPORT.xlsx) will be generated automatically."
         }
       ],
-      "disable_tools": ["read_dependency", "browse_files", "read_file"],
-      "tools": [
-        { "type": "function", "function": { "name": "write_artifact", "description": "Write a file to disk. Use <function_call> tags. Required: name (filename), data (content), type (md/json).", "parameters": { "type": "object", "properties": { "name": { "type": "string" }, "data": { "type": "string" }, "type": { "type": "string", "enum": ["markdown", "json"] } }, "required": ["name", "data"] } } }
-      ]
+      "disable_tools": ["read_dependency", "browse_files", "read_file", "write_artifact"],
+      "tools": []
     },
     "04_prototype_agent": {
       "role": "Senior Rapid-Prototyping Engineer",
