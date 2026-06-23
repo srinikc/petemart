@@ -7,7 +7,7 @@ class LLMOpenAIProvider {
     this.apiKey = options.apiKey || process.env.LLM_API_KEY || process.env.OPENAI_API_KEY || '';
     this.model = options.model || process.env.LLM_MODEL || 'gpt-4o';
     this.baseURL = (options.baseURL || process.env.LLM_BASE_URL || 'https://api.openai.com/v1').replace(/\/+$/, '');
-    this.maxTokens = options.maxTokens || 32000;
+    this.maxTokens = options.maxTokens || 16000;
     this.toolChoice = options.toolChoice || 'auto';   // 'auto' works with all providers; 'required' may fail on DeepSeek
     this.skipNativeTools = options.skipNativeTools === true;
     this._initialized = false;
