@@ -71,8 +71,8 @@ function localTimestamp() {
 }
 
 function dynamicLLMTimeout(promptLength) {
-  const base = 120000;
-  const extra = promptLength > 5000 ? Math.floor((promptLength - 5000) / 1000) * 500 : 0;
+  const base = 300000;
+  const extra = promptLength > 5000 ? Math.floor((promptLength - 5000) / 1000) * 1000 : 0;
   return Math.min(base + extra, 600000);
 }
 
