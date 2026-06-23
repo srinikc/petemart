@@ -590,8 +590,8 @@ class AgentRuntime {
         }
         const stillMissing = this._getMissingComplianceFiles(agentDef?.id, artifacts, priorArtifacts);
         if (stillMissing.length > 0 && i < MAX_ITERATIONS - 1) {
-          vlog.write('RUNTIME', agentDef.id, `Still missing: ${stillMissing.join(', ')} — re-prompting`);
-          messages.push({ role: 'system', content: `Output EACH remaining file with a ## header. Only text, no tool calls:\n${stillMissing.map(f => '## ' + f).join('\n[content here]\n')}` });
+          vlog.write('RUNTIME', agentDef.id, `Still missing: ${stillMissing.join(', ')} — re-prompting headers`);
+          messages.push({ role: 'system', content: `Output EACH remaining file with a ## header. Example:\n${stillMissing.map(f => '## ' + f + '\n[write content here]').join('\n\n')}` });
           continue;
         }
         break;
@@ -604,12 +604,12 @@ class AgentRuntime {
         const completedArtifacts = artifacts.concat(priorArtifacts || []);
         const missing = this._getMissingComplianceFiles(agentDef?.id, completedArtifacts, priorArtifacts);
         if (missing.length > 0) {
-          vlog.write('RUNTIME', agentDef.id, `Missing files: ${missing.join(', ')} — injecting tool-use reminder`);
-          messages.push({ role: 'system', content: `IMPORTANT: You have NOT yet called write_artifact for these required files: ${missing.join(', ')}. You MUST call write_artifact now with the complete content for each file. Use the <function_call> format. Do NOT describe what you will do — execute write_artifact immediately.` });
+          vlog.write('RUNTIME', agentDef.id, `Missing files: ${missing.join(', ')} — re-prompting headers`);
+          messages.push({ role: 'system', content: `Output EACH remaining file with a ## header. Only text, no tool calls:\n${missing.map(f => '## ' + f + '\n[content]').join('\n\n')}` });
         } else {
           vlog.write('RUNTIME', agentDef.id, `Empty response #${consecutiveEmpty}`);
           if (consecutiveEmpty === 1) {
-            messages.push({ role: 'system', content: 'You must call write_artifact to save your output as files. Call write_artifact now with the appropriate file name, content, and type.' });
+            messages.push({ role: 'system', content: 'Output the required files with ## headers. Example:\n## FEASIBILITY_ARCHITECTURE.md\nContent here...' });
           }
         }
         continue;
