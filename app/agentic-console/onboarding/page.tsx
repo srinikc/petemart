@@ -9,9 +9,14 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { getPlatformConfig } from "@/lib/platform-config";
+
+const platform = getPlatformConfig();
 
 const LLM_CATEGORIES = [
   { id: 'opencode-go', label: 'OpenAI Compatible', desc: 'OpenAI, DeepSeek, OpenRouter, vLLM, any OpenAI-compatible API' },
+  { id: 'openrouter', label: 'OpenRouter', desc: 'DeepSeek, OpenAI, Anthropic, Google models via OpenRouter' },
+  { id: 'opencode', label: 'OpenCode Zen', desc: 'OpenCode-managed models (DeepSeek, etc.)' },
   { id: 'google', label: 'Google Gemini', desc: 'Gemini 2.0 Flash, Gemini 1.5 Pro' },
   { id: 'anthropic', label: 'Anthropic Claude', desc: 'Claude 3.5 Sonnet, Claude 3 Haiku, Claude 3 Opus' },
   { id: 'ollama', label: 'Ollama (Local)', desc: 'Run local models via Ollama' },
@@ -19,6 +24,8 @@ const LLM_CATEGORIES = [
 
 const MODEL_SUGGESTIONS: Record<string, string[]> = {
   'opencode-go': 'deepseek-v4-flash, gpt-4o, gpt-4o-mini, deepseek-coder-v2'.split(', '),
+  'openrouter': 'deepseek/deepseek-v4-flash, deepseek/deepseek-r1, openai/gpt-4o, anthropic/claude-sonnet-4-5, google/gemini-2.0-flash'.split(', '),
+  'opencode': 'deepseek-v4-flash-free, deepseek-v4-flash'.split(', '),
   'google': 'gemini-2.0-flash, gemini-2.0-flash-lite, gemini-1.5-pro'.split(', '),
   'anthropic': 'claude-3-5-sonnet-20241022, claude-3-haiku-20240307, claude-3-opus-20240229'.split(', '),
   'ollama': 'llama3, mixtral, codellama, mistral'.split(', '),
@@ -90,10 +97,10 @@ export default function EnterpriseOnboardingCockpit() {
           </div>
           <div className="flex flex-col">
             <span className="font-black text-xl tracking-tighter bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent uppercase">
-              PETEMART
+              {platform.appName}
             </span>
             <span className="text-[10px] text-indigo-400 font-bold uppercase tracking-[0.2em] -mt-1">
-              Enterprise Builder
+              {platform.appTagline}
             </span>
           </div>
         </div>

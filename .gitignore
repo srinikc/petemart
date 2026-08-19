@@ -154,3 +154,25 @@ scratch/
 agent_token_usage_log.csv
 opencode_conversation_*.md
 opencode_pricing_reference.*
+
+# Framework LLM credentials (onboarding config — NEVER commit API keys)
+00_state_ledger/llm_config.json
+
+# Tool caches / temp / junk
+.understand-anything/
+backup/
+*.err
+*.err.log
+*.log
+test.txt
+test2.txt
+batch-*.json
+__tests__/runtime/_test_tmp/
+agents/03_execution_workspace/null/
+.qa-dashboard-pid
+tsconfig.tsbuildinfo
+*.tsbuildinfo
+.cache/
+.astro/
+oldartifacts/
+00_state_ledger/prompt_snapshots/

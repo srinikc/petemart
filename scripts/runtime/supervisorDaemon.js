@@ -401,7 +401,7 @@ function launchAgentTask(agentId, state) {
     dependencies_artifacts: [],
     deliverables: registryDef.deliverables || {},
     sandbox_dir: registryDef.workspace_root || `agents/03_execution_workspace/${agentId}/`,
-    prompt_source: `.opencode/agents/${agentId}.md`,
+    prompt_source: `00_state_ledger/AGENT_REGISTRY.json → agents.${agentId}.system_prompt`,
     user_instruction: agent?.user_instruction || null,
     compliance_checks: agent?.compliance_checklist || [],
     launched_at: new Date().toISOString(),

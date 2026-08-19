@@ -9,6 +9,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from 'next/link';
+import { getPlatformConfig } from "@/lib/platform-config";
+
+const platform = getPlatformConfig();
 
 export default function ProjectPortfolioMockup() {
   const projects = [
@@ -23,7 +26,7 @@ export default function ProjectPortfolioMockup() {
     },
     { 
       id: 'petemart-mobile', 
-      name: 'PeteMart Mobile App', 
+      name: `${platform.appName} Mobile`, 
       status: 'Paused', 
       progress: 28, 
       agents: '4/16', 

@@ -2,26 +2,27 @@
   "project_metadata": {
     "project_name": "PeteMart",
     "version": "2.0",
-    "factory_root": "C:/Users/ADMIN/Documents/Srinikc/AI Products/petemart-agentic-framework",
+    "factory_root": "C:/Users/ADMIN/Documents/Srinikc/AI Products/product-forge-agentic",
     "total_agents": 16,
     "supervisor_agent_version": "1.0"
   },
   "supervisor_control": {
     "agent_00_supervisor": {
       "status": "active",
-      "current_action": "Launched 1 agent(s)",
-      "next_agent_to_dispatch": "05_program_mgmt_agent",
+      "current_action": "No eligible agents — waiting for approvals or dependencies",
+      "next_agent_to_dispatch": "07a_ui_agent",
       "dispatch_queue": [
-        "05_program_mgmt_agent",
-        "06_infra_devops_agent"
+        "07a_ui_agent",
+        "07b_api_agent",
+        "07c_backend_db_agent"
       ],
-      "last_cycle_timestamp": "2026-06-22T12:18:12.614Z",
+      "last_cycle_timestamp": "2026-08-19T16:12:13.600Z",
       "cool_down_seconds": 5,
       "last_error": null,
-      "daemon_last_heartbeat": 1782130692614,
+      "daemon_last_heartbeat": 1787155933600,
       "daemon_status": "running",
-      "cycle_count": 16643,
-      "last_health_audit_at": "2026-06-22T12:18:13.232Z",
+      "cycle_count": 17183,
+      "last_health_audit_at": "2026-08-19T16:12:13.873Z",
       "llm_override": {
         "provider": "openrouter",
         "model": "deepseek/deepseek-v4-flash",
@@ -73,7 +74,7 @@
           "Did not use PR template with checkboxes (all PRs used freeform descriptions)",
           "Did not update STATE_MATRIX.json with PR references after merge"
         ],
-        "corrective_action": "PR #8 \u00e2\u20ac\u201d adds server-side CI on feature push, strengthens AGENTS.md rules, tracks PR references in STATE_MATRIX.json"
+        "corrective_action": "PR #8 â€” adds server-side CI on feature push, strengthens AGENTS.md rules, tracks PR references in STATE_MATRIX.json"
       },
       "pr_tracking": {
         "pr_list": [
@@ -163,7 +164,7 @@
           },
           {
             "number": 9,
-            "title": "fix(deploy): smart trigger \u00e2\u20ac\u201d only on infra changes or manual dispatch",
+            "title": "fix(deploy): smart trigger â€” only on infra changes or manual dispatch",
             "branch": "feature/deploy-smart-trigger",
             "merged_at": "2026-06-04T09:30:00Z",
             "ai_assistant_compliant": false,
@@ -265,7 +266,7 @@
         "approved": true,
         "approved_by": "Human Gatekeeper (Srinikc)",
         "approved_at": "2026-05-30T18:45:00Z",
-        "notes": "Approved. \u00e2\u201a\u00b90/month POC infra cost confirmed. Opencode/DeepSeek platform replaces Gemini AI (no additional cost)."
+        "notes": "Approved. â‚¹0/month POC infra cost confirmed. Opencode/DeepSeek platform replaces Gemini AI (no additional cost)."
       },
       {
         "gate_id": "GATE-MVP-01",
@@ -289,22 +290,22 @@
     ]
   },
   "pipeline_control": {
-    "current_phase": "phase_two",
+    "current_phase": "phase_three",
     "active_agents": [],
     "is_pipeline_paused": false,
     "stuck_agent_check_enabled": true,
     "stuck_agent_timeout_ms": 300000,
-    "last_sync_timestamp": "2026-06-21T15:33:03.370Z",
+    "last_sync_timestamp": "2026-08-18T14:16:35.091Z",
     "dashboard_summary": {
       "total_agents": 19,
       "agents_completed": 6,
       "agents_in_progress": 0,
-      "agents_pending": 7,
-      "agents_awaiting_review": 5,
+      "agents_pending": 6,
+      "agents_awaiting_review": 6,
       "agents_failed": 0,
       "overall_progress_pct": 32,
-      "last_milestone": "Pipeline unblocked: 03\u00e2\u2020\u2019approved, 04\u00e2\u2020\u2019approved, 05/06\u00e2\u2020\u2019approved. Phase 2 ready.",
-      "last_updated": "2026-06-11T10:28:12.034Z"
+      "last_milestone": "State reconciled 2026-08-18: 03/04/05/06 restored to approved. Phase 3 execution agents (07a-09) produced artifacts, awaiting HITL review.",
+      "last_updated": "2026-08-18T14:16:35.091Z"
     }
   },
   "agent_states": {
@@ -336,63 +337,63 @@
         },
         {
           "id": "SUP-003",
-          "check": "feature_branch_workflow_enforced() \u00e2\u20ac\u201d all code agents use feature branches \u00e2\u2020\u2019 PR \u00e2\u2020\u2019 CI \u00e2\u2020\u2019 merge cycle",
+          "check": "feature_branch_workflow_enforced() â€” all code agents use feature branches â†’ PR â†’ CI â†’ merge cycle",
           "type": "workflow",
           "required": true,
           "passed": true
         },
         {
           "id": "SUP-004",
-          "check": "no_direct_pushes_to_develop_main() \u00e2\u20ac\u201d pre-push hook blocks direct pushes to protected branches",
+          "check": "no_direct_pushes_to_develop_main() â€” pre-push hook blocks direct pushes to protected branches",
           "type": "workflow",
           "required": true,
           "passed": true
         },
         {
           "id": "SUP-005",
-          "check": "pr_template_exists() \u00e2\u20ac\u201d .github/PULL_REQUEST_TEMPLATE.md is present",
+          "check": "pr_template_exists() â€” .github/PULL_REQUEST_TEMPLATE.md is present",
           "type": "artifact",
           "required": true,
           "passed": true
         },
         {
           "id": "SUP-006",
-          "check": "ci_pipeline_configured_for_prs() \u00e2\u20ac\u201d CI triggers on PR to develop/main",
+          "check": "ci_pipeline_configured_for_prs() â€” CI triggers on PR to develop/main",
           "type": "workflow",
           "required": true,
           "passed": true
         },
         {
           "id": "SUP-007",
-          "check": "ai_assistant_follows_workflow() \u00e2\u20ac\u201d any opencode-driven changes use feature branch + PR + pre-commit hook + PR template + STATE_MATRIX update",
+          "check": "ai_assistant_follows_workflow() â€” any opencode-driven changes use feature branch + PR + pre-commit hook + PR template + STATE_MATRIX update",
           "type": "workflow",
           "required": true,
           "passed": true,
-          "compliance_audit_note": "Partially compliant before PR #8. Feature branches and PRs were used, but --no-verify bypassed pre-commit, PR template was skipped, and STATE_MATRIX was not updated. PR #8 is the first fully compliant PR \u00e2\u20ac\u201d committed without --no-verify, uses PR template checkboxes, and updates STATE_MATRIX with PR reference."
+          "compliance_audit_note": "Partially compliant before PR #8. Feature branches and PRs were used, but --no-verify bypassed pre-commit, PR template was skipped, and STATE_MATRIX was not updated. PR #8 is the first fully compliant PR â€” committed without --no-verify, uses PR template checkboxes, and updates STATE_MATRIX with PR reference."
         },
         {
           "id": "SUP-008",
-          "check": "requirements_traceability_validated() \u00e2\u20ac\u201d each agent's artifacts trace to PRD requirement IDs per TRACEABILITY_MATRIX.json",
+          "check": "requirements_traceability_validated() â€” each agent's artifacts trace to PRD requirement IDs per TRACEABILITY_MATRIX.json",
           "type": "traceability",
           "required": true,
           "passed": true
         },
         {
           "id": "SUP-009",
-          "check": "dependency_input_artifacts_verified() \u00e2\u20ac\u201d each agent consumes artifacts from upstream dependencies before producing output",
+          "check": "dependency_input_artifacts_verified() â€” each agent consumes artifacts from upstream dependencies before producing output",
           "type": "traceability",
           "required": true,
           "passed": true
         },
         {
           "id": "SUP-010",
-          "check": "traceability_matrix_exists() \u00e2\u20ac\u201d TRACEABILITY_MATRIX.json present and covers all 15 agents",
+          "check": "traceability_matrix_exists() â€” TRACEABILITY_MATRIX.json present and covers all 15 agents",
           "type": "artifact",
           "required": true,
           "passed": true
         }
       ],
-      "notes": "Sr. Program Manager: Orchestrates pipeline AND audits compliance for all 15 agents. WORKFLOW ENFORCEMENT ACTIVE: Feature-branch \u00e2\u2020\u2019 PR \u00e2\u2020\u2019 CI \u00e2\u2020\u2019 code-review \u00e2\u2020\u2019 merge enforced for all code agents and AI assistant. TRACEABILITY ENFORCED: Each agent's artifacts must trace to specific PRD requirement IDs per TRACEABILITY_MATRIX.json. Dependency input verification active."
+      "notes": "Sr. Program Manager: Orchestrates pipeline AND audits compliance for all 15 agents. WORKFLOW ENFORCEMENT ACTIVE: Feature-branch â†’ PR â†’ CI â†’ code-review â†’ merge enforced for all code agents and AI assistant. TRACEABILITY ENFORCED: Each agent's artifacts must trace to specific PRD requirement IDs per TRACEABILITY_MATRIX.json. Dependency input verification active."
     },
     "01_ideation_agent": {
       "phase": "phase_one",
@@ -404,7 +405,7 @@
       "role": "Product Marketing Manager & Hyper-Local Retail Economics Specialist",
       "expert_reviewer": {
         "role_title": "Senior Product Marketing Manager",
-        "industry_jd_reference": "GTM Strategy Lead / Retail Economics Specialist \u00e2\u20ac\u201d evaluates market research depth, UVP differentiation, merchant dataset completeness, and monetization model viability.",
+        "industry_jd_reference": "GTM Strategy Lead / Retail Economics Specialist â€” evaluates market research depth, UVP differentiation, merchant dataset completeness, and monetization model viability.",
         "review_status": "completed",
         "review_triggered_by": "human_gatekeeper",
         "review_feedback": [
@@ -430,21 +431,21 @@
       "compliance_checklist": [
         {
           "id": "IDEA-001",
-          "check": "artifact_exists(idea_proposal.md) \u00e2\u20ac\u201d market research document present",
+          "check": "artifact_exists(idea_proposal.md) â€” market research document present",
           "type": "artifact",
           "required": true,
           "passed": true
         },
         {
           "id": "IDEA-002",
-          "check": "artifact_exists(business_revenue_model.json) \u00e2\u20ac\u201d monetization model present",
+          "check": "artifact_exists(business_revenue_model.json) â€” monetization model present",
           "type": "artifact",
           "required": true,
           "passed": true
         },
         {
           "id": "IDEA-003",
-          "check": "artifact_exists(store_inventory_datasets.json) \u00e2\u20ac\u201d merchant inventory data present",
+          "check": "artifact_exists(store_inventory_datasets.json) â€” merchant inventory data present",
           "type": "artifact",
           "required": true,
           "passed": true
@@ -480,7 +481,7 @@
       ],
       "notes": "ENHANCED UPDATE (v3.0): Expanded from 392 to 406 merchants. Added 14 new Google Maps-resolved merchants. Enhanced ALL merchants with 17 new fields. Awaiting HITL approval.",
       "_health_flags": [
-        "artifacts_on_disk"
+        "llm_health"
       ]
     },
     "02_requirement_agent": {
@@ -495,11 +496,11 @@
       "role": "Enterprise Product Manager / Product Owner",
       "expert_reviewer": {
         "role_title": "Senior Product Manager / VP of Product",
-        "industry_jd_reference": "Technical Product Manager (E-commerce) \u00e2\u20ac\u201d validates requirement completeness, priority alignment to business goals, cost boundary accuracy, and workflow coverage across web and mobile channels.",
+        "industry_jd_reference": "Technical Product Manager (E-commerce) â€” validates requirement completeness, priority alignment to business goals, cost boundary accuracy, and workflow coverage across web and mobile channels.",
         "review_status": "completed",
         "review_triggered_by": "human_gatekeeper",
         "review_feedback": [
-          "Expanded from 46 to 103 Requirement IDs across 10 categories. VP-level review conducted \u00e2\u20ac\u201d added 32 new requirements including performance, DR, maintenance, funnels, data licensing, AI try-on, jewellery features, branding, multi-city, ShipRocket, kill switch, and unique differentiators. MVP scope tier defined. Approved by human gatekeeper."
+          "Expanded from 46 to 103 Requirement IDs across 10 categories. VP-level review conducted â€” added 32 new requirements including performance, DR, maintenance, funnels, data licensing, AI try-on, jewellery features, branding, multi-city, ShipRocket, kill switch, and unique differentiators. MVP scope tier defined. Approved by human gatekeeper."
         ],
         "reviewed_by": "Srinikc (VP Product review conducted)",
         "reviewed_at": "2026-05-30T18:30:00Z",
@@ -519,14 +520,14 @@
       "compliance_checklist": [
         {
           "id": "REQ-001",
-          "check": "artifact_exists(prd.md) \u00e2\u20ac\u201d PRD document present",
+          "check": "artifact_exists(prd.md) â€” PRD document present",
           "type": "artifact",
           "required": true,
           "passed": true
         },
         {
           "id": "REQ-002",
-          "check": "artifact_exists(prd.json) \u00e2\u20ac\u201d structured PRD present",
+          "check": "artifact_exists(prd.json) â€” structured PRD present",
           "type": "artifact",
           "required": true,
           "passed": true
@@ -560,144 +561,157 @@
           "passed": true
         }
       ],
-      "notes": "PRD ENHANCED (v2.0): 96 reqs + 7 new (103 total). Added: kill switch (INFRA-011), reviews (UI-021, BE-025), Virtual Walk (UI-022), Live Bazaar (UI-023), Co-Shopping (UI-024), Virtual St. CMS (BE-026). \u00c2\u00a79 MVP Scope defined. Awaiting HITL approval.",
+      "notes": "PRD ENHANCED (v2.0): 96 reqs + 7 new (103 total). Added: kill switch (INFRA-011), reviews (UI-021, BE-025), Virtual Walk (UI-022), Live Bazaar (UI-023), Co-Shopping (UI-024), Virtual St. CMS (BE-026). Â§9 MVP Scope defined. Awaiting HITL approval.",
       "_health_flags": [
-        "artifacts_on_disk"
+        "llm_health"
       ]
     },
     "03_architect_agent": {
       "phase": "phase_one",
       "pool": "async_pool",
-      "status": "in_progress",
-      "started_at": "2026-06-22T12:18:13.248Z",
+      "status": "approved",
+      "started_at": "2026-06-22T07:15:33.052Z",
       "timeout_threshold_ms": 300000,
       "stuck_detected_at": null,
       "dependencies": [
         "02_requirement_agent"
       ],
       "requires_human_approval": true,
-      "approved": false,
+      "approved": true,
       "role": "Senior Enterprise Solution Architect",
       "expert_reviewer": {
         "role_title": "Senior Solution Architect / CTO",
-        "industry_jd_reference": "Enterprise Solution Architect \u00e2\u20ac\u201d reviews technical blueprint, API strategy, caching layer, message-queue architecture, security framework, and infrastructure costing. Must validate feasibility of 103 requirements against chosen tech stack.",
-        "review_status": "pending",
+        "industry_jd_reference": "Enterprise Solution Architect â€” reviews technical blueprint, API strategy, caching layer, message-queue architecture, security framework, and infrastructure costing. Must validate feasibility of 103 requirements against chosen tech stack.",
+        "review_status": "completed",
         "review_feedback": [
           "APPROVED with changes: (1) Replace Gemini AI with Opencode/DeepSeek platform for any AI features, (2) Include WhatsApp integration in POC scope, (3) Generate synthetic product-level inventory for all 8 pilot merchants since real inventory arrays are empty."
         ],
-        "reviewed_by": null,
-        "reviewed_at": null,
+        "reviewed_by": "Human Gatekeeper (Srinikc)",
+        "reviewed_at": "2026-06-22T12:00:00Z",
         "sign_off_required": true,
-        "sign_off_granted": false
+        "sign_off_granted": true
       },
       "approval_gate_triggers": [
         "GATE-TECH-STACK-01",
         "GATE-COSTING-01"
       ],
       "last_artifact_emitted": "agents/02_engineering_specs/03_architect_agent/FEASIBILITY_ARCHITECTURE.md",
-      "artifacts_emitted": [],
-      "last_activity_timestamp": "2026-06-22T12:22:49.416Z",
-      "execution_count": 0,
+      "artifacts_emitted": [
+        "agents/02_engineering_specs/03_architect_agent/FEASIBILITY_ARCHITECTURE.md",
+        "agents/02_engineering_specs/03_architect_agent/FEASIBILITY_ARCHITECTURE.json",
+        "agents/02_engineering_specs/03_architect_agent/DIAGRAMS.md",
+        "agents/02_engineering_specs/03_architect_agent/POC_SCOPE.md",
+        "agents/02_engineering_specs/03_architect_agent/COST_MODELS.md",
+        "agents/02_engineering_specs/03_architect_agent/GUARDRAIL_VERIFICATION.md",
+        "agents/02_engineering_specs/03_architect_agent/STITCH_INTEGRATION_GUIDE.md",
+        "agents/02_engineering_specs/03_architect_agent/03_architect_agent_COMPLETION_SLIDE.pptx",
+        "agents/02_engineering_specs/03_architect_agent/03_architect_agent_DATA_EXPORT.xlsx",
+        "agents/02_engineering_specs/03_architect_agent/03_architect_agent_FULL_PRESENTATION.pptx"
+      ],
+      "last_activity_timestamp": "2026-08-18T14:16:35.089Z",
+      "execution_count": 1,
       "compliance_checklist": [
         {
           "id": "ARCH-001",
-          "check": "artifact_exists(FEASIBILITY_ARCHITECTURE.md)",
+          "check": "artifact_exists(FEASIBILITY_ARCHITECTURE.md) â€” architecture document present",
           "type": "artifact",
           "required": true,
-          "passed": false
+          "passed": true
         },
         {
           "id": "ARCH-002",
-          "check": "artifact_exists(FEASIBILITY_ARCHITECTURE.json)",
+          "check": "artifact_exists(FEASIBILITY_ARCHITECTURE.json) â€” structured architecture present",
           "type": "artifact",
           "required": true,
-          "passed": false
+          "passed": true
         },
         {
           "id": "ARCH-003",
-          "check": "artifact_exists(DIAGRAMS.md)",
+          "check": "Mermaid/PlantUML architectural diagrams produced (DIAGRAMS.md)",
           "type": "artifact",
           "required": true,
-          "passed": false
+          "passed": true
         },
         {
           "id": "ARCH-004",
-          "check": "artifact_exists(POC_SCOPE.md)",
-          "type": "artifact",
+          "check": "multi-layer testing architecture defined",
+          "type": "architecture",
           "required": true,
-          "passed": false
+          "passed": true
         },
         {
           "id": "ARCH-005",
-          "check": "artifact_exists(COST_MODELS.md)",
-          "type": "artifact",
+          "check": "API gateway with rate-limiting rules defined",
+          "type": "architecture",
           "required": true,
-          "passed": false
+          "passed": true
         },
         {
           "id": "ARCH-006",
-          "check": "artifact_exists(GUARDRAIL_VERIFICATION.md)",
+          "check": "POC scope clearly maps to subset of full architecture (POC_SCOPE.md)",
           "type": "artifact",
           "required": true,
-          "passed": false
+          "passed": true
         },
         {
           "id": "ARCH-007",
-          "check": "artifact_exists(STITCH_INTEGRATION_GUIDE.md)",
+          "check": "infrastructure cost model accounts for scaling thresholds (COST_MODELS.md)",
           "type": "artifact",
           "required": true,
-          "passed": false
+          "passed": true
         },
         {
           "id": "ARCH-008",
-          "check": "artifact_exists(COMPLETION_SLIDE.pptx)",
+          "check": "COMPLETION_SLIDE.pptx generated",
           "type": "artifact",
           "required": true,
-          "passed": false
+          "passed": true
         },
         {
           "id": "ARCH-009",
-          "check": "artifact_exists(DATA_EXPORT.xlsx)",
+          "check": "DATA_EXPORT.xlsx generated (cost models, resource estimates)",
           "type": "artifact",
           "required": true,
-          "passed": false
+          "passed": true
         }
       ],
-      "notes": "Architecture complete. Google Stitch integrated as primary UI design tool. APPROVED by human gatekeeper with changes: Opencode/DeepSeek replaces Gemini, WhatsApp included in POC, synthetic inventory to be generated.",
+      "notes": "Architecture complete for FULL product (all 103 reqs). Google Stitch integrated as primary UI design tool. APPROVED by human gatekeeper with changes: Opencode/DeepSeek replaces Gemini, WhatsApp included in POC, synthetic inventory to be generated. State restored 2026-08-18 after runtime failure loop clobbered it.",
       "user_instruction": "[2026-06-10T11:56:40.358Z] as an architect, we need to do architect adn design for entire product not POC, so device architect/design for entire product as per all ruqirements mentioned in PRD and provide design, architecture, techstack, apis and costing and all other things required for the project.",
       "last_error": null,
-      "approved_by": "Supervisor (Auto)",
-      "approved_at": "2026-06-11T09:49:48.334Z",
+      "approved_by": "Human Gatekeeper (Srinikc)",
+      "approved_at": "2026-06-22T12:00:00Z",
       "_health_flags": [
-        "agent_run_log"
+        "agent_run_log",
+        "llm_health",
+        "tools_available"
       ],
-      "step_label": "LLM iteration 5/40",
+      "step_label": "completed",
       "current_step": 0,
       "steps_total": 5,
-      "step_started_at": "2026-06-22T12:18:13.889Z",
-      "active_llm": "openrouter/deepseek/deepseek-v4-flash",
-      "last_run_duration_ms": 631279,
-      "last_run_id": "03_architect_agent_1782130031306",
-      "run_id": "03_architect_agent_1782130031306",
+      "step_started_at": "2026-06-22T07:15:33.660Z",
+      "active_llm": "opencode-go/deepseek-v4-flash",
+      "last_run_duration_ms": 193788,
+      "last_run_id": "03_architect_agent_1782112533058",
+      "run_id": "03_architect_agent_1782112533058",
       "dlq_entry": null,
-      "consecutive_failures": 4
+      "consecutive_failures": 0
     },
     "04_prototype_agent": {
       "phase": "phase_one",
       "pool": "async_pool",
-      "status": "pending",
+      "status": "approved",
       "dependencies": [
         "03_architect_agent"
       ],
       "requires_human_approval": true,
-      "approved": false,
+      "approved": true,
       "role": "Senior Prototyping Engineer / Concept Verification Engine",
       "expert_reviewer": {
         "role_title": "Senior Prototyping Engineer / Tech Lead",
-        "industry_jd_reference": "Prototyping Lead \u00e2\u20ac\u201d validates POC functionality against architecture spec, sample data quality, and launch readiness of the prototype workspace.",
+        "industry_jd_reference": "Prototyping Lead â€” validates POC functionality against architecture spec, sample data quality, and launch readiness of the prototype workspace.",
         "review_status": "completed",
         "review_feedback": [
-          "APPROVED as imperfect \u00e2\u20ac\u201d moving to full product build. Key gaps identified: (1) Missing auth/personas (Customer/Merchant/Admin), (2) Poor UX labels (Sell, MOQ, Featured), (3) Incoherent flow between pages, (4) Not demo-ready for friends/stakeholders. Full build (Agents 05-15) will address all gaps with proper workflows reviewed by Sr Product/VP roles."
+          "APPROVED as imperfect â€” moving to full product build. Key gaps identified: (1) Missing auth/personas (Customer/Merchant/Admin), (2) Poor UX labels (Sell, MOQ, Featured), (3) Incoherent flow between pages, (4) Not demo-ready for friends/stakeholders. Full build (Agents 05-15) will address all gaps with proper workflows reviewed by Sr Product/VP roles."
         ],
         "reviewed_by": "Human Gatekeeper (Srinikc)",
         "reviewed_at": "2026-05-30T19:00:00Z",
@@ -711,26 +725,26 @@
         "agents/02_engineering_specs/04_prototype_agent/data/products-combined.json",
         "agents/02_engineering_specs/04_prototype_agent/04_prototype_agent_COMPLETION_SLIDE.pptx"
       ],
-      "last_activity_timestamp": "2026-06-21T15:33:03.370Z",
+      "last_activity_timestamp": "2026-08-18T14:16:35.091Z",
       "execution_count": 1,
       "compliance_checklist": [
         {
           "id": "POC-001",
-          "check": "artifact_exists(LAUNCH_GUIDE.md) \u00e2\u20ac\u201d setup/launch guide present",
+          "check": "artifact_exists(LAUNCH_GUIDE.md) â€” setup/launch guide present",
           "type": "artifact",
           "required": true,
           "passed": true
         },
         {
           "id": "POC-002",
-          "check": "artifact_exists(merchants.json) \u00e2\u20ac\u201d sample merchant data present",
+          "check": "artifact_exists(merchants.json) â€” sample merchant data present",
           "type": "artifact",
           "required": true,
           "passed": true
         },
         {
           "id": "POC-003",
-          "check": "artifact_exists(products-combined.json) \u00e2\u20ac\u201d sample product data present",
+          "check": "artifact_exists(products-combined.json) â€” sample product data present",
           "type": "artifact",
           "required": true,
           "passed": true
@@ -758,27 +772,24 @@
         }
       ],
       "notes": "POC approved as imperfect. Moving to full product build. Gaps: auth/personas missing, UX labels confusing, flow not cohesive.",
-      "disabled": true,
-      "last_error": "DOWNSTREAM_CASCADE: upstream 03_architect_agent not completed",
       "_health_flags": [
-        "dependency_integrity"
+        "llm_health"
       ],
-      "disabled_at": "2026-06-21T15:33:03.370Z",
       "started_at": null
     },
     "05_program_mgmt_agent": {
       "phase": "phase_two",
       "pool": "async_pool",
-      "status": "failed",
+      "status": "approved",
       "dependencies": [
         "04_prototype_agent"
       ],
       "requires_human_approval": true,
-      "approved": false,
+      "approved": true,
       "role": "Senior Agile Program Manager & Scrum Master",
       "expert_reviewer": {
         "role_title": "Senior Program Manager / Delivery Head",
-        "industry_jd_reference": "Agile Program Manager \u00e2\u20ac\u201d reviews epic/story decomposition, sprint plans, dependency mapping, milestone timelines, and MVP scope definition against PRD requirements.",
+        "industry_jd_reference": "Agile Program Manager â€” reviews epic/story decomposition, sprint plans, dependency mapping, milestone timelines, and MVP scope definition against PRD requirements.",
         "review_status": "completed",
         "review_feedback": [
           "MVP scope approved. Auth-first approach validated. Sprints 1-6 (12 weeks) covers core workflows. Deferred items documented."
@@ -800,30 +811,30 @@
         "agents/02_engineering_specs/05_program_mgmt_agent/05_ACCEPTANCE_CRITERIA_REVIEW_GATES.md",
         "agents/02_engineering_specs/05_program_mgmt_agent/06_PROGRAM_DASHBOARD.json",
         "agents/02_engineering_specs/05_program_mgmt_agent/README.md",
-        "agents/05_program_mgmt_agent/05_program_mgmt_agent_COMPLETION_SLIDE.pptx",
-        "agents/05_program_mgmt_agent/05_program_mgmt_agent_DATA_EXPORT.xlsx",
-        "agents/05_program_mgmt_agent/05_program_mgmt_agent_FULL_PRESENTATION.pptx"
+        "agents/02_engineering_specs/05_program_mgmt_agent/05_program_mgmt_agent_COMPLETION_SLIDE.pptx",
+        "agents/02_engineering_specs/05_program_mgmt_agent/05_program_mgmt_agent_DATA_EXPORT.xlsx",
+        "agents/02_engineering_specs/05_program_mgmt_agent/05_program_mgmt_agent_FULL_PRESENTATION.pptx"
       ],
-      "last_activity_timestamp": "2026-06-21T11:51:24.263Z",
+      "last_activity_timestamp": "2026-08-18T14:16:35.091Z",
       "execution_count": 1,
       "compliance_checklist": [
         {
           "id": "PM-001",
-          "check": "artifact_exists(EPIC_FEATURE_STORY_MAP.md) \u00e2\u20ac\u201d epic/story decomposition present",
+          "check": "artifact_exists(EPIC_FEATURE_STORY_MAP.md) â€” epic/story decomposition present",
           "type": "artifact",
           "required": true,
           "passed": true
         },
         {
           "id": "PM-002",
-          "check": "artifact_exists(SPRINT_TIMELINE_MILESTONES.md) \u00e2\u20ac\u201d sprint schedule present",
+          "check": "artifact_exists(SPRINT_TIMELINE_MILESTONES.md) â€” sprint schedule present",
           "type": "artifact",
           "required": true,
           "passed": true
         },
         {
           "id": "PM-003",
-          "check": "artifact_exists(MVP_SCOPE_DEFINITION.md) \u00e2\u20ac\u201d MVP scope defined",
+          "check": "artifact_exists(MVP_SCOPE_DEFINITION.md) â€” MVP scope defined",
           "type": "artifact",
           "required": true,
           "passed": true
@@ -858,19 +869,18 @@
         }
       ],
       "notes": "Full product sprint plan created: 26 Epics, 113 User Stories, 12 Sprints (24 weeks), MVP = Sprints 1-6. Auth-first approach. APPROVED by human gatekeeper.",
-      "last_error": "CANCELLED_BY_USER",
+      "last_error": null,
       "started_at": null,
       "_health_flags": [
-        "artifacts_on_disk",
         "agent_run_log",
-        "dependency_integrity"
+        "llm_health"
       ],
       "step_label": null,
       "current_step": 0,
       "steps_total": 5,
       "step_started_at": "2026-06-21T11:51:24.249Z",
       "active_llm": "opencode-go/deepseek-v4-flash",
-      "consecutive_failures": 141,
+      "consecutive_failures": 0,
       "last_run_id": "05_program_mgmt_agent_1782042675638",
       "run_id": "05_program_mgmt_agent_1782042675638",
       "last_run_duration_ms": 6095
@@ -878,7 +888,7 @@
     "06_infra_devops_agent": {
       "phase": "phase_two",
       "pool": "async_pool",
-      "status": "pending",
+      "status": "approved",
       "dependencies": [
         "05_program_mgmt_agent"
       ],
@@ -887,7 +897,7 @@
       "role": "DevOps Systems Architect & Core Supply Chain Automation Engine",
       "expert_reviewer": {
         "role_title": "Senior DevOps Architect / Platform Engineer",
-        "industry_jd_reference": "DevOps/Platform Architect \u00e2\u20ac\u201d validates CI/CD pipeline design, Docker/K8s configuration, GitHub branching strategy, secrets management approach, and rollback protocols.",
+        "industry_jd_reference": "DevOps/Platform Architect â€” validates CI/CD pipeline design, Docker/K8s configuration, GitHub branching strategy, secrets management approach, and rollback protocols.",
         "review_status": "completed",
         "review_feedback": [],
         "reviewed_by": "Auto-approved (no HITL required)",
@@ -908,12 +918,12 @@
         "agents/03_execution_workspace/06_infra_devops_agent/supabase/migrations/001_initial_schema.sql",
         "agents/03_execution_workspace/06_infra_devops_agent/06_infra_devops_agent_COMPLETION_SLIDE.pptx"
       ],
-      "last_activity_timestamp": "2026-05-31T18:00:00Z",
+      "last_activity_timestamp": "2026-08-18T14:16:35.091Z",
       "execution_count": 2,
       "compliance_checklist": [
         {
           "id": "DEVOPS-001",
-          "check": "artifact_exists(BRANCHING_STRATEGY.md) \u00e2\u20ac\u201d branching strategy present",
+          "check": "artifact_exists(BRANCHING_STRATEGY.md) â€” branching strategy present",
           "type": "artifact",
           "required": true,
           "passed": true
@@ -954,17 +964,17 @@
           "passed": true
         }
       ],
-      "notes": "v2 ENHANCED: Added automated code review pipeline \u00e2\u20ac\u201d PR-Agent (AI review), SonarQube Cloud (static analysis + MCP server), Reviewdog (ESLint/TS linting), CodeQL (already present in security-scan.yml). MCP server configured for on-demand SonarQube queries. AGENTS.md updated with pipeline documentation. 6 GitHub Action workflows total.",
+      "notes": "v2 ENHANCED: Added automated code review pipeline â€” PR-Agent (AI review), SonarQube Cloud (static analysis + MCP server), Reviewdog (ESLint/TS linting), CodeQL (already present in security-scan.yml). MCP server configured for on-demand SonarQube queries. AGENTS.md updated with pipeline documentation. 6 GitHub Action workflows total.",
       "last_error": null,
       "started_at": null,
       "_health_flags": [
-        "dependency_integrity"
+        "llm_health"
       ]
     },
     "07a_ui_agent": {
       "phase": "phase_three",
       "pool": "sync_pool",
-      "status": "pending",
+      "status": "in_progress",
       "dependencies": [
         "05_program_mgmt_agent",
         "06_infra_devops_agent"
@@ -974,7 +984,7 @@
       "role": "Frontend & Mobile Interface Engineer",
       "expert_reviewer": {
         "role_title": "Senior Frontend Engineer / UI Architect",
-        "industry_jd_reference": "Frontend Lead (React/React Native) \u00e2\u20ac\u201d validates responsive wireframes, component architecture, mobile UX, accessibility, and frontend unit test coverage above 80%.",
+        "industry_jd_reference": "Frontend Lead (React/React Native) â€” validates responsive wireframes, component architecture, mobile UX, accessibility, and frontend unit test coverage above 80%.",
         "review_status": "pending",
         "review_feedback": [],
         "reviewed_by": null,
@@ -1000,14 +1010,14 @@
       "compliance_checklist": [
         {
           "id": "UI-001",
-          "check": "artifact_exists(UI_INTERFACE_MAP.json) \u00e2\u20ac\u201d UI map present",
+          "check": "artifact_exists(UI_INTERFACE_MAP.json) â€” UI map present",
           "type": "artifact",
           "required": true,
           "passed": true
         },
         {
           "id": "UI-002",
-          "check": "artifact_exists(UI_AGENT_REPORT.md) \u00e2\u20ac\u201d UI report present",
+          "check": "artifact_exists(UI_AGENT_REPORT.md) â€” UI report present",
           "type": "artifact",
           "required": true,
           "passed": true
@@ -1049,51 +1059,53 @@
         },
         {
           "id": "UI-008",
-          "check": "feature_branch_used() \u00e2\u20ac\u201d work was done on a feature branch off develop, not directly on develop/main",
+          "check": "feature_branch_used() â€” work was done on a feature branch off develop, not directly on develop/main",
           "type": "workflow",
           "required": true,
           "passed": false
         },
         {
           "id": "UI-009",
-          "check": "pr_created_and_merged() \u00e2\u20ac\u201d PR was opened targeting develop and merged after CI passed",
+          "check": "pr_created_and_merged() â€” PR was opened targeting develop and merged after CI passed",
           "type": "workflow",
           "required": true,
           "passed": false
         },
         {
           "id": "UI-010",
-          "check": "ci_pipeline_passed() \u00e2\u20ac\u201d GitHub Actions CI build succeeded before merge",
+          "check": "ci_pipeline_passed() â€” GitHub Actions CI build succeeded before merge",
           "type": "workflow",
           "required": true,
           "passed": false
         },
         {
           "id": "UI-011",
-          "check": "requirements_traceability() \u00e2\u20ac\u201d UI artifacts reference PRD requirement IDs (REQ-UI-001 to REQ-UI-024, REQ-COM-001 to REQ-COM-003)",
+          "check": "requirements_traceability() â€” UI artifacts reference PRD requirement IDs (REQ-UI-001 to REQ-UI-024, REQ-COM-001 to REQ-COM-003)",
           "type": "traceability",
           "required": true,
           "passed": false
         },
         {
           "id": "UI-012",
-          "check": "input_from_upstream_agents() \u00e2\u20ac\u201d consumes PRD (02), Architect specs (03), Sprint plan (05) before implementation",
+          "check": "input_from_upstream_agents() â€” consumes PRD (02), Architect specs (03), Sprint plan (05) before implementation",
           "type": "traceability",
           "required": true,
           "passed": false
         }
       ],
-      "notes": "Non-fatal compliance gaps: feature_branch_used() \u00e2\u20ac\u201d work was done on a feature branch off develop, not directly on develop/main; pr_created_and_merged() \u00e2\u20ac\u201d PR was opened targeting develop and merged after CI passed; ci_pipeline_passed() \u00e2\u20ac\u201d GitHub Actions CI build succeeded before merge; requirements_traceability() \u00e2\u20ac\u201d UI artifacts reference PRD requirement IDs (REQ-UI-001 to REQ-UI-024, REQ-COM-001 to REQ-COM-003); input_from_upstream_agents() \u00e2\u20ac\u201d consumes PRD (02), Architect specs (03), Sprint plan (05) before implementation. Review and approve if acceptable.",
-      "last_error": null,
-      "started_at": null,
+      "notes": "Non-fatal compliance gaps: feature_branch_used() â€” work was done on a feature branch off develop, not directly on develop/main; pr_created_and_merged() â€” PR was opened targeting develop and merged after CI passed; ci_pipeline_passed() â€” GitHub Actions CI build succeeded before merge; requirements_traceability() â€” UI artifacts reference PRD requirement IDs (REQ-UI-001 to REQ-UI-024, REQ-COM-001 to REQ-COM-003); input_from_upstream_agents() â€” consumes PRD (02), Architect specs (03), Sprint plan (05) before implementation. Review and approve if acceptable.",
+      "last_error": "Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console.",
+      "started_at": "2026-08-19T14:47:35.905Z",
       "_health_flags": [
-        "dependency_integrity"
-      ]
+        "llm_health",
+        "stuck_detection"
+      ],
+      "consecutive_failures": 1
     },
     "07b_api_agent": {
       "phase": "phase_three",
       "pool": "sync_pool",
-      "status": "pending",
+      "status": "in_progress",
       "dependencies": [
         "05_program_mgmt_agent",
         "06_infra_devops_agent"
@@ -1103,7 +1115,7 @@
       "role": "Interface Connection Engineer",
       "expert_reviewer": {
         "role_title": "Senior Backend Engineer / API Architect",
-        "industry_jd_reference": "API Architect \u00e2\u20ac\u201d validates RESTful endpoint design, request/response schemas, authentication boundaries, rate limiting, and API security validation passes.",
+        "industry_jd_reference": "API Architect â€” validates RESTful endpoint design, request/response schemas, authentication boundaries, rate limiting, and API security validation passes.",
         "review_status": "pending",
         "review_feedback": [],
         "reviewed_by": null,
@@ -1127,14 +1139,14 @@
       "compliance_checklist": [
         {
           "id": "API-001",
-          "check": "artifact_exists(API_SPECIFICATION.md) \u00e2\u20ac\u201d API spec document present",
+          "check": "artifact_exists(API_SPECIFICATION.md) â€” API spec document present",
           "type": "artifact",
           "required": true,
           "passed": true
         },
         {
           "id": "API-002",
-          "check": "artifact_exists(API_SPECIFICATION.json) \u00e2\u20ac\u201d structured API spec present",
+          "check": "artifact_exists(API_SPECIFICATION.json) â€” structured API spec present",
           "type": "artifact",
           "required": true,
           "passed": true
@@ -1190,51 +1202,53 @@
         },
         {
           "id": "API-010",
-          "check": "feature_branch_used() \u00e2\u20ac\u201d work on feature branch off develop",
+          "check": "feature_branch_used() â€” work on feature branch off develop",
           "type": "workflow",
           "required": true,
           "passed": false
         },
         {
           "id": "API-011",
-          "check": "pr_created_and_merged() \u00e2\u20ac\u201d PR targeting develop, CI passed before merge",
+          "check": "pr_created_and_merged() â€” PR targeting develop, CI passed before merge",
           "type": "workflow",
           "required": true,
           "passed": false
         },
         {
           "id": "API-012",
-          "check": "ci_pipeline_passed() \u00e2\u20ac\u201d GitHub Actions CI build succeeded",
+          "check": "ci_pipeline_passed() â€” GitHub Actions CI build succeeded",
           "type": "workflow",
           "required": true,
           "passed": false
         },
         {
           "id": "API-013",
-          "check": "requirements_traceability() \u00e2\u20ac\u201d API artifacts reference PRD requirement IDs (REQ-API-001 to REQ-API-013, REQ-COM-004 to REQ-COM-010)",
+          "check": "requirements_traceability() â€” API artifacts reference PRD requirement IDs (REQ-API-001 to REQ-API-013, REQ-COM-004 to REQ-COM-010)",
           "type": "traceability",
           "required": true,
           "passed": false
         },
         {
           "id": "API-014",
-          "check": "input_from_upstream_agents() \u00e2\u20ac\u201d consumes PRD (02), Architect specs (03), Sprint plan (05) before implementation",
+          "check": "input_from_upstream_agents() â€” consumes PRD (02), Architect specs (03), Sprint plan (05) before implementation",
           "type": "traceability",
           "required": true,
           "passed": false
         }
       ],
-      "notes": "Non-fatal compliance gaps: feature_branch_used() \u00e2\u20ac\u201d work on feature branch off develop; pr_created_and_merged() \u00e2\u20ac\u201d PR targeting develop, CI passed before merge; ci_pipeline_passed() \u00e2\u20ac\u201d GitHub Actions CI build succeeded; requirements_traceability() \u00e2\u20ac\u201d API artifacts reference PRD requirement IDs (REQ-API-001 to REQ-API-013, REQ-COM-004 to REQ-COM-010); input_from_upstream_agents() \u00e2\u20ac\u201d consumes PRD (02), Architect specs (03), Sprint plan (05) before implementation. Review and approve if acceptable.",
-      "last_error": null,
-      "started_at": null,
+      "notes": "Non-fatal compliance gaps: feature_branch_used() â€” work on feature branch off develop; pr_created_and_merged() â€” PR targeting develop, CI passed before merge; ci_pipeline_passed() â€” GitHub Actions CI build succeeded; requirements_traceability() â€” API artifacts reference PRD requirement IDs (REQ-API-001 to REQ-API-013, REQ-COM-004 to REQ-COM-010); input_from_upstream_agents() â€” consumes PRD (02), Architect specs (03), Sprint plan (05) before implementation. Review and approve if acceptable.",
+      "last_error": "Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console.",
+      "started_at": "2026-08-19T14:47:35.913Z",
       "_health_flags": [
-        "dependency_integrity"
-      ]
+        "llm_health",
+        "stuck_detection"
+      ],
+      "consecutive_failures": 1
     },
     "07c_backend_db_agent": {
       "phase": "phase_three",
       "pool": "sync_pool",
-      "status": "pending",
+      "status": "in_progress",
       "dependencies": [
         "05_program_mgmt_agent",
         "06_infra_devops_agent"
@@ -1244,7 +1258,7 @@
       "role": "Data Infrastructure & Storage Engineer",
       "expert_reviewer": {
         "role_title": "Senior Database Engineer / DBA",
-        "industry_jd_reference": "Database Architect \u00e2\u20ac\u201d validates schema design, indexing strategy, connection pooling, migration rollback scripts, caching strategy, and query performance under concurrency.",
+        "industry_jd_reference": "Database Architect â€” validates schema design, indexing strategy, connection pooling, migration rollback scripts, caching strategy, and query performance under concurrency.",
         "review_status": "pending",
         "review_feedback": [],
         "reviewed_by": null,
@@ -1274,7 +1288,7 @@
       "compliance_checklist": [
         {
           "id": "DB-001",
-          "check": "artifact_exists(01-complete-schema.sql) \u00e2\u20ac\u201d schema definitions present",
+          "check": "artifact_exists(01-complete-schema.sql) â€” schema definitions present",
           "type": "artifact",
           "required": true,
           "passed": true
@@ -1337,46 +1351,48 @@
         },
         {
           "id": "DB-010",
-          "check": "feature_branch_used() \u00e2\u20ac\u201d work on feature branch off develop",
+          "check": "feature_branch_used() â€” work on feature branch off develop",
           "type": "workflow",
           "required": true,
           "passed": false
         },
         {
           "id": "DB-011",
-          "check": "pr_created_and_merged() \u00e2\u20ac\u201d PR targeting develop, CI passed before merge",
+          "check": "pr_created_and_merged() â€” PR targeting develop, CI passed before merge",
           "type": "workflow",
           "required": true,
           "passed": false
         },
         {
           "id": "DB-012",
-          "check": "ci_pipeline_passed() \u00e2\u20ac\u201d GitHub Actions CI build succeeded",
+          "check": "ci_pipeline_passed() â€” GitHub Actions CI build succeeded",
           "type": "workflow",
           "required": true,
           "passed": false
         },
         {
           "id": "DB-013",
-          "check": "requirements_traceability() \u00e2\u20ac\u201d DB artifacts reference PRD requirement IDs (REQ-BE-001 to REQ-BE-026, REQ-MICRO-001 to REQ-MICRO-008)",
+          "check": "requirements_traceability() â€” DB artifacts reference PRD requirement IDs (REQ-BE-001 to REQ-BE-026, REQ-MICRO-001 to REQ-MICRO-008)",
           "type": "traceability",
           "required": true,
           "passed": false
         },
         {
           "id": "DB-014",
-          "check": "input_from_upstream_agents() \u00e2\u20ac\u201d consumes PRD (02), Architect specs (03), Sprint plan (05) before implementation",
+          "check": "input_from_upstream_agents() â€” consumes PRD (02), Architect specs (03), Sprint plan (05) before implementation",
           "type": "traceability",
           "required": true,
           "passed": false
         }
       ],
-      "notes": "Non-fatal compliance gaps: feature_branch_used() \u00e2\u20ac\u201d work on feature branch off develop; pr_created_and_merged() \u00e2\u20ac\u201d PR targeting develop, CI passed before merge; ci_pipeline_passed() \u00e2\u20ac\u201d GitHub Actions CI build succeeded; requirements_traceability() \u00e2\u20ac\u201d DB artifacts reference PRD requirement IDs (REQ-BE-001 to REQ-BE-026, REQ-MICRO-001 to REQ-MICRO-008); input_from_upstream_agents() \u00e2\u20ac\u201d consumes PRD (02), Architect specs (03), Sprint plan (05) before implementation. Review and approve if acceptable.",
-      "last_error": null,
-      "started_at": null,
+      "notes": "Non-fatal compliance gaps: feature_branch_used() â€” work on feature branch off develop; pr_created_and_merged() â€” PR targeting develop, CI passed before merge; ci_pipeline_passed() â€” GitHub Actions CI build succeeded; requirements_traceability() â€” DB artifacts reference PRD requirement IDs (REQ-BE-001 to REQ-BE-026, REQ-MICRO-001 to REQ-MICRO-008); input_from_upstream_agents() â€” consumes PRD (02), Architect specs (03), Sprint plan (05) before implementation. Review and approve if acceptable.",
+      "last_error": "Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console.",
+      "started_at": "2026-08-19T14:47:35.921Z",
       "_health_flags": [
-        "dependency_integrity"
-      ]
+        "llm_health",
+        "stuck_detection"
+      ],
+      "consecutive_failures": 1
     },
     "07d_integration_agent": {
       "phase": "phase_three",
@@ -1392,7 +1408,7 @@
       "role": "Systems Assembly Engineer",
       "expert_reviewer": {
         "role_title": "Senior Integration Engineer / Systems Architect",
-        "industry_jd_reference": "Integration Architect \u00e2\u20ac\u201d validates end-to-end data flow, authentication handshakes across layers, event trigger chains, security audit clearance, and absence of debug flags.",
+        "industry_jd_reference": "Integration Architect â€” validates end-to-end data flow, authentication handshakes across layers, event trigger chains, security audit clearance, and absence of debug flags.",
         "review_status": "pending",
         "review_feedback": [],
         "reviewed_by": null,
@@ -1415,7 +1431,7 @@
       "compliance_checklist": [
         {
           "id": "INT-001",
-          "check": "artifact_exists(INTEGRATION_REPORT.md) \u00e2\u20ac\u201d integration report present",
+          "check": "artifact_exists(INTEGRATION_REPORT.md) â€” integration report present",
           "type": "artifact",
           "required": true,
           "passed": true
@@ -1464,44 +1480,45 @@
         },
         {
           "id": "INT-008",
-          "check": "feature_branch_used() \u00e2\u20ac\u201d work on feature branch off develop",
+          "check": "feature_branch_used() â€” work on feature branch off develop",
           "type": "workflow",
           "required": true,
           "passed": false
         },
         {
           "id": "INT-009",
-          "check": "pr_created_and_merged() \u00e2\u20ac\u201d PR targeting develop, CI passed before merge",
+          "check": "pr_created_and_merged() â€” PR targeting develop, CI passed before merge",
           "type": "workflow",
           "required": true,
           "passed": false
         },
         {
           "id": "INT-010",
-          "check": "ci_pipeline_passed() \u00e2\u20ac\u201d GitHub Actions CI build succeeded",
+          "check": "ci_pipeline_passed() â€” GitHub Actions CI build succeeded",
           "type": "workflow",
           "required": true,
           "passed": false
         },
         {
           "id": "INT-011",
-          "check": "requirements_traceability() \u00e2\u20ac\u201d integration report cross-references cross-cutting requirements (REQ-UI-006, REQ-API-001, REQ-API-013, REQ-COM-010, REQ-INFRA-003, REQ-INFRA-005)",
+          "check": "requirements_traceability() â€” integration report cross-references cross-cutting requirements (REQ-UI-006, REQ-API-001, REQ-API-013, REQ-COM-010, REQ-INFRA-003, REQ-INFRA-005)",
           "type": "traceability",
           "required": true,
           "passed": false
         },
         {
           "id": "INT-012",
-          "check": "input_from_upstream_agents() \u00e2\u20ac\u201d consumes UI (07a), API (07b), DB (07c) artifacts before integration",
+          "check": "input_from_upstream_agents() â€” consumes UI (07a), API (07b), DB (07c) artifacts before integration",
           "type": "traceability",
           "required": true,
           "passed": false
         }
       ],
-      "notes": "v2 INTEGRATION VERIFIED: 0 build errors, 45 pages, 35 API routes. Email+Phone auth flows all PASS. 406 merchants, 21 markets, 2,042 products loaded. Role-based redirects verified. Protected routes return 401. Merchant/Admin dashboards functional. Awaiting HITL approval. NOTE: Previous work bypassed feature branch workflow \u00e2\u20ac\u201d re-do via proper branch+PR cycle required for compliance. TRACEABILITY REQUIRED: Must map integration output to cross-cutting requirement IDs.",
+      "notes": "v2 INTEGRATION VERIFIED: 0 build errors, 45 pages, 35 API routes. Email+Phone auth flows all PASS. 406 merchants, 21 markets, 2,042 products loaded. Role-based redirects verified. Protected routes return 401. Merchant/Admin dashboards functional. Awaiting HITL approval. NOTE: Previous work bypassed feature branch workflow â€” re-do via proper branch+PR cycle required for compliance. TRACEABILITY REQUIRED: Must map integration output to cross-cutting requirement IDs.",
       "last_error": null,
       "started_at": null,
       "_health_flags": [
+        "llm_health",
         "dependency_integrity"
       ]
     },
@@ -1519,7 +1536,7 @@
       "role": "Senior Test Architect & Quality Gatekeeper",
       "expert_reviewer": {
         "role_title": "Senior QA Architect / Test Manager",
-        "industry_jd_reference": "QA Lead \u00e2\u20ac\u201d validates test plan completeness, automated test coverage thresholds, regression suite, E2E Playwright tests, test selection mechanism, QA web dashboard, and Go/No-Go recommendation for staging promotion.",
+        "industry_jd_reference": "QA Lead â€” validates test plan completeness, automated test coverage thresholds, regression suite, E2E Playwright tests, test selection mechanism, QA web dashboard, and Go/No-Go recommendation for staging promotion.",
         "review_status": "completed",
         "review_feedback": [
           "E2E AUTOMATION FRAMEWORK COMPLETED: Playwright config with chromium/firefox/webkit matrix, 39 E2E tests across 6 spec files (home, auth, customer-journey, merchant-flow, admin-flow, api-health). Test selection mechanism via qa-dashboard/test-run-config.json with sandbox vs CI/CD profiles. Web dashboard at /qa-dashboard with KPIs, charts, quality gates, defect log, test type grid, and environment toggle. Collector script aggregates Vitest + Playwright results. CI pipeline runs E2E in separate job with artifact upload. approved.",
@@ -1584,21 +1601,21 @@
       "compliance_checklist": [
         {
           "id": "QA-001",
-          "check": "artifact_exists(QA_TEST_PLAN.md) \u00e2\u20ac\u201d test plan present",
+          "check": "artifact_exists(QA_TEST_PLAN.md) â€” test plan present",
           "type": "artifact",
           "required": true,
           "passed": true
         },
         {
           "id": "QA-002",
-          "check": "artifact_exists(DEFECT_LOG.md) \u00e2\u20ac\u201d defect log present",
+          "check": "artifact_exists(DEFECT_LOG.md) â€” defect log present",
           "type": "artifact",
           "required": true,
           "passed": true
         },
         {
           "id": "QA-003",
-          "check": "artifact_exists(GO_NOGO_RECOMMENDATION.md) \u00e2\u20ac\u201d Go/No-Go recommendation present",
+          "check": "artifact_exists(GO_NOGO_RECOMMENDATION.md) â€” Go/No-Go recommendation present",
           "type": "artifact",
           "required": true,
           "passed": true
@@ -1654,44 +1671,45 @@
         },
         {
           "id": "QA-011",
-          "check": "feature_branch_used() \u00e2\u20ac\u201d work on feature branch off develop",
+          "check": "feature_branch_used() â€” work on feature branch off develop",
           "type": "workflow",
           "required": true,
           "passed": false
         },
         {
           "id": "QA-012",
-          "check": "pr_created_and_merged() \u00e2\u20ac\u201d PR targeting develop, CI passed before merge",
+          "check": "pr_created_and_merged() â€” PR targeting develop, CI passed before merge",
           "type": "workflow",
           "required": true,
           "passed": false
         },
         {
           "id": "QA-013",
-          "check": "ci_pipeline_passed() \u00e2\u20ac\u201d GitHub Actions CI build succeeded",
+          "check": "ci_pipeline_passed() â€” GitHub Actions CI build succeeded",
           "type": "workflow",
           "required": true,
           "passed": false
         },
         {
           "id": "QA-014",
-          "check": "requirements_traceability() \u00e2\u20ac\u201d test plan covers ALL 103 PRD requirements (REQ-UI-*, REQ-API-*, REQ-BE-*, REQ-COM-*, REQ-INFRA-*, etc.)",
+          "check": "requirements_traceability() â€” test plan covers ALL 103 PRD requirements (REQ-UI-*, REQ-API-*, REQ-BE-*, REQ-COM-*, REQ-INFRA-*, etc.)",
           "type": "traceability",
           "required": true,
           "passed": false
         },
         {
           "id": "QA-015",
-          "check": "test_cases_trace_to_requirements() \u00e2\u20ac\u201d each E2E test case references specific requirement ID(s)",
+          "check": "test_cases_trace_to_requirements() â€” each E2E test case references specific requirement ID(s)",
           "type": "traceability",
           "required": true,
           "passed": false
         }
       ],
-      "notes": "v2.0 E2E AUTOMATION FRAMEWORK COMPLETED: Playwright config with multi-browser matrix, 39 E2E tests across 6 spec files (home, auth, customer-journey, merchant-flow, admin-flow, api-health). Test selection mechanism via qa-dashboard/test-run-config.json (sandbox vs CI/CD profiles with 15 test types each). QA web dashboard enhanced with environment toggle and test type selector. Collector script merges Vitest + Playwright results. CI pipeline runs E2E in separate job with Playwright artifact uploads. Use npm run qa:run (sandbox) or npm run qa:run:ci (CI). NOTE: Previous work bypassed feature branch workflow \u00e2\u20ac\u201d re-do via proper branch+PR cycle required for compliance. TRACEABILITY REQUIRED: Tests must trace to specific PRD requirement IDs.",
+      "notes": "v2.0 E2E AUTOMATION FRAMEWORK COMPLETED: Playwright config with multi-browser matrix, 39 E2E tests across 6 spec files (home, auth, customer-journey, merchant-flow, admin-flow, api-health). Test selection mechanism via qa-dashboard/test-run-config.json (sandbox vs CI/CD profiles with 15 test types each). QA web dashboard enhanced with environment toggle and test type selector. Collector script merges Vitest + Playwright results. CI pipeline runs E2E in separate job with Playwright artifact uploads. Use npm run qa:run (sandbox) or npm run qa:run:ci (CI). NOTE: Previous work bypassed feature branch workflow â€” re-do via proper branch+PR cycle required for compliance. TRACEABILITY REQUIRED: Tests must trace to specific PRD requirement IDs.",
       "last_error": null,
       "started_at": null,
       "_health_flags": [
+        "llm_health",
         "dependency_integrity"
       ]
     },
@@ -1707,7 +1725,7 @@
       "role": "Release & Deployment Coordinator",
       "expert_reviewer": {
         "role_title": "Senior Release Manager / DevOps Lead",
-        "industry_jd_reference": "Release Manager \u00e2\u20ac\u201d validates staging sign-off, production deployment scripts, post-deployment monitoring, and final Go/No-Go status before live rollout.",
+        "industry_jd_reference": "Release Manager â€” validates staging sign-off, production deployment scripts, post-deployment monitoring, and final Go/No-Go status before live rollout.",
         "review_status": "pending",
         "review_feedback": [],
         "reviewed_by": null,
@@ -1732,14 +1750,14 @@
       "compliance_checklist": [
         {
           "id": "PROD-001",
-          "check": "artifact_exists(DEPLOYMENT_REPORT.md) \u00e2\u20ac\u201d deployment report present",
+          "check": "artifact_exists(DEPLOYMENT_REPORT.md) â€” deployment report present",
           "type": "artifact",
           "required": true,
           "passed": true
         },
         {
           "id": "PROD-002",
-          "check": "artifact_exists(RELEASE_NOTES.md) \u00e2\u20ac\u201d release notes present",
+          "check": "artifact_exists(RELEASE_NOTES.md) â€” release notes present",
           "type": "artifact",
           "required": true,
           "passed": true
@@ -1774,44 +1792,45 @@
         },
         {
           "id": "PROD-007",
-          "check": "feature_branch_used() \u00e2\u20ac\u201d work on feature branch off develop",
+          "check": "feature_branch_used() â€” work on feature branch off develop",
           "type": "workflow",
           "required": true,
           "passed": false
         },
         {
           "id": "PROD-008",
-          "check": "pr_created_and_merged() \u00e2\u20ac\u201d PR targeting develop, CI passed before merge",
+          "check": "pr_created_and_merged() â€” PR targeting develop, CI passed before merge",
           "type": "workflow",
           "required": true,
           "passed": false
         },
         {
           "id": "PROD-009",
-          "check": "ci_pipeline_passed() \u00e2\u20ac\u201d GitHub Actions CI build succeeded",
+          "check": "ci_pipeline_passed() â€” GitHub Actions CI build succeeded",
           "type": "workflow",
           "required": true,
           "passed": false
         },
         {
           "id": "PROD-010",
-          "check": "requirements_traceability() \u00e2\u20ac\u201d deployment artifacts reference DR, performance, and infra requirements (REQ-DR-001 to REQ-DR-004, REQ-PERF-001 to REQ-PERF-003, REQ-INFRA-001 to REQ-INFRA-004)",
+          "check": "requirements_traceability() â€” deployment artifacts reference DR, performance, and infra requirements (REQ-DR-001 to REQ-DR-004, REQ-PERF-001 to REQ-PERF-003, REQ-INFRA-001 to REQ-INFRA-004)",
           "type": "traceability",
           "required": true,
           "passed": false
         },
         {
           "id": "PROD-011",
-          "check": "input_from_upstream_agents() \u00e2\u20ac\u201d consumes QA report (08) before deployment recommendation",
+          "check": "input_from_upstream_agents() â€” consumes QA report (08) before deployment recommendation",
           "type": "traceability",
           "required": true,
           "passed": false
         }
       ],
-      "notes": "Production deployment report complete: 21 API endpoints, 41 pages, 25 dynamic routes, 3 demo accounts, LOW risk, GO recommendation. Awaiting GATE-PRODUCTION-01 HITL sign-off. NOTE: Must follow feature-branch \u00e2\u2020\u2019 PR \u00e2\u2020\u2019 CI \u00e2\u2020\u2019 merge workflow. TRACEABILITY REQUIRED: Must map deployment to DR, performance, and infra requirements.",
+      "notes": "Production deployment report complete: 21 API endpoints, 41 pages, 25 dynamic routes, 3 demo accounts, LOW risk, GO recommendation. Awaiting GATE-PRODUCTION-01 HITL sign-off. NOTE: Must follow feature-branch â†’ PR â†’ CI â†’ merge workflow. TRACEABILITY REQUIRED: Must map deployment to DR, performance, and infra requirements.",
       "last_error": null,
       "started_at": null,
       "_health_flags": [
+        "llm_health",
         "dependency_integrity"
       ]
     },
@@ -1827,7 +1846,7 @@
       "role": "Technical Documentation & Localization Specialist",
       "expert_reviewer": {
         "role_title": "Senior Technical Writer / Documentation Lead",
-        "industry_jd_reference": "Technical Writing Lead \u00e2\u20ac\u201d validates help file coverage, i18n key mapping, installation guide completeness, style guide compliance, and release notes accuracy.",
+        "industry_jd_reference": "Technical Writing Lead â€” validates help file coverage, i18n key mapping, installation guide completeness, style guide compliance, and release notes accuracy.",
         "review_status": "pending",
         "review_feedback": [],
         "reviewed_by": null,
@@ -1869,35 +1888,36 @@
         },
         {
           "id": "TECHPUB-005",
-          "check": "feature_branch_used() \u00e2\u20ac\u201d work on feature branch off develop",
+          "check": "feature_branch_used() â€” work on feature branch off develop",
           "type": "workflow",
           "required": true,
           "passed": false
         },
         {
           "id": "TECHPUB-006",
-          "check": "pr_created_and_merged() \u00e2\u20ac\u201d PR targeting develop, CI passed before merge",
+          "check": "pr_created_and_merged() â€” PR targeting develop, CI passed before merge",
           "type": "workflow",
           "required": true,
           "passed": false
         },
         {
           "id": "TECHPUB-007",
-          "check": "requirements_traceability() \u00e2\u20ac\u201d documentation covers i18n (REQ-UI-013), API docs (REQ-API-013), merchant guide (REQ-MICRO-008)",
+          "check": "requirements_traceability() â€” documentation covers i18n (REQ-UI-013), API docs (REQ-API-013), merchant guide (REQ-MICRO-008)",
           "type": "traceability",
           "required": true,
           "passed": false
         },
         {
           "id": "TECHPUB-008",
-          "check": "input_from_upstream_agents() \u00e2\u20ac\u201d consumes UI map (07a), API spec (07b) before writing documentation",
+          "check": "input_from_upstream_agents() â€” consumes UI map (07a), API spec (07b) before writing documentation",
           "type": "traceability",
           "required": true,
           "passed": false
         }
       ],
-      "notes": "Must follow feature-branch \u00e2\u2020\u2019 PR \u00e2\u2020\u2019 CI \u00e2\u2020\u2019 merge workflow. TRACEABILITY REQUIRED: Documentation must trace to i18n, API docs, and merchant guide requirements.",
+      "notes": "Must follow feature-branch â†’ PR â†’ CI â†’ merge workflow. TRACEABILITY REQUIRED: Documentation must trace to i18n, API docs, and merchant guide requirements.",
       "_health_flags": [
+        "llm_health",
         "dependency_integrity"
       ]
     },
@@ -1913,7 +1933,7 @@
       "role": "CRM & Operations Specialist",
       "expert_reviewer": {
         "role_title": "Senior Customer Success Manager / Operations Lead",
-        "industry_jd_reference": "Customer Onboarding Lead \u00e2\u20ac\u201d validates acquisition pipeline design, account provisioning flow, merchant onboarding guides, billing integration, and support ticket routing.",
+        "industry_jd_reference": "Customer Onboarding Lead â€” validates acquisition pipeline design, account provisioning flow, merchant onboarding guides, billing integration, and support ticket routing.",
         "review_status": "pending",
         "review_feedback": [],
         "reviewed_by": null,
@@ -1955,35 +1975,36 @@
         },
         {
           "id": "CRM-005",
-          "check": "feature_branch_used() \u00e2\u20ac\u201d work on feature branch off develop",
+          "check": "feature_branch_used() â€” work on feature branch off develop",
           "type": "workflow",
           "required": true,
           "passed": false
         },
         {
           "id": "CRM-006",
-          "check": "pr_created_and_merged() \u00e2\u20ac\u201d PR targeting develop, CI passed before merge",
+          "check": "pr_created_and_merged() â€” PR targeting develop, CI passed before merge",
           "type": "workflow",
           "required": true,
           "passed": false
         },
         {
           "id": "CRM-007",
-          "check": "requirements_traceability() \u00e2\u20ac\u201d onboarding artifacts map to merchant microsite requirements (REQ-MICRO-001 to REQ-MICRO-008, REQ-UI-011, REQ-UI-014)",
+          "check": "requirements_traceability() â€” onboarding artifacts map to merchant microsite requirements (REQ-MICRO-001 to REQ-MICRO-008, REQ-UI-011, REQ-UI-014)",
           "type": "traceability",
           "required": true,
           "passed": false
         },
         {
           "id": "CRM-008",
-          "check": "input_from_upstream_agents() \u00e2\u20ac\u201d consumes DB schema (07c), UI merchant screens (07a) before building onboarding flows",
+          "check": "input_from_upstream_agents() â€” consumes DB schema (07c), UI merchant screens (07a) before building onboarding flows",
           "type": "traceability",
           "required": true,
           "passed": false
         }
       ],
-      "notes": "Must follow feature-branch \u00e2\u2020\u2019 PR \u00e2\u2020\u2019 CI \u00e2\u2020\u2019 merge workflow. TRACEABILITY REQUIRED: Onboarding artifacts must trace to merchant microsite requirements.",
+      "notes": "Must follow feature-branch â†’ PR â†’ CI â†’ merge workflow. TRACEABILITY REQUIRED: Onboarding artifacts must trace to merchant microsite requirements.",
       "_health_flags": [
+        "llm_health",
         "dependency_integrity"
       ]
     },
@@ -1999,7 +2020,7 @@
       "role": "Growth & Traffic Automation Specialist",
       "expert_reviewer": {
         "role_title": "Senior Marketing Manager / Growth Lead",
-        "industry_jd_reference": "Growth Marketing Lead \u00e2\u20ac\u201d validates campaign architecture, SEO strategy, meta-tag maps, social media assets, video scripts, and analytics tracking setup.",
+        "industry_jd_reference": "Growth Marketing Lead â€” validates campaign architecture, SEO strategy, meta-tag maps, social media assets, video scripts, and analytics tracking setup.",
         "review_status": "pending",
         "review_feedback": [],
         "reviewed_by": null,
@@ -2041,35 +2062,36 @@
         },
         {
           "id": "MKT-005",
-          "check": "feature_branch_used() \u00e2\u20ac\u201d work on feature branch off develop",
+          "check": "feature_branch_used() â€” work on feature branch off develop",
           "type": "workflow",
           "required": true,
           "passed": false
         },
         {
           "id": "MKT-006",
-          "check": "pr_created_and_merged() \u00e2\u20ac\u201d PR targeting develop, CI passed before merge",
+          "check": "pr_created_and_merged() â€” PR targeting develop, CI passed before merge",
           "type": "workflow",
           "required": true,
           "passed": false
         },
         {
           "id": "MKT-007",
-          "check": "requirements_traceability() \u00e2\u20ac\u201d marketing artifacts trace to customer funnel requirements (REQ-FUNNEL-001 to REQ-FUNNEL-004, REQ-PERF-002)",
+          "check": "requirements_traceability() â€” marketing artifacts trace to customer funnel requirements (REQ-FUNNEL-001 to REQ-FUNNEL-004, REQ-PERF-002)",
           "type": "traceability",
           "required": true,
           "passed": false
         },
         {
           "id": "MKT-008",
-          "check": "input_from_upstream_agents() \u00e2\u20ac\u201d consumes production deployment URLs (09) before launching campaigns",
+          "check": "input_from_upstream_agents() â€” consumes production deployment URLs (09) before launching campaigns",
           "type": "traceability",
           "required": true,
           "passed": false
         }
       ],
-      "notes": "Must follow feature-branch \u00e2\u2020\u2019 PR \u00e2\u2020\u2019 CI \u00e2\u2020\u2019 merge workflow. TRACEABILITY REQUIRED: Marketing artifacts must trace to funnel requirements.",
+      "notes": "Must follow feature-branch â†’ PR â†’ CI â†’ merge workflow. TRACEABILITY REQUIRED: Marketing artifacts must trace to funnel requirements.",
       "_health_flags": [
+        "llm_health",
         "dependency_integrity"
       ]
     },
@@ -2085,7 +2107,7 @@
       "role": "Autonomous Remediation & Healing Agent",
       "expert_reviewer": {
         "role_title": "Senior SRE / Support Lead",
-        "industry_jd_reference": "Site Reliability Lead \u00e2\u20ac\u201d validates monitoring setup, incident response playbooks, auto-remediation scripts, patch validation in sandbox, and DevOps pipeline clearance for hotfixes.",
+        "industry_jd_reference": "Site Reliability Lead â€” validates monitoring setup, incident response playbooks, auto-remediation scripts, patch validation in sandbox, and DevOps pipeline clearance for hotfixes.",
         "review_status": "pending",
         "review_feedback": [],
         "reviewed_by": null,
@@ -2141,35 +2163,36 @@
         },
         {
           "id": "MAINT-007",
-          "check": "feature_branch_used() \u00e2\u20ac\u201d work on feature branch off develop",
+          "check": "feature_branch_used() â€” work on feature branch off develop",
           "type": "workflow",
           "required": true,
           "passed": false
         },
         {
           "id": "MAINT-008",
-          "check": "pr_created_and_merged() \u00e2\u20ac\u201d PR targeting develop, CI passed before merge",
+          "check": "pr_created_and_merged() â€” PR targeting develop, CI passed before merge",
           "type": "workflow",
           "required": true,
           "passed": false
         },
         {
           "id": "MAINT-009",
-          "check": "requirements_traceability() \u00e2\u20ac\u201d maintenance artifacts trace to lifecycle requirements (REQ-MAINT-001 to REQ-MAINT-005)",
+          "check": "requirements_traceability() â€” maintenance artifacts trace to lifecycle requirements (REQ-MAINT-001 to REQ-MAINT-005)",
           "type": "traceability",
           "required": true,
           "passed": false
         },
         {
           "id": "MAINT-010",
-          "check": "input_from_upstream_agents() \u00e2\u20ac\u201d consumes production deployment (09), QA test results (08) before issuing patches",
+          "check": "input_from_upstream_agents() â€” consumes production deployment (09), QA test results (08) before issuing patches",
           "type": "traceability",
           "required": true,
           "passed": false
         }
       ],
-      "notes": "Must follow feature-branch \u00e2\u2020\u2019 PR \u00e2\u2020\u2019 CI \u00e2\u2020\u2019 merge workflow. TRACEABILITY REQUIRED: Maintenance patches must trace to lifecycle requirements.",
+      "notes": "Must follow feature-branch â†’ PR â†’ CI â†’ merge workflow. TRACEABILITY REQUIRED: Maintenance patches must trace to lifecycle requirements.",
       "_health_flags": [
+        "llm_health",
         "dependency_integrity"
       ]
     },
@@ -2185,7 +2208,7 @@
       "role": "Cloud Cost Optimization Guardrail",
       "expert_reviewer": {
         "role_title": "Senior FinOps Analyst / Cloud Cost Lead",
-        "industry_jd_reference": "FinOps Lead \u00e2\u20ac\u201d validates cloud spend tracking against budget, LLM token consumption monitoring, cost anomaly detection thresholds, and auto-scaling cost projections.",
+        "industry_jd_reference": "FinOps Lead â€” validates cloud spend tracking against budget, LLM token consumption monitoring, cost anomaly detection thresholds, and auto-scaling cost projections.",
         "review_status": "pending",
         "review_feedback": [],
         "reviewed_by": null,
@@ -2227,35 +2250,36 @@
         },
         {
           "id": "FIN-005",
-          "check": "feature_branch_used() \u00e2\u20ac\u201d work on feature branch off develop",
+          "check": "feature_branch_used() â€” work on feature branch off develop",
           "type": "workflow",
           "required": true,
           "passed": false
         },
         {
           "id": "FIN-006",
-          "check": "pr_created_and_merged() \u00e2\u20ac\u201d PR targeting develop, CI passed before merge",
+          "check": "pr_created_and_merged() â€” PR targeting develop, CI passed before merge",
           "type": "workflow",
           "required": true,
           "passed": false
         },
         {
           "id": "FIN-007",
-          "check": "requirements_traceability() \u00e2\u20ac\u201d cost tracking artifacts trace to commerce costing (REQ-COM-010) and infra (REQ-INFRA-001) requirements",
+          "check": "requirements_traceability() â€” cost tracking artifacts trace to commerce costing (REQ-COM-010) and infra (REQ-INFRA-001) requirements",
           "type": "traceability",
           "required": true,
           "passed": false
         },
         {
           "id": "FIN-008",
-          "check": "input_from_upstream_agents() \u00e2\u20ac\u201d consumes architect cost models (03), production deployment (09) before tracking",
+          "check": "input_from_upstream_agents() â€” consumes architect cost models (03), production deployment (09) before tracking",
           "type": "traceability",
           "required": true,
           "passed": false
         }
       ],
-      "notes": "Must follow feature-branch \u00e2\u2020\u2019 PR \u00e2\u2020\u2019 CI \u00e2\u2020\u2019 merge workflow. TRACEABILITY REQUIRED: Cost tracking must trace to commerce and infra requirements.",
+      "notes": "Must follow feature-branch â†’ PR â†’ CI â†’ merge workflow. TRACEABILITY REQUIRED: Cost tracking must trace to commerce and infra requirements.",
       "_health_flags": [
+        "llm_health",
         "dependency_integrity"
       ]
     },
@@ -2271,7 +2295,7 @@
       "role": "Security Guardrail",
       "expert_reviewer": {
         "role_title": "Senior Security Engineer / Compliance Officer",
-        "industry_jd_reference": "Security Lead \u00e2\u20ac\u201d validates secrets scanning across branches, API key exposure checks, encryption standards, compliance variance detection, and credential isolation in vault.",
+        "industry_jd_reference": "Security Lead â€” validates secrets scanning across branches, API key exposure checks, encryption standards, compliance variance detection, and credential isolation in vault.",
         "review_status": "pending",
         "review_feedback": [],
         "reviewed_by": null,
@@ -2313,35 +2337,36 @@
         },
         {
           "id": "SEC-005",
-          "check": "feature_branch_used() \u00e2\u20ac\u201d work on feature branch off develop",
+          "check": "feature_branch_used() â€” work on feature branch off develop",
           "type": "workflow",
           "required": true,
           "passed": false
         },
         {
           "id": "SEC-006",
-          "check": "pr_created_and_merged() \u00e2\u20ac\u201d PR targeting develop, CI passed before merge",
+          "check": "pr_created_and_merged() â€” PR targeting develop, CI passed before merge",
           "type": "workflow",
           "required": true,
           "passed": false
         },
         {
           "id": "SEC-007",
-          "check": "requirements_traceability() \u00e2\u20ac\u201d security artifacts trace to infra security (REQ-INFRA-005 to REQ-INFRA-011) and data privacy (REQ-DATA-001 to REQ-DATA-003) requirements",
+          "check": "requirements_traceability() â€” security artifacts trace to infra security (REQ-INFRA-005 to REQ-INFRA-011) and data privacy (REQ-DATA-001 to REQ-DATA-003) requirements",
           "type": "traceability",
           "required": true,
           "passed": false
         },
         {
           "id": "SEC-008",
-          "check": "input_from_upstream_agents() \u00e2\u20ac\u201d consumes DevOps config (06), production deployment (09) before scanning",
+          "check": "input_from_upstream_agents() â€” consumes DevOps config (06), production deployment (09) before scanning",
           "type": "traceability",
           "required": true,
           "passed": false
         }
       ],
-      "notes": "Must follow feature-branch \u00e2\u2020\u2019 PR \u00e2\u2020\u2019 CI \u00e2\u2020\u2019 merge workflow. TRACEABILITY REQUIRED: Security scanning must trace to infra security and data privacy requirements.",
+      "notes": "Must follow feature-branch â†’ PR â†’ CI â†’ merge workflow. TRACEABILITY REQUIRED: Security scanning must trace to infra security and data privacy requirements.",
       "_health_flags": [
+        "llm_health",
         "dependency_integrity"
       ]
     }
@@ -2362,7 +2387,7 @@
       "role": "Senior Enterprise Solution Architect",
       "expert_reviewer": {
         "role_title": "Senior Solution Architect / CTO",
-        "industry_jd_reference": "Enterprise Solution Architect \u00e2\u20ac\u201d reviews technical blueprint, API strategy, caching layer, message-queue architecture, security framework, and infrastructure costing. Must validate feasibility of 103 requirements against chosen tech stack.",
+        "industry_jd_reference": "Enterprise Solution Architect â€” reviews technical blueprint, API strategy, caching layer, message-queue architecture, security framework, and infrastructure costing. Must validate feasibility of 103 requirements against chosen tech stack.",
         "review_status": "pending",
         "review_feedback": [
           "APPROVED with changes: (1) Replace Gemini AI with Opencode/DeepSeek platform for any AI features, (2) Include WhatsApp integration in POC scope, (3) Generate synthetic product-level inventory for all 8 pilot merchants since real inventory arrays are empty."
@@ -2386,14 +2411,14 @@
       "compliance_checklist": [
         {
           "id": "ARCH-001",
-          "check": "artifact_exists(FEASIBILITY_ARCHITECTURE.md) \u00e2\u20ac\u201d architecture document present",
+          "check": "artifact_exists(FEASIBILITY_ARCHITECTURE.md) â€” architecture document present",
           "type": "artifact",
           "required": true,
           "passed": true
         },
         {
           "id": "ARCH-002",
-          "check": "artifact_exists(FEASIBILITY_ARCHITECTURE.json) \u00e2\u20ac\u201d structured architecture present",
+          "check": "artifact_exists(FEASIBILITY_ARCHITECTURE.json) â€” structured architecture present",
           "type": "artifact",
           "required": true,
           "passed": true

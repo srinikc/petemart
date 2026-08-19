@@ -1,0 +1,18 @@
+{
+  "appName": "ProductForge",
+  "appTagline": "Agentic Product Studio",
+  "appSlug": "product-forge-agentic",
+  "codeKey": "productforge",
+  "envPrefix": "PF_",
+  "consoleTitle": "Central Agentic AI Console",
+  "consoleSubtitle": "Multi-project pipeline management",
+  "projectId": "petemart",
+  "projectName": "PeteMart",
+  "projectDescription": "Old Bangalore Pete markets e-commerce platform",
+  "supportEmail": "support@productforge.dev",
+  "ports": {
+    "frameworkConsole": 3000,
+    "product": 3001,
+    "qaDashboard": 3458
+  }
+}

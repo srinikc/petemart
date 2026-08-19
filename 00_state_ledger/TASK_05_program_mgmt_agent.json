@@ -1,0 +1,66 @@
+{
+  "agent_id": "05_program_mgmt_agent",
+  "role": "Senior Agile Program Manager & Scrum Master",
+  "phase": "phase_two",
+  "dependencies_artifacts": [],
+  "deliverables": {
+    "human_readable": "agents/02_engineering_specs/05_program_mgmt_agent/SPRINT_PLAN.md",
+    "structured_data": "agents/02_engineering_specs/05_program_mgmt_agent/SPRINT_PLAN.json"
+  },
+  "sandbox_dir": "agents/02_engineering_specs/05_program_mgmt_agent/",
+  "prompt_source": ".opencode/agents/05_program_mgmt_agent.md",
+  "user_instruction": null,
+  "compliance_checks": [
+    {
+      "id": "PM-001",
+      "check": "artifact_exists(EPIC_FEATURE_STORY_MAP.md) — epic/story decomposition present",
+      "type": "artifact",
+      "required": true,
+      "passed": true
+    },
+    {
+      "id": "PM-002",
+      "check": "artifact_exists(SPRINT_TIMELINE_MILESTONES.md) — sprint schedule present",
+      "type": "artifact",
+      "required": true,
+      "passed": true
+    },
+    {
+      "id": "PM-003",
+      "check": "artifact_exists(MVP_SCOPE_DEFINITION.md) — MVP scope defined",
+      "type": "artifact",
+      "required": true,
+      "passed": true
+    },
+    {
+      "id": "PM-004",
+      "check": "all User Stories trace to approved Requirement IDs from PRD",
+      "type": "traceability",
+      "required": true,
+      "passed": true
+    },
+    {
+      "id": "PM-005",
+      "check": "delivery timeline has no unmapped task dependencies or deadlocks",
+      "type": "data_completeness",
+      "required": true,
+      "passed": true
+    },
+    {
+      "id": "PM-006",
+      "check": "COMPLETION_SLIDE.pptx generated",
+      "type": "artifact",
+      "required": true,
+      "passed": true
+    },
+    {
+      "id": "PM-007",
+      "check": "DATA_EXPORT.xlsx generated (sprint timelines, story points, dependency maps)",
+      "type": "artifact",
+      "required": true,
+      "passed": true
+    }
+  ],
+  "launched_at": "2026-06-21T11:56:23.733Z",
+  "status": "launched"
+}

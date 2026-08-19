@@ -2,11 +2,14 @@ import type { Metadata } from 'next';
 import '@/styles/globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { Toaster } from 'sonner';
+import { getPlatformConfig } from '@/lib/platform-config';
+
+const platform = getPlatformConfig();
 
 export const metadata: Metadata = {
-  title: 'PeteMart - Old Bangalore\'s Pete Markets at Your Doorstep',
-  description: 'Shop from 5,000+ traditional merchants across Chickpet, Balepet, Raja Market and more. Buy Now, Enquire on WhatsApp, or Visit Store.',
-  keywords: 'Bangalore markets, Chickpet, Balepet, Indian e-commerce, hyperlocal, traditional merchants',
+  title: `${platform.appName} — ${platform.appTagline}`,
+  description: platform.projectDescription,
+  keywords: 'agentic pipeline, AI orchestration, product studio, autonomous SDLC, multi-agent framework',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

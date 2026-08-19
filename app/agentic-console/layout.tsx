@@ -5,6 +5,9 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Shield, Menu, X, Activity, Bot, Settings, Server, Radio, ChevronDown, Globe } from 'lucide-react';
 import { GLOBAL_NAV_ITEMS, fetchProjectsIndex, ProjectInfo, withProject } from './shared';
 import Breadcrumbs from './breadcrumbs';
+import { getPlatformConfig } from '@/lib/platform-config';
+
+const platform = getPlatformConfig();
 
 const ICON_MAP: Record<string, React.ElementType> = {
     Activity, Bot, Shield, Settings, Server, Radio,
@@ -58,8 +61,8 @@ export default function AgenticConsoleLayout({ children }: { children: React.Rea
                     <div className="flex items-center gap-3">
                         <Shield size={22} className="text-indigo-600" />
                         <div>
-                            <h1 className="text-base font-bold">Central Agentic AI Console</h1>
-                            <p className="text-[10px] text-gray-400">Multi-project pipeline management</p>
+                            <h1 className="text-base font-bold">{platform.consoleTitle}</h1>
+                            <p className="text-[10px] text-gray-400">{platform.consoleSubtitle}</p>
                         </div>
                     </div>
 

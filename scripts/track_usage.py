@@ -1,8 +1,15 @@
 """
 track_usage.py — Token Usage Logger
 
-Reads opencode's local SQLite database and appends new sessions
-to agent_token_usage_log.csv in the project root.
+TEMPORARY (opencode-dependent): Reads opencode's local SQLite database and appends
+new sessions to agent_token_usage_log.csv in the project root.
+
+DEPRECATION PLAN (framework-native tracking):
+    The agentic framework already logs token usage natively to
+    00_state_ledger/token_spend_log.json via LLMProvider._logTokenUsage.
+    Migrate this script to read that file (per-agent: agent_id, provider, model,
+    tokens_in, tokens_out, cost) and drop the opencode SQLite dependency entirely.
+    This is scheduled for the framework DB phase (Supabase token_usage table).
 
 Usage:
     python scripts/track_usage.py

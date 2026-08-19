@@ -21,7 +21,6 @@ const STATE_PATH = path.join(ROOT, '00_state_ledger/STATE_MATRIX.json');
 const REGISTRY_PATH = path.join(ROOT, '00_state_ledger/AGENT_REGISTRY.json');
 const TRACEABILITY_PATH = path.join(ROOT, '00_state_ledger/TRACEABILITY_MATRIX.json');
 const EVENTS_PATH = path.join(ROOT, '00_state_ledger/PIPELINE_EVENTS.jsonl');
-const AGENTS_DIR = path.join(ROOT, '.opencode/agents');
 
 // ── Helpers ──
 
@@ -60,12 +59,6 @@ function artifactExists(relPath) {
 function getAgentDefs() {
   const registry = readJSON(REGISTRY_PATH);
   return registry?.agents || {};
-}
-
-function getAgentPrompt(agentId) {
-  const agentFile = path.join(AGENTS_DIR, `${agentId}.md`);
-  if (!fs.existsSync(agentFile)) return null;
-  return fs.readFileSync(agentFile, 'utf-8');
 }
 
 // ── Eligibility Engine ──
@@ -170,7 +163,6 @@ function shouldAutoRunAgent(agentId, state) {
 
 function launchAgentTask(agentId, state) {
   const agent = state.agent_states[agentId];
-  const prompt = getAgentPrompt(agentId);
   const artifacts = getDependencyArtifacts(state, agent);
   const registryDef = getAgentDefs()[agentId];
 
@@ -181,7 +173,7 @@ function launchAgentTask(agentId, state) {
     dependencies_artifacts: artifacts,
     deliverables: registryDef?.deliverables || {},
     sandbox_dir: registryDef?.workspace_root || `agents/03_execution_workspace/${agentId}/`,
-    prompt_source: `.opencode/agents/${agentId}.md`,
+    prompt_source: `00_state_ledger/AGENT_REGISTRY.json → agents.${agentId}.system_prompt`,
     user_instruction: agent.user_instruction || null,
     compliance_checks: agent.compliance_checklist || [],
     launched_at: new Date().toISOString(),

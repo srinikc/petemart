@@ -196,7 +196,7 @@ class SupervisorAgent {
       return {
         check: 'llm_health',
         healthy: true,
-        detail: `Provider: ${this._llmProvider.provider || 'opencode'}, Model: ${this._llmModel}`,
+        detail: `Provider: ${this._llmProvider.provider || 'unknown'}, Model: ${this._llmModel}`,
         provider: this._llmProvider.provider,
         model: this._llmModel,
       };

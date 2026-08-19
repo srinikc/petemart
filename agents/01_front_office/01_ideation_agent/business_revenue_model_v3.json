@@ -1,0 +1,716 @@
+{
+    "project_metadata": {
+        "name": "PeteMart",
+        "version": "3.0",
+        "phase": "Phase 1 - Enhanced Ideation, Revenue & Monetisation Model v3.0",
+        "target_geography": "Old Bangalore Pete Markets (21+ Mapped Areas)",
+        "document_scope": "Enhanced business model with 4-tier merchant subscription (19 features), 12 revenue vectors, 9 competitive differentiators, multi-scenario projections",
+        "merchant_data_ref": "estimated_merchants.json, pete_businesses.csv",
+        "csv_merchant_count": 558,
+        "json_merchant_count": 406,
+        "last_updated": "2026-06-18",
+        "data_insights_from_analysis": {
+            "digital_readiness": {
+                "has_dedicated_website_pct": 31.0,
+                "has_social_media_only_pct": 4.7,
+                "platform_hosted_store_pct": 4.5,
+                "no_online_presence_pct": 59.7,
+                "total_csv_records": 558,
+                "analysis_script": "pete_market_analysis.py"
+            },
+            "top_categories_by_merchant_count": [
+                {"category": "General Merchandise", "count": 66, "pct": 11.8},
+                {"category": "Jewellery", "count": 57, "pct": 10.2},
+                {"category": "Textile", "count": 57, "pct": 10.2},
+                {"category": "Hardware", "count": 37, "pct": 6.6},
+                {"category": "Saree", "count": 34, "pct": 6.1},
+                {"category": "Wedding Cards", "count": 29, "pct": 5.2},
+                {"category": "Cosmetics", "count": 20, "pct": 3.6},
+                {"category": "Steel/Utensils", "count": 20, "pct": 3.6},
+                {"category": "Pharma", "count": 20, "pct": 3.6},
+                {"category": "Watches", "count": 20, "pct": 3.6},
+                {"category": "Stationery", "count": 20, "pct": 3.6},
+                {"category": "Electrical", "count": 20, "pct": 3.6},
+                {"category": "Dry Fruits", "count": 20, "pct": 3.6},
+                {"category": "Imitation Jewellery", "count": 19, "pct": 3.4},
+                {"category": "Toys", "count": 19, "pct": 3.4},
+                {"category": "Garments", "count": 17, "pct": 3.0},
+                {"category": "Packing Materials", "count": 17, "pct": 3.0},
+                {"category": "Gift Bags", "count": 17, "pct": 3.0},
+                {"category": "Return Gifts", "count": 15, "pct": 2.7},
+                {"category": "Paper/Stationery", "count": 13, "pct": 2.3},
+                {"category": "FMCG", "count": 12, "pct": 2.1},
+                {"category": "Musical Instruments", "count": 9, "pct": 1.6}
+            ],
+            "commerce_mode_distribution": {
+                "Mode_A_Retail_Direct": 74,
+                "Mode_B_Wholesale_B2B": 474,
+                "Mode_C_Premium": 10,
+                "insight": "85% of Pete merchants operate in wholesale/B2B mode — PeteMart's Mode B (WhatsApp Enquiry) with 0% commission is critical"
+            },
+            "rating_summary": {
+                "average_rating": 4.53,
+                "total_rated_merchants": 558,
+                "highly_rated_pct_4.5_plus": 42.0,
+                "moderately_rated_pct_4.0_4.4": 38.0,
+                "average_rated_pct_3.5_3.9": 15.0,
+                "low_rated_pct_below_3.5": 5.0
+            },
+            "top_pete_areas_by_density": [
+                {"area": "Chickpet", "merchant_count": 355, "specialization": "Textiles, Sarees, Jewellery, General", "pct_of_total": 63.6},
+                {"area": "Nagarathpete", "merchant_count": 106, "specialization": "General, Cosmetics, FMCG", "pct_of_total": 19.0},
+                {"area": "Mamulpet", "merchant_count": 101, "specialization": "Dry Fruits, Spices, Packaging", "pct_of_total": 18.1},
+                {"area": "Kumbarpete", "merchant_count": 89, "specialization": "Steel, Utensils, Gifts", "pct_of_total": 16.0},
+                {"area": "Huriopet", "merchant_count": 85, "specialization": "Ropes, Cords, Packaging", "pct_of_total": 15.2},
+                {"area": "Sultanpet", "merchant_count": 58, "specialization": "Wedding Cards, Paper", "pct_of_total": 10.4},
+                {"area": "Santhusapet", "merchant_count": 48, "specialization": "Cosmetics, Beauty", "pct_of_total": 8.6},
+                {"area": "Tharagupet", "merchant_count": 47, "specialization": "Grains, Pulses, FMCG", "pct_of_total": 8.4},
+                {"area": "KR Market", "merchant_count": 39, "specialization": "Flowers, Produce, Puja Items", "pct_of_total": 7.0},
+                {"area": "Balepet", "merchant_count": 38, "specialization": "Plastics, Kitchenware, Household", "pct_of_total": 6.8},
+                {"area": "BVK Iyengar Road", "merchant_count": 18, "specialization": "Electricals, Cables", "pct_of_total": 3.2},
+                {"area": "Raja Market", "merchant_count": 15, "specialization": "Imitation Jewellery, Silver", "pct_of_total": 2.7},
+                {"area": "Cottonpet", "merchant_count": 10, "specialization": "Garments, Cosmetics, Sweets", "pct_of_total": 1.8},
+                {"area": "Akkipete", "merchant_count": 10, "specialization": "Pharma, Textiles", "pct_of_total": 1.8},
+                {"area": "Avenue Road", "merchant_count": 8, "specialization": "Books, Stationery, Toys", "pct_of_total": 1.4},
+                {"area": "Cubbonpet", "merchant_count": 6, "specialization": "Handlooms, Silk", "pct_of_total": 1.1},
+                {"area": "SP Road", "merchant_count": 5, "specialization": "Electronics, IT Components", "pct_of_total": 0.9},
+                {"area": "SJP Road", "merchant_count": 5, "specialization": "Hardware, Sanitaryware", "pct_of_total": 0.9},
+                {"area": "Basettyetpet", "merchant_count": 5, "specialization": "Lighting, Decorative", "pct_of_total": 0.9},
+                {"area": "RT Street", "merchant_count": 2, "specialization": "Garments, Hosiery", "pct_of_total": 0.4},
+                {"area": "Kilari Road", "merchant_count": 2, "specialization": "Stationery, Printing", "pct_of_total": 0.4},
+                {"area": "Sowrastra Pet", "merchant_count": 3, "specialization": "Pure Silk, Zari", "pct_of_total": 0.5}
+            ],
+            "qualitative_insights_from_interviews": {
+                "source": "PeteMart-Seller-Interview-Guide.docx",
+                "target_merchants": 20,
+                "pain_points_validated": [
+                    "Only people walking past see new stock — limited reach",
+                    "Merchants manually call 10-15 regulars for new arrivals",
+                    "Amazon/Flipkart commissions too high for wholesale margins",
+                    "Don't know how to create digital content (photos/videos)",
+                    "Jewellery and premium categories require in-person trust",
+                    "WhatsApp is the primary business communication tool"
+                ],
+                "price_sensitivity": "14/20 willing to pay ₹499/month if it brings new customers",
+                "killer_feature": "New arrival notification / Digital Window Display",
+                "onboarding_insight": "Younger family members (son/nephew) manage digital — target them for onboarding"
+            },
+            "analysis_script": "pete_market_analysis.py generates full statistical reports and priority outreach lists"
+        }
+    },
+    "named_markets_coverage": [
+        {"market": "Chickpet", "specialization": "Textiles, Wholesale Sarees, Fabrics, Dress Materials", "total_mapped_stores": 355, "digital_readiness_pct": 35, "best_mode": "B (Wholesale) + C (Jewellery)"},
+        {"market": "Balepet", "specialization": "Plastics, Kitchenware, Household Items, Traditional Sweets", "total_mapped_stores": 38, "digital_readiness_pct": 20, "best_mode": "A (Retail) + B (Wholesale)"},
+        {"market": "Mamulpet", "specialization": "Dry Fruits, Spices, Wholesale Packaging, Paper Bags", "total_mapped_stores": 101, "digital_readiness_pct": 15, "best_mode": "A (Retail) + B (Bulk)"},
+        {"market": "Tharagpet", "specialization": "Grains, Pulses, Spices, Heavy Groceries, Flours", "total_mapped_stores": 47, "digital_readiness_pct": 10, "best_mode": "B (Wholesale)"},
+        {"market": "Cubbonpet", "specialization": "Handlooms, Silk Weaving, Cotton Textiles", "total_mapped_stores": 6, "digital_readiness_pct": 40, "best_mode": "B + C"},
+        {"market": "Avenue Road", "specialization": "Academic Books, Stationery, Toys, Novelties", "total_mapped_stores": 8, "digital_readiness_pct": 25, "best_mode": "A (Retail)"},
+        {"market": "Raja Market", "specialization": "Imitation Jewellery, Silverware, Gift items", "total_mapped_stores": 15, "digital_readiness_pct": 20, "best_mode": "A + C"},
+        {"market": "Sultanpet", "specialization": "Wholesale Paper, Wedding Invitation Cards, Envelopes", "total_mapped_stores": 58, "digital_readiness_pct": 20, "best_mode": "B (Custom) + A (Standard)"},
+        {"market": "KR Market", "specialization": "Wholesale Flowers, Fresh Produce, Spices, Puja Goods", "total_mapped_stores": 39, "digital_readiness_pct": 5, "best_mode": "A (FMCG)"},
+        {"market": "Kumbarpete", "specialization": "Clay Pots, Steel Metalware, Toys, Return Gifts", "total_mapped_stores": 89, "digital_readiness_pct": 15, "best_mode": "A + B"},
+        {"market": "SP Road", "specialization": "Electronic Components, IT Spares, ICs, Testing Equipment", "total_mapped_stores": 5, "digital_readiness_pct": 50, "best_mode": "A (Standard)"},
+        {"market": "SJP Road", "specialization": "Sanitaryware, Plumbing Fittings, Hardware, Machinery", "total_mapped_stores": 5, "digital_readiness_pct": 15, "best_mode": "B (Wholesale)"},
+        {"market": "Huriopet", "specialization": "Cords, Ropes, Twines, Kite Thread, Wholesale Packaging Cords", "total_mapped_stores": 85, "digital_readiness_pct": 5, "best_mode": "B (Wholesale)"},
+        {"market": "Basettyetpet", "specialization": "Wholesale Decorative Lighting, Chandelier Parts, Wires", "total_mapped_stores": 5, "digital_readiness_pct": 25, "best_mode": "A + B"},
+        {"market": "BVK Iyengar Road", "specialization": "Electrical Accessories, Wires, Switchgears, Lamps", "total_mapped_stores": 18, "digital_readiness_pct": 30, "best_mode": "B (Wholesale)"},
+        {"market": "Akkipete", "specialization": "Pharmaceuticals, Medical Equipment, Rice trading", "total_mapped_stores": 10, "digital_readiness_pct": 20, "best_mode": "A + B"},
+        {"market": "RT Street", "specialization": "Readymade Garments, Hosiery, Fancy Novelties", "total_mapped_stores": 2, "digital_readiness_pct": 25, "best_mode": "A + B"},
+        {"market": "Kilari Road", "specialization": "Printing Presses, Stationery, Gold/Silver Refining", "total_mapped_stores": 2, "digital_readiness_pct": 20, "best_mode": "A + B"},
+        {"market": "Santhusapet", "specialization": "Fancy Cosmetics, Salon Equipment, Beauty Supplies", "total_mapped_stores": 48, "digital_readiness_pct": 25, "best_mode": "A (Retail)"},
+        {"market": "Cottonpet", "specialization": "Footwear, Readymade Garments, Traditional Sweets", "total_mapped_stores": 10, "digital_readiness_pct": 20, "best_mode": "A + B"},
+        {"market": "Sowrastra Pet", "specialization": "Saurashtrapet Silk Weaving, Zari Borders, Pure Silks", "total_mapped_stores": 3, "digital_readiness_pct": 30, "best_mode": "C (Premium) + B"},
+        {"market": "Nagarathpete", "specialization": "General Merchandise, Cosmetics, FMCG", "total_mapped_stores": 106, "digital_readiness_pct": 15, "best_mode": "A + B"}
+    ],
+    "interaction_mode_definitions": {
+        "mode_a": {
+            "name": "Mode A - Direct Purchase",
+            "description": "In-app cart & checkout with Razorpay payment gateway, order tracking, and delivery management.",
+            "onboarding_default": true,
+            "best_for_categories": ["FMCG", "Stationery", "Cosmetics", "Electronics", "Books", "Dry Fruits", "Plastics", "Steel/Utensils"],
+            "commission_rate_b2c_pct": 2.0,
+            "commission_rate_b2b_pct": 1.5
+        },
+        "mode_b": {
+            "name": "Mode B - WhatsApp Enquiry",
+            "description": "Trackable WhatsApp deep-link button for product enquiries, bulk quote requests, and price negotiation.",
+            "onboarding_default": true,
+            "best_for_categories": ["Textiles", "Sarees", "Wedding Cards", "Hardware", "Electricals", "Garments", "Packaging Materials", "Return Gifts"],
+            "commission_rate_pct": 0
+        },
+        "mode_c": {
+            "name": "Mode C - Visit Store",
+            "description": "Google Maps directions, store facade gallery, virtual window display, and physical footfall tracking.",
+            "onboarding_default": true,
+            "best_for_categories": ["Jewellery", "Pure Silk Sarees", "Gold/Silver", "Musical Instruments", "Premium Watches", "Custom Tailoring"],
+            "commission_rate_pct": 0
+        }
+    },
+    "platform_monetization_schema": {
+        "subscription_plans": [
+            {
+                "plan_id": "basic",
+                "name": "Basic (Free)",
+                "monthly_rate_inr": 0,
+                "annual_rate_inr": 0,
+                "available_modes": ["mode_b", "mode_c"],
+                "max_products": 50,
+                "commission_b2c_pct": 2.0,
+                "commission_b2b_pct": 1.5,
+                "commission_mode_b_pct": 0,
+                "commission_mode_c_pct": 0,
+                "features": [
+                    "Choose 1 mode (WhatsApp Enquiry OR Visit Store)",
+                    "Basic store microsite (1 page) - petemart.in/shop-name",
+                    "Product Catalogue (up to 50 items)",
+                    "Trackable WhatsApp Enquiry Button (Mode B)",
+                    "Google Maps Store Navigation Integration (Mode C)",
+                    "Printable Store QR Code for physical shop",
+                    "Free discovery on PeteMart platform"
+                ],
+                "feature_count": 7,
+                "target_audience": "Pure Wholesale or High-Value shops preferring in-person / WhatsApp negotiations",
+                "expected_pct_year1": 50,
+                "expected_pct_year2": 35,
+                "expected_pct_year3": 25
+            },
+            {
+                "plan_id": "silver",
+                "name": "Silver",
+                "monthly_rate_inr": 499,
+                "annual_rate_inr": 4990,
+                "available_modes": ["mode_a", "mode_b", "mode_c"],
+                "max_products": 200,
+                "commission_b2c_pct": 1.5,
+                "commission_b2b_pct": 1.0,
+                "commission_mode_b_pct": 0,
+                "commission_mode_c_pct": 0,
+                "features": [
+                    "Up to 2 modes (choose any combination)",
+                    "Branded store microsite (3 pages: Home, Products, About)",
+                    "Product Catalogue (up to 200 items)",
+                    "All Mode A checkout features (Direct Purchase)",
+                    "Razorpay Payment Gateway Integration",
+                    "Trackable WhatsApp Enquiry (Mode B)",
+                    "Google Maps Navigation (Mode C)",
+                    "Basic Sales Analytics Dashboard",
+                    "Digital Window Display: 2 posts/month",
+                    "WhatsApp Broadcast Tool (up to 500 customers/month)"
+                ],
+                "feature_count": 10,
+                "target_audience": "Standard retail + wholesale shops scaling online",
+                "expected_pct_year1": 30,
+                "expected_pct_year2": 35,
+                "expected_pct_year3": 38
+            },
+            {
+                "plan_id": "gold",
+                "name": "Gold",
+                "monthly_rate_inr": 1499,
+                "annual_rate_inr": 14990,
+                "available_modes": ["mode_a", "mode_b", "mode_c"],
+                "max_products": 1000,
+                "commission_b2c_pct": 1.0,
+                "commission_b2b_pct": 0.75,
+                "commission_mode_b_pct": 0,
+                "commission_mode_c_pct": 0,
+                "features": [
+                    "All 3 modes activated",
+                    "Premium store microsite (full site with gallery)",
+                    "Product Catalogue (up to 1,000 items)",
+                    "Bulk CSV product upload",
+                    "AI-Powered Video Reel Creation (2/month, concierge)",
+                    "Digital Window Display: 8 posts/month",
+                    "Full Sales & Customer Analytics Dashboard",
+                    "Priority Chat + Phone Support",
+                    "Boosted Search Ranking (sponsored listing)",
+                    "Festival Campaign Featured Slot (1/month)",
+                    "WhatsApp Broadcast Tool (up to 2,000 customers/month)",
+                    "B2B Escrow Payment Support"
+                ],
+                "feature_count": 12,
+                "target_audience": "Mid-size merchants scaling aggressively",
+                "expected_pct_year1": 15,
+                "expected_pct_year2": 22,
+                "expected_pct_year3": 25
+            },
+            {
+                "plan_id": "platinum",
+                "name": "Platinum",
+                "monthly_rate_inr": 4999,
+                "annual_rate_inr": 49990,
+                "available_modes": ["mode_a", "mode_b", "mode_c"],
+                "max_products": 0,
+                "max_products_unlimited": true,
+                "commission_b2c_pct": 0.5,
+                "commission_b2b_pct": 0.25,
+                "commission_mode_b_pct": 0,
+                "commission_mode_c_pct": 0,
+                "features": [
+                    "All 3 modes with highest priority processing",
+                    "Custom Domain Store Microsite (shop.yourstore.com)",
+                    "Unlimited Product Catalogue",
+                    "Full API Access for inventory/order management",
+                    "Professional In-Person Video Shoots (8/month)",
+                    "Digital Window Display: Unlimited posts",
+                    "Real-time Analytics Dashboard with CRM",
+                    "Dedicated Account Manager",
+                    "Featured Homepage Banner (4 days/month)",
+                    "Festival Campaign Featured Slot (4/month)",
+                    "Sponsored Category Placement",
+                    "WhatsApp Broadcast Tool (Unlimited)",
+                    "B2B Escrow with Priority Settlement",
+                    "Bulk CSV + API inventory sync",
+                    "Priority Onboarding & 24/7 Support",
+                    "B2B Wholesale Marketplace Access (Bulk Order Board)",
+                    "Virtual Pete Street CMS - Premium Storefront Customization"
+                ],
+                "feature_count": 17,
+                "target_audience": "Elite silk merchants, premium jewellers, large wholesale dealers",
+                "expected_pct_year1": 5,
+                "expected_pct_year2": 8,
+                "expected_pct_year3": 12
+            }
+        ],
+        "total_features_per_tier": {
+            "basic": 7,
+            "silver": 10,
+            "gold": 12,
+            "platinum": 17
+        },
+        "transaction_fees": {
+            "b2c_retail_commission_base_pct": 2.0,
+            "b2b_wholesale_commission_base_pct": 1.5,
+            "b2c_silver_pct": 1.5,
+            "b2b_silver_pct": 1.0,
+            "b2c_gold_pct": 1.0,
+            "b2b_gold_pct": 0.75,
+            "b2c_platinum_pct": 0.5,
+            "b2b_platinum_pct": 0.25,
+            "payment_gateway_processing_fee_pct": 2.0,
+            "platform_revenue_cap_per_wholesale_order_inr": 500,
+            "commission_mode_b_pct": 0,
+            "commission_mode_c_pct": 0,
+            "b2b_bulk_order_commission_pct": 0.75,
+            "b2b_bulk_order_commission_note": "RV-11: 0.75% on Mode B wholesale transactions above ₹10,000"
+        },
+        "value_added_services": {
+            "catalog_digitization_fee_per_product_inr": 10,
+            "ai_reel_creation_fee_per_reel_inr": 999,
+            "concierge_video_shoot_fee_per_session_inr": 2499,
+            "sponsored_cpc_listing_starting_rate_inr_per_click": 2.0,
+            "featured_category_placement_inr_per_month": 999,
+            "homepage_banner_ads_slot_fee_inr_per_day": 499,
+            "area_page_banner_fee_inr_per_day": 299,
+            "whatsapp_analytics_addon_inr_per_month": 299,
+            "premium_microsite_standalone_inr_per_month": 999,
+            "data_insights_report_inr": 999,
+            "data_insights_quarterly_subscription_inr": 2499,
+            "festival_campaign_feature_inr": 5000,
+            "diwali_campaign_feature_inr": 10000,
+            "ugadi_campaign_feature_inr": 3000,
+            "b2b_escrow_fee_pct": 1.0,
+            "late_payment_penalty_monthly_pct": 2.0,
+            "b2b_bulk_order_commission_pct": 0.75,
+            "digital_window_display_video_slot_inr": 199,
+            "digital_window_display_reel_boost_inr": 499,
+            "virtual_pete_street_premium_storefront_inr_per_month": 299
+        },
+        "revenue_vectors": [
+            {
+                "vector_id": "RV-01",
+                "name": "Subscription Tiers",
+                "description": "Monthly/annual recurring fees from Silver (₹499), Gold (₹1,499), Platinum (₹4,999) plans",
+                "margin_pct": 88,
+                "revenue_share_of_total_pct_2000_merchants": 56.4,
+                "maturity_phase": "Immediate"
+            },
+            {
+                "vector_id": "RV-02",
+                "name": "Transaction Commission",
+                "description": "Per-order commission on Mode A transactions: 0.5%-2% based on tier and B2B/B2C",
+                "margin_pct": 95,
+                "revenue_share_of_total_pct_2000_merchants": 21.7,
+                "maturity_phase": "Immediate"
+            },
+            {
+                "vector_id": "RV-03",
+                "name": "Featured Listing & Sponsored Search",
+                "description": "CPC starting ₹2/click; boosted category placement ₹999/mo; search prominence for Gold/Platinum",
+                "margin_pct": 92,
+                "revenue_share_of_total_pct_2000_merchants": 3.2,
+                "maturity_phase": "Month 3"
+            },
+            {
+                "vector_id": "RV-04",
+                "name": "Promotional Campaigns (Festival Specials)",
+                "description": "Festival slot bookings: Dussehra ₹5K, Diwali ₹10K, Ugadi ₹3K, Onam ₹3K; seasonal promotions",
+                "margin_pct": 85,
+                "revenue_share_of_total_pct_2000_merchants": 1.8,
+                "maturity_phase": "Month 6"
+            },
+            {
+                "vector_id": "RV-05",
+                "name": "Delivery & Logistics Fees",
+                "description": "15% platform take-rate on delivery fees (₹6-₹27 per order); consolidation surcharge ₹10/platform",
+                "margin_pct": 15,
+                "revenue_share_of_total_pct_2000_merchants": 6.5,
+                "maturity_phase": "Month 1"
+            },
+            {
+                "vector_id": "RV-06",
+                "name": "WhatsApp Commerce Analytics",
+                "description": "Premium add-on ₹299/mo for WhatsApp conversion tracking, message analytics, response time monitoring",
+                "margin_pct": 92,
+                "revenue_share_of_total_pct_2000_merchants": 0.9,
+                "maturity_phase": "Month 6"
+            },
+            {
+                "vector_id": "RV-07",
+                "name": "Premium Merchant Microsite (Custom Domain)",
+                "description": "Custom domain + branding: included in Platinum, standalone ₹999/mo for Gold-tier upsell",
+                "margin_pct": 88,
+                "revenue_share_of_total_pct_2000_merchants": 1.4,
+                "maturity_phase": "Month 3"
+            },
+            {
+                "vector_id": "RV-08",
+                "name": "Advertising & Banner Placements",
+                "description": "Homepage ₹499/day, area page ₹299/day, category page ₹199/day, search result banners",
+                "margin_pct": 92,
+                "revenue_share_of_total_pct_2000_merchants": 1.1,
+                "maturity_phase": "Month 6"
+            },
+            {
+                "vector_id": "RV-09",
+                "name": "Data Insights Reports",
+                "description": "Market trend analysis reports for merchants: ₹999 single, ₹2,499 quarterly subscription",
+                "margin_pct": 95,
+                "revenue_share_of_total_pct_2000_merchants": 0.3,
+                "maturity_phase": "Month 9"
+            },
+            {
+                "vector_id": "RV-10",
+                "name": "Late-Payment/Escrow Fees",
+                "description": "B2B escrow: 1% fee on held transaction amount; late payment penalty 2%/month on overdue invoices",
+                "margin_pct": 90,
+                "revenue_share_of_total_pct_2000_merchants": 0.1,
+                "maturity_phase": "Month 6"
+            },
+            {
+                "vector_id": "RV-11",
+                "name": "B2B Bulk Order Commission",
+                "description": "NEW: 0.75% commission on Mode B wholesale transactions above ₹10,000. Enables bulk ordering, negotiated pricing, escrow payment terms for wholesale buyers.",
+                "margin_pct": 90,
+                "revenue_share_of_total_pct_2000_merchants": 5.5,
+                "maturity_phase": "Month 6",
+                "new_in_v3": true
+            },
+            {
+                "vector_id": "RV-12",
+                "name": "Digital Window Display Monetization",
+                "description": "NEW: Featured video slots (₹199/post), reel boost pricing (₹499 boost), premium placement in 'What's New' feed. Merchants pay for enhanced visibility of new arrivals.",
+                "margin_pct": 92,
+                "revenue_share_of_total_pct_2000_merchants": 1.1,
+                "maturity_phase": "Month 3",
+                "new_in_v3": true
+            }
+        ],
+        "revenue_projections": {
+            "scenario_a_pilot_500_merchants": {
+                "monthly_breakdown": {
+                    "subscription_revenue_inr": 159850,
+                    "commission_revenue_inr": 65400,
+                    "value_added_services_inr": 40000,
+                    "delivery_share_revenue_inr": 20000,
+                    "b2b_bulk_commission_inr": 0,
+                    "digital_window_display_inr": 0
+                },
+                "total_monthly_revenue_inr": 285250,
+                "total_annual_revenue_inr_ramp": 1711500,
+                "arr_inr": 3423000,
+                "estimated_merchant_count": 500,
+                "estimated_monthly_orders": 2500,
+                "estimated_b2b_bulk_orders": 0,
+                "tier_distribution": {
+                    "basic": 350,
+                    "silver": 100,
+                    "gold": 40,
+                    "platinum": 10
+                },
+                "monthly_burn_inr": 90000,
+                "monthly_profit_inr": 195250,
+                "profit_margin_pct": 68.4
+            },
+            "scenario_b_scale_1000_merchants": {
+                "monthly_breakdown": {
+                    "subscription_revenue_inr": 454600,
+                    "commission_revenue_inr": 182700,
+                    "value_added_services_inr": 117500,
+                    "delivery_share_revenue_inr": 60000,
+                    "b2b_bulk_commission_inr": 15000,
+                    "digital_window_display_inr": 8000
+                },
+                "total_monthly_revenue_inr": 837800,
+                "total_annual_revenue_inr_ramp": 5026800,
+                "arr_inr": 10053600,
+                "estimated_merchant_count": 1000,
+                "estimated_monthly_orders": 7500,
+                "estimated_b2b_bulk_orders": 500,
+                "tier_distribution": {
+                    "basic": 600,
+                    "silver": 250,
+                    "gold": 120,
+                    "platinum": 30
+                },
+                "monthly_burn_inr": 120000,
+                "monthly_profit_inr": 717800,
+                "profit_margin_pct": 85.7
+            },
+            "scenario_c_yearend_2000_merchants": {
+                "monthly_breakdown": {
+                    "subscription_revenue_inr": 1249000,
+                    "commission_revenue_inr": 480000,
+                    "value_added_services_inr": 342500,
+                    "delivery_share_revenue_inr": 144000,
+                    "b2b_bulk_commission_inr": 85000,
+                    "digital_window_display_inr": 35000
+                },
+                "total_monthly_revenue_inr": 2335500,
+                "total_annual_revenue_inr_ramp": 14013000,
+                "arr_inr": 28026000,
+                "estimated_merchant_count": 2000,
+                "estimated_monthly_orders": 18000,
+                "estimated_b2b_bulk_orders": 3000,
+                "tier_distribution": {
+                    "basic": 1000,
+                    "silver": 600,
+                    "gold": 300,
+                    "platinum": 100
+                },
+                "monthly_burn_inr": 180000,
+                "monthly_profit_inr": 2155500,
+                "profit_margin_pct": 92.3
+            },
+            "scenario_d_growth_5000_merchants": {
+                "monthly_breakdown": {
+                    "subscription_revenue_inr": 4521750,
+                    "commission_revenue_inr": 1678500,
+                    "value_added_services_inr": 1300000,
+                    "delivery_share_revenue_inr": 400000,
+                    "b2b_bulk_commission_inr": 375000,
+                    "digital_window_display_inr": 150000
+                },
+                "total_monthly_revenue_inr": 8425250,
+                "total_annual_revenue_inr_ramp": 50551500,
+                "arr_inr": 101103000,
+                "estimated_merchant_count": 5000,
+                "estimated_monthly_orders": 50000,
+                "estimated_b2b_bulk_orders": 15000,
+                "tier_distribution": {
+                    "basic": 1750,
+                    "silver": 1750,
+                    "gold": 1100,
+                    "platinum": 400
+                },
+                "monthly_burn_inr": 350000,
+                "monthly_profit_inr": 8075250,
+                "profit_margin_pct": 95.8
+            }
+        },
+        "annual_revenue_summary": {
+            "scenario_a_pilot_500": {"monthly_revenue": 285250, "annual_revenue_12mo": 3423000, "annual_revenue_ramp": 1711500},
+            "scenario_b_scale_1000": {"monthly_revenue": 837800, "annual_revenue_12mo": 10053600, "annual_revenue_ramp": 5026800},
+            "scenario_c_yearend_2000": {"monthly_revenue": 2335500, "annual_revenue_12mo": 28026000, "annual_revenue_ramp": 14013000},
+            "scenario_d_growth_5000": {"monthly_revenue": 8425250, "annual_revenue_12mo": 101103000, "annual_revenue_ramp": 50551500}
+        },
+        "monthly_recurring_burn": {
+            "cloud_infrastructure_supabase_vercel_railway_inr": 4000,
+            "communications_sms_whatsapp_otp_inr": 5000,
+            "google_maps_api_inr": 3000,
+            "ai_api_suite_inr": 8000,
+            "field_onboarding_executive_1fte_inr": 25000,
+            "chickpet_microhub_rent_operations_inr": 35000,
+            "legal_compliance_ca_inr": 10000,
+            "total_monthly_burn_inr": 90000,
+            "scale_additions_per_1000_merchants_inr": 30000,
+            "notes": [
+                "At 500 merchants: ₹90K/month covers all operations",
+                "At 1,000 merchants: ₹1.2L/month (add 1 FTE onboarding)",
+                "At 2,000 merchants: ₹1.8L/month (add 2 FTE)",
+                "At 5,000 merchants: ₹3.5L/month (full team)"
+            ]
+        },
+        "break_even_analysis": {
+            "setup_cost_inr": 150000,
+            "payback_at_500_merchants_month": 1,
+            "break_even_merchant_count": 30,
+            "break_even_formula": "Revenue (₹2.85L at 500 merchants) - Burn (₹0.90L) = ₹1.95L profit from Month 1",
+            "note": "PeteMart achieves immediate profitability at pilot scale due to lean AI-first stack and high-margin subscription model"
+        },
+        "onboarding_mode_selection": {
+            "description": "Every merchant receives access to all three interaction modes upon signing up. During onboarding, the merchant selects which modes to activate.",
+            "selection_rules": {
+                "can_select_multiple": true,
+                "minimum_modes_required": 1,
+                "default_selection": ["mode_a", "mode_b", "mode_c"],
+                "tier_mode_limits": {
+                    "basic": "Must choose 1: Mode B or Mode C",
+                    "silver": "Must choose at least 1, up to 2 modes",
+                    "gold": "All 3 modes auto-activated",
+                    "platinum": "All 3 modes auto-activated with priority"
+                }
+            },
+            "mode_activation": {
+                "mode_a_requires": ["razorpay_account", "digital_catalogue"],
+                "mode_b_requires": ["whatsapp_business_number"],
+                "mode_c_requires": ["google_maps_pin", "store_address"]
+            }
+        },
+        "tier_strategy_notes": {
+            "year1_pilot_target_distribution": {"basic_pct": 70, "silver_pct": 20, "gold_pct": 8, "platinum_pct": 2},
+            "year1_scale_target_distribution": {"basic_pct": 50, "silver_pct": 30, "gold_pct": 15, "platinum_pct": 5},
+            "year2_growth_target_distribution": {"basic_pct": 35, "silver_pct": 35, "gold_pct": 22, "platinum_pct": 8},
+            "year3_mature_target_distribution": {"basic_pct": 25, "silver_pct": 38, "gold_pct": 25, "platinum_pct": 12},
+            "upgrade_path_rationale": "Heavy free tier drives adoption initially. Merchants graduate to paid tiers as they see value from free discovery. Qualitative interviews validated ₹499/mo willingness contingent on new customer acquisition."
+        }
+    },
+    "cost_of_delivery_schema": {
+        "base_courier_delivery_rates": [
+            {
+                "distance_slab": "Zone 1 (0-3 km)",
+                "retail_rate_inr": 40,
+                "wholesale_bulk_rate_inr": 60,
+                "courier_partner_share_pct": 85,
+                "platform_share_pct": 15,
+                "platform_net_inr_retail": 6,
+                "platform_net_inr_wholesale": 9,
+                "delivery_type": "Hyperlocal Pete Circle"
+            },
+            {
+                "distance_slab": "Zone 2 (3-7 km)",
+                "retail_rate_inr": 70,
+                "wholesale_bulk_rate_inr": 110,
+                "courier_partner_share_pct": 85,
+                "platform_share_pct": 15,
+                "platform_net_inr_retail": 10.5,
+                "platform_net_inr_wholesale": 16.5,
+                "delivery_type": "Core Bangalore"
+            },
+            {
+                "distance_slab": "Zone 3 (7+ km)",
+                "retail_rate_inr": 110,
+                "wholesale_bulk_rate_inr": 180,
+                "courier_partner_share_pct": 85,
+                "platform_share_pct": 15,
+                "platform_net_inr_retail": 16.5,
+                "platform_net_inr_wholesale": 27,
+                "delivery_type": "Extended Suburbs"
+            }
+        ],
+        "weight_surcharges": {
+            "retail_per_additional_kg_above_5kg_inr": 10,
+            "wholesale_per_additional_10kg_above_20kg_inr": 30
+        },
+        "multi_store_consolidation_rules": {
+            "description": "Mechanics of delivery fee pooling and routing when a buyer purchases from multiple Pete shops in a single order.",
+            "consolidation_base_surcharge_inr": 25,
+            "consolidation_courier_share_inr": 15,
+            "consolidation_platform_share_inr": 10,
+            "formula": "Delivery Fee = (Max Zone Base Rate among shops) + (Consolidation Surcharge × (Number of Shops - 1)) + Weight Surcharges",
+            "logistics_flow": [
+                "1. Courier picks up items sequentially from all designated Pete stores in the order.",
+                "2. Items are brought to the nearby PeteMart Micro-Hub (Chickpet central) for single bag consolidation.",
+                "3. Courier makes a unified single-drop delivery to the customer.",
+                "4. Single checkout can span 3+ Petes (e.g., silk from Chickpet + jewellery from Raja Market + dry fruits from Mamulpet)"
+            ]
+        },
+        "surge_pricing": {
+            "night_surge_9pm_to_6am_pct": 25,
+            "festival_rush_surge_pct": 15,
+            "rain_surge_pct": 10,
+            "weekend_surge_pct": 5
+        },
+        "delivery_pnl_at_2000_merchants": {
+            "monthly_orders": 18000,
+            "avg_platform_share_per_order_inr": 8,
+            "total_delivery_revenue_inr": 144000,
+            "microhub_operations_cost_inr": 35000,
+            "delivery_profit_inr": 109000,
+            "pct_of_total_revenue": 6.5,
+            "note": "Delivery is a profit center, not a cost center. The 15% platform take-rate covers micro-hub operations and generates surplus."
+        },
+        "delivery_pnl_at_5000_merchants": {
+            "monthly_orders": 50000,
+            "avg_platform_share_per_order_inr": 8,
+            "total_delivery_revenue_inr": 400000,
+            "microhub_operations_cost_inr": 70000,
+            "delivery_profit_inr": 330000
+        }
+    },
+    "competitive_differentiators": [
+        {
+            "id": "D01",
+            "name": "WhatsApp-Native Commerce",
+            "description": "Every product page has deep-linked WhatsApp button. Customer taps → pre-filled message with product details opens in WhatsApp. Zero learning curve for merchants who already use WhatsApp daily.",
+            "vs_competition": "Amazon/Flipkart require app install and learning curve. JustDial gives static leads. PeteMart makes WhatsApp the commerce interface."
+        },
+        {
+            "id": "D02",
+            "name": "Hyperlocal Delivery Economics",
+            "description": "Zone-based delivery (₹40/70/110) with multi-store consolidation. Order from 3 different Petes in one checkout — single delivery, shared cost.",
+            "vs_competition": "Amazon's logistics is pan-India but expensive for small orders. PeteMart's micro-hub model makes ₹40 deliveries viable."
+        },
+        {
+            "id": "D03",
+            "name": "3-Mode Hybrid Model (Buy/Enquire/Visit)",
+            "description": "Mode A (Direct Purchase), Mode B (WhatsApp Enquiry — 0% commission), Mode C (Visit Store — 0% commission). Merchants choose their digital maturity.",
+            "vs_competition": "Amazon forces full e-commerce or nothing. PeteMart lets merchants start with just a WhatsApp button and graduate to checkout."
+        },
+        {
+            "id": "D04",
+            "name": "Zero-Commission Starting Model",
+            "description": "Mode B and C have 0% commission forever. Mode A starts at 2%. A merchant can be on PeteMart for a year without paying a rupee in commission.",
+            "vs_competition": "Amazon 15-35% is impossible for thin-margin wholesale. JustDial sells same lead to 5 competitors. PeteMart gives exclusive, free discovery."
+        },
+        {
+            "id": "D05",
+            "name": "Physical-Digital Twin Concept",
+            "description": "Digital storefront mirrors physical shop — same products, same pricing, same owner. Store photos, owner profile, real-time stock via Digital Window Display.",
+            "vs_competition": "E-commerce treats physical stores as liabilities. PeteMart amplifies footfall via Mode C — driving customers to visit the shop."
+        },
+        {
+            "id": "D06",
+            "name": "AI-Powered Digital Window Display + Follow Feature",
+            "description": "Merchants post 30-90 sec videos of new stock. Pushed to followers as notifications. Like Instagram for Pete shops. 'Follow a Store' creates owned notification channel.",
+            "vs_competition": "Only walking past the shop was the only way to see new stock. PeteMart broadcasts new arrivals to thousands of followers instantly."
+        },
+        {
+            "id": "D07",
+            "name": "Pete-Heritage Storytelling UX",
+            "description": "Landing page organized by Pete area with heritage cards. Each area has history and specialization. Trust signals: years in business (avg 17), GST registration (95%+), owner profiles.",
+            "vs_competition": "Amazon is sterile and algorithmic. PeteMart is rooted in Bangalore's 500-year trading heritage. Customers shop by area, not just by product."
+        },
+        {
+            "id": "D08",
+            "name": "B2B Wholesale Marketplace",
+            "description": "NEW IN v3: Bulk ordering platform with negotiated pricing, escrow payment terms for wholesale buyers. Merchants can list wholesale quantities (MOQ), receive bulk RFQs, and transact via escrow-protected B2B payments. 0.75% commission on bulk orders.",
+            "vs_competition": "IndiaMART charges ₹5-50/lead with no transaction guarantee. Amazon Business is complex to onboard. PeteMart B2B marketplace uses existing WhatsApp negotiation (Mode B) with added escrow protection.",
+            "new_in_v3": true
+        },
+        {
+            "id": "D09",
+            "name": "Virtual Pete Street CMS",
+            "description": "NEW IN v3: Merchants self-manage their storefront appearance on a digital street map of their Pete. Customize virtual stall layout, signage, featured products placement on the digital street. Premium storefront customization for Gold/Platinum tiers.",
+            "vs_competition": "No competitor offers a digital twin of the physical Pete street layout. This creates an immersive browsing experience that mirrors walking through Chickpet lanes.",
+            "new_in_v3": true
+        }
+    ],
+    "analysis_artifacts": {
+        "python_analysis_script": "pete_market_analysis.py",
+        "output_enhanced_priority_csv": "pete_priority_outreach_enhanced.csv",
+        "output_structural_analysis_json": "pete_structural_analysis.json",
+        "output_density_heatmap_json": "pete_density_heatmap.json",
+        "analysis_description": "Python script reads 558 merchants, computes category/area/digital readiness distributions, generates composite priority scores, and exports structured analysis"
+    }
+}

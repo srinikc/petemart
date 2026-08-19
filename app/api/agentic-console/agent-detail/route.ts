@@ -40,14 +40,8 @@ export async function GET(request: NextRequest) {
         }
     }
 
-    // Read system prompt from registry or fallback to .opencode/agents/*.md
-    let systemPrompt = registryEntry?.system_prompt || '';
-    if (!systemPrompt) {
-      const agentFile = path.join(ROOT, '.opencode/agents', `${agentId}.md`);
-      if (fs.existsSync(agentFile)) {
-        systemPrompt = fs.readFileSync(agentFile, 'utf-8');
-      }
-    }
+    // System prompt source: AGENT_REGISTRY.json (single source of truth for prompts)
+    const systemPrompt = registryEntry?.system_prompt || '';
 
     // Last error from state
     const lastError = agentState?.last_error || null;

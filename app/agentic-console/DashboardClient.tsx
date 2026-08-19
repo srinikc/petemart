@@ -159,7 +159,7 @@ export default function AgenticConsoleDashboard({ initialState }: { initialState
   const [supervisorChatInput, setSupervisorChatInput] = useState('');
   const [showLlmDropdown, setShowLlmDropdown] = useState(false);
   const llmDropdownRef = useRef<HTMLDivElement>(null);
-  const CHAT_STORAGE_KEY = 'petemart_supervisor_chat';
+  const CHAT_STORAGE_KEY = 'productforge_supervisor_chat';
   const getSavedChat = (): { role: string; content: string; timestamp: number }[] => {
     try { const s = localStorage.getItem(CHAT_STORAGE_KEY); return s ? JSON.parse(s) : []; } catch { return []; }
   };
