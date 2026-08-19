@@ -4,7 +4,7 @@
 // Works on both server and client (Next.js).
 // =============================================================================
 
-import platformConfig from '@/config/platform.config.json';
+import rawPlatformConfig from '@/config/platform.config.json';
 
 export type PlatformConfig = {
   appName: string;
@@ -25,7 +25,7 @@ export type PlatformConfig = {
   };
 };
 
-const BASE: PlatformConfig = platformConfig as PlatformConfig;
+const BASE: PlatformConfig = rawPlatformConfig as PlatformConfig;
 
 function envKey(prefix: string, key: string): string {
   return `NEXT_PUBLIC_${prefix}_${key}`.toUpperCase();
