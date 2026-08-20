@@ -868,6 +868,7 @@ class AgentRuntime {
 
     if (depContext) prompt += `\n\n## Dependency Context\n${depContext}`;
     if (context?.user_instruction) prompt += `\n\n## User Instruction\n${context.user_instruction}`;
+    prompt += this._getMemoryContext(agentDef.id);
     return prompt;
   }
 
@@ -906,6 +907,30 @@ class AgentRuntime {
       } catch {}
     }
     return parts.join('\n\n');
+  }
+
+  // ── Episodic Memory ──
+  // Reads back the agent's own prior run history from memory_store so a
+  // re-invoked agent (e.g. re-run by the supervisor or for a hotfix) can see
+  // what it did in previous runs instead of starting from a blank slate.
+  _getMemoryContext(agentId, maxEntries = 5) {
+    try {
+      const memPath = path.join(MEMORY_DIR(), `${agentId}.json`);
+      if (!fs.existsSync(memPath)) return '';
+      const mem = JSON.parse(fs.readFileSync(memPath, 'utf-8'));
+      const history = Array.isArray(mem.history) ? mem.history : [];
+      if (history.length === 0) return '';
+      const recent = history.slice(-maxEntries);
+      const lines = recent.map((h, i) => {
+        const ts = h.timestamp ? h.timestamp.replace('T', ' ').slice(0, 19) : 'unknown time';
+        const artifacts = Array.isArray(h.artifacts) && h.artifacts.length > 0 ? h.artifacts.join(', ') : 'none';
+        const preview = h.contentPreview ? h.contentPreview.replace(/\s+/g, ' ').slice(0, 150) : '';
+        return `- Run #${history.length - recent.length + i + 1} (${ts}, ${h.status || 'completed'}): artifacts=[${artifacts}]${preview ? ` | output: "${preview}"` : ''}`;
+      });
+      return `\n\n## Previous Runs (your memory)\nYou have executed this agent ${history.length} time(s). Most recent runs:\n${lines.join('\n')}\nUse this to continue from where you left off — do not repeat completed work unless required.`;
+    } catch {
+      return '';
+    }
   }
 
   // ── Compliance ──
