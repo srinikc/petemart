@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { frameworkRoot } from '@productforge/framework-core';
 
 export const dynamic = 'force-dynamic';
 
-const ROOT = process.cwd();
+const ROOT = frameworkRoot();
 const COMMANDS_PATH = path.join(ROOT, '00_state_ledger/SUPERVISOR_COMMANDS.jsonl');
 const RESPONSES_PATH = path.join(ROOT, '00_state_ledger/SUPERVISOR_RESPONSES.jsonl');
 const DASHBOARD_PATH = path.join(ROOT, '00_state_ledger/SUPERVISOR_DASHBOARD.json');

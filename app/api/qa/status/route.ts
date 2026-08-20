@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { frameworkRoot } from '@productforge/framework-core';
 
-const STATUS_FILE = path.join(process.cwd(), 'qa-dashboard', '.run-status.json');
+const STATUS_FILE = path.join(frameworkRoot(), 'qa-dashboard', '.run-status.json');
 
 export const dynamic = 'force-dynamic';
 

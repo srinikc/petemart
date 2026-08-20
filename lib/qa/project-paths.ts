@@ -1,8 +1,9 @@
 import fs from 'fs';
 import path from 'path';
+import { frameworkRoot } from '@productforge/framework-core';
 
 export function projectDir(project: string): string {
-  return path.join(process.cwd(), 'qa-dashboard', 'projects', project);
+  return path.join(frameworkRoot(), 'qa-dashboard', 'projects', project);
 }
 
 export function projectResultsPath(project: string): string {

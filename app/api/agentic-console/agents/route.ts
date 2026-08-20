@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { frameworkRoot } from '@productforge/framework-core';
 
 export const dynamic = 'force-dynamic';
 
 const LEDGER = '00_state_ledger';
-const ROOT = () => process.cwd();
+const ROOT = () => frameworkRoot();
 
 function readJson(rel: string) {
   const p = path.join(ROOT(), rel);

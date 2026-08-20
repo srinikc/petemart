@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { execSync } from 'child_process';
+import { frameworkRoot } from '@productforge/framework-core';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,7 +10,7 @@ export async function GET() {
         const branchesOutput = execSync('git branch -a --format="%(refname:short)|%(upstream:track)|%(subject)"', {
             encoding: 'utf-8',
             timeout: 10000,
-            cwd: process.cwd(),
+            cwd: frameworkRoot(),
         }).trim();
 
         const lines = branchesOutput.split('\n').filter(Boolean);

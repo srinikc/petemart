@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { frameworkRoot } from '@productforge/framework-core';
 
 export const dynamic = 'force-dynamic';
 
-const ROOT = process.cwd();
+const ROOT = frameworkRoot();
 const JIRA_BASE = process.env.JIRA_BASE_URL || '';
 const JIRA_TOKEN = process.env.JIRA_TOKEN || '';
 const JIRA_PROJECT = process.env.JIRA_PROJECT || 'PETEMART';

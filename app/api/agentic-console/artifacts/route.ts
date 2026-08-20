@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { frameworkRoot } from '@productforge/framework-core';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-const ROOT = process.cwd();
+const ROOT = frameworkRoot();
 
 function safeReadDir(dirPath: string): { name: string; size: number; isDir: boolean; mtime: string }[] {
   try {

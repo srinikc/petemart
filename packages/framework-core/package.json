@@ -1,0 +1,17 @@
+{
+  "name": "@productforge/framework-core",
+  "version": "1.0.0",
+  "description": "ProductForge framework core: cwd-independent path resolution, state access, and shared runtime helpers",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "next": ">=15.0.0"
+  }
+}

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { frameworkRoot } from '@productforge/framework-core';
 
 const REPORTS_CONFIG = [
   {
@@ -36,7 +37,7 @@ const REPORTS_CONFIG = [
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const root = process.cwd();
+  const root = frameworkRoot();
   const reports = REPORTS_CONFIG.map(r => ({
     id: r.id,
     name: r.name,

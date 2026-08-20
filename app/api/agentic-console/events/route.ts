@@ -1,11 +1,12 @@
 import { NextRequest } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { frameworkRoot } from '@productforge/framework-core';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-const ROOT = process.cwd();
+const ROOT = frameworkRoot();
 const EVENTS_PATH = path.join(ROOT, '00_state_ledger/PIPELINE_EVENTS.jsonl');
 
 function readState(statePath: string): any {

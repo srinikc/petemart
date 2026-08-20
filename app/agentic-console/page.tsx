@@ -1,12 +1,13 @@
 import fs from 'fs';
 import path from 'path';
+import { frameworkRoot } from '@productforge/framework-core';
 import DashboardClient from './DashboardClient';
 
 export const dynamic = 'force-dynamic';
 
 function safeReadJSON(relPath: string) {
   try {
-    const p = path.join(process.cwd(), relPath);
+    const p = path.join(frameworkRoot(), relPath);
     return JSON.parse(fs.readFileSync(p, 'utf-8'));
   } catch { return null; }
 }

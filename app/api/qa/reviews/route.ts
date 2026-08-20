@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { frameworkRoot } from '@productforge/framework-core';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const root = process.cwd();
+  const root = frameworkRoot();
   const filePath = path.join(root, 'qa-dashboard', 'agentic-console', 'reviews.json');
 
   try {

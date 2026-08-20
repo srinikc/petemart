@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { frameworkRoot } from '@productforge/framework-core';
 
 export const dynamic = 'force-dynamic';
 
-const ROOT = process.cwd();
+const ROOT = frameworkRoot();
 const MESSAGES_FILE = '00_state_ledger/AGENT_MESSAGES.jsonl';
 const A2A_TYPES_FILE = '00_state_ledger/A2A_TYPES.json';
 

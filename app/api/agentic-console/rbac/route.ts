@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { frameworkRoot } from '@productforge/framework-core';
 
 export const dynamic = 'force-dynamic';
 
-const ROOT = process.cwd();
+const ROOT = frameworkRoot();
 const RBAC_FILE = '00_state_ledger/rbac_config.json';
 
 type Role = 'admin' | 'gatekeeper' | 'viewer';

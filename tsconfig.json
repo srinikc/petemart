@@ -14,7 +14,8 @@
     "incremental": true,
     "plugins": [{ "name": "next" }],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@productforge/framework-core": ["./packages/framework-core/src/index.ts"]
     },
     "target": "ES2017",
     "forceConsistentCasingInFileNames": true

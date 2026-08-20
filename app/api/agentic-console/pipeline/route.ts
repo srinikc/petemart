@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { frameworkRoot } from '@productforge/framework-core';
 
 export const dynamic = 'force-dynamic';
 
-const ROOT = process.cwd();
+const ROOT = frameworkRoot();
 const TRACES_PATH = path.join(ROOT, '00_state_ledger/traces.jsonl');
 
 function statePath(project?: string | null): string {

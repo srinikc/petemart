@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { execSync } from 'child_process';
+import { frameworkRoot } from '@productforge/framework-core';
 
 export const dynamic = 'force-dynamic';
 
@@ -8,7 +9,7 @@ export async function GET() {
         const output = execSync('gh pr list --state all --limit 50 --json number,title,headRefName,baseRefName,state,mergeCommit,createdAt,mergedAt,reviews,latestChecks', {
             encoding: 'utf-8',
             timeout: 15000,
-            cwd: process.cwd(),
+            cwd: frameworkRoot(),
         }).trim();
 
         const prs = JSON.parse(output || '[]');

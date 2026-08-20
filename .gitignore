@@ -176,3 +176,4 @@ tsconfig.tsbuildinfo
 .astro/
 oldartifacts/
 00_state_ledger/prompt_snapshots/
+qa-dashboard/.run-status.json

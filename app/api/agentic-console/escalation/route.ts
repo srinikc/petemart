@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { frameworkRoot } from '@productforge/framework-core';
 export const dynamic = 'force-dynamic';
 
-const FILE = path.join(process.cwd(), '00_state_ledger/escalation_matrix.json');
+const FILE = path.join(frameworkRoot(), '00_state_ledger/escalation_matrix.json');
 
 function readMatrix() {
   try { return JSON.parse(fs.readFileSync(FILE, 'utf-8')); } catch { return null; }

@@ -1,7 +1,8 @@
 import fs from 'fs';
 import path from 'path';
+import { frameworkRoot } from '@productforge/framework-core';
 
-const ROOT = process.cwd();
+const ROOT = frameworkRoot();
 const QA_DATA_DIR = path.join(ROOT, 'qa-dashboard', 'data');
 
 function ensureDir(dir: string) {

@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { frameworkRoot } from '@productforge/framework-core';
 
 export const dynamic = 'force-dynamic';
 
-const STATE_PATH = path.join(process.cwd(), '00_state_ledger/STATE_MATRIX.json');
+const STATE_PATH = path.join(frameworkRoot(), '00_state_ledger/STATE_MATRIX.json');
 
 function readState(): any {
   return JSON.parse(fs.readFileSync(STATE_PATH, 'utf-8'));

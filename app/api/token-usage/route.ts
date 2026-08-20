@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { frameworkRoot } from '@productforge/framework-core';
 
 export const dynamic = 'force-dynamic';
 
-const CSV_PATH = path.join(process.cwd(), 'agent_token_usage_log.csv');
+const CSV_PATH = path.join(frameworkRoot(), 'agent_token_usage_log.csv');
 
 interface TokenSession {
   session_id: string;

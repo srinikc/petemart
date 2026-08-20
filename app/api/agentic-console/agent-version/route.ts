@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { frameworkRoot } from '@productforge/framework-core';
 
 export const dynamic = 'force-dynamic';
 
-const ROOT = process.cwd();
+const ROOT = frameworkRoot();
 const STATE_FILE = '00_state_ledger/STATE_MATRIX.json';
 const PROJ_FILE = '00_state_ledger/projects/petemart/STATE_MATRIX.json';
 const EVENTS_FILE = '00_state_ledger/PIPELINE_EVENTS.jsonl';

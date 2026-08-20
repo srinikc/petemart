@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { projectResultsPath, projectHistoryPath, readProjectJSON } from '@/lib/qa/project-paths';
+import { frameworkRoot } from '@productforge/framework-core';
 
 export interface QualityGate {
   gateId: string;
@@ -33,7 +34,7 @@ function loadJSON<T>(filePath: string): T | null {
 }
 
 function hasFilePattern(pattern: string): boolean {
-  const fullPattern = path.join(process.cwd(), pattern);
+  const fullPattern = path.join(frameworkRoot(), pattern);
   try {
     const dir = path.dirname(fullPattern);
     if (!fs.existsSync(dir)) return false;

@@ -8,10 +8,11 @@ import { createDefectFromFailure } from '@/lib/qa/defect-links';
 import type { Defect } from '@/lib/qa/defect-links';
 import { projectResultsPath, projectHistoryPath, ensureProjectDir, readProjectJSON } from '@/lib/qa/project-paths';
 import http from 'http';
+import { frameworkRoot } from '@productforge/framework-core';
 
 // ---- Configuration ----
 
-const QA_DIR = path.join(process.cwd(), 'qa-dashboard');
+const QA_DIR = path.join(frameworkRoot(), 'qa-dashboard');
 const STATUS_FILE = path.join(QA_DIR, '.run-status.json');
 const DEV_SERVER_PORT = 3000;
 const DEV_SERVER_URL = `http://localhost:${DEV_SERVER_PORT}`;
@@ -67,7 +68,7 @@ function startDevServer(): Promise<void> {
   return new Promise((resolve, reject) => {
     console.log(`Dev server not running — starting on port ${DEV_SERVER_PORT}...`);
     const child = spawn('npm', ['run', 'dev'], {
-      cwd: process.cwd(),
+      cwd: frameworkRoot(),
       env: { ...process.env, PORT: String(DEV_SERVER_PORT) },
       stdio: ['ignore', 'pipe', 'pipe'],
       detached: true,
@@ -153,7 +154,7 @@ async function runVitestWithTimeout(
     const startTime = Date.now();
     const args = ['vitest', 'run', pattern, '--reporter=json'];
     const child = spawn('npx', args, {
-      cwd: process.cwd(),
+      cwd: frameworkRoot(),
       env: { ...process.env, CI: 'false', NO_COLOR: '1' },
       stdio: ['ignore', 'pipe', 'pipe'],
       windowsHide: true,
@@ -298,7 +299,7 @@ export async function POST(req: NextRequest) {
       writeStatus({ progress: `${i}/${testTypesToRun.length} running: ${tt}...` });
 
       // Check if the test directory has any files; skip if not
-      const testDir = path.join(process.cwd(), pattern);
+      const testDir = path.join(frameworkRoot(), pattern);
       let hasTests = false;
       try {
         if (fs.existsSync(testDir)) {
