@@ -2,11 +2,9 @@ import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { Header } from '@productforge/ui';
-import { AuthProvider } from '@productforge/shared';
 
-vi.mock('@productforge/shared', () => ({
+vi.mock('@productforge/shared/AuthContext', () => ({
   useAuth: () => ({ user: null, isAuthenticated: false, role: null, signOut: vi.fn(), loading: false }),
-  AuthProvider: ({ children }: { children: React.ReactNode }) => React.createElement(React.Fragment, null, children),
 }));
 
 describe('Header Component', () => {

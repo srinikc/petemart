@@ -597,20 +597,20 @@ class AgentRuntime {
         break;
       } else {
         consecutiveEmpty++;
-        if (consecutiveEmpty >= 3) {
-          vlog.write('RUNTIME', agentDef.id, `Loop guard | ${consecutiveEmpty} consecutive empty responses — stopping`);
-          break;
-        }
         const completedArtifacts = artifacts.concat(priorArtifacts || []);
         const missing = this._getMissingComplianceFiles(agentDef?.id, completedArtifacts, priorArtifacts);
         if (missing.length > 0) {
+          if (consecutiveEmpty >= 3) {
+            vlog.write('RUNTIME', agentDef.id, `Loop guard | ${consecutiveEmpty} consecutive empty responses — stopping`);
+            break;
+          }
           vlog.write('RUNTIME', agentDef.id, `Missing files: ${missing.join(', ')} — re-prompting headers`);
           messages.push({ role: 'system', content: `Output EACH remaining file with a ## header. Only text, no tool calls:\n${missing.map(f => '## ' + f + '\n[content]').join('\n\n')}` });
         } else {
-          vlog.write('RUNTIME', agentDef.id, `Empty response #${consecutiveEmpty}`);
-          if (consecutiveEmpty === 1) {
-            messages.push({ role: 'system', content: 'Output the required files with ## headers. Example:\n## FEASIBILITY_ARCHITECTURE.md\nContent here...' });
-          }
+          // No tool calls, no content, and no compliance files pending — nothing further to
+          // request from the model, so stop immediately instead of re-prompting.
+          vlog.write('RUNTIME', agentDef.id, `Empty response with no pending files — stopping`);
+          break;
         }
         continue;
       }
@@ -667,11 +667,9 @@ class AgentRuntime {
           const { execSync } = require('child_process');
           execSync(`python "${scriptPath}" "${sandboxDir}"`, { stdio: 'pipe', timeout: 30000, windowsHide: true });
           if (needXlsx && fs.existsSync(path.join(sandboxDir, 'DATA_EXPORT.xlsx'))) {
-            result.artifacts.push({ name: 'DATA_EXPORT.xlsx', data: '', type: 'xlsx' });
             vlog.write('RUNTIME', agentId, 'Generated DATA_EXPORT.xlsx from cost data');
           }
           if (needPptx && fs.existsSync(path.join(sandboxDir, 'COMPLETION_SLIDE.pptx'))) {
-            result.artifacts.push({ name: 'COMPLETION_SLIDE.pptx', data: '', type: 'pptx' });
             vlog.write('RUNTIME', agentId, 'Generated COMPLETION_SLIDE.pptx from architecture data');
           }
         }
@@ -725,6 +723,7 @@ class AgentRuntime {
           const p = path.join(workspaceRoot, art.name).replace(/\\/g, '/');
           if (!agent.artifacts_emitted.includes(p)) agent.artifacts_emitted.push(p);
         }
+        agent.last_artifact_emitted = agent.artifacts_emitted;
       }
       // Compliance check: verify artifacts from THIS run only (not stale accumulated artifacts)
       const currentArtifacts = (result.artifacts || []).filter(a => a && a.name);
@@ -739,8 +738,9 @@ class AgentRuntime {
       }
       if (checkPassed) {
         agent.status = 'approved';
-      } else if (agent.status !== 'failed' && agent.status !== 'cancelled') {
-        agent.status = (currentArtifacts.length > 0) ? 'awaiting_approval' : 'failed';
+      } else {
+        agent.status = 'failed';
+        if (!agent.last_error) agent.last_error = 'Compliance check failed — required artifact(s) not produced';
       }
       this._saveState(state);
     }

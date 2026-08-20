@@ -19,9 +19,10 @@ try {
   console.error('[dev-server] Supervisor start error:', err.message);
 }
 
-// Forward CLI arguments to Next.js
+// Forward CLI arguments to Next.js (framework-console app)
 const args = process.argv.slice(2);
-process.argv = [process.argv[0], path.join(__dirname, 'node_modules/next/dist/bin/next'), 'dev', ...args];
+const appDir = path.join(__dirname, 'apps/framework-console');
+process.argv = [process.argv[0], path.join(__dirname, 'node_modules/next/dist/bin/next'), 'dev', appDir, ...args];
 
 // Redirect stdout/stderr to log files for server logs tab
 const logStream = createWriteStream(path.join(__dirname, 'dev-server.log'), { flags: 'a' });

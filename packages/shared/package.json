@@ -12,6 +12,7 @@
     "./data": "./src/data.ts",
     "./cart-store": "./src/cart-store.ts",
     "./api-client": "./src/api-client.ts",
+    "./platform-config": "./src/platform-config.ts",
     "./AuthContext": "./src/AuthContext.tsx"
   },
   "scripts": {

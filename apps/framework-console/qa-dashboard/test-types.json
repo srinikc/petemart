@@ -1,0 +1,186 @@
+{
+  "version": "1.0",
+  "last_updated": "2026-05-31T23:23:00Z",
+  "categories": [
+    {
+      "id": "unit",
+      "name": "Unit Tests",
+      "description": "Individual functions, utilities, hooks, and pure logic",
+      "icon": "FileText",
+      "order": 1,
+      "subcategories": [
+        { "id": "unit-utils", "name": "Utility Functions", "tool": "Vitest", "coverage_target": 90 },
+        { "id": "unit-hooks", "name": "Custom Hooks", "tool": "Vitest + RTL", "coverage_target": 85 },
+        { "id": "unit-helpers", "name": "API Helpers", "tool": "Vitest", "coverage_target": 95 }
+      ]
+    },
+    {
+      "id": "component",
+      "name": "Component Tests",
+      "description": "UI component rendering, states, and behavior (loading/empty/error/edge)",
+      "icon": "Layout",
+      "order": 2,
+      "subcategories": [
+        { "id": "comp-atoms", "name": "Atomic Components", "tool": "RTL + Vitest", "coverage_target": 85 },
+        { "id": "comp-molecules", "name": "Composite Components", "tool": "RTL + Vitest", "coverage_target": 80 },
+        { "id": "comp-pages", "name": "Page Integration", "tool": "RTL + Vitest", "coverage_target": 75 }
+      ]
+    },
+    {
+      "id": "integration",
+      "name": "Integration Tests",
+      "description": "API routes, middleware, auth guards, DB interactions, payment flows",
+      "icon": "Link",
+      "order": 3,
+      "subcategories": [
+        { "id": "int-api", "name": "API Endpoints", "tool": "Supertest", "coverage_target": 100 },
+        { "id": "int-auth", "name": "Auth Middleware & Guards", "tool": "Supertest", "coverage_target": 100 },
+        { "id": "int-db", "name": "DB RLS & Migrations", "tool": "Supabase Local", "coverage_target": 90 },
+        { "id": "int-payment", "name": "Payment Flow (Razorpay)", "tool": "Supertest + Mock", "coverage_target": 90 },
+        { "id": "int-whatsapp", "name": "WhatsApp Integration", "tool": "Integration Test", "coverage_target": 85 }
+      ]
+    },
+    {
+      "id": "e2e",
+      "name": "E2E Tests",
+      "description": "Full user journeys across the entire application",
+      "icon": "Monitor",
+      "order": 4,
+      "subcategories": [
+        { "id": "e2e-auth", "name": "Auth Flow (OTP → Login → Redirect)", "tool": "Playwright", "coverage_target": 100 },
+        { "id": "e2e-customer", "name": "Customer Journey (Browse → Cart → Checkout → Order → Track)", "tool": "Playwright", "coverage_target": 100 },
+        { "id": "e2e-merchant", "name": "Merchant Flow (Dashboard → Products → Orders → Analytics)", "tool": "Playwright", "coverage_target": 100 },
+        { "id": "e2e-admin", "name": "Admin Flow (Approvals → Merchants → Analytics → Config)", "tool": "Playwright", "coverage_target": 100 },
+        { "id": "e2e-mobile", "name": "Mobile Flow (Expo QR → Store → WhatsApp)", "tool": "Detox/Maestro", "coverage_target": 80 }
+      ]
+    },
+    {
+      "id": "api-contract",
+      "name": "API Contract Tests",
+      "description": "Schema validation, backward compatibility, endpoint compliance",
+      "icon": "FileJson",
+      "order": 5,
+      "subcategories": [
+        { "id": "contract-schema", "name": "Request/Response Schema", "tool": "Zod", "coverage_target": 100 },
+        { "id": "contract-compat", "name": "Backward Compatibility", "tool": "MSW + Zod", "coverage_target": 80 }
+      ]
+    },
+    {
+      "id": "visual-regression",
+      "name": "Visual Regression Tests",
+      "description": "UI snapshot comparison to detect unintended visual changes",
+      "icon": "Eye",
+      "order": 6,
+      "subcategories": [
+        { "id": "vr-screenshots", "name": "Page Screenshots", "tool": "Playwright Snapshot", "coverage_target": 90 },
+        { "id": "vr-components", "name": "Component States", "tool": "Playwright Snapshot", "coverage_target": 80 }
+      ]
+    },
+    {
+      "id": "performance",
+      "name": "Performance Tests",
+      "description": "Response times, Lighthouse scores, API latency under load",
+      "icon": "Zap",
+      "order": 7,
+      "subcategories": [
+        { "id": "perf-lighthouse", "name": "Lighthouse Scores (LCP, TBT, CLS)", "tool": "Lighthouse CI", "coverage_target": 90 },
+        { "id": "perf-api", "name": "API P95 Response < 300ms", "tool": "k6", "coverage_target": 95 },
+        { "id": "perf-render", "name": "Page Render Time", "tool": "Playwright + Tracing", "coverage_target": 85 }
+      ]
+    },
+    {
+      "id": "stress",
+      "name": "Stress/Load Tests",
+      "description": "Concurrent user simulation, breaking point identification, ramp-up profiles",
+      "icon": "Activity",
+      "order": 8,
+      "subcategories": [
+        { "id": "stress-concurrent", "name": "500+ Concurrent Users", "tool": "k6 / Artillery", "coverage_target": 90 },
+        { "id": "stress-ramp", "name": "Linear Ramp-up (5 min)", "tool": "k6", "coverage_target": 90 },
+        { "id": "stress-endurance", "name": "Sustained Load (30 min)", "tool": "k6", "coverage_target": 85 }
+      ]
+    },
+    {
+      "id": "security",
+      "name": "Security Tests",
+      "description": "OWASP, penetration testing, secrets scan, dependency audit",
+      "icon": "Shield",
+      "order": 9,
+      "subcategories": [
+        { "id": "sec-sqli", "name": "SQL Injection & XSS", "tool": "OWASP ZAP", "coverage_target": 95 },
+        { "id": "sec-secrets", "name": "Secrets & Credentials Scan", "tool": "truffleHog + Gitleaks", "coverage_target": 100 },
+        { "id": "sec-deps", "name": "Dependency Vulnerability Scan", "tool": "Dependabot + Snyk", "coverage_target": 100 },
+        { "id": "sec-cors", "name": "CORS & Headers", "tool": "Supertest + Audit", "coverage_target": 100 }
+      ]
+    },
+    {
+      "id": "accessibility",
+      "name": "Accessibility Tests",
+      "description": "WCAG 2.1 AA compliance for all user-facing screens",
+      "icon": "Accessibility",
+      "order": 10,
+      "subcategories": [
+        { "id": "a11y-automated", "name": "Automated a11y Audit", "tool": "axe-core + Lighthouse", "coverage_target": 90 },
+        { "id": "a11y-manual", "name": "Manual Screen Reader Check", "tool": "NVDA/VoiceOver", "coverage_target": 80 }
+      ]
+    },
+    {
+      "id": "cross-browser",
+      "name": "Cross-Browser Tests",
+      "description": "Multi-browser matrix (Chrome, Firefox, Safari, Edge)",
+      "icon": "Globe",
+      "order": 11,
+      "subcategories": [
+        { "id": "xb-chrome", "name": "Chrome (Latest)", "tool": "Playwright", "coverage_target": 100 },
+        { "id": "xb-firefox", "name": "Firefox (Latest)", "tool": "Playwright", "coverage_target": 100 },
+        { "id": "xb-safari", "name": "Safari (WebKit)", "tool": "Playwright", "coverage_target": 100 },
+        { "id": "xb-edge", "name": "Edge (Chromium)", "tool": "Playwright", "coverage_target": 100 }
+      ]
+    },
+    {
+      "id": "regression",
+      "name": "Regression Tests",
+      "description": "Full suite execution on every PR via CI pipeline",
+      "icon": "RotateCcw",
+      "order": 12,
+      "subcategories": [
+        { "id": "reg-full", "name": "Complete Test Suite", "tool": "GitHub Actions CI", "coverage_target": 100 },
+        { "id": "reg-smoke", "name": "Smoke Tests (Deploy)", "tool": "Playwright Quick", "coverage_target": 100 }
+      ]
+    },
+    {
+      "id": "multi-tenant",
+      "name": "Multi-Tenant Isolation Tests",
+      "description": "Merchant data isolation, RLS enforcement, cross-tenant leakage prevention",
+      "icon": "Layers",
+      "order": 13,
+      "subcategories": [
+        { "id": "mt-rls", "name": "RLS Policy Enforcement", "tool": "Supabase Test", "coverage_target": 100 },
+        { "id": "mt-isolation", "name": "Data Leakage Prevention", "tool": "Integration Test", "coverage_target": 100 }
+      ]
+    },
+    {
+      "id": "migration",
+      "name": "Data Migration Tests",
+      "description": "Schema version up/down, rollback scripts, seed data integrity",
+      "icon": "Database",
+      "order": 14,
+      "subcategories": [
+        { "id": "mig-up", "name": "Migration Up (Apply)", "tool": "SQL Test", "coverage_target": 100 },
+        { "id": "mig-down", "name": "Migration Down (Rollback)", "tool": "SQL Test", "coverage_target": 100 },
+        { "id": "mig-seed", "name": "Seed Data Integrity", "tool": "Data Test", "coverage_target": 100 }
+      ]
+    },
+    {
+      "id": "disaster-recovery",
+      "name": "Disaster Recovery Tests",
+      "description": "Backup/restore, failover, data integrity after recovery",
+      "icon": "CloudOff",
+      "order": 15,
+      "subcategories": [
+        { "id": "dr-backup", "name": "Backup Verification", "tool": "Manual + Script", "coverage_target": 90 },
+        { "id": "dr-restore", "name": "Restore Integrity", "tool": "Manual + Script", "coverage_target": 90 }
+      ]
+    }
+  ]
+}
