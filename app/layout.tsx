@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import '@/styles/globals.css';
-import { AuthProvider } from '@/contexts/AuthContext';
+import { AuthProvider } from '@productforge/shared';
 import { Toaster } from 'sonner';
 import { getPlatformConfig } from '@/lib/platform-config';
 

@@ -6,8 +6,8 @@ import {
   MoreVertical, ExternalLink, Clock, CheckCircle2, 
   AlertCircle, ShieldCheck, CreditCard, Activity, Sparkles
 } from 'lucide-react';
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@productforge/ui";
+import { Card, CardContent } from "@productforge/ui";
 import Link from 'next/link';
 import { getPlatformConfig } from "@/lib/platform-config";
 

@@ -8,7 +8,7 @@ import { GET as marketsGet } from '@/app/api/v1/markets/route';
 import { GET as merchantsGet } from '@/app/api/v1/merchants/route';
 import { GET as productsGet } from '@/app/api/v1/products/route';
 import { GET as ordersGet } from '@/app/api/v1/orders/route';
-import { MARKETS, MERCHANTS, PRODUCTS } from '@/lib/data';
+import { MARKETS, MERCHANTS, PRODUCTS } from '@productforge/shared';
 
 function mockRequest(url: string, init?: RequestInit): NextRequest {
   return new NextRequest(url, init as any);

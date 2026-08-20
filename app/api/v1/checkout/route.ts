@@ -6,7 +6,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { handleError, ok, unauthorized, badRequest } from '@/lib/api-helpers';
-import { carts, getUserIdFromAuth } from '@/lib/cart-store';
+import { carts, getUserIdFromAuth } from '@productforge/shared/cart-store';
 
 let orderCounter = 100;
 

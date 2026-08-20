@@ -3,11 +3,11 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { formatPrice } from '@/lib/utils';
-import { useAuth } from '@/contexts/AuthContext';
+import { Card } from '@productforge/ui';
+import { Badge } from '@productforge/ui';
+import { Button } from '@productforge/ui';
+import { formatPrice } from '@productforge/shared/utils';
+import { useAuth } from '@productforge/shared';
 import { Package, TrendingUp, Clock, MessageCircle, ArrowUp, ArrowDown, Plus, BarChart3, ShoppingBag, Info } from 'lucide-react';
 
 const KPI_DATA = [

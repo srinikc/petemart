@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { formatPrice } from '@/lib/utils';
+import { Card } from '@productforge/ui';
+import { Badge } from '@productforge/ui';
+import { Button } from '@productforge/ui';
+import { formatPrice } from '@productforge/shared/utils';
 import { TrendingUp, BarChart3, Download, Store, Users, ShoppingBag, Info, ArrowUp } from 'lucide-react';
 
 export default function AdminAnalytics() {

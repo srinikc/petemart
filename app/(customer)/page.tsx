@@ -2,11 +2,11 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { MARKETS, MERCHANTS } from '@/lib/data';
-import { getModeLabel, formatPrice, truncate } from '@/lib/utils';
+import { Button } from '@productforge/ui';
+import { Card } from '@productforge/ui';
+import { Badge } from '@productforge/ui';
+import { MARKETS, MERCHANTS } from '@productforge/shared';
+import { getModeLabel, formatPrice, truncate } from '@productforge/shared/utils';
 import {
   Search, MapPin, ChevronRight, Star, TrendingUp,
   Truck, MessageCircle, Store, ArrowRight, ChevronLeft,

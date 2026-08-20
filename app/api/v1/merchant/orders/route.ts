@@ -6,7 +6,7 @@
 // =============================================================================
 
 import { NextRequest } from 'next/server';
-import { MERCHANTS, ORDERS } from '@/lib/data';
+import { MERCHANTS, ORDERS } from '@productforge/shared';
 import {
   handleError, ok, unauthorized,
   parsePagination, createPaginationMeta,

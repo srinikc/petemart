@@ -1,7 +1,7 @@
 import React from 'react';
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
-import { Separator } from '@/components/ui/separator';
+import { Separator } from '@productforge/ui';
 
 describe('Separator Component', () => {
   it('renders horizontal separator by default', () => {

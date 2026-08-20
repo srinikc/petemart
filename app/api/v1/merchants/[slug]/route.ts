@@ -5,7 +5,7 @@
 // =============================================================================
 
 import { NextRequest } from 'next/server';
-import { getMerchantBySlug, getProductsByMerchant, getMerchant } from '@/lib/data';
+import { getMerchantBySlug, getProductsByMerchant, getMerchant } from '@productforge/shared';
 import { ok, notFound, handleError } from '@/lib/api-helpers';
 
 export async function GET(

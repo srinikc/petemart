@@ -7,7 +7,7 @@
 
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
-import { MERCHANTS, PRODUCTS } from '@/lib/data';
+import { MERCHANTS, PRODUCTS } from '@productforge/shared';
 import {
   handleError, ok, badRequest, unauthorized, notFound, forbidden,
 } from '@/lib/api-helpers';

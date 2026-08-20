@@ -2,11 +2,11 @@
 
 import React, { use } from 'react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { ORDER_STATUSES } from '@/lib/data';
-import { getStatusColor, getStatusLabel, getDeliveryEta } from '@/lib/utils';
+import { Button } from '@productforge/ui';
+import { Card } from '@productforge/ui';
+import { Badge } from '@productforge/ui';
+import { ORDER_STATUSES } from '@productforge/shared';
+import { getStatusColor, getStatusLabel, getDeliveryEta } from '@productforge/shared/utils';
 import { Truck, MapPin, Phone, Share2, CheckCircle2, Clock, ChevronLeft, Info } from 'lucide-react';
 
 export default function OrderTrackingPage({ params }: { params: Promise<{ id: string }> }) {

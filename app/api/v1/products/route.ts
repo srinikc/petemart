@@ -6,7 +6,7 @@
 // =============================================================================
 
 import { NextRequest, NextResponse } from 'next/server';
-import { PRODUCTS, MERCHANTS } from '@/lib/data';
+import { PRODUCTS, MERCHANTS } from '@productforge/shared';
 import { ok, handleError, checkRateLimit, getClientIp, parsePagination, createPaginationMeta } from '@/lib/api-helpers';
 
 export async function GET(request: NextRequest) {

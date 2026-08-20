@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { PRODUCTS } from '@/lib/data';
+import { PRODUCTS } from '@productforge/shared';
 import { handleError, badRequest, unauthorized, notFound, conflict, ok } from '@/lib/api-helpers';
 
 const checkoutItemSchema = z.object({

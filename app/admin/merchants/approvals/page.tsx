@@ -1,13 +1,13 @@
 'use client';
 
 import React from 'react';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { MERCHANTS } from '@/lib/data';
-import { getInitials } from '@/lib/utils';
+import { Card } from '@productforge/ui';
+import { Badge } from '@productforge/ui';
+import { Button } from '@productforge/ui';
+import { MERCHANTS } from '@productforge/shared';
+import { getInitials } from '@productforge/shared/utils';
 import { CheckCircle, XCircle, FileText, Info, Store, Eye } from 'lucide-react';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@productforge/ui';
 import { toast } from 'sonner';
 
 export default function MerchantApprovals() {

@@ -2,11 +2,11 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { ORDERS } from '@/lib/data';
-import { formatPrice, formatDate, getStatusColor, getStatusLabel } from '@/lib/utils';
+import { Button } from '@productforge/ui';
+import { Card } from '@productforge/ui';
+import { Badge } from '@productforge/ui';
+import { ORDERS } from '@productforge/shared';
+import { formatPrice, formatDate, getStatusColor, getStatusLabel } from '@productforge/shared/utils';
 import { Package, ChevronRight, Info, ArrowRight } from 'lucide-react';
 
 export default function OrderHistoryPage() {

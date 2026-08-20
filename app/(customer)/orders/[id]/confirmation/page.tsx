@@ -2,9 +2,9 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Button } from '@productforge/ui';
+import { Card } from '@productforge/ui';
+import { Badge } from '@productforge/ui';
 import { CheckCircle2, Package, ArrowRight, MapPin, Info } from 'lucide-react';
 
 export default function OrderConfirmationPage() {

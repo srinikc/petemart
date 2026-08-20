@@ -7,8 +7,8 @@ import {
   ArrowRight, Globe, Shield, Cpu, MessageSquare, 
   Terminal, BarChart3, Settings
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@productforge/ui";
+import { Button } from "@productforge/ui";
 import { getPlatformConfig } from "@/lib/platform-config";
 
 const platform = getPlatformConfig();

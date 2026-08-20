@@ -3,15 +3,15 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { CART_ITEMS, ADDRESSES } from '@/lib/data';
-import { formatPrice, getInitials } from '@/lib/utils';
+import { Button } from '@productforge/ui';
+import { Card } from '@productforge/ui';
+import { Input } from '@productforge/ui';
+import { Badge } from '@productforge/ui';
+import { Separator } from '@productforge/ui';
+import { CART_ITEMS, ADDRESSES } from '@productforge/shared';
+import { formatPrice, getInitials } from '@productforge/shared/utils';
 import { MapPin, CreditCard, Shield, Info, CheckCircle, Plus, Lock, ArrowLeft } from 'lucide-react';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@productforge/ui';
 import { toast } from 'sonner';
 
 export default function CheckoutPage() {

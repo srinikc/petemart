@@ -2,12 +2,12 @@
 
 import React, { use } from 'react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { ORDERS } from '@/lib/data';
-import { formatPrice, formatDate, getStatusColor, getStatusLabel, getDeliveryEta } from '@/lib/utils';
+import { Button } from '@productforge/ui';
+import { Card } from '@productforge/ui';
+import { Badge } from '@productforge/ui';
+import { Separator } from '@productforge/ui';
+import { ORDERS } from '@productforge/shared';
+import { formatPrice, formatDate, getStatusColor, getStatusLabel, getDeliveryEta } from '@productforge/shared/utils';
 import { Package, ChevronLeft, MapPin, Truck, CheckCircle2, Clock, Info, ArrowRight } from 'lucide-react';
 
 export default function OrderDetail({ params }: { params: Promise<{ id: string }> }) {

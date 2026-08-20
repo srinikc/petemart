@@ -3,14 +3,14 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { useAuth } from '@/contexts/AuthContext';
+import { Button } from '@productforge/ui';
+import { Input } from '@productforge/ui';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@productforge/ui';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@productforge/ui';
+import { useAuth } from '@productforge/shared';
 import { Mail, Phone, Smartphone, Shield, ArrowLeft, CheckCircle2, User, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
-import type { UserRole } from '@/types';
+import type { UserRole } from '@productforge/shared';
 
 type AuthMode = 'login' | 'signup';
 type LoginTab = 'email' | 'phone';

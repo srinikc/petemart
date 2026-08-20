@@ -5,7 +5,7 @@
 // =============================================================================
 
 import { NextRequest } from 'next/server';
-import { MERCHANTS, MARKETS, DATA_SUMMARY } from '@/lib/data';
+import { MERCHANTS, MARKETS, DATA_SUMMARY } from '@productforge/shared';
 import { handleError, ok, unauthorized, badRequest, parsePagination, createPaginationMeta } from '@/lib/api-helpers';
 
 function isAdmin(request: NextRequest): boolean {

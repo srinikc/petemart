@@ -2,15 +2,15 @@
 
 import React, { useState, use } from 'react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Separator } from '@/components/ui/separator';
-import { getMerchantBySlug, getProductsByMerchant } from '@/lib/data';
-import { formatPrice, getModeLabel, getInitials, truncate } from '@/lib/utils';
+import { Button } from '@productforge/ui';
+import { Card } from '@productforge/ui';
+import { Badge } from '@productforge/ui';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@productforge/ui';
+import { Separator } from '@productforge/ui';
+import { getMerchantBySlug, getProductsByMerchant } from '@productforge/shared';
+import { formatPrice, getModeLabel, getInitials, truncate } from '@productforge/shared/utils';
 import { Store, Star, MapPin, Clock, ChevronRight, ShoppingCart, MessageCircle, Phone, Info, ArrowLeft } from 'lucide-react';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@productforge/ui';
 import { toast } from 'sonner';
 
 export default function MerchantMicrosite({ params }: { params: Promise<{ slug: string }> }) {

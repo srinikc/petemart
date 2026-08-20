@@ -1,11 +1,11 @@
 'use client';
 
 import React from 'react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+import { Card } from '@productforge/ui';
+import { Button } from '@productforge/ui';
+import { Input } from '@productforge/ui';
+import { Badge } from '@productforge/ui';
+import { Separator } from '@productforge/ui';
 import { Settings, Store, Bell, Shield, Info, Save } from 'lucide-react';
 import { toast } from 'sonner';
 

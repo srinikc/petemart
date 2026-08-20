@@ -2,11 +2,11 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+import { Button } from '@productforge/ui';
+import { Card } from '@productforge/ui';
+import { Input } from '@productforge/ui';
+import { Badge } from '@productforge/ui';
+import { Separator } from '@productforge/ui';
 import { ArrowLeft, Plus, Info } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';

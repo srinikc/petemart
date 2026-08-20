@@ -2,15 +2,15 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { getInitials, formatDate } from '@/lib/utils';
+import { useAuth } from '@productforge/shared';
+import { Button } from '@productforge/ui';
+import { Card } from '@productforge/ui';
+import { Badge } from '@productforge/ui';
+import { Separator } from '@productforge/ui';
+import { Avatar, AvatarFallback } from '@productforge/ui';
+import { getInitials, formatDate } from '@productforge/shared/utils';
 import { User, Package, MapPin, LogOut, Settings, ChevronRight, Info, Store, Shield } from 'lucide-react';
-import { ADDRESSES } from '@/lib/data';
+import { ADDRESSES } from '@productforge/shared';
 
 export default function ProfilePage() {
   const { user, isAuthenticated, signOut } = useAuth();

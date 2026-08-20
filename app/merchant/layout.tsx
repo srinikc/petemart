@@ -1,6 +1,6 @@
 import React from 'react';
-import { Header } from '@/components/layout/Header';
-import { Footer } from '@/components/layout/Footer';
+import { Header } from '@productforge/ui';
+import { Footer } from '@productforge/ui';
 
 export default function MerchantLayout({ children }: { children: React.ReactNode }) {
   return (

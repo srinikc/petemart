@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Card } from '@productforge/ui';
+import { Button } from '@productforge/ui';
+import { Badge } from '@productforge/ui';
 import { Download, Info, QrCode } from 'lucide-react';
 
 export default function MerchantQR() {

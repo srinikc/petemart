@@ -5,7 +5,7 @@
 // =============================================================================
 
 import { NextRequest } from 'next/server';
-import { MARKETS } from '@/lib/data';
+import { MARKETS } from '@productforge/shared';
 import { ok, handleError, checkRateLimit, getClientIp } from '@/lib/api-helpers';
 
 export async function GET(request: NextRequest) {

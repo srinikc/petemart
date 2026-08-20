@@ -2,14 +2,14 @@
 
 import React, { useState, use } from 'react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { MARKETS, getMerchantsByMarket } from '@/lib/data';
-import { getModeLabel, getInitials } from '@/lib/utils';
+import { Button } from '@productforge/ui';
+import { Badge } from '@productforge/ui';
+import { Card } from '@productforge/ui';
+import { Input } from '@productforge/ui';
+import { MARKETS, getMerchantsByMarket } from '@productforge/shared';
+import { getModeLabel, getInitials } from '@productforge/shared/utils';
 import { Store, Star, Search, SlidersHorizontal, MapPin, Info, ArrowLeft, ChevronDown } from 'lucide-react';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@productforge/ui';
 
 export default function MarketExplorerPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);

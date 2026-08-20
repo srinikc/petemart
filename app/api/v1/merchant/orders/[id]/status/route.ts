@@ -7,8 +7,8 @@
 
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
-import { ORDERS } from '@/lib/data';
-import { canTransition } from '@/types';
+import { ORDERS } from '@productforge/shared';
+import { canTransition } from '@productforge/shared';
 import {
   handleError, ok, badRequest, unauthorized, notFound, forbidden,
 } from '@/lib/api-helpers';

@@ -15,7 +15,10 @@
     "plugins": [{ "name": "next" }],
     "paths": {
       "@/*": ["./*"],
-      "@productforge/framework-core": ["./packages/framework-core/src/index.ts"]
+      "@productforge/framework-core": ["./packages/framework-core/src/index.ts"],
+      "@productforge/shared": ["./packages/shared/src/index.ts"],
+      "@productforge/shared/*": ["./packages/shared/src/*"],
+      "@productforge/ui": ["./packages/ui/src/index.ts"]
     },
     "target": "ES2017",
     "forceConsistentCasingInFileNames": true

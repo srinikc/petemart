@@ -5,7 +5,7 @@
 // =============================================================================
 
 import { NextRequest } from 'next/server';
-import { getProductById, getMerchant } from '@/lib/data';
+import { getProductById, getMerchant } from '@productforge/shared';
 import { ok, notFound, handleError, checkRateLimit, getClientIp } from '@/lib/api-helpers';
 
 export async function GET(

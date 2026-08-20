@@ -2,12 +2,12 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { getProductsByMerchant } from '@/lib/data';
-import { formatPrice, getModeLabel } from '@/lib/utils';
+import { Card } from '@productforge/ui';
+import { Badge } from '@productforge/ui';
+import { Button } from '@productforge/ui';
+import { Input } from '@productforge/ui';
+import { getProductsByMerchant } from '@productforge/shared';
+import { formatPrice, getModeLabel } from '@productforge/shared/utils';
 import { Search, Plus, Filter, Download, Upload, Package, Info, Star } from 'lucide-react';
 
 const MERCHANT_ID = 'merchant-1';

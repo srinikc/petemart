@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { formatPrice, formatDate, getStatusColor, getStatusLabel } from '@/lib/utils';
+import { Card } from '@productforge/ui';
+import { Badge } from '@productforge/ui';
+import { Input } from '@productforge/ui';
+import { Button } from '@productforge/ui';
+import { formatPrice, formatDate, getStatusColor, getStatusLabel } from '@productforge/shared/utils';
 import { Search, Filter, Package, ChevronRight, Info } from 'lucide-react';
 import Link from 'next/link';
 

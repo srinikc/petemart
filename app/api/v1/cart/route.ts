@@ -7,8 +7,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { handleError, ok, unauthorized, badRequest, notFound } from '@/lib/api-helpers';
-import { PRODUCTS } from '@/lib/data';
-import { carts, getUserIdFromAuth } from '@/lib/cart-store';
+import { PRODUCTS } from '@productforge/shared';
+import { carts, getUserIdFromAuth } from '@productforge/shared/cart-store';
 
 // GET /api/v1/cart
 export async function GET(request: NextRequest) {

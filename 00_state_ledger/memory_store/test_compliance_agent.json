@@ -276,6 +276,66 @@
         "prompt_tokens": 5,
         "completion_tokens": 3
       }
+    },
+    {
+      "runId": "test-run-001",
+      "timestamp": "2026-08-20T05:49:21.154Z",
+      "status": "completed",
+      "duration": 12345,
+      "artifacts": [
+        "produced_output.md"
+      ],
+      "contentPreview": "Some output",
+      "usage": {
+        "prompt_tokens": 10,
+        "completion_tokens": 5
+      }
+    },
+    {
+      "runId": "test-run-002",
+      "timestamp": "2026-08-20T05:49:24.051Z",
+      "status": "completed",
+      "duration": 67890,
+      "artifacts": [
+        "good_output.md",
+        "DATA_EXPORT.xlsx",
+        "COMPLETION_SLIDE.pptx"
+      ],
+      "contentPreview": "All good",
+      "usage": {
+        "prompt_tokens": 5,
+        "completion_tokens": 3
+      }
+    },
+    {
+      "runId": "test-run-001",
+      "timestamp": "2026-08-20T06:53:42.853Z",
+      "status": "completed",
+      "duration": 12345,
+      "artifacts": [
+        "produced_output.md"
+      ],
+      "contentPreview": "Some output",
+      "usage": {
+        "prompt_tokens": 10,
+        "completion_tokens": 5
+      }
+    },
+    {
+      "runId": "test-run-002",
+      "timestamp": "2026-08-20T06:53:45.200Z",
+      "status": "completed",
+      "duration": 67890,
+      "artifacts": [
+        "good_output.md",
+        "DATA_EXPORT.xlsx",
+        "COMPLETION_SLIDE.pptx"
+      ],
+      "contentPreview": "All good",
+      "usage": {
+        "prompt_tokens": 5,
+        "completion_tokens": 3
+      }
     }
   ]
 }

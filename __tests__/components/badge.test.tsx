@@ -1,7 +1,7 @@
 import React from 'react';
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@productforge/ui';
 
 describe('Badge Component', () => {
   it('renders with default variant', () => {

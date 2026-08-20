@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { MERCHANTS, PRODUCTS } from '@/lib/data';
+import { MERCHANTS, PRODUCTS } from '@productforge/shared';
 import {
   handleError, ok, created, unauthorized, badRequest, forbidden, notFound,
   parsePagination, createPaginationMeta,

@@ -5,7 +5,7 @@
 // =============================================================================
 
 import { NextRequest } from 'next/server';
-import { DATA_SUMMARY } from '@/lib/data';
+import { DATA_SUMMARY } from '@productforge/shared';
 
 const startTime = Date.now();
 

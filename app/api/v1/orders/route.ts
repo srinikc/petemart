@@ -5,7 +5,7 @@
 // =============================================================================
 
 import { NextRequest, NextResponse } from 'next/server';
-import { ORDERS } from '@/lib/data';
+import { ORDERS } from '@productforge/shared';
 import { ok, unauthorized, handleError } from '@/lib/api-helpers';
 
 export async function GET(request: NextRequest) {

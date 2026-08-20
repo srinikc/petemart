@@ -3,11 +3,11 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { formatPrice } from '@/lib/utils';
-import { useAuth } from '@/contexts/AuthContext';
+import { Card } from '@productforge/ui';
+import { Badge } from '@productforge/ui';
+import { Button } from '@productforge/ui';
+import { formatPrice } from '@productforge/shared/utils';
+import { useAuth } from '@productforge/shared';
 import { Store, Users, ShoppingBag, TrendingUp, ArrowUp, AlertCircle, CheckCircle, Info, ChevronRight } from 'lucide-react';
 
 const ADMIN_KPIS = [
