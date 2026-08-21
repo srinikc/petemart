@@ -4,8 +4,8 @@ $root = Split-Path -Parent (Split-Path -Parent $PSCommandPath)
 Write-Host "=== Stopping All Servers ===" -ForegroundColor Cyan
 Write-Host ""
 
-# ── 1. Dev Server ──
-Write-Host "[1/3] Dev Server (port 3000)..." -ForegroundColor Cyan
+# ── 1. Dev Server (console :3000) ──
+Write-Host "[1/4] Dev Server (console, port 3000)..." -ForegroundColor Cyan
 $devPidFile = Join-Path $root ".dev-server-pid"
 $killedDev = $false
 if (Test-Path $devPidFile) {
@@ -26,8 +26,20 @@ if ($on3000) {
 }
 if ($killedDev) { Write-Host "  ✓ Dev server stopped" -ForegroundColor Green } else { Write-Host "  - Not running" -ForegroundColor Gray }
 
-# ── 2. QA Dashboard ──
-Write-Host "[2/3] QA Dashboard (port 3458)..." -ForegroundColor Cyan
+# ── 2. Product (petemart :3001) ──
+Write-Host "[2/4] Product app (port 3001)..." -ForegroundColor Cyan
+$killedProduct = $false
+$on3001 = netstat -ano | Select-String ":3001" | Select-String "LISTENING"
+if ($on3001) {
+  $on3001 | ForEach-Object {
+    $foundPid = $_ -replace '.*\s+(\d+)$', '$1'
+    if ($foundPid -match '^\d+$') { taskkill /F /PID $foundPid 2>$null; $killedProduct = $true }
+  }
+}
+if ($killedProduct) { Write-Host "  ✓ Product app stopped" -ForegroundColor Green } else { Write-Host "  - Not running" -ForegroundColor Gray }
+
+# ── 3. QA Dashboard ──
+Write-Host "[3/4] QA Dashboard (port 3458)..." -ForegroundColor Cyan
 $qaPidFile = Join-Path $root ".qa-dashboard-pid"
 $killedQa = $false
 if (Test-Path $qaPidFile) {
@@ -46,10 +58,10 @@ if ($on3458) {
     if ($foundPid -match '^\d+$') { taskkill /F /PID $foundPid 2>$null; $killedQa = $true }
   }
 }
-if ($killedQa) { Write-Host "  ✓ QA Dashboard stopped" -ForegroundColor Green } else { Write-Host "  - Not running" -ForegroundColor Gray }
+if ($killedQa) { Write-Host "  [OK] QA Dashboard stopped" -ForegroundColor Green } else { Write-Host "  - Not running" -ForegroundColor Gray }
 
-# ── 3. Stale Supervisor / Runtime PIDs ──
-Write-Host "[3/3] Stale PID files..." -ForegroundColor Cyan
+# ── 4. Stale Supervisor / Runtime PIDs ──
+Write-Host "[4/4] Stale PID files..." -ForegroundColor Cyan
 $staleFiles = @(
   (Join-Path $root "00_state_ledger\SUPERVISOR_DAEMON.pid"),
   (Join-Path $root "00_state_ledger\.runtime.pid")

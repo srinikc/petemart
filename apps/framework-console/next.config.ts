@@ -2,6 +2,7 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   transpilePackages: ['@productforge/framework-core', '@productforge/shared', '@productforge/ui'],
+  distDir: process.env.NEXT_DIST_DIR || '.next',
   experimental: {
     serverActions: {
       bodySizeLimit: '2mb',

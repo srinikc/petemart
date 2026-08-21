@@ -8,9 +8,15 @@
     "packages/*"
   ],
   "scripts": {
+    "dev": "node dev-server.js",
+    "dev:all": "node dev-server.js",
     "dev:console": "node dev-server.js -p 3000",
-    "dev:product": "npm run dev -w @productforge/petemart",
-    "dev:qa": "npm run dev:qa -w @productforge/framework-console",
+    "dev:product": "node dev-server.js -p 3001",
+    "dev:qa": "node dev-server.js -p 3458",
+    "dev:stop": "powershell -ExecutionPolicy Bypass -File scripts/stop-dev.ps1",
+    "stop:all": "powershell -ExecutionPolicy Bypass -File scripts/stop-all.ps1",
+    "dev:clean": "powershell -ExecutionPolicy Bypass -File scripts/clean-dev.ps1",
+    "serve:qa": "powershell -ExecutionPolicy Bypass -File scripts/serve-qa-dashboard.ps1",
     "build": "npm run build -w @productforge/framework-console && npm run build -w @productforge/petemart",
     "build:console": "npm run build -w @productforge/framework-console",
     "build:product": "npm run build -w @productforge/petemart",
