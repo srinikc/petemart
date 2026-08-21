@@ -1,0 +1,186 @@
+[
+  {
+    "category": "Cosmetics",
+    "mode_a": 20,
+    "mode_b": 0,
+    "mode_c": 0,
+    "total": 20,
+    "b_pct": 0.0
+  },
+  {
+    "category": "Dry Fruits",
+    "mode_a": 20,
+    "mode_b": 0,
+    "mode_c": 0,
+    "total": 20,
+    "b_pct": 0.0
+  },
+  {
+    "category": "Electrical",
+    "mode_a": 0,
+    "mode_b": 20,
+    "mode_c": 0,
+    "total": 20,
+    "b_pct": 100.0
+  },
+  {
+    "category": "FMCG",
+    "mode_a": 12,
+    "mode_b": 0,
+    "mode_c": 0,
+    "total": 12,
+    "b_pct": 0.0
+  },
+  {
+    "category": "Garments",
+    "mode_a": 0,
+    "mode_b": 17,
+    "mode_c": 0,
+    "total": 17,
+    "b_pct": 100.0
+  },
+  {
+    "category": "General",
+    "mode_a": 0,
+    "mode_b": 66,
+    "mode_c": 0,
+    "total": 66,
+    "b_pct": 100.0
+  },
+  {
+    "category": "Gift Bags",
+    "mode_a": 0,
+    "mode_b": 17,
+    "mode_c": 0,
+    "total": 17,
+    "b_pct": 100.0
+  },
+  {
+    "category": "Hardware",
+    "mode_a": 0,
+    "mode_b": 37,
+    "mode_c": 0,
+    "total": 37,
+    "b_pct": 100.0
+  },
+  {
+    "category": "Imitation Jewellery",
+    "mode_a": 0,
+    "mode_b": 19,
+    "mode_c": 0,
+    "total": 19,
+    "b_pct": 100.0
+  },
+  {
+    "category": "Invitation Covers",
+    "mode_a": 0,
+    "mode_b": 1,
+    "mode_c": 0,
+    "total": 1,
+    "b_pct": 100.0
+  },
+  {
+    "category": "Jewellery",
+    "mode_a": 0,
+    "mode_b": 0,
+    "mode_c": 57,
+    "total": 57,
+    "b_pct": 0.0
+  },
+  {
+    "category": "Musical Instruments",
+    "mode_a": 0,
+    "mode_b": 0,
+    "mode_c": 9,
+    "total": 9,
+    "b_pct": 0.0
+  },
+  {
+    "category": "Packing Materials",
+    "mode_a": 0,
+    "mode_b": 17,
+    "mode_c": 0,
+    "total": 17,
+    "b_pct": 100.0
+  },
+  {
+    "category": "Paper/Stationery",
+    "mode_a": 13,
+    "mode_b": 0,
+    "mode_c": 0,
+    "total": 13,
+    "b_pct": 0.0
+  },
+  {
+    "category": "Pharma",
+    "mode_a": 0,
+    "mode_b": 20,
+    "mode_c": 0,
+    "total": 20,
+    "b_pct": 100.0
+  },
+  {
+    "category": "Return Gifts",
+    "mode_a": 15,
+    "mode_b": 0,
+    "mode_c": 0,
+    "total": 15,
+    "b_pct": 0.0
+  },
+  {
+    "category": "Saree",
+    "mode_a": 0,
+    "mode_b": 34,
+    "mode_c": 0,
+    "total": 34,
+    "b_pct": 100.0
+  },
+  {
+    "category": "Stationery",
+    "mode_a": 20,
+    "mode_b": 0,
+    "mode_c": 0,
+    "total": 20,
+    "b_pct": 0.0
+  },
+  {
+    "category": "Steel/Utensils",
+    "mode_a": 0,
+    "mode_b": 20,
+    "mode_c": 0,
+    "total": 20,
+    "b_pct": 100.0
+  },
+  {
+    "category": "Textile",
+    "mode_a": 0,
+    "mode_b": 57,
+    "mode_c": 0,
+    "total": 57,
+    "b_pct": 100.0
+  },
+  {
+    "category": "Toys",
+    "mode_a": 19,
+    "mode_b": 0,
+    "mode_c": 0,
+    "total": 19,
+    "b_pct": 0.0
+  },
+  {
+    "category": "Watches",
+    "mode_a": 0,
+    "mode_b": 0,
+    "mode_c": 20,
+    "total": 20,
+    "b_pct": 0.0
+  },
+  {
+    "category": "Wedding Cards",
+    "mode_a": 0,
+    "mode_b": 29,
+    "mode_c": 0,
+    "total": 29,
+    "b_pct": 100.0
+  }
+]

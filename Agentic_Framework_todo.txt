@@ -1,0 +1,15 @@
+Agentic AI :
+====================
+we need to have meeting with all the stakeholders once project idea is given and it may require one or 2 meetings based on response given by user to stakeholders, that can be scheduled /organized by supervisor - user can initiate the second meeting once he has all answers by clicking on teh meeting.
+Onboarding should have LLM proivder, models, api url and keys for each agents to be updated and LLM provider/models should be autopopulated that are there in the industry, with openrouter, opencode zen/go also. should have option to enter custom one. we should have recommended agents LLM proivder/model based on the roles that they play, user can still chnage it. idea is to have different llm to different agents - not same llms for all. 
+there should have one for supervisor and chat - that can be configured frpm admin - settings of the framework - same LLM privider/model drop down and all - we can take it from mymoney project
+we should have product-plan.md for agentic framework and also product-plan.md for each agent so that it capture what all it has planned/goals and what is implemented so that it knows what is done and pending. can we context memory for each agents?
+also context memory for supervisor and chat ?
+DB for all the configs for framework adn for each agents do we need it for runtime?
+Zod schema validation for framework and agents product verification
+we need to have gherkens type of scenarios written for each features/modules for framework, similary it hsould be used by each agents to implement their work and update once it is done
+USer creation and management workflow - admin and feature enablement for users. each user can have how much project that can be configured. at a time, how many projects can run parallel - it should be configurable and recommendation to be done based on system HW configuration. it should take email id of the user. and also emails id of users that are to be involved in the project - in the project creation - users should be agentic framework users. 
+Tokens usage per agent needs to be captured and shown and also for supervsior and chat.
+skills - that can be loaded for framework and for agents to use - skills - can we have drop down on discovered skills till now and to install and use also?
+project creation/onboarding should have project/product name, path where it has to create, logo and so on
+delete user it should list all projects and its data and warn the user and confirm - we will do soft delete and keep it for a week -highlight that adn then they can revoke/bring it back within 7 days and after that alll project and its artifacts are all deleted. there will be email when delete is invoked with all details and abot soft delete and 1 week to be available and once deleted, one email again to be sent to the user. 

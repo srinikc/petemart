@@ -1,0 +1,115 @@
+{
+  "agent_id": "07c_backend_db_agent",
+  "role": "Data Infrastructure & Storage Engineer",
+  "phase": "phase_three",
+  "dependencies_artifacts": [],
+  "deliverables": {
+    "human_readable": "agents/03_execution_workspace/07c_backend_db_agent/09-data-model.md",
+    "structured_data": "agents/03_execution_workspace/07c_backend_db_agent/10-data-model.json"
+  },
+  "sandbox_dir": "agents/03_execution_workspace/07c_backend_db_agent/",
+  "prompt_source": "00_state_ledger/AGENT_REGISTRY.json → agents.07c_backend_db_agent.system_prompt",
+  "user_instruction": null,
+  "compliance_checks": [
+    {
+      "id": "DB-001",
+      "check": "artifact_exists(01-complete-schema.sql) â€” schema definitions present",
+      "type": "artifact",
+      "required": true,
+      "passed": true
+    },
+    {
+      "id": "DB-002",
+      "check": "code review completed (pre-commit gate cleared)",
+      "type": "code_review",
+      "required": true,
+      "passed": true
+    },
+    {
+      "id": "DB-003",
+      "check": "TypeScript check passed (tsc --noEmit)",
+      "type": "test",
+      "required": true,
+      "passed": true
+    },
+    {
+      "id": "DB-004",
+      "check": "database unit tests executed and passing",
+      "type": "test",
+      "required": true,
+      "passed": true
+    },
+    {
+      "id": "DB-005",
+      "check": "migration scripts include automated rollback statements",
+      "type": "data_completeness",
+      "required": true,
+      "passed": true
+    },
+    {
+      "id": "DB-006",
+      "check": "index definitions present for primary tables (non-indexed query check)",
+      "type": "data_completeness",
+      "required": true,
+      "passed": true
+    },
+    {
+      "id": "DB-007",
+      "check": "connection timeout and pool parameters align with Architect's scaling criteria",
+      "type": "architecture",
+      "required": true,
+      "passed": true
+    },
+    {
+      "id": "DB-008",
+      "check": "COMPLETION_SLIDE.pptx generated",
+      "type": "artifact",
+      "required": true,
+      "passed": true
+    },
+    {
+      "id": "DB-009",
+      "check": "DATA_EXPORT.xlsx generated (schema definitions, index configurations, migration logs)",
+      "type": "artifact",
+      "required": true,
+      "passed": true
+    },
+    {
+      "id": "DB-010",
+      "check": "feature_branch_used() â€” work on feature branch off develop",
+      "type": "workflow",
+      "required": true,
+      "passed": false
+    },
+    {
+      "id": "DB-011",
+      "check": "pr_created_and_merged() â€” PR targeting develop, CI passed before merge",
+      "type": "workflow",
+      "required": true,
+      "passed": false
+    },
+    {
+      "id": "DB-012",
+      "check": "ci_pipeline_passed() â€” GitHub Actions CI build succeeded",
+      "type": "workflow",
+      "required": true,
+      "passed": false
+    },
+    {
+      "id": "DB-013",
+      "check": "requirements_traceability() â€” DB artifacts reference PRD requirement IDs (REQ-BE-001 to REQ-BE-026, REQ-MICRO-001 to REQ-MICRO-008)",
+      "type": "traceability",
+      "required": true,
+      "passed": false
+    },
+    {
+      "id": "DB-014",
+      "check": "input_from_upstream_agents() â€” consumes PRD (02), Architect specs (03), Sprint plan (05) before implementation",
+      "type": "traceability",
+      "required": true,
+      "passed": false
+    }
+  ],
+  "launched_at": "2026-08-19T14:47:35.898Z",
+  "status": "launched"
+}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { Input } from '@/components/ui/input';
+import { Input } from '@productforge/ui';
 
 describe('Input Component', () => {
   it('renders with placeholder', () => {

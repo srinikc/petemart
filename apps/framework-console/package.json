@@ -1,0 +1,34 @@
+{
+  "name": "@productforge/framework-console",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ProductForge Central Agentic Console + QA Dashboard (framework orchestration UI)",
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "dev:qa": "next dev -p 3458",
+    "build": "next build",
+    "start": "next start -p 3000",
+    "start:qa": "next start -p 3458",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@productforge/framework-core": "1.0.0",
+    "@productforge/shared": "1.0.0",
+    "jspdf": "^4.2.1",
+    "lucide-react": "^0.460.0",
+    "next": "^15.5.18",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "recharts": "^2.15.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.19",
+    "@types/react": "^19.2.15",
+    "@types/react-dom": "^19.2.3",
+    "autoprefixer": "^10.5.0",
+    "postcss": "^8.5.15",
+    "tailwindcss": "^3.4.19",
+    "tailwindcss-animate": "^1.0.7",
+    "typescript": "^5.9.3"
+  }
+}

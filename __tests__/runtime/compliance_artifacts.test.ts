@@ -76,7 +76,7 @@ describe('C/D: artifacts + duration on compliance failure', () => {
       phase: 'test',
       pool: 'sync',
       dependencies: [],
-      workspaceRoot: '__tests__/runtime/_test_tmp',
+      workspaceRoot: '__tests__/runtime/_test_comp',
       tools: [],
     };
 
@@ -127,7 +127,7 @@ describe('C/D: artifacts + duration on compliance failure', () => {
       phase: 'test',
       pool: 'sync',
       dependencies: [],
-      workspaceRoot: '__tests__/runtime/_test_tmp',
+      workspaceRoot: '__tests__/runtime/_test_comp',
       tools: [],
     };
 

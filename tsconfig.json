@@ -14,11 +14,21 @@
     "incremental": true,
     "plugins": [{ "name": "next" }],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@/lib/api-helpers": ["./apps/petemart/lib/api-helpers"],
+      "@/lib/api-helpers/*": ["./apps/petemart/lib/api-helpers/*"],
+      "@/lib/qa/*": ["./apps/framework-console/lib/qa/*"],
+      "@/app/api/qa/*": ["./apps/framework-console/app/api/qa/*"],
+      "@/app/api/v1/*": ["./apps/petemart/app/api/v1/*"],
+      "@/qa-dashboard/*": ["./apps/framework-console/qa-dashboard/*"],
+      "@productforge/framework-core": ["./packages/framework-core/src/index.ts"],
+      "@productforge/shared": ["./packages/shared/src/index.ts"],
+      "@productforge/shared/*": ["./packages/shared/src/*"],
+      "@productforge/ui": ["./packages/ui/src/index.ts"]
     },
     "target": "ES2017",
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "agents"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "packages/**/*.ts", "packages/**/*.tsx", "scripts/**/*.ts"],
+  "exclude": ["node_modules", "agents", ".next", "coverage", "apps/petemart/.next", "apps/framework-console/.next"]
 }

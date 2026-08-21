@@ -597,20 +597,20 @@ class AgentRuntime {
         break;
       } else {
         consecutiveEmpty++;
-        if (consecutiveEmpty >= 3) {
-          vlog.write('RUNTIME', agentDef.id, `Loop guard | ${consecutiveEmpty} consecutive empty responses — stopping`);
-          break;
-        }
         const completedArtifacts = artifacts.concat(priorArtifacts || []);
         const missing = this._getMissingComplianceFiles(agentDef?.id, completedArtifacts, priorArtifacts);
         if (missing.length > 0) {
+          if (consecutiveEmpty >= 3) {
+            vlog.write('RUNTIME', agentDef.id, `Loop guard | ${consecutiveEmpty} consecutive empty responses — stopping`);
+            break;
+          }
           vlog.write('RUNTIME', agentDef.id, `Missing files: ${missing.join(', ')} — re-prompting headers`);
           messages.push({ role: 'system', content: `Output EACH remaining file with a ## header. Only text, no tool calls:\n${missing.map(f => '## ' + f + '\n[content]').join('\n\n')}` });
         } else {
-          vlog.write('RUNTIME', agentDef.id, `Empty response #${consecutiveEmpty}`);
-          if (consecutiveEmpty === 1) {
-            messages.push({ role: 'system', content: 'Output the required files with ## headers. Example:\n## FEASIBILITY_ARCHITECTURE.md\nContent here...' });
-          }
+          // No tool calls, no content, and no compliance files pending — nothing further to
+          // request from the model, so stop immediately instead of re-prompting.
+          vlog.write('RUNTIME', agentDef.id, `Empty response with no pending files — stopping`);
+          break;
         }
         continue;
       }
@@ -667,11 +667,9 @@ class AgentRuntime {
           const { execSync } = require('child_process');
           execSync(`python "${scriptPath}" "${sandboxDir}"`, { stdio: 'pipe', timeout: 30000, windowsHide: true });
           if (needXlsx && fs.existsSync(path.join(sandboxDir, 'DATA_EXPORT.xlsx'))) {
-            result.artifacts.push({ name: 'DATA_EXPORT.xlsx', data: '', type: 'xlsx' });
             vlog.write('RUNTIME', agentId, 'Generated DATA_EXPORT.xlsx from cost data');
           }
           if (needPptx && fs.existsSync(path.join(sandboxDir, 'COMPLETION_SLIDE.pptx'))) {
-            result.artifacts.push({ name: 'COMPLETION_SLIDE.pptx', data: '', type: 'pptx' });
             vlog.write('RUNTIME', agentId, 'Generated COMPLETION_SLIDE.pptx from architecture data');
           }
         }
@@ -725,6 +723,7 @@ class AgentRuntime {
           const p = path.join(workspaceRoot, art.name).replace(/\\/g, '/');
           if (!agent.artifacts_emitted.includes(p)) agent.artifacts_emitted.push(p);
         }
+        agent.last_artifact_emitted = agent.artifacts_emitted;
       }
       // Compliance check: verify artifacts from THIS run only (not stale accumulated artifacts)
       const currentArtifacts = (result.artifacts || []).filter(a => a && a.name);
@@ -739,8 +738,9 @@ class AgentRuntime {
       }
       if (checkPassed) {
         agent.status = 'approved';
-      } else if (agent.status !== 'failed' && agent.status !== 'cancelled') {
-        agent.status = (currentArtifacts.length > 0) ? 'awaiting_approval' : 'failed';
+      } else {
+        agent.status = 'failed';
+        if (!agent.last_error) agent.last_error = 'Compliance check failed — required artifact(s) not produced';
       }
       this._saveState(state);
     }
@@ -868,6 +868,7 @@ class AgentRuntime {
 
     if (depContext) prompt += `\n\n## Dependency Context\n${depContext}`;
     if (context?.user_instruction) prompt += `\n\n## User Instruction\n${context.user_instruction}`;
+    prompt += this._getMemoryContext(agentDef.id);
     return prompt;
   }
 
@@ -906,6 +907,30 @@ class AgentRuntime {
       } catch {}
     }
     return parts.join('\n\n');
+  }
+
+  // ── Episodic Memory ──
+  // Reads back the agent's own prior run history from memory_store so a
+  // re-invoked agent (e.g. re-run by the supervisor or for a hotfix) can see
+  // what it did in previous runs instead of starting from a blank slate.
+  _getMemoryContext(agentId, maxEntries = 5) {
+    try {
+      const memPath = path.join(MEMORY_DIR(), `${agentId}.json`);
+      if (!fs.existsSync(memPath)) return '';
+      const mem = JSON.parse(fs.readFileSync(memPath, 'utf-8'));
+      const history = Array.isArray(mem.history) ? mem.history : [];
+      if (history.length === 0) return '';
+      const recent = history.slice(-maxEntries);
+      const lines = recent.map((h, i) => {
+        const ts = h.timestamp ? h.timestamp.replace('T', ' ').slice(0, 19) : 'unknown time';
+        const artifacts = Array.isArray(h.artifacts) && h.artifacts.length > 0 ? h.artifacts.join(', ') : 'none';
+        const preview = h.contentPreview ? h.contentPreview.replace(/\s+/g, ' ').slice(0, 150) : '';
+        return `- Run #${history.length - recent.length + i + 1} (${ts}, ${h.status || 'completed'}): artifacts=[${artifacts}]${preview ? ` | output: "${preview}"` : ''}`;
+      });
+      return `\n\n## Previous Runs (your memory)\nYou have executed this agent ${history.length} time(s). Most recent runs:\n${lines.join('\n')}\nUse this to continue from where you left off — do not repeat completed work unless required.`;
+    } catch {
+      return '';
+    }
   }
 
   // ── Compliance ──

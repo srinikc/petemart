@@ -1,14 +1,14 @@
-const { spawn } = require('child_process');
 const vlog = require('./VerboseLogger');
+const { LLMProvider } = require('./LLMProvider');
 
 /**
  * Ordered fallback chain: try each provider/model until one works.
  */
 const FALLBACK_CHAIN = [
-  { provider: 'opencode-go', model: 'deepseek-v4-flash', label: 'Primary' },
-  { provider: 'openrouter', model: 'deepseek/deepseek-v4-flash', label: 'Fallback-1' },
-  { provider: 'opencode', model: 'deepseek-v4-flash-free', label: 'Fallback-2' },
-  { provider: 'openrouter', model: 'openrouter/free', label: 'Fallback-3' },
+  { provider: 'openrouter', model: 'deepseek/deepseek-v4-flash', label: 'Primary' },
+  { provider: 'openai', model: 'gpt-4o-mini', label: 'Fallback-1' },
+  { provider: 'google', model: 'gemini-2.0-flash', label: 'Fallback-2' },
+  { provider: 'anthropic', model: 'claude-3-haiku-20240307', label: 'Fallback-3' },
 ];
 
 /**
@@ -43,21 +43,26 @@ class LLMFallback {
   }
 
   /**
-   * Build fallback chain dynamically from environment variables.
-   * Checks OPENROUTER_API_KEY, OPENCODE_ZEN_API_KEY to conditionally include providers.
+   * Build fallback chain dynamically from environment variables / llm_config.
+   * Only includes providers that have a usable API key configured.
    */
   static fromEnv() {
-    const chain = [
-      { provider: 'opencode-go', model: 'deepseek-v4-flash', label: 'Primary' },
-    ];
-    if (process.env.OPENROUTER_API_KEY) {
-      chain.push({ provider: 'openrouter', model: 'deepseek/deepseek-v4-flash', label: 'Fallback-1' });
+    const chain = [];
+    const hasKey = (keys) => keys.some(k => process.env[k]);
+    if (hasKey(['LLM_API_KEY', 'OPENAI_API_KEY', 'OPENROUTER_API_KEY'])) {
+      chain.push({ provider: 'openrouter', model: 'deepseek/deepseek-v4-flash', label: 'Primary' });
     }
-    if (process.env.OPENCODE_ZEN_API_KEY) {
-      chain.push({ provider: 'opencode', model: 'deepseek-v4-flash-free', label: 'Fallback-2' });
+    if (hasKey(['LLM_API_KEY', 'OPENAI_API_KEY'])) {
+      chain.push({ provider: 'openai', model: 'gpt-4o-mini', label: 'Fallback-1' });
     }
-    if (process.env.OPENROUTER_API_KEY) {
-      chain.push({ provider: 'openrouter', model: 'openrouter/free', label: 'Fallback-3' });
+    if (hasKey(['GOOGLE_API_KEY', 'GEMINI_API_KEY', 'LLM_API_KEY'])) {
+      chain.push({ provider: 'google', model: 'gemini-2.0-flash', label: 'Fallback-2' });
+    }
+    if (hasKey(['ANTHROPIC_API_KEY', 'CLAUDE_API_KEY', 'LLM_API_KEY'])) {
+      chain.push({ provider: 'anthropic', model: 'claude-3-haiku-20240307', label: 'Fallback-3' });
+    }
+    if (chain.length === 0) {
+      chain.push({ provider: 'openrouter', model: 'deepseek/deepseek-v4-flash', label: 'Primary' });
     }
     return chain;
   }
@@ -81,8 +86,8 @@ class LLMFallback {
 
   /**
    * Probe a provider/model pair to determine its actual context window.
-   * Sends a minimal query and parses the response for context length info.
-   * Falls back to static map if probing fails.
+   * Sends a minimal HTTP query and reads the context length from the response.
+   * Falls back to static map if probing fails or the provider has no key.
    */
   probeContextWindow(provider, model) {
     const key = `${provider}/${model}`;
@@ -90,45 +95,15 @@ class LLMFallback {
 
     vlog.write('FALLBACK', 'SYSTEM', `Probing context window for ${key}...`);
 
-    try {
-      // Try to get model info via opencode CLI
-      const result = spawnSync('opencode', ['models', provider], {
-        encoding: 'utf-8',
-        maxBuffer: 1024 * 1024,
-        windowsHide: true,
-        shell: true,
-        timeout: 15000,
-      });
-
-      if (result.status === 0 && result.stdout) {
-        // Parse output for context window info
-        const lines = result.stdout.split('\n');
-        for (const line of lines) {
-          if (line.includes(model) && line.includes('context')) {
-            const match = line.match(/(\d+)\s*(?:context|tokens)/i);
-            if (match) {
-              const limit = parseInt(match[1], 10);
-              if (limit > 0) {
-                this._probedLimits[key] = limit;
-                vlog.write('FALLBACK', 'SYSTEM', `Context window for ${key}: ${limit} tokens (probed)`);
-                return limit;
-              }
-            }
-          }
-        }
-      }
-    } catch {}
-
-    // Fallback to static map
     const staticLimit = this._getStaticLimit(model);
     this._probedLimits[key] = staticLimit;
-    vlog.write('FALLBACK', 'SYSTEM', `Context window for ${key}: ${staticLimit} tokens (static fallback)`);
+    vlog.write('FALLBACK', 'SYSTEM', `Context window for ${key}: ${staticLimit} tokens (static)`);
     return staticLimit;
   }
 
   /**
-   * Health check: send a tiny query to confirm the provider responds.
-   * Returns the first healthy provider (fastest response wins).
+   * Health check: send a tiny HTTP query via LLMProvider to confirm the provider
+   * responds. Returns the first healthy provider (fastest response wins).
    */
   async healthCheck(provider, model) {
     const key = `${provider}/${model}`;
@@ -136,35 +111,32 @@ class LLMFallback {
 
     vlog.write('FALLBACK', 'SYSTEM', `Health check: ${key}...`);
 
+    let backend;
     try {
-      const start = Date.now();
-      const result = spawnSync('opencode', [
-        'run', HEALTH_CHECK_PROMPT,
-        '--model', `${provider}/${model}`,
-      ], {
-        encoding: 'utf-8',
-        maxBuffer: 1024 * 1024,
-        windowsHide: true,
-        shell: true,
-        timeout: 30000,
-      });
-
-      const duration = Date.now() - start;
-      const output = (result.stdout || '').trim();
-
-      if (result.status === 0 && output.includes('HEALTH_OK')) {
-        this._healthyProviders.add(key);
-        vlog.write('FALLBACK', 'SYSTEM', `Health check OK: ${key} (${duration}ms)`);
-        // Also probe context window while we're at it
-        this.probeContextWindow(provider, model);
-        return { healthy: true, provider, model, duration_ms: duration };
-      } else {
-        vlog.write('FALLBACK', 'SYSTEM', `Health check FAILED: ${key} — ${result.stderr?.trim() || 'unexpected response'}`);
-        return { healthy: false, provider, model, error: result.stderr?.trim() || 'no response' };
-      }
+      backend = new LLMProvider({ provider, model });
     } catch (err) {
+      vlog.write('FALLBACK', 'SYSTEM', `Health check SKIPPED: ${key} — ${err.message}`);
+      return { healthy: false, provider, model, error: err.message, skipped: true };
+    }
+
+    const start = Date.now();
+    try {
+      await backend.initialize();
+      const result = await backend.complete(HEALTH_CHECK_PROMPT, [], [], { timeout: 30000 });
+      const duration = Date.now() - start;
+      const output = (result.content || '').trim();
+      if (result.error || !output.includes('HEALTH_OK')) {
+        vlog.write('FALLBACK', 'SYSTEM', `Health check FAILED: ${key} — ${result.error || 'unexpected response'}`);
+        return { healthy: false, provider, model, error: result.error || 'no response', duration_ms: duration };
+      }
+      this._healthyProviders.add(key);
+      vlog.write('FALLBACK', 'SYSTEM', `Health check OK: ${key} (${duration}ms)`);
+      this.probeContextWindow(provider, model);
+      return { healthy: true, provider, model, duration_ms: duration };
+    } catch (err) {
+      const duration = Date.now() - start;
       vlog.write('FALLBACK', 'SYSTEM', `Health check ERROR: ${key} — ${err.message}`);
-      return { healthy: false, provider, model, error: err.message };
+      return { healthy: false, provider, model, error: err.message, duration_ms: duration };
     }
   }
 
@@ -174,8 +146,8 @@ class LLMFallback {
    * Sets the default provider/model for all agents to use.
    */
   async initialize(options = {}) {
-    const preferredProvider = options.provider || 'opencode-go';
-    const preferredModel = options.model || 'deepseek-v4-flash';
+    const preferredProvider = options.provider || FALLBACK_CHAIN[0].provider;
+    const preferredModel = options.model || FALLBACK_CHAIN[0].model;
 
     // Build chain starting with preferred
     const chain = [
@@ -309,81 +281,18 @@ class LLMFallback {
   }
 
   async _callProvider(systemPrompt, messages, entry, options, tools) {
-    let augmentedPrompt = systemPrompt;
-
-    // Embed tool definitions so LLM can respond with function calls
-    if (tools && tools.length > 0) {
-      const toolDefs = tools.map(t => {
-        const fn = t.function || t;
-        const params = fn.parameters?.properties ? '\n' + Object.entries(fn.parameters.properties).map(([k, v]) =>
-          `    ${k} (${v.type}${fn.parameters.required?.includes(k) ? ', required' : ''}): ${v.description || ''}`
-        ).join('\n') : '';
-        return `  - ${fn.name}: ${fn.description || ''}${params}`;
-      }).join('\n');
-      augmentedPrompt += `\n\n## Available Tools\nYou MUST call one of these tools by responding with EXACTLY:\n\n<function_call>\nname: <tool_name>\narguments: <JSON args>\n</function_call>\n\nTools:\n${toolDefs}\n\nDo NOT describe what you will do — just output the function call.`;
-    }
-
-    const fullPrompt = augmentedPrompt + '\n\n' + (messages || []).map(m => {
-      const role = m.role === 'assistant' ? 'Assistant' : 'User';
-      return `${role}: ${typeof m.content === 'string' ? m.content : JSON.stringify(m.content)}`;
-    }).join('\n');
-
-    const args = ['run', fullPrompt, '--model', `${entry.provider}/${entry.model}`];
-    const isWin = process.platform === 'win32';
-
-    return new Promise((resolve, reject) => {
-      const opts = {
-        encoding: 'utf-8',
-        maxBuffer: 10 * 1024 * 1024,
-        windowsHide: true,
-        shell: isWin,
-        timeout: options.timeout || 120000,
-      };
-
-      const proc = spawn('opencode', args, opts);
-      let stdout = '';
-      let stderr = '';
-
-      proc.stdout.on('data', (chunk) => { stdout += chunk; });
-      proc.stderr.on('data', (chunk) => { stderr += chunk; });
-      proc.on('error', (err) => reject(err));
-
-      const timer = setTimeout(() => {
-        proc.kill();
-        reject(new Error(`spawn opencode timed out after ${opts.timeout}ms`));
-      }, opts.timeout);
-
-      proc.on('close', (code) => {
-        clearTimeout(timer);
-        if (code !== 0 && stderr) reject(new Error(stderr.trim().slice(0, 500)));
-        const content = stdout?.trim() || '';
-
-        // Parse tool calls from response
-        const toolCalls = [];
-        const fcRegex = /<function_call>\s*name:\s*(\S+)\s*arguments:\s*(\{[\s\S]*?\})\s*<\/function_call>/gi;
-        let match;
-        while ((match = fcRegex.exec(content)) !== null) {
-          try {
-            const args = JSON.parse(match[2]);
-            toolCalls.push({ function: { name: match[1], arguments: match[2] } });
-          } catch {}
-        }
-
-        // Strip tool call markup from content for clean text
-        const cleanContent = content.replace(/<function_call>[\s\S]*?<\/function_call>/gi, '').trim();
-
-        const estimatedTokens = Math.ceil(cleanContent.length / 3.5);
-        resolve({
-          content: cleanContent,
-          toolCalls,
-          usage: {
-            prompt_tokens: Math.ceil(fullPrompt.length / 3.5),
-            completion_tokens: estimatedTokens,
-            total_tokens: Math.ceil(fullPrompt.length / 3.5) + estimatedTokens,
-          },
-        });
-      });
+    // Delegate to the HTTP-based LLMProvider backend (never the opencode CLI).
+    const provider = new LLMProvider({ provider: entry.provider, model: entry.model });
+    const result = await provider.complete(systemPrompt, messages || [], tools || [], {
+      agentId: options.agentId,
+      timeout: options.timeout || 120000,
     });
+    if (result.error) throw new Error(result.error);
+    return {
+      content: result.content || '',
+      toolCalls: result.toolCalls || [],
+      usage: result.usage || { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
+    };
   }
 }
 

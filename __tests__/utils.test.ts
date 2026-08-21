@@ -6,7 +6,7 @@ import {
   formatPrice, formatDate, formatDateTime, slugify,
   truncate, getInitials, getModeLabel, getStatusColor,
   getStatusLabel, getDeliveryEta, cn,
-} from '@/lib/utils';
+} from '@productforge/shared/utils';
 
 describe('Utility Functions', () => {
   // ── cn() ──────────────────────────────────────────────────────────────────

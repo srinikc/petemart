@@ -1,0 +1,15 @@
+# Gitleaks config for ProductForge monorepo.
+# Extends default rules; allows known false positives.
+title = "ProductForge gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Allowed false positives"
+# MD5 artifact-integrity hashes in the state ledger (not credentials).
+paths = [
+  '''00_state_ledger/ARTIFACT_HASHES.json''',
+  '''00_state_ledger/EVENTS_CACHE.json''',
+  '''00_state_ledger/SUPERVISOR_DASHBOARD.json''',
+]

@@ -2,7 +2,7 @@
 // PeteMart — Unit Tests: Mock Data Integrity
 // =============================================================================
 import { describe, it, expect } from 'vitest';
-import { MARKETS, MERCHANTS, PRODUCTS, ORDERS, CART_ITEMS, ADDRESSES } from '@/lib/data';
+import { MARKETS, MERCHANTS, PRODUCTS, ORDERS, CART_ITEMS, ADDRESSES } from '@productforge/shared';
 
 describe('Mock Data Integrity', () => {
   // ── Markets ────────────────────────────────────────────────────────────────

@@ -1,17 +1,24 @@
 {
   "pipeline_phase": "idle",
   "pipeline_paused": false,
-  "cycle_count": 0,
+  "cycle_count": 17183,
   "circuit_breaker": "CLOSED",
+  "daemon": {
+    "status": "running",
+    "heartbeat": 1787155933600,
+    "last_cycle": "2026-08-19T16:12:13.600Z",
+    "current_action": "No eligible agents — waiting for approvals or dependencies"
+  },
   "summary": {
     "total_agents": 19,
-    "agents_completed": 2,
-    "agents_in_progress": 0,
-    "agents_pending": 16,
+    "agents_completed": 6,
+    "agents_in_progress": 3,
+    "agents_pending": 9,
     "agents_awaiting_review": 0,
+    "agents_awaiting_input": 0,
     "agents_failed": 0,
-    "overall_progress_pct": 11,
-    "last_updated": "2026-06-17T18:32:12.658Z"
+    "overall_progress_pct": 33,
+    "last_updated": "2026-08-19T16:12:13.887Z"
   },
   "agents": [
     {
@@ -19,134 +26,1918 @@
       "status": "idle",
       "role": "Senior Program Manager / Pipeline Orchestrator & Compliance Auditor",
       "phase": "system",
-      "execution_count": 0
+      "execution_count": 0,
+      "step_label": null,
+      "last_error": null,
+      "requires_human_approval": false,
+      "artifacts_emitted": 0,
+      "compliance_passed": 10,
+      "compliance_total": 10
     },
     {
       "id": "01_ideation_agent",
       "status": "approved",
       "role": "Product Marketing Manager & Hyper-Local Retail Economics Specialist",
       "phase": "phase_one",
-      "execution_count": 2
+      "execution_count": 2,
+      "step_label": null,
+      "last_error": null,
+      "requires_human_approval": true,
+      "artifacts_emitted": 7,
+      "compliance_passed": 7,
+      "compliance_total": 7
     },
     {
       "id": "02_requirement_agent",
       "status": "approved",
       "role": "Enterprise Product Manager / Product Owner",
       "phase": "phase_one",
-      "execution_count": 3
+      "execution_count": 3,
+      "step_label": null,
+      "last_error": null,
+      "requires_human_approval": true,
+      "artifacts_emitted": 5,
+      "compliance_passed": 6,
+      "compliance_total": 6
     },
     {
       "id": "03_architect_agent",
-      "status": "pending",
+      "status": "approved",
       "role": "Senior Enterprise Solution Architect",
       "phase": "phase_one",
-      "execution_count": 1
+      "execution_count": 1,
+      "step_label": "completed",
+      "last_error": null,
+      "requires_human_approval": true,
+      "artifacts_emitted": 10,
+      "compliance_passed": 9,
+      "compliance_total": 9
     },
     {
       "id": "04_prototype_agent",
-      "status": "pending",
+      "status": "approved",
       "role": "Senior Prototyping Engineer / Concept Verification Engine",
       "phase": "phase_one",
-      "execution_count": 1
+      "execution_count": 1,
+      "step_label": null,
+      "last_error": null,
+      "requires_human_approval": true,
+      "artifacts_emitted": 4,
+      "compliance_passed": 6,
+      "compliance_total": 6
     },
     {
       "id": "05_program_mgmt_agent",
-      "status": "pending",
+      "status": "approved",
       "role": "Senior Agile Program Manager & Scrum Master",
       "phase": "phase_two",
-      "execution_count": 1
+      "execution_count": 1,
+      "step_label": null,
+      "last_error": null,
+      "requires_human_approval": true,
+      "artifacts_emitted": 10,
+      "compliance_passed": 7,
+      "compliance_total": 7
     },
     {
       "id": "06_infra_devops_agent",
-      "status": "pending",
+      "status": "approved",
       "role": "DevOps Systems Architect & Core Supply Chain Automation Engine",
       "phase": "phase_two",
-      "execution_count": 2
+      "execution_count": 2,
+      "step_label": null,
+      "last_error": null,
+      "requires_human_approval": false,
+      "artifacts_emitted": 10,
+      "compliance_passed": 6,
+      "compliance_total": 6
     },
     {
       "id": "07a_ui_agent",
-      "status": "pending",
+      "status": "in_progress",
       "role": "Frontend & Mobile Interface Engineer",
       "phase": "phase_three",
-      "execution_count": 2
+      "execution_count": 2,
+      "step_label": null,
+      "last_error": "Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console.",
+      "requires_human_approval": true,
+      "artifacts_emitted": 10,
+      "compliance_passed": 7,
+      "compliance_total": 12
     },
     {
       "id": "07b_api_agent",
-      "status": "pending",
+      "status": "in_progress",
       "role": "Interface Connection Engineer",
       "phase": "phase_three",
-      "execution_count": 1
+      "execution_count": 1,
+      "step_label": null,
+      "last_error": "Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console.",
+      "requires_human_approval": true,
+      "artifacts_emitted": 8,
+      "compliance_passed": 9,
+      "compliance_total": 14
     },
     {
       "id": "07c_backend_db_agent",
-      "status": "pending",
+      "status": "in_progress",
       "role": "Data Infrastructure & Storage Engineer",
       "phase": "phase_three",
-      "execution_count": 2
+      "execution_count": 2,
+      "step_label": null,
+      "last_error": "Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console.",
+      "requires_human_approval": true,
+      "artifacts_emitted": 14,
+      "compliance_passed": 9,
+      "compliance_total": 14
     },
     {
       "id": "07d_integration_agent",
       "status": "pending",
       "role": "Systems Assembly Engineer",
       "phase": "phase_three",
-      "execution_count": 2
+      "execution_count": 2,
+      "step_label": null,
+      "last_error": null,
+      "requires_human_approval": true,
+      "artifacts_emitted": 7,
+      "compliance_passed": 7,
+      "compliance_total": 12
     },
     {
       "id": "08_qa_agent",
       "status": "pending",
       "role": "Senior Test Architect & Quality Gatekeeper",
       "phase": "phase_four",
-      "execution_count": 2
+      "execution_count": 2,
+      "step_label": null,
+      "last_error": null,
+      "requires_human_approval": true,
+      "artifacts_emitted": 46,
+      "compliance_passed": 10,
+      "compliance_total": 15
     },
     {
       "id": "09_production_agent",
       "status": "pending",
       "role": "Release & Deployment Coordinator",
       "phase": "phase_four",
-      "execution_count": 1
+      "execution_count": 1,
+      "step_label": null,
+      "last_error": null,
+      "requires_human_approval": true,
+      "artifacts_emitted": 6,
+      "compliance_passed": 6,
+      "compliance_total": 11
     },
     {
       "id": "10_tech_pub_agent",
       "status": "pending",
       "role": "Technical Documentation & Localization Specialist",
       "phase": "phase_four",
-      "execution_count": 0
+      "execution_count": 0,
+      "step_label": null,
+      "last_error": null,
+      "requires_human_approval": false,
+      "artifacts_emitted": 0,
+      "compliance_passed": 0,
+      "compliance_total": 8
     },
     {
       "id": "11_customer_onboarding_agent",
       "status": "pending",
       "role": "CRM & Operations Specialist",
       "phase": "phase_five",
-      "execution_count": 0
+      "execution_count": 0,
+      "step_label": null,
+      "last_error": null,
+      "requires_human_approval": false,
+      "artifacts_emitted": 0,
+      "compliance_passed": 0,
+      "compliance_total": 8
     },
     {
       "id": "12_marketing_agent",
       "status": "pending",
       "role": "Growth & Traffic Automation Specialist",
       "phase": "phase_five",
-      "execution_count": 0
+      "execution_count": 0,
+      "step_label": null,
+      "last_error": null,
+      "requires_human_approval": false,
+      "artifacts_emitted": 0,
+      "compliance_passed": 0,
+      "compliance_total": 8
     },
     {
       "id": "13_maintenance_agent",
       "status": "pending",
       "role": "Autonomous Remediation & Healing Agent",
       "phase": "phase_five",
-      "execution_count": 0
+      "execution_count": 0,
+      "step_label": null,
+      "last_error": null,
+      "requires_human_approval": false,
+      "artifacts_emitted": 0,
+      "compliance_passed": 0,
+      "compliance_total": 10
     },
     {
       "id": "14_finops_agent",
       "status": "pending",
       "role": "Cloud Cost Optimization Guardrail",
       "phase": "phase_five",
-      "execution_count": 0
+      "execution_count": 0,
+      "step_label": null,
+      "last_error": null,
+      "requires_human_approval": false,
+      "artifacts_emitted": 0,
+      "compliance_passed": 0,
+      "compliance_total": 8
     },
     {
       "id": "15_secrets_compliance_agent",
       "status": "pending",
       "role": "Security Guardrail",
       "phase": "phase_five",
-      "execution_count": 0
+      "execution_count": 0,
+      "step_label": null,
+      "last_error": null,
+      "requires_human_approval": false,
+      "artifacts_emitted": 0,
+      "compliance_passed": 0,
+      "compliance_total": 8
     }
   ],
-  "updated_at": "2026-06-17T18:32:12.658Z"
+  "health_audit": {
+    "01_ideation_agent": {
+      "agent_id": "01_ideation_agent",
+      "status": "approved",
+      "allHealthy": false,
+      "checks": [
+        {
+          "check": "artifacts_on_disk",
+          "healthy": true,
+          "detail": "7 tracked, 0 missing, 0 empty, 0 stale",
+          "artifacts": {
+            "total": 7,
+            "missing": [],
+            "empty": [],
+            "stale": []
+          }
+        },
+        {
+          "check": "agent_run_log",
+          "healthy": true,
+          "detail": "No errors",
+          "errorCount": 0,
+          "lastError": null
+        },
+        {
+          "check": "checkpoint_completeness",
+          "healthy": true,
+          "detail": "0/0 checkpoints done, 0 LLM iters, 0 errors",
+          "checkpoints": {
+            "started": 0,
+            "completed": 0,
+            "llmIterations": 0,
+            "errors": 0
+          },
+          "lastRun": null
+        },
+        {
+          "check": "llm_health",
+          "healthy": false,
+          "detail": "LLM check failed: Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console.",
+          "provider": null,
+          "model": null,
+          "error": "Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console."
+        },
+        {
+          "check": "tools_available",
+          "healthy": true,
+          "detail": "3 tool(s) defined in registry, 0 missing",
+          "defined": [
+            "write_artifact",
+            "read_dependency",
+            "browse_files"
+          ],
+          "missing": []
+        },
+        {
+          "check": "dependency_integrity",
+          "healthy": true,
+          "detail": "No dependencies",
+          "dependencyStatus": {}
+        },
+        {
+          "check": "stuck_detection",
+          "healthy": true,
+          "detail": "Agent not active",
+          "stuck": false
+        },
+        {
+          "check": "execution_limit",
+          "healthy": true,
+          "detail": "2/10 executions used",
+          "executionCount": 2,
+          "maxExecutions": 10,
+          "exceeded": false
+        },
+        {
+          "check": "upstream_changes",
+          "healthy": true,
+          "detail": "No upstream deps",
+          "changed": false
+        }
+      ],
+      "checked_at": "2026-08-19T16:12:13.620Z"
+    },
+    "02_requirement_agent": {
+      "agent_id": "02_requirement_agent",
+      "status": "approved",
+      "allHealthy": false,
+      "checks": [
+        {
+          "check": "artifacts_on_disk",
+          "healthy": true,
+          "detail": "5 tracked, 0 missing, 0 empty, 0 stale",
+          "artifacts": {
+            "total": 5,
+            "missing": [],
+            "empty": [],
+            "stale": []
+          }
+        },
+        {
+          "check": "agent_run_log",
+          "healthy": true,
+          "detail": "No runs recorded",
+          "errorCount": 0,
+          "lastError": null
+        },
+        {
+          "check": "checkpoint_completeness",
+          "healthy": true,
+          "detail": "0/0 checkpoints done, 0 LLM iters, 0 errors",
+          "checkpoints": {
+            "started": 0,
+            "completed": 0,
+            "llmIterations": 0,
+            "errors": 0
+          },
+          "lastRun": null
+        },
+        {
+          "check": "llm_health",
+          "healthy": false,
+          "detail": "LLM check failed: Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console.",
+          "provider": null,
+          "model": null,
+          "error": "Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console."
+        },
+        {
+          "check": "tools_available",
+          "healthy": true,
+          "detail": "2 tool(s) defined in registry, 0 missing",
+          "defined": [
+            "write_artifact",
+            "read_dependency"
+          ],
+          "missing": []
+        },
+        {
+          "check": "dependency_integrity",
+          "healthy": true,
+          "detail": "1/1 deps resolved",
+          "dependencyStatus": {
+            "01_ideation_agent": {
+              "resolved": true,
+              "status": "approved"
+            }
+          },
+          "allDepsResolved": true
+        },
+        {
+          "check": "stuck_detection",
+          "healthy": true,
+          "detail": "Agent not active",
+          "stuck": false
+        },
+        {
+          "check": "execution_limit",
+          "healthy": true,
+          "detail": "3/10 executions used",
+          "executionCount": 3,
+          "maxExecutions": 10,
+          "exceeded": false
+        },
+        {
+          "check": "upstream_changes",
+          "healthy": true,
+          "detail": "No changes detected",
+          "changed": [],
+          "upstreamChanged": false
+        }
+      ],
+      "checked_at": "2026-08-19T16:12:13.636Z"
+    },
+    "03_architect_agent": {
+      "agent_id": "03_architect_agent",
+      "status": "approved",
+      "allHealthy": false,
+      "checks": [
+        {
+          "check": "artifacts_on_disk",
+          "healthy": true,
+          "detail": "10 tracked, 0 missing, 0 empty, 0 stale",
+          "artifacts": {
+            "total": 10,
+            "missing": [],
+            "empty": [],
+            "stale": []
+          }
+        },
+        {
+          "check": "agent_run_log",
+          "healthy": false,
+          "detail": "2 error(s) found",
+          "errorCount": 2,
+          "lastError": "[2026-06-23T11:39:09.567Z] [RUNTIME] [03_architect_agent] Binary gen error: Command failed: python \"C:\\Users\\ADMIN\\Documents\\Srinikc\\AI Products\\product-forge-agentic\\scripts\\generate_binaries.py"
+        },
+        {
+          "check": "checkpoint_completeness",
+          "healthy": true,
+          "detail": "0/0 checkpoints done, 0 LLM iters, 0 errors",
+          "checkpoints": {
+            "started": 0,
+            "completed": 0,
+            "llmIterations": 0,
+            "errors": 0
+          },
+          "lastRun": null
+        },
+        {
+          "check": "llm_health",
+          "healthy": false,
+          "detail": "LLM check failed: Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console.",
+          "provider": null,
+          "model": null,
+          "error": "Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console."
+        },
+        {
+          "check": "tools_available",
+          "healthy": false,
+          "detail": "0 tool(s) defined in registry, 1 missing",
+          "defined": [],
+          "missing": [
+            "write_artifact"
+          ]
+        },
+        {
+          "check": "dependency_integrity",
+          "healthy": true,
+          "detail": "1/1 deps resolved",
+          "dependencyStatus": {
+            "02_requirement_agent": {
+              "resolved": true,
+              "status": "approved"
+            }
+          },
+          "allDepsResolved": true
+        },
+        {
+          "check": "stuck_detection",
+          "healthy": true,
+          "detail": "Agent not active",
+          "stuck": false
+        },
+        {
+          "check": "execution_limit",
+          "healthy": true,
+          "detail": "1/10 executions used",
+          "executionCount": 1,
+          "maxExecutions": 10,
+          "exceeded": false
+        },
+        {
+          "check": "upstream_changes",
+          "healthy": true,
+          "detail": "No changes detected",
+          "changed": [],
+          "upstreamChanged": false
+        }
+      ],
+      "checked_at": "2026-08-19T16:12:13.658Z"
+    },
+    "04_prototype_agent": {
+      "agent_id": "04_prototype_agent",
+      "status": "approved",
+      "allHealthy": false,
+      "checks": [
+        {
+          "check": "artifacts_on_disk",
+          "healthy": true,
+          "detail": "4 tracked, 0 missing, 0 empty, 0 stale",
+          "artifacts": {
+            "total": 4,
+            "missing": [],
+            "empty": [],
+            "stale": []
+          }
+        },
+        {
+          "check": "agent_run_log",
+          "healthy": true,
+          "detail": "No runs recorded",
+          "errorCount": 0,
+          "lastError": null
+        },
+        {
+          "check": "checkpoint_completeness",
+          "healthy": true,
+          "detail": "0/0 checkpoints done, 0 LLM iters, 0 errors",
+          "checkpoints": {
+            "started": 0,
+            "completed": 0,
+            "llmIterations": 0,
+            "errors": 0
+          },
+          "lastRun": null
+        },
+        {
+          "check": "llm_health",
+          "healthy": false,
+          "detail": "LLM check failed: Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console.",
+          "provider": null,
+          "model": null,
+          "error": "Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console."
+        },
+        {
+          "check": "tools_available",
+          "healthy": true,
+          "detail": "2 tool(s) defined in registry, 0 missing",
+          "defined": [
+            "write_artifact",
+            "read_dependency"
+          ],
+          "missing": []
+        },
+        {
+          "check": "dependency_integrity",
+          "healthy": true,
+          "detail": "1/1 deps resolved",
+          "dependencyStatus": {
+            "03_architect_agent": {
+              "resolved": true,
+              "status": "approved"
+            }
+          },
+          "allDepsResolved": true
+        },
+        {
+          "check": "stuck_detection",
+          "healthy": true,
+          "detail": "Agent not active",
+          "stuck": false
+        },
+        {
+          "check": "execution_limit",
+          "healthy": true,
+          "detail": "1/10 executions used",
+          "executionCount": 1,
+          "maxExecutions": 10,
+          "exceeded": false
+        },
+        {
+          "check": "upstream_changes",
+          "healthy": true,
+          "detail": "No changes detected",
+          "changed": [],
+          "upstreamChanged": false
+        }
+      ],
+      "checked_at": "2026-08-19T16:12:13.672Z"
+    },
+    "05_program_mgmt_agent": {
+      "agent_id": "05_program_mgmt_agent",
+      "status": "approved",
+      "allHealthy": false,
+      "checks": [
+        {
+          "check": "artifacts_on_disk",
+          "healthy": true,
+          "detail": "10 tracked, 0 missing, 0 empty, 0 stale",
+          "artifacts": {
+            "total": 10,
+            "missing": [],
+            "empty": [],
+            "stale": []
+          }
+        },
+        {
+          "check": "agent_run_log",
+          "healthy": false,
+          "detail": "429 error(s) found",
+          "errorCount": 429,
+          "lastError": "[6/21/2026, 5:26:21 PM] [ERR] LLM returned empty content"
+        },
+        {
+          "check": "checkpoint_completeness",
+          "healthy": true,
+          "detail": "0/0 checkpoints done, 0 LLM iters, 0 errors",
+          "checkpoints": {
+            "started": 0,
+            "completed": 0,
+            "llmIterations": 0,
+            "errors": 0
+          },
+          "lastRun": null
+        },
+        {
+          "check": "llm_health",
+          "healthy": false,
+          "detail": "LLM check failed: Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console.",
+          "provider": null,
+          "model": null,
+          "error": "Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console."
+        },
+        {
+          "check": "tools_available",
+          "healthy": true,
+          "detail": "2 tool(s) defined in registry, 0 missing",
+          "defined": [
+            "write_artifact",
+            "read_dependency"
+          ],
+          "missing": []
+        },
+        {
+          "check": "dependency_integrity",
+          "healthy": true,
+          "detail": "1/1 deps resolved",
+          "dependencyStatus": {
+            "04_prototype_agent": {
+              "resolved": true,
+              "status": "approved"
+            }
+          },
+          "allDepsResolved": true
+        },
+        {
+          "check": "stuck_detection",
+          "healthy": true,
+          "detail": "Agent not active",
+          "stuck": false
+        },
+        {
+          "check": "execution_limit",
+          "healthy": true,
+          "detail": "1/10 executions used",
+          "executionCount": 1,
+          "maxExecutions": 10,
+          "exceeded": false
+        },
+        {
+          "check": "upstream_changes",
+          "healthy": true,
+          "detail": "No changes detected",
+          "changed": [],
+          "upstreamChanged": false
+        }
+      ],
+      "checked_at": "2026-08-19T16:12:13.686Z"
+    },
+    "06_infra_devops_agent": {
+      "agent_id": "06_infra_devops_agent",
+      "status": "approved",
+      "allHealthy": false,
+      "checks": [
+        {
+          "check": "artifacts_on_disk",
+          "healthy": true,
+          "detail": "10 tracked, 0 missing, 0 empty, 0 stale",
+          "artifacts": {
+            "total": 10,
+            "missing": [],
+            "empty": [],
+            "stale": []
+          }
+        },
+        {
+          "check": "agent_run_log",
+          "healthy": true,
+          "detail": "No runs recorded",
+          "errorCount": 0,
+          "lastError": null
+        },
+        {
+          "check": "checkpoint_completeness",
+          "healthy": true,
+          "detail": "0/0 checkpoints done, 0 LLM iters, 0 errors",
+          "checkpoints": {
+            "started": 0,
+            "completed": 0,
+            "llmIterations": 0,
+            "errors": 0
+          },
+          "lastRun": null
+        },
+        {
+          "check": "llm_health",
+          "healthy": false,
+          "detail": "LLM check failed: Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console.",
+          "provider": null,
+          "model": null,
+          "error": "Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console."
+        },
+        {
+          "check": "tools_available",
+          "healthy": true,
+          "detail": "2 tool(s) defined in registry, 0 missing",
+          "defined": [
+            "write_artifact",
+            "read_dependency"
+          ],
+          "missing": []
+        },
+        {
+          "check": "dependency_integrity",
+          "healthy": true,
+          "detail": "1/1 deps resolved",
+          "dependencyStatus": {
+            "05_program_mgmt_agent": {
+              "resolved": true,
+              "status": "approved"
+            }
+          },
+          "allDepsResolved": true
+        },
+        {
+          "check": "stuck_detection",
+          "healthy": true,
+          "detail": "Agent not active",
+          "stuck": false
+        },
+        {
+          "check": "execution_limit",
+          "healthy": true,
+          "detail": "2/10 executions used",
+          "executionCount": 2,
+          "maxExecutions": 10,
+          "exceeded": false
+        },
+        {
+          "check": "upstream_changes",
+          "healthy": true,
+          "detail": "No changes detected",
+          "changed": [],
+          "upstreamChanged": false
+        }
+      ],
+      "checked_at": "2026-08-19T16:12:13.701Z"
+    },
+    "07a_ui_agent": {
+      "agent_id": "07a_ui_agent",
+      "status": "in_progress",
+      "allHealthy": false,
+      "checks": [
+        {
+          "check": "artifacts_on_disk",
+          "healthy": true,
+          "detail": "10 tracked, 0 missing, 0 empty, 10 stale",
+          "artifacts": {
+            "total": 10,
+            "missing": [],
+            "empty": [],
+            "stale": [
+              "agents/03_execution_workspace/07a_ui_agent/output/UI_MAP.md",
+              "agents/03_execution_workspace/07a_ui_agent/output/UI_MAP.json",
+              "agents/03_execution_workspace/07a_ui_agent/design-system/DESIGN.md",
+              "agents/03_execution_workspace/07a_ui_agent/petemart-web/package.json",
+              "agents/03_execution_workspace/07a_ui_agent/07a_ui_agent_COMPLETION_SLIDE.pptx",
+              "agents/03_execution_workspace/07a_ui_agent/UI_AGENT_REPORT.md",
+              "agents/03_execution_workspace/07a_ui_agent/UI_INTERFACE_MAP.json",
+              "agents/03_execution_workspace/07a_ui_agent/auth-page.tsx",
+              "agents/03_execution_workspace/07a_ui_agent/merchant-dashboard-page.tsx",
+              "agents/03_execution_workspace/07a_ui_agent/admin-dashboard-page.tsx"
+            ]
+          }
+        },
+        {
+          "check": "agent_run_log",
+          "healthy": true,
+          "detail": "No runs recorded",
+          "errorCount": 0,
+          "lastError": null
+        },
+        {
+          "check": "checkpoint_completeness",
+          "healthy": true,
+          "detail": "0/0 checkpoints done, 0 LLM iters, 0 errors",
+          "checkpoints": {
+            "started": 0,
+            "completed": 0,
+            "llmIterations": 0,
+            "errors": 0
+          },
+          "lastRun": null
+        },
+        {
+          "check": "llm_health",
+          "healthy": false,
+          "detail": "LLM check failed: Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console.",
+          "provider": null,
+          "model": null,
+          "error": "Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console."
+        },
+        {
+          "check": "tools_available",
+          "healthy": true,
+          "detail": "3 tool(s) defined in registry, 0 missing",
+          "defined": [
+            "write_artifact",
+            "read_dependency",
+            "browse_files"
+          ],
+          "missing": []
+        },
+        {
+          "check": "dependency_integrity",
+          "healthy": true,
+          "detail": "2/2 deps resolved",
+          "dependencyStatus": {
+            "05_program_mgmt_agent": {
+              "resolved": true,
+              "status": "approved"
+            },
+            "06_infra_devops_agent": {
+              "resolved": true,
+              "status": "approved"
+            }
+          },
+          "allDepsResolved": true
+        },
+        {
+          "check": "stuck_detection",
+          "healthy": false,
+          "detail": "Running for 5078s (timeout: 300s)",
+          "stuck": true,
+          "elapsedMs": 5077802,
+          "timeoutMs": 300000,
+          "currentStep": null,
+          "stepStuck": false
+        },
+        {
+          "check": "execution_limit",
+          "healthy": true,
+          "detail": "2/10 executions used",
+          "executionCount": 2,
+          "maxExecutions": 10,
+          "exceeded": false
+        },
+        {
+          "check": "upstream_changes",
+          "healthy": true,
+          "detail": "No changes detected",
+          "changed": [],
+          "upstreamChanged": false
+        }
+      ],
+      "checked_at": "2026-08-19T16:12:13.723Z"
+    },
+    "07b_api_agent": {
+      "agent_id": "07b_api_agent",
+      "status": "in_progress",
+      "allHealthy": false,
+      "checks": [
+        {
+          "check": "artifacts_on_disk",
+          "healthy": true,
+          "detail": "8 tracked, 0 missing, 0 empty, 8 stale",
+          "artifacts": {
+            "total": 8,
+            "missing": [],
+            "empty": [],
+            "stale": [
+              "agents/03_execution_workspace/07b_api_agent/API_SPECIFICATION.md",
+              "agents/03_execution_workspace/07b_api_agent/API_SPECIFICATION.json",
+              "agents/03_execution_workspace/07b_api_agent/tests/auth.test.ts",
+              "agents/03_execution_workspace/07b_api_agent/tests/merchants.test.ts",
+              "agents/03_execution_workspace/07b_api_agent/tests/products.test.ts",
+              "agents/03_execution_workspace/07b_api_agent/tests/orders.test.ts",
+              "agents/03_execution_workspace/07b_api_agent/tests/admin-routes.test.ts",
+              "agents/03_execution_workspace/07b_api_agent/tests/merchant-routes.test.ts"
+            ]
+          }
+        },
+        {
+          "check": "agent_run_log",
+          "healthy": true,
+          "detail": "No runs recorded",
+          "errorCount": 0,
+          "lastError": null
+        },
+        {
+          "check": "checkpoint_completeness",
+          "healthy": true,
+          "detail": "0/0 checkpoints done, 0 LLM iters, 0 errors",
+          "checkpoints": {
+            "started": 0,
+            "completed": 0,
+            "llmIterations": 0,
+            "errors": 0
+          },
+          "lastRun": null
+        },
+        {
+          "check": "llm_health",
+          "healthy": false,
+          "detail": "LLM check failed: Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console.",
+          "provider": null,
+          "model": null,
+          "error": "Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console."
+        },
+        {
+          "check": "tools_available",
+          "healthy": true,
+          "detail": "3 tool(s) defined in registry, 0 missing",
+          "defined": [
+            "write_artifact",
+            "read_dependency",
+            "browse_files"
+          ],
+          "missing": []
+        },
+        {
+          "check": "dependency_integrity",
+          "healthy": true,
+          "detail": "2/2 deps resolved",
+          "dependencyStatus": {
+            "05_program_mgmt_agent": {
+              "resolved": true,
+              "status": "approved"
+            },
+            "06_infra_devops_agent": {
+              "resolved": true,
+              "status": "approved"
+            }
+          },
+          "allDepsResolved": true
+        },
+        {
+          "check": "stuck_detection",
+          "healthy": false,
+          "detail": "Running for 5078s (timeout: 300s)",
+          "stuck": true,
+          "elapsedMs": 5077817,
+          "timeoutMs": 300000,
+          "currentStep": null,
+          "stepStuck": false
+        },
+        {
+          "check": "execution_limit",
+          "healthy": true,
+          "detail": "1/10 executions used",
+          "executionCount": 1,
+          "maxExecutions": 10,
+          "exceeded": false
+        },
+        {
+          "check": "upstream_changes",
+          "healthy": true,
+          "detail": "No changes detected",
+          "changed": [],
+          "upstreamChanged": false
+        }
+      ],
+      "checked_at": "2026-08-19T16:12:13.742Z"
+    },
+    "07c_backend_db_agent": {
+      "agent_id": "07c_backend_db_agent",
+      "status": "in_progress",
+      "allHealthy": false,
+      "checks": [
+        {
+          "check": "artifacts_on_disk",
+          "healthy": true,
+          "detail": "14 tracked, 0 missing, 0 empty, 14 stale",
+          "artifacts": {
+            "total": 14,
+            "missing": [],
+            "empty": [],
+            "stale": [
+              "agents/03_execution_workspace/07c_backend_db_agent/01-complete-schema.sql",
+              "agents/03_execution_workspace/07c_backend_db_agent/02-rls-policies.sql",
+              "agents/03_execution_workspace/07c_backend_db_agent/03-index-definitions.sql",
+              "agents/03_execution_workspace/07c_backend_db_agent/04-seed-part1-auth-profiles-stores.sql",
+              "agents/03_execution_workspace/07c_backend_db_agent/05-seed-part2-products-stores1-3.sql",
+              "agents/03_execution_workspace/07c_backend_db_agent/06-seed-part3-products-stores4-6.sql",
+              "agents/03_execution_workspace/07c_backend_db_agent/07-seed-part4-products-stores7-9.sql",
+              "agents/03_execution_workspace/07c_backend_db_agent/08-migration-script.sql",
+              "agents/03_execution_workspace/07c_backend_db_agent/09-data-model.md",
+              "agents/03_execution_workspace/07c_backend_db_agent/10-data-model.json",
+              "agents/03_execution_workspace/07c_backend_db_agent/11-supplemental-products.sql",
+              "agents/03_execution_workspace/07c_backend_db_agent/09-auth-v2.sql",
+              "agents/03_execution_workspace/07c_backend_db_agent/12-auth-v2-seed.sql",
+              "agents/03_execution_workspace/07c_backend_db_agent/07c_backend_db_agent_DATA_EXPORT.xlsx"
+            ]
+          }
+        },
+        {
+          "check": "agent_run_log",
+          "healthy": true,
+          "detail": "No runs recorded",
+          "errorCount": 0,
+          "lastError": null
+        },
+        {
+          "check": "checkpoint_completeness",
+          "healthy": true,
+          "detail": "0/0 checkpoints done, 0 LLM iters, 0 errors",
+          "checkpoints": {
+            "started": 0,
+            "completed": 0,
+            "llmIterations": 0,
+            "errors": 0
+          },
+          "lastRun": null
+        },
+        {
+          "check": "llm_health",
+          "healthy": false,
+          "detail": "LLM check failed: Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console.",
+          "provider": null,
+          "model": null,
+          "error": "Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console."
+        },
+        {
+          "check": "tools_available",
+          "healthy": true,
+          "detail": "3 tool(s) defined in registry, 0 missing",
+          "defined": [
+            "write_artifact",
+            "read_dependency",
+            "browse_files"
+          ],
+          "missing": []
+        },
+        {
+          "check": "dependency_integrity",
+          "healthy": true,
+          "detail": "2/2 deps resolved",
+          "dependencyStatus": {
+            "05_program_mgmt_agent": {
+              "resolved": true,
+              "status": "approved"
+            },
+            "06_infra_devops_agent": {
+              "resolved": true,
+              "status": "approved"
+            }
+          },
+          "allDepsResolved": true
+        },
+        {
+          "check": "stuck_detection",
+          "healthy": false,
+          "detail": "Running for 5078s (timeout: 300s)",
+          "stuck": true,
+          "elapsedMs": 5077831,
+          "timeoutMs": 300000,
+          "currentStep": null,
+          "stepStuck": false
+        },
+        {
+          "check": "execution_limit",
+          "healthy": true,
+          "detail": "2/10 executions used",
+          "executionCount": 2,
+          "maxExecutions": 10,
+          "exceeded": false
+        },
+        {
+          "check": "upstream_changes",
+          "healthy": true,
+          "detail": "No changes detected",
+          "changed": [],
+          "upstreamChanged": false
+        }
+      ],
+      "checked_at": "2026-08-19T16:12:13.763Z"
+    },
+    "07d_integration_agent": {
+      "agent_id": "07d_integration_agent",
+      "status": "pending",
+      "allHealthy": false,
+      "checks": [
+        {
+          "check": "artifacts_on_disk",
+          "healthy": true,
+          "detail": "7 tracked, 0 missing, 0 empty, 0 stale",
+          "artifacts": {
+            "total": 7,
+            "missing": [],
+            "empty": [],
+            "stale": []
+          }
+        },
+        {
+          "check": "agent_run_log",
+          "healthy": true,
+          "detail": "No runs recorded",
+          "errorCount": 0,
+          "lastError": null
+        },
+        {
+          "check": "checkpoint_completeness",
+          "healthy": true,
+          "detail": "0/0 checkpoints done, 0 LLM iters, 0 errors",
+          "checkpoints": {
+            "started": 0,
+            "completed": 0,
+            "llmIterations": 0,
+            "errors": 0
+          },
+          "lastRun": null
+        },
+        {
+          "check": "llm_health",
+          "healthy": false,
+          "detail": "LLM check failed: Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console.",
+          "provider": null,
+          "model": null,
+          "error": "Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console."
+        },
+        {
+          "check": "tools_available",
+          "healthy": true,
+          "detail": "3 tool(s) defined in registry, 0 missing",
+          "defined": [
+            "write_artifact",
+            "read_dependency",
+            "browse_files"
+          ],
+          "missing": []
+        },
+        {
+          "check": "dependency_integrity",
+          "healthy": false,
+          "detail": "0/3 deps resolved",
+          "dependencyStatus": {
+            "07a_ui_agent": {
+              "resolved": false,
+              "status": "in_progress"
+            },
+            "07b_api_agent": {
+              "resolved": false,
+              "status": "in_progress"
+            },
+            "07c_backend_db_agent": {
+              "resolved": false,
+              "status": "in_progress"
+            }
+          },
+          "allDepsResolved": false
+        },
+        {
+          "check": "stuck_detection",
+          "healthy": true,
+          "detail": "Agent not active",
+          "stuck": false
+        },
+        {
+          "check": "execution_limit",
+          "healthy": true,
+          "detail": "2/10 executions used",
+          "executionCount": 2,
+          "maxExecutions": 10,
+          "exceeded": false
+        },
+        {
+          "check": "upstream_changes",
+          "healthy": true,
+          "detail": "No changes detected",
+          "changed": [],
+          "upstreamChanged": false
+        }
+      ],
+      "checked_at": "2026-08-19T16:12:13.783Z"
+    },
+    "08_qa_agent": {
+      "agent_id": "08_qa_agent",
+      "status": "pending",
+      "allHealthy": false,
+      "checks": [
+        {
+          "check": "artifacts_on_disk",
+          "healthy": true,
+          "detail": "46 tracked, 0 missing, 0 empty, 0 stale",
+          "artifacts": {
+            "total": 46,
+            "missing": [],
+            "empty": [],
+            "stale": []
+          }
+        },
+        {
+          "check": "agent_run_log",
+          "healthy": true,
+          "detail": "No runs recorded",
+          "errorCount": 0,
+          "lastError": null
+        },
+        {
+          "check": "checkpoint_completeness",
+          "healthy": true,
+          "detail": "0/0 checkpoints done, 0 LLM iters, 0 errors",
+          "checkpoints": {
+            "started": 0,
+            "completed": 0,
+            "llmIterations": 0,
+            "errors": 0
+          },
+          "lastRun": null
+        },
+        {
+          "check": "llm_health",
+          "healthy": false,
+          "detail": "LLM check failed: Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console.",
+          "provider": null,
+          "model": null,
+          "error": "Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console."
+        },
+        {
+          "check": "tools_available",
+          "healthy": true,
+          "detail": "3 tool(s) defined in registry, 0 missing",
+          "defined": [
+            "write_artifact",
+            "read_dependency",
+            "browse_files"
+          ],
+          "missing": []
+        },
+        {
+          "check": "dependency_integrity",
+          "healthy": false,
+          "detail": "0/1 deps resolved",
+          "dependencyStatus": {
+            "07d_integration_agent": {
+              "resolved": false,
+              "status": "pending"
+            }
+          },
+          "allDepsResolved": false
+        },
+        {
+          "check": "stuck_detection",
+          "healthy": true,
+          "detail": "Agent not active",
+          "stuck": false
+        },
+        {
+          "check": "execution_limit",
+          "healthy": true,
+          "detail": "2/10 executions used",
+          "executionCount": 2,
+          "maxExecutions": 10,
+          "exceeded": false
+        },
+        {
+          "check": "upstream_changes",
+          "healthy": true,
+          "detail": "No changes detected",
+          "changed": [],
+          "upstreamChanged": false
+        }
+      ],
+      "checked_at": "2026-08-19T16:12:13.809Z"
+    },
+    "09_production_agent": {
+      "agent_id": "09_production_agent",
+      "status": "pending",
+      "allHealthy": false,
+      "checks": [
+        {
+          "check": "artifacts_on_disk",
+          "healthy": true,
+          "detail": "6 tracked, 0 missing, 0 empty, 0 stale",
+          "artifacts": {
+            "total": 6,
+            "missing": [],
+            "empty": [],
+            "stale": []
+          }
+        },
+        {
+          "check": "agent_run_log",
+          "healthy": true,
+          "detail": "No runs recorded",
+          "errorCount": 0,
+          "lastError": null
+        },
+        {
+          "check": "checkpoint_completeness",
+          "healthy": true,
+          "detail": "0/0 checkpoints done, 0 LLM iters, 0 errors",
+          "checkpoints": {
+            "started": 0,
+            "completed": 0,
+            "llmIterations": 0,
+            "errors": 0
+          },
+          "lastRun": null
+        },
+        {
+          "check": "llm_health",
+          "healthy": false,
+          "detail": "LLM check failed: Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console.",
+          "provider": null,
+          "model": null,
+          "error": "Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console."
+        },
+        {
+          "check": "tools_available",
+          "healthy": true,
+          "detail": "2 tool(s) defined in registry, 0 missing",
+          "defined": [
+            "write_artifact",
+            "read_dependency"
+          ],
+          "missing": []
+        },
+        {
+          "check": "dependency_integrity",
+          "healthy": false,
+          "detail": "0/1 deps resolved",
+          "dependencyStatus": {
+            "08_qa_agent": {
+              "resolved": false,
+              "status": "pending"
+            }
+          },
+          "allDepsResolved": false
+        },
+        {
+          "check": "stuck_detection",
+          "healthy": true,
+          "detail": "Agent not active",
+          "stuck": false
+        },
+        {
+          "check": "execution_limit",
+          "healthy": true,
+          "detail": "1/10 executions used",
+          "executionCount": 1,
+          "maxExecutions": 10,
+          "exceeded": false
+        },
+        {
+          "check": "upstream_changes",
+          "healthy": true,
+          "detail": "No changes detected",
+          "changed": [],
+          "upstreamChanged": false
+        }
+      ],
+      "checked_at": "2026-08-19T16:12:13.839Z"
+    },
+    "10_tech_pub_agent": {
+      "agent_id": "10_tech_pub_agent",
+      "status": "pending",
+      "allHealthy": false,
+      "checks": [
+        {
+          "check": "artifacts_on_disk",
+          "healthy": true,
+          "detail": "0 tracked, 0 missing, 0 empty, 0 stale",
+          "artifacts": {
+            "total": 0,
+            "missing": [],
+            "empty": [],
+            "stale": []
+          }
+        },
+        {
+          "check": "agent_run_log",
+          "healthy": true,
+          "detail": "No runs recorded",
+          "errorCount": 0,
+          "lastError": null
+        },
+        {
+          "check": "checkpoint_completeness",
+          "healthy": true,
+          "detail": "0/0 checkpoints done, 0 LLM iters, 0 errors",
+          "checkpoints": {
+            "started": 0,
+            "completed": 0,
+            "llmIterations": 0,
+            "errors": 0
+          },
+          "lastRun": null
+        },
+        {
+          "check": "llm_health",
+          "healthy": false,
+          "detail": "LLM check failed: Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console.",
+          "provider": null,
+          "model": null,
+          "error": "Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console."
+        },
+        {
+          "check": "tools_available",
+          "healthy": true,
+          "detail": "2 tool(s) defined in registry, 0 missing",
+          "defined": [
+            "write_artifact",
+            "read_dependency"
+          ],
+          "missing": []
+        },
+        {
+          "check": "dependency_integrity",
+          "healthy": false,
+          "detail": "0/1 deps resolved",
+          "dependencyStatus": {
+            "09_production_agent": {
+              "resolved": false,
+              "status": "pending"
+            }
+          },
+          "allDepsResolved": false
+        },
+        {
+          "check": "stuck_detection",
+          "healthy": true,
+          "detail": "Agent not active",
+          "stuck": false
+        },
+        {
+          "check": "execution_limit",
+          "healthy": true,
+          "detail": "0/10 executions used",
+          "executionCount": 0,
+          "maxExecutions": 10,
+          "exceeded": false
+        },
+        {
+          "check": "upstream_changes",
+          "healthy": true,
+          "detail": "No changes detected",
+          "changed": [],
+          "upstreamChanged": false
+        }
+      ],
+      "checked_at": "2026-08-19T16:12:13.846Z"
+    },
+    "11_customer_onboarding_agent": {
+      "agent_id": "11_customer_onboarding_agent",
+      "status": "pending",
+      "allHealthy": false,
+      "checks": [
+        {
+          "check": "artifacts_on_disk",
+          "healthy": true,
+          "detail": "0 tracked, 0 missing, 0 empty, 0 stale",
+          "artifacts": {
+            "total": 0,
+            "missing": [],
+            "empty": [],
+            "stale": []
+          }
+        },
+        {
+          "check": "agent_run_log",
+          "healthy": true,
+          "detail": "No runs recorded",
+          "errorCount": 0,
+          "lastError": null
+        },
+        {
+          "check": "checkpoint_completeness",
+          "healthy": true,
+          "detail": "0/0 checkpoints done, 0 LLM iters, 0 errors",
+          "checkpoints": {
+            "started": 0,
+            "completed": 0,
+            "llmIterations": 0,
+            "errors": 0
+          },
+          "lastRun": null
+        },
+        {
+          "check": "llm_health",
+          "healthy": false,
+          "detail": "LLM check failed: Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console.",
+          "provider": null,
+          "model": null,
+          "error": "Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console."
+        },
+        {
+          "check": "tools_available",
+          "healthy": true,
+          "detail": "2 tool(s) defined in registry, 0 missing",
+          "defined": [
+            "write_artifact",
+            "read_dependency"
+          ],
+          "missing": []
+        },
+        {
+          "check": "dependency_integrity",
+          "healthy": false,
+          "detail": "0/1 deps resolved",
+          "dependencyStatus": {
+            "09_production_agent": {
+              "resolved": false,
+              "status": "pending"
+            }
+          },
+          "allDepsResolved": false
+        },
+        {
+          "check": "stuck_detection",
+          "healthy": true,
+          "detail": "Agent not active",
+          "stuck": false
+        },
+        {
+          "check": "execution_limit",
+          "healthy": true,
+          "detail": "0/10 executions used",
+          "executionCount": 0,
+          "maxExecutions": 10,
+          "exceeded": false
+        },
+        {
+          "check": "upstream_changes",
+          "healthy": true,
+          "detail": "No changes detected",
+          "changed": [],
+          "upstreamChanged": false
+        }
+      ],
+      "checked_at": "2026-08-19T16:12:13.850Z"
+    },
+    "12_marketing_agent": {
+      "agent_id": "12_marketing_agent",
+      "status": "pending",
+      "allHealthy": false,
+      "checks": [
+        {
+          "check": "artifacts_on_disk",
+          "healthy": true,
+          "detail": "0 tracked, 0 missing, 0 empty, 0 stale",
+          "artifacts": {
+            "total": 0,
+            "missing": [],
+            "empty": [],
+            "stale": []
+          }
+        },
+        {
+          "check": "agent_run_log",
+          "healthy": true,
+          "detail": "No runs recorded",
+          "errorCount": 0,
+          "lastError": null
+        },
+        {
+          "check": "checkpoint_completeness",
+          "healthy": true,
+          "detail": "0/0 checkpoints done, 0 LLM iters, 0 errors",
+          "checkpoints": {
+            "started": 0,
+            "completed": 0,
+            "llmIterations": 0,
+            "errors": 0
+          },
+          "lastRun": null
+        },
+        {
+          "check": "llm_health",
+          "healthy": false,
+          "detail": "LLM check failed: Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console.",
+          "provider": null,
+          "model": null,
+          "error": "Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console."
+        },
+        {
+          "check": "tools_available",
+          "healthy": true,
+          "detail": "2 tool(s) defined in registry, 0 missing",
+          "defined": [
+            "write_artifact",
+            "read_dependency"
+          ],
+          "missing": []
+        },
+        {
+          "check": "dependency_integrity",
+          "healthy": false,
+          "detail": "0/1 deps resolved",
+          "dependencyStatus": {
+            "09_production_agent": {
+              "resolved": false,
+              "status": "pending"
+            }
+          },
+          "allDepsResolved": false
+        },
+        {
+          "check": "stuck_detection",
+          "healthy": true,
+          "detail": "Agent not active",
+          "stuck": false
+        },
+        {
+          "check": "execution_limit",
+          "healthy": true,
+          "detail": "0/10 executions used",
+          "executionCount": 0,
+          "maxExecutions": 10,
+          "exceeded": false
+        },
+        {
+          "check": "upstream_changes",
+          "healthy": true,
+          "detail": "No changes detected",
+          "changed": [],
+          "upstreamChanged": false
+        }
+      ],
+      "checked_at": "2026-08-19T16:12:13.856Z"
+    },
+    "13_maintenance_agent": {
+      "agent_id": "13_maintenance_agent",
+      "status": "pending",
+      "allHealthy": false,
+      "checks": [
+        {
+          "check": "artifacts_on_disk",
+          "healthy": true,
+          "detail": "0 tracked, 0 missing, 0 empty, 0 stale",
+          "artifacts": {
+            "total": 0,
+            "missing": [],
+            "empty": [],
+            "stale": []
+          }
+        },
+        {
+          "check": "agent_run_log",
+          "healthy": true,
+          "detail": "No runs recorded",
+          "errorCount": 0,
+          "lastError": null
+        },
+        {
+          "check": "checkpoint_completeness",
+          "healthy": true,
+          "detail": "0/0 checkpoints done, 0 LLM iters, 0 errors",
+          "checkpoints": {
+            "started": 0,
+            "completed": 0,
+            "llmIterations": 0,
+            "errors": 0
+          },
+          "lastRun": null
+        },
+        {
+          "check": "llm_health",
+          "healthy": false,
+          "detail": "LLM check failed: Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console.",
+          "provider": null,
+          "model": null,
+          "error": "Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console."
+        },
+        {
+          "check": "tools_available",
+          "healthy": true,
+          "detail": "2 tool(s) defined in registry, 0 missing",
+          "defined": [
+            "write_artifact",
+            "read_dependency"
+          ],
+          "missing": []
+        },
+        {
+          "check": "dependency_integrity",
+          "healthy": false,
+          "detail": "0/1 deps resolved",
+          "dependencyStatus": {
+            "09_production_agent": {
+              "resolved": false,
+              "status": "pending"
+            }
+          },
+          "allDepsResolved": false
+        },
+        {
+          "check": "stuck_detection",
+          "healthy": true,
+          "detail": "Agent not active",
+          "stuck": false
+        },
+        {
+          "check": "execution_limit",
+          "healthy": true,
+          "detail": "0/10 executions used",
+          "executionCount": 0,
+          "maxExecutions": 10,
+          "exceeded": false
+        },
+        {
+          "check": "upstream_changes",
+          "healthy": true,
+          "detail": "No changes detected",
+          "changed": [],
+          "upstreamChanged": false
+        }
+      ],
+      "checked_at": "2026-08-19T16:12:13.860Z"
+    },
+    "14_finops_agent": {
+      "agent_id": "14_finops_agent",
+      "status": "pending",
+      "allHealthy": false,
+      "checks": [
+        {
+          "check": "artifacts_on_disk",
+          "healthy": true,
+          "detail": "0 tracked, 0 missing, 0 empty, 0 stale",
+          "artifacts": {
+            "total": 0,
+            "missing": [],
+            "empty": [],
+            "stale": []
+          }
+        },
+        {
+          "check": "agent_run_log",
+          "healthy": true,
+          "detail": "No runs recorded",
+          "errorCount": 0,
+          "lastError": null
+        },
+        {
+          "check": "checkpoint_completeness",
+          "healthy": true,
+          "detail": "0/0 checkpoints done, 0 LLM iters, 0 errors",
+          "checkpoints": {
+            "started": 0,
+            "completed": 0,
+            "llmIterations": 0,
+            "errors": 0
+          },
+          "lastRun": null
+        },
+        {
+          "check": "llm_health",
+          "healthy": false,
+          "detail": "LLM check failed: Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console.",
+          "provider": null,
+          "model": null,
+          "error": "Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console."
+        },
+        {
+          "check": "tools_available",
+          "healthy": true,
+          "detail": "2 tool(s) defined in registry, 0 missing",
+          "defined": [
+            "write_artifact",
+            "read_dependency"
+          ],
+          "missing": []
+        },
+        {
+          "check": "dependency_integrity",
+          "healthy": false,
+          "detail": "0/1 deps resolved",
+          "dependencyStatus": {
+            "09_production_agent": {
+              "resolved": false,
+              "status": "pending"
+            }
+          },
+          "allDepsResolved": false
+        },
+        {
+          "check": "stuck_detection",
+          "healthy": true,
+          "detail": "Agent not active",
+          "stuck": false
+        },
+        {
+          "check": "execution_limit",
+          "healthy": true,
+          "detail": "0/10 executions used",
+          "executionCount": 0,
+          "maxExecutions": 10,
+          "exceeded": false
+        },
+        {
+          "check": "upstream_changes",
+          "healthy": true,
+          "detail": "No changes detected",
+          "changed": [],
+          "upstreamChanged": false
+        }
+      ],
+      "checked_at": "2026-08-19T16:12:13.866Z"
+    },
+    "15_secrets_compliance_agent": {
+      "agent_id": "15_secrets_compliance_agent",
+      "status": "pending",
+      "allHealthy": false,
+      "checks": [
+        {
+          "check": "artifacts_on_disk",
+          "healthy": true,
+          "detail": "0 tracked, 0 missing, 0 empty, 0 stale",
+          "artifacts": {
+            "total": 0,
+            "missing": [],
+            "empty": [],
+            "stale": []
+          }
+        },
+        {
+          "check": "agent_run_log",
+          "healthy": true,
+          "detail": "No runs recorded",
+          "errorCount": 0,
+          "lastError": null
+        },
+        {
+          "check": "checkpoint_completeness",
+          "healthy": true,
+          "detail": "0/0 checkpoints done, 0 LLM iters, 0 errors",
+          "checkpoints": {
+            "started": 0,
+            "completed": 0,
+            "llmIterations": 0,
+            "errors": 0
+          },
+          "lastRun": null
+        },
+        {
+          "check": "llm_health",
+          "healthy": false,
+          "detail": "LLM check failed: Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console.",
+          "provider": null,
+          "model": null,
+          "error": "Unknown LLM provider \"opencode-go\". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console."
+        },
+        {
+          "check": "tools_available",
+          "healthy": true,
+          "detail": "2 tool(s) defined in registry, 0 missing",
+          "defined": [
+            "write_artifact",
+            "read_dependency"
+          ],
+          "missing": []
+        },
+        {
+          "check": "dependency_integrity",
+          "healthy": false,
+          "detail": "0/1 deps resolved",
+          "dependencyStatus": {
+            "09_production_agent": {
+              "resolved": false,
+              "status": "pending"
+            }
+          },
+          "allDepsResolved": false
+        },
+        {
+          "check": "stuck_detection",
+          "healthy": true,
+          "detail": "Agent not active",
+          "stuck": false
+        },
+        {
+          "check": "execution_limit",
+          "healthy": true,
+          "detail": "0/10 executions used",
+          "executionCount": 0,
+          "maxExecutions": 10,
+          "exceeded": false
+        },
+        {
+          "check": "upstream_changes",
+          "healthy": true,
+          "detail": "No changes detected",
+          "changed": [],
+          "upstreamChanged": false
+        }
+      ],
+      "checked_at": "2026-08-19T16:12:13.872Z"
+    }
+  },
+  "events_last_minute": 0,
+  "updated_at": "2026-08-19T16:12:13.887Z"
 }

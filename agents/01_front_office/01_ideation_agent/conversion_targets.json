@@ -1,0 +1,902 @@
+[
+  {
+    "name": "Puckraj and sons",
+    "category": "General",
+    "commerce_mode": "B",
+    "rating": 4.0,
+    "reviews": 17468,
+    "phone": "094487 71841",
+    "composite_score": 39.1
+  },
+  {
+    "name": "Sri Venkateshwara Sweetmeat Stall (original)",
+    "category": "General",
+    "commerce_mode": "B",
+    "rating": 4.3,
+    "reviews": 5410,
+    "phone": "080 4151 1957",
+    "composite_score": 37.0
+  },
+  {
+    "name": "Kanchi Apex Society | Renowned Kanchipuram Saree Shop & Silk Saree Shop in Chickpet, Bangalore",
+    "category": "Saree",
+    "commerce_mode": "B",
+    "rating": 4.8,
+    "reviews": 1453,
+    "phone": "089711 33443",
+    "composite_score": 35.0
+  },
+  {
+    "name": "Vanitha Sanitaryware & Hardware",
+    "category": "Hardware",
+    "commerce_mode": "B",
+    "rating": 4.9,
+    "reviews": 1180,
+    "phone": "096628 80844",
+    "composite_score": 34.7
+  },
+  {
+    "name": "Deco & Toys",
+    "category": "Toys",
+    "commerce_mode": "A",
+    "rating": 4.1,
+    "reviews": 4544,
+    "phone": "080 4114 0032",
+    "composite_score": 34.5
+  },
+  {
+    "name": "PARICHAY FOR COMPLETE MAN",
+    "category": "General",
+    "commerce_mode": "B",
+    "rating": 4.8,
+    "reviews": 1042,
+    "phone": "082172 41632",
+    "composite_score": 33.4
+  },
+  {
+    "name": "vardhman packaging",
+    "category": "Gift Bags",
+    "commerce_mode": "B",
+    "rating": 4.9,
+    "reviews": 838,
+    "phone": "093430 04163",
+    "composite_score": 33.0
+  },
+  {
+    "name": "Tushar Impex",
+    "category": "General",
+    "commerce_mode": "B",
+    "rating": 4.6,
+    "reviews": 1184,
+    "phone": "082173 96388",
+    "composite_score": 32.6
+  },
+  {
+    "name": "Golden Card Creation",
+    "category": "Wedding Cards",
+    "commerce_mode": "B",
+    "rating": 4.6,
+    "reviews": 1019,
+    "phone": "096323 90082",
+    "composite_score": 31.9
+  },
+  {
+    "name": "Kurta Ghar - Chickpet",
+    "category": "General",
+    "commerce_mode": "B",
+    "rating": 4.7,
+    "reviews": 867,
+    "phone": "099011 34797",
+    "composite_score": 31.8
+  },
+  {
+    "name": "MANJU Toys & Games",
+    "category": "Toys",
+    "commerce_mode": "A",
+    "rating": 4.7,
+    "reviews": 825,
+    "phone": "093538 76822",
+    "composite_score": 31.6
+  },
+  {
+    "name": "Subhas Stores - The Book Mall",
+    "category": "General",
+    "commerce_mode": "B",
+    "rating": 4.1,
+    "reviews": 1920,
+    "phone": "080 2225 6624",
+    "composite_score": 31.0
+  },
+  {
+    "name": "Sri RamaVilas Sweets (Gundappa Hotel)",
+    "category": "General",
+    "commerce_mode": "B",
+    "rating": 4.4,
+    "reviews": 1047,
+    "phone": "080 2222 2055",
+    "composite_score": 30.6
+  },
+  {
+    "name": "Wholesale price toys shop",
+    "category": "Toys",
+    "commerce_mode": "A",
+    "rating": 4.9,
+    "reviews": 491,
+    "phone": "083103 64799",
+    "composite_score": 30.4
+  },
+  {
+    "name": "DRY FRUIT SPECIALS",
+    "category": "Dry Fruits",
+    "commerce_mode": "A",
+    "rating": 4.8,
+    "reviews": 475,
+    "phone": "070223 16752",
+    "composite_score": 29.6
+  },
+  {
+    "name": "Kalash Gifts",
+    "category": "Gift Bags",
+    "commerce_mode": "B",
+    "rating": 4.9,
+    "reviews": 420,
+    "phone": "098809 88528",
+    "composite_score": 29.6
+  },
+  {
+    "name": "R.K. Toys and gifts",
+    "category": "Return Gifts",
+    "commerce_mode": "A",
+    "rating": 4.9,
+    "reviews": 407,
+    "phone": "081971 15528",
+    "composite_score": 29.5
+  },
+  {
+    "name": "Sudarshan Silks - Chickpete",
+    "category": "Saree",
+    "commerce_mode": "B",
+    "rating": 3.8,
+    "reviews": 2146,
+    "phone": "080 4330 0400",
+    "composite_score": 29.2
+  },
+  {
+    "name": "Avinash Inc",
+    "category": "Steel/Utensils",
+    "commerce_mode": "B",
+    "rating": 4.6,
+    "reviews": 569,
+    "phone": "097433 22111",
+    "composite_score": 29.2
+  },
+  {
+    "name": "Triveni cards bengaluru",
+    "category": "Wedding Cards",
+    "commerce_mode": "B",
+    "rating": 4.2,
+    "reviews": 1046,
+    "phone": "087223 53077",
+    "composite_score": 29.2
+  },
+  {
+    "name": "SHAKTHI MARKETING",
+    "category": "Watches",
+    "commerce_mode": "C",
+    "rating": 4.9,
+    "reviews": 370,
+    "phone": "081475 72755",
+    "composite_score": 29.0
+  },
+  {
+    "name": "Chandan Card Centre",
+    "category": "Wedding Cards",
+    "commerce_mode": "B",
+    "rating": 4.6,
+    "reviews": 546,
+    "phone": "081057 62313",
+    "composite_score": 29.0
+  },
+  {
+    "name": "Ayush Card Creation",
+    "category": "Wedding Cards",
+    "commerce_mode": "B",
+    "rating": 4.9,
+    "reviews": 349,
+    "phone": "087643 06682",
+    "composite_score": 28.7
+  },
+  {
+    "name": "Namma Electricals - Your #1 Retail and Wholesale Electrical Supplier in India.",
+    "category": "Electrical",
+    "commerce_mode": "B",
+    "rating": 4.8,
+    "reviews": 390,
+    "phone": "099162 28400",
+    "composite_score": 28.6
+  },
+  {
+    "name": "Kheteshwara Fancy Stores ( Branch)",
+    "category": "Imitation Jewellery",
+    "commerce_mode": "B",
+    "rating": 4.9,
+    "reviews": 345,
+    "phone": "085531 68450",
+    "composite_score": 28.6
+  },
+  {
+    "name": "Kanchi Co Yogalakshmi Silks",
+    "category": "Saree",
+    "commerce_mode": "B",
+    "rating": 4.4,
+    "reviews": 664,
+    "phone": "097392 29774",
+    "composite_score": 28.6
+  },
+  {
+    "name": "Mataji saree wholesale dealers",
+    "category": "Saree",
+    "commerce_mode": "B",
+    "rating": 4.9,
+    "reviews": 307,
+    "phone": "099024 46691",
+    "composite_score": 28.1
+  },
+  {
+    "name": "wholesale cane basket",
+    "category": "Gift Bags",
+    "commerce_mode": "B",
+    "rating": 4.8,
+    "reviews": 330,
+    "phone": "095352 24571",
+    "composite_score": 27.9
+  },
+  {
+    "name": "Milap Sarees - New Branch",
+    "category": "Saree",
+    "commerce_mode": "B",
+    "rating": 4.7,
+    "reviews": 376,
+    "phone": "090351 97793",
+    "composite_score": 27.9
+  },
+  {
+    "name": "Udupi Stores",
+    "category": "General",
+    "commerce_mode": "B",
+    "rating": 4.3,
+    "reviews": 645,
+    "phone": "099001 47180",
+    "composite_score": 27.8
+  },
+  {
+    "name": "PRADEEP FASHION",
+    "category": "Textile",
+    "commerce_mode": "B",
+    "rating": 4.8,
+    "reviews": 301,
+    "phone": "094492 49460",
+    "composite_score": 27.4
+  },
+  {
+    "name": "Saravana Cards",
+    "category": "Wedding Cards",
+    "commerce_mode": "B",
+    "rating": 4.6,
+    "reviews": 372,
+    "phone": "090087 21436",
+    "composite_score": 27.2
+  },
+  {
+    "name": "VASANT ELECTRICALS- GODOWN",
+    "category": "Electrical",
+    "commerce_mode": "B",
+    "rating": 4.9,
+    "reviews": 242,
+    "phone": "099809 96666",
+    "composite_score": 26.9
+  },
+  {
+    "name": "Wholesale sarees Mahalaxmi",
+    "category": "Saree",
+    "commerce_mode": "B",
+    "rating": 5.0,
+    "reviews": 217,
+    "phone": "097430 00701",
+    "composite_score": 26.9
+  },
+  {
+    "name": "Praveen Jewellers",
+    "category": "Jewellery",
+    "commerce_mode": "C",
+    "rating": 4.4,
+    "reviews": 437,
+    "phone": "093412 60116",
+    "composite_score": 26.8
+  },
+  {
+    "name": "Shri Shankeshwar Hardware",
+    "category": "Hardware",
+    "commerce_mode": "B",
+    "rating": 4.9,
+    "reviews": 226,
+    "phone": "098452 41621",
+    "composite_score": 26.6
+  },
+  {
+    "name": "Mahendra Apparels",
+    "category": "Garments",
+    "commerce_mode": "B",
+    "rating": 4.9,
+    "reviews": 215,
+    "phone": "094480 85848",
+    "composite_score": 26.3
+  },
+  {
+    "name": "Rishabh Fancy Store",
+    "category": "Imitation Jewellery",
+    "commerce_mode": "B",
+    "rating": 4.8,
+    "reviews": 237,
+    "phone": "099640 18261",
+    "composite_score": 26.3
+  },
+  {
+    "name": "Sri Eshwara Cards",
+    "category": "Wedding Cards",
+    "commerce_mode": "B",
+    "rating": 4.8,
+    "reviews": 229,
+    "phone": "098452 83864",
+    "composite_score": 26.1
+  },
+  {
+    "name": "Dhondusas",
+    "category": "General",
+    "commerce_mode": "B",
+    "rating": 4.3,
+    "reviews": 424,
+    "phone": "099641 64163",
+    "composite_score": 26.0
+  },
+  {
+    "name": "MANAN FASHIONS",
+    "category": "Saree",
+    "commerce_mode": "B",
+    "rating": 4.9,
+    "reviews": 200,
+    "phone": "099640 24273",
+    "composite_score": 26.0
+  },
+  {
+    "name": "Solanki Gift centre",
+    "category": "Gift Bags",
+    "commerce_mode": "B",
+    "rating": 4.9,
+    "reviews": 190,
+    "phone": "080 4151 2848",
+    "composite_score": 25.7
+  },
+  {
+    "name": "Padmashree Paper Mart",
+    "category": "Paper/Stationery",
+    "commerce_mode": "A",
+    "rating": 4.7,
+    "reviews": 234,
+    "phone": "080 2225 3709",
+    "composite_score": 25.7
+  },
+  {
+    "name": "Megawatts Electric Co",
+    "category": "Electrical",
+    "commerce_mode": "B",
+    "rating": 4.9,
+    "reviews": 186,
+    "phone": "095918 88188",
+    "composite_score": 25.6
+  },
+  {
+    "name": "Sri Textiles",
+    "category": "Textile",
+    "commerce_mode": "B",
+    "rating": 4.1,
+    "reviews": 520,
+    "phone": "080 2238 0709",
+    "composite_score": 25.6
+  },
+  {
+    "name": "Srivaaru Silks",
+    "category": "Saree",
+    "commerce_mode": "B",
+    "rating": 4.0,
+    "reviews": 586,
+    "phone": "080 2225 8444",
+    "composite_score": 25.5
+  },
+  {
+    "name": "Wholesale saree chickpet",
+    "category": "Saree",
+    "commerce_mode": "B",
+    "rating": 5.0,
+    "reviews": 153,
+    "phone": "098865 98845",
+    "composite_score": 25.2
+  },
+  {
+    "name": "Moksh Creation",
+    "category": "Textile",
+    "commerce_mode": "B",
+    "rating": 4.6,
+    "reviews": 240,
+    "phone": "098441 73709",
+    "composite_score": 25.2
+  },
+  {
+    "name": "Sri Alankar Card Palace (\u0c85\u0cb2\u0c82\u0c95\u0cbe\u0cb0\u0ccd \u0c95\u0cbe\u0cb0\u0ccd\u0ca1\u0ccd)",
+    "category": "Invitation Covers",
+    "commerce_mode": "B",
+    "rating": 4.7,
+    "reviews": 197,
+    "phone": "080957 71783",
+    "composite_score": 24.9
+  },
+  {
+    "name": "Prathap Stores",
+    "category": "General",
+    "commerce_mode": "B",
+    "rating": 4.4,
+    "reviews": 277,
+    "phone": "093426 75686",
+    "composite_score": 24.8
+  },
+  {
+    "name": "Sri Ranga Jewellers",
+    "category": "Jewellery",
+    "commerce_mode": "C",
+    "rating": 4.9,
+    "reviews": 157,
+    "phone": "098459 94130",
+    "composite_score": 24.8
+  },
+  {
+    "name": "MAHARAJA ELECTRICALS ( Hi-Fi Authorised distributor )",
+    "category": "Electrical",
+    "commerce_mode": "B",
+    "rating": 4.8,
+    "reviews": 172,
+    "phone": "097430 64443",
+    "composite_score": 24.7
+  },
+  {
+    "name": "ASHOK BANGLES (Since 1975)",
+    "category": "General",
+    "commerce_mode": "B",
+    "rating": 4.6,
+    "reviews": 207,
+    "phone": "098449 00809",
+    "composite_score": 24.6
+  },
+  {
+    "name": "Ram Medical Stores",
+    "category": "General",
+    "commerce_mode": "B",
+    "rating": 4.3,
+    "reviews": 301,
+    "phone": "080 2221 1666",
+    "composite_score": 24.6
+  },
+  {
+    "name": "Sri Venkateshwara Silks",
+    "category": "General",
+    "commerce_mode": "B",
+    "rating": 4.0,
+    "reviews": 448,
+    "phone": "080 2226 9016",
+    "composite_score": 24.4
+  },
+  {
+    "name": "Sarvodaya Steel Corporation",
+    "category": "Steel/Utensils",
+    "commerce_mode": "B",
+    "rating": 4.6,
+    "reviews": 200,
+    "phone": "098440 53661",
+    "composite_score": 24.4
+  },
+  {
+    "name": "Rajguru Hardware & Sanitaryware",
+    "category": "Hardware",
+    "commerce_mode": "B",
+    "rating": 5.0,
+    "reviews": 127,
+    "phone": "097846 38772",
+    "composite_score": 24.3
+  },
+  {
+    "name": "BREEZE AGENCIES",
+    "category": "General",
+    "commerce_mode": "B",
+    "rating": 4.4,
+    "reviews": 241,
+    "phone": "098801 92366",
+    "composite_score": 24.2
+  },
+  {
+    "name": "Veena Musicals (Chickpet)",
+    "category": "Musical Instruments",
+    "commerce_mode": "C",
+    "rating": 4.1,
+    "reviews": 345,
+    "phone": "080 2225 7780",
+    "composite_score": 24.0
+  },
+  {
+    "name": "DK Hi Fashion",
+    "category": "Garments",
+    "commerce_mode": "B",
+    "rating": 4.9,
+    "reviews": 125,
+    "phone": "098803 00075",
+    "composite_score": 23.7
+  },
+  {
+    "name": "Babji Hardware and Sanitation",
+    "category": "Hardware",
+    "commerce_mode": "B",
+    "rating": 4.8,
+    "reviews": 138,
+    "phone": "099867 47344",
+    "composite_score": 23.7
+  },
+  {
+    "name": "L D Fashion",
+    "category": "Textile",
+    "commerce_mode": "B",
+    "rating": 4.6,
+    "reviews": 171,
+    "phone": "099164 91972",
+    "composite_score": 23.7
+  },
+  {
+    "name": "R C Scientific Gold / Vani Gold/Srivani",
+    "category": "Imitation Jewellery",
+    "commerce_mode": "B",
+    "rating": 4.4,
+    "reviews": 202,
+    "phone": "080 2287 0088",
+    "composite_score": 23.4
+  },
+  {
+    "name": "Pooja's The Footwear Shop",
+    "category": "General",
+    "commerce_mode": "B",
+    "rating": 4.8,
+    "reviews": 126,
+    "phone": "099860 18828",
+    "composite_score": 23.3
+  },
+  {
+    "name": "M Goutham Jewellers",
+    "category": "Watches",
+    "commerce_mode": "C",
+    "rating": 4.5,
+    "reviews": 173,
+    "phone": "098444 99485",
+    "composite_score": 23.2
+  },
+  {
+    "name": "Mysore Hardware",
+    "category": "Hardware",
+    "commerce_mode": "B",
+    "rating": 4.9,
+    "reviews": 105,
+    "phone": "078470 28797",
+    "composite_score": 22.9
+  },
+  {
+    "name": "Shreeji Textiles",
+    "category": "Textile",
+    "commerce_mode": "B",
+    "rating": 4.5,
+    "reviews": 160,
+    "phone": "098443 12507",
+    "composite_score": 22.9
+  },
+  {
+    "name": "Chandra Harmonium Works",
+    "category": "Musical Instruments",
+    "commerce_mode": "C",
+    "rating": 4.2,
+    "reviews": 223,
+    "phone": "093423 55796",
+    "composite_score": 22.7
+  },
+  {
+    "name": "Mumtaz Sanitary Stores",
+    "category": "Hardware",
+    "commerce_mode": "B",
+    "rating": 4.8,
+    "reviews": 106,
+    "phone": "089515 03950",
+    "composite_score": 22.4
+  },
+  {
+    "name": "Sri Mansukh International",
+    "category": "Garments",
+    "commerce_mode": "B",
+    "rating": 4.9,
+    "reviews": 94,
+    "phone": "083101 57609",
+    "composite_score": 22.3
+  },
+  {
+    "name": "Inder Trading Co",
+    "category": "Stationery",
+    "commerce_mode": "A",
+    "rating": 4.5,
+    "reviews": 140,
+    "phone": "080 4146 5777",
+    "composite_score": 22.3
+  },
+  {
+    "name": "Om Vidhi creations",
+    "category": "Imitation Jewellery",
+    "commerce_mode": "B",
+    "rating": 4.9,
+    "reviews": 87,
+    "phone": "090196 30324",
+    "composite_score": 21.9
+  },
+  {
+    "name": "Sreevaari Jewellers",
+    "category": "Jewellery",
+    "commerce_mode": "C",
+    "rating": 4.5,
+    "reviews": 130,
+    "phone": "070190 56003",
+    "composite_score": 21.9
+  },
+  {
+    "name": "Peetex",
+    "category": "Saree",
+    "commerce_mode": "B",
+    "rating": 4.4,
+    "reviews": 138,
+    "phone": "093412 13626",
+    "composite_score": 21.7
+  },
+  {
+    "name": "Art Papier",
+    "category": "Gift Bags",
+    "commerce_mode": "B",
+    "rating": 4.1,
+    "reviews": 195,
+    "phone": "080 4203 2013",
+    "composite_score": 21.6
+  },
+  {
+    "name": "M.P. Electricals (Halonix Distributors)",
+    "category": "Electrical",
+    "commerce_mode": "B",
+    "rating": 4.9,
+    "reviews": 80,
+    "phone": "098866 33560",
+    "composite_score": 21.5
+  },
+  {
+    "name": "SHEETAL JEWELLERS",
+    "category": "Jewellery",
+    "commerce_mode": "C",
+    "rating": 4.8,
+    "reviews": 88,
+    "phone": "097411 73928",
+    "composite_score": 21.5
+  },
+  {
+    "name": "Sri Balaaji Jewels & Gems",
+    "category": "Jewellery",
+    "commerce_mode": "C",
+    "rating": 4.5,
+    "reviews": 117,
+    "phone": "097311 18883",
+    "composite_score": 21.5
+  },
+  {
+    "name": "GANESHMAL TEJRAJ AND CO",
+    "category": "Steel/Utensils",
+    "commerce_mode": "B",
+    "rating": 4.3,
+    "reviews": 144,
+    "phone": "080 4123 4480",
+    "composite_score": 21.4
+  },
+  {
+    "name": "Kuber Kreation",
+    "category": "Textile",
+    "commerce_mode": "B",
+    "rating": 4.7,
+    "reviews": 93,
+    "phone": "098445 32524",
+    "composite_score": 21.4
+  },
+  {
+    "name": "Sri bhagya lakshmi super bazar",
+    "category": "General",
+    "commerce_mode": "B",
+    "rating": 4.3,
+    "reviews": 141,
+    "phone": "080 2670 2536",
+    "composite_score": 21.3
+  },
+  {
+    "name": "Nakoda Cards | Wedding Card Manufacturer",
+    "category": "Wedding Cards",
+    "commerce_mode": "B",
+    "rating": 3.8,
+    "reviews": 266,
+    "phone": "099642 35012",
+    "composite_score": 21.2
+  },
+  {
+    "name": "Rajkumar The Card Shop",
+    "category": "Wedding Cards",
+    "commerce_mode": "B",
+    "rating": 3.5,
+    "reviews": 419,
+    "phone": "098442 97464",
+    "composite_score": 21.1
+  },
+  {
+    "name": "AKSHAYA JEWELS",
+    "category": "Jewellery",
+    "commerce_mode": "C",
+    "rating": 4.8,
+    "reviews": 77,
+    "phone": "094499 89249",
+    "composite_score": 20.9
+  },
+  {
+    "name": "Ganesh Musicals",
+    "category": "Musical Instruments",
+    "commerce_mode": "C",
+    "rating": 4.2,
+    "reviews": 141,
+    "phone": "080 2220 1402",
+    "composite_score": 20.8
+  },
+  {
+    "name": "Jay karni Sanitary & Hardware",
+    "category": "Hardware",
+    "commerce_mode": "B",
+    "rating": 5.0,
+    "reviews": 62,
+    "phone": "081057 40910",
+    "composite_score": 20.7
+  },
+  {
+    "name": "Omkar Card Creations",
+    "category": "Wedding Cards",
+    "commerce_mode": "B",
+    "rating": 4.0,
+    "reviews": 174,
+    "phone": "098441 20581",
+    "composite_score": 20.7
+  },
+  {
+    "name": "Pooja Clocks",
+    "category": "Watches",
+    "commerce_mode": "C",
+    "rating": 5.0,
+    "reviews": 60,
+    "phone": "094481 67481",
+    "composite_score": 20.6
+  },
+  {
+    "name": "MADHUBALASAREESWHOLESALE",
+    "category": "Saree",
+    "commerce_mode": "B",
+    "rating": 4.7,
+    "reviews": 77,
+    "phone": "096204 08760",
+    "composite_score": 20.5
+  },
+  {
+    "name": "Mahadev cards and cover",
+    "category": "Wedding Cards",
+    "commerce_mode": "B",
+    "rating": 4.0,
+    "reviews": 162,
+    "phone": "094489 37624",
+    "composite_score": 20.4
+  },
+  {
+    "name": "SREE BALAJI TRADERS S.SANTOSH",
+    "category": "Paper/Stationery",
+    "commerce_mode": "A",
+    "rating": 4.5,
+    "reviews": 90,
+    "phone": "098452 91749",
+    "composite_score": 20.3
+  },
+  {
+    "name": "Balaji Hardware - ebco Hettich Ozone",
+    "category": "Hardware",
+    "commerce_mode": "B",
+    "rating": 4.9,
+    "reviews": 61,
+    "phone": "099006 12446",
+    "composite_score": 20.2
+  },
+  {
+    "name": "Maruthi Silks",
+    "category": "Saree",
+    "commerce_mode": "B",
+    "rating": 4.6,
+    "reviews": 79,
+    "phone": "099722 46725",
+    "composite_score": 20.2
+  },
+  {
+    "name": "Beauty Collection",
+    "category": "Cosmetics",
+    "commerce_mode": "A",
+    "rating": 4.9,
+    "reviews": 59,
+    "phone": "070732 97562",
+    "composite_score": 20.1
+  },
+  {
+    "name": "Swasthik Dry Fruits",
+    "category": "Dry Fruits",
+    "commerce_mode": "A",
+    "rating": 4.9,
+    "reviews": 59,
+    "phone": "098458 91521",
+    "composite_score": 20.1
+  },
+  {
+    "name": "Wholesale top and readymade",
+    "category": "Garments",
+    "commerce_mode": "B",
+    "rating": 4.9,
+    "reviews": 57,
+    "phone": "091488 95690",
+    "composite_score": 19.9
+  },
+  {
+    "name": "Rukmini Hall",
+    "category": "General",
+    "commerce_mode": "B",
+    "rating": 4.3,
+    "reviews": 101,
+    "phone": "080 2225 5425",
+    "composite_score": 19.9
+  },
+  {
+    "name": "PRIME CORPORATION ( saree wholesaler )",
+    "category": "Saree",
+    "commerce_mode": "B",
+    "rating": 4.6,
+    "reviews": 71,
+    "phone": "077601 37852",
+    "composite_score": 19.7
+  },
+  {
+    "name": "SONA CARDS",
+    "category": "Wedding Cards",
+    "commerce_mode": "B",
+    "rating": 4.8,
+    "reviews": 59,
+    "phone": "094800 87511",
+    "composite_score": 19.7
+  },
+  {
+    "name": "HEERA NOVELTIES-wholesale cosmetic dealer in bangalore",
+    "category": "Cosmetics",
+    "commerce_mode": "A",
+    "rating": 4.6,
+    "reviews": 66,
+    "phone": "098867 97356",
+    "composite_score": 19.3
+  }
+]

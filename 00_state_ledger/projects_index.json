@@ -6,7 +6,7 @@
   "projects": {
     "petemart": {
       "id": "petemart",
-      "name": "Petemart Agentic Framework",
+      "name": "PeteMart - ProductForge Sample Project",
       "description": "Old Bangalore Pete markets e-commerce platform",
       "state_path": "00_state_ledger/projects/petemart/STATE_MATRIX.json",
       "created_at": "2026-06-01T00:00:00Z",

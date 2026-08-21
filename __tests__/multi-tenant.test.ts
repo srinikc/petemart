@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { MERCHANTS, PRODUCTS, ORDERS } from '@/lib/data';
+import { MERCHANTS, PRODUCTS, ORDERS } from '@productforge/shared';
 
 describe('Multi-Tenant Data Isolation', () => {
   it('each merchant has unique ID', () => {

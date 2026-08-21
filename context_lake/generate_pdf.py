@@ -274,7 +274,7 @@ pdf.cell(0, 8, clean("Design & Implementation Document"), align="C", new_x="LMAR
 pdf.ln(16)
 pdf.set_font("Arial", "", 10)
 pdf.set_text_color(100, 100, 100)
-pdf.cell(0, 6, clean("Project: petemart-agentic-framework"), align="C", new_x="LMARGIN", new_y="NEXT")
+pdf.cell(0, 6, clean("Project: product-forge-agentic"), align="C", new_x="LMARGIN", new_y="NEXT")
 pdf.cell(0, 6, clean("Platform: Windows  |  Runtime: Python 3.10+  |  Dependencies: Zero (stdlib)"), align="C", new_x="LMARGIN", new_y="NEXT")
 pdf.cell(0, 6, clean("Date: June 2026"), align="C", new_x="LMARGIN", new_y="NEXT")
 

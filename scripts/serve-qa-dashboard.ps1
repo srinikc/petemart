@@ -21,9 +21,10 @@ if ($existing) {
 }
 
 # Build if needed
-if ($ForceRebuild -or !(Test-Path (Join-Path $root ".next"))) {
-  Write-Host "Building project..." -ForegroundColor Yellow
-  Push-Location $root
+$appDir = Join-Path $root "apps\framework-console"
+if ($ForceRebuild -or !(Test-Path (Join-Path $appDir ".next"))) {
+  Write-Host "Building framework-console app..." -ForegroundColor Yellow
+  Push-Location $appDir
   npm run build 2>&1
   if ($LASTEXITCODE -ne 0) { Write-Host "BUILD FAILED" -ForegroundColor Red; exit 1 }
   Pop-Location
@@ -36,7 +37,7 @@ if (!(Test-Path $nextBin)) {
   Write-Host "ERROR: next.cmd not found at $nextBin" -ForegroundColor Red
   exit 1
 }
-$proc = Start-Process -FilePath $nextBin -ArgumentList "start -p $Port" -WorkingDirectory $root -WindowStyle Hidden -PassThru
+$proc = Start-Process -FilePath $nextBin -ArgumentList "start $appDir -p $Port" -WorkingDirectory $appDir -WindowStyle Hidden -PassThru
 
 # Save PID
 $proc.Id | Out-File -FilePath $pidFile -Encoding ascii

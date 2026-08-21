@@ -1,9 +1,10 @@
 {
   "version": 2,
   "framework": "nextjs",
+  "rootDirectory": "apps/framework-console",
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
-  "installCommand": "npm install",
+  "installCommand": "npm install --prefix ../.. && npm install",
   "regions": ["bom1"],
   "public": false,
   "cleanUrls": true,

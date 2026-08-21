@@ -1,9 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-const os = require('os');
 const vlog = require('./VerboseLogger');
 const { LLMOpenAIProvider } = require('./LLMOpenAIProvider');
-const { LLMOpenCodeProvider } = require('./LLMOpenCodeProvider');
 const { LLMGoogleProvider } = require('./LLMGoogleProvider');
 const { LLMAnthropicProvider } = require('./LLMAnthropicProvider');
 const { LLMOllamaProvider } = require('./LLMOllamaProvider');
@@ -12,10 +10,8 @@ const SPEND_LOG_PATH = path.join(process.cwd(), '00_state_ledger', 'token_spend_
 
 // Maps provider names to their backend class and default config
 const PROVIDER_REGISTRY = {
-  'opencode-go': { cls: LLMOpenAIProvider, config: { baseURL: 'https://opencode.ai/zen/go/v1', authKey: 'opencode-go' } },
-  'openrouter': { cls: LLMOpenAIProvider, config: { baseURL: 'https://openrouter.ai/api/v1', authKey: 'openrouter' } },
-  'opencode': { cls: LLMOpenAIProvider, config: { baseURL: 'https://opencode.ai/zen/v1', authKey: 'opencode-go' } },
-  'openai': { cls: LLMOpenAIProvider, config: { baseURL: 'https://api.openai.com/v1', authKey: 'openai' } },
+  'openrouter': { cls: LLMOpenAIProvider, config: { baseURL: 'https://openrouter.ai/api/v1' } },
+  'openai': { cls: LLMOpenAIProvider, config: { baseURL: 'https://api.openai.com/v1' } },
   'google': { cls: LLMGoogleProvider, config: {} },
   'gemini': { cls: LLMGoogleProvider, config: {} },
   'anthropic': { cls: LLMAnthropicProvider, config: {} },
@@ -31,17 +27,20 @@ const PROVIDER_ALIASES = {
   'chatgpt': 'openai',
 };
 
-function readAuthKeys() {
-  const candidates = [
-    path.join(os.homedir(), '.local', 'share', 'opencode', 'auth.json'),
-    path.join(process.env.LOCALAPPDATA || '', 'opencode', 'auth.json'),
-    path.join(process.env.APPDATA || '', 'opencode', 'auth.json'),
-  ];
-  for (const fp of candidates) {
-    try {
-      if (fs.existsSync(fp)) return JSON.parse(fs.readFileSync(fp, 'utf-8'));
-    } catch {}
-  }
+const LLM_CONFIG_PATH = path.join(process.cwd(), '00_state_ledger', 'llm_config.json');
+
+/**
+ * Read LLM credentials/config from the gitignored onboarding config file
+ * (00_state_ledger/llm_config.json). Format:
+ *   { "provider": "openrouter", "model": "...", "baseURL": "...", "apiKey": "..." }
+ * API keys NEVER come from opencode's auth.json or committed state files.
+ */
+function readLlmConfig() {
+  try {
+    if (fs.existsSync(LLM_CONFIG_PATH)) {
+      return JSON.parse(fs.readFileSync(LLM_CONFIG_PATH, 'utf-8')) || {};
+    }
+  } catch {}
   return {};
 }
 
@@ -104,22 +103,23 @@ class LLMProvider {
   }
 
   _resolveConfig(options) {
-    let rawProvider = (options.provider || process.env.LLM_PROVIDER || 'opencode-go').toLowerCase();
-    let model = options.model || process.env.LLM_MODEL || 'deepseek-v4-flash';
-    let apiKey = options.apiKey || process.env.LLM_API_KEY || process.env.OPENAI_API_KEY || '';
-    let baseURL = options.baseURL || process.env.LLM_BASE_URL || '';
+    const cfg = readLlmConfig();
+    let rawProvider = (options.provider || process.env.LLM_PROVIDER || cfg.provider || 'openrouter').toLowerCase();
+    let model = options.model || process.env.LLM_MODEL || cfg.model || 'deepseek-v4-flash';
+    let apiKey = options.apiKey || process.env.LLM_API_KEY || process.env.OPENAI_API_KEY || cfg.apiKey || '';
+    let baseURL = options.baseURL || process.env.LLM_BASE_URL || cfg.baseURL || '';
 
-    // STATE_MATRIX llm_override fills in anything not set by options/env
+    // STATE_MATRIX llm_override fills in anything not set by options/env/config
     try {
       const statePath = path.join(process.cwd(), '00_state_ledger/STATE_MATRIX.json');
       if (fs.existsSync(statePath)) {
         const state = JSON.parse(fs.readFileSync(statePath, 'utf-8'));
         const ov = state?.supervisor_control?.agent_00_supervisor?.llm_override;
         if (ov) {
-          if (!options.provider && ov.provider) rawProvider = ov.provider;
-          if (!options.model && ov.model) model = ov.model;
-          if (!options.apiKey && ov.apiKey) apiKey = ov.apiKey;
-          if (!options.baseURL && ov.baseURL) baseURL = ov.baseURL;
+          if (!options.provider && !process.env.LLM_PROVIDER && !cfg.provider && ov.provider) rawProvider = ov.provider;
+          if (!options.model && !process.env.LLM_MODEL && !cfg.model && ov.model) model = ov.model;
+          if (!options.apiKey && !process.env.LLM_API_KEY && !process.env.OPENAI_API_KEY && !cfg.apiKey && ov.apiKey) apiKey = ov.apiKey;
+          if (!options.baseURL && !process.env.LLM_BASE_URL && !cfg.baseURL && ov.baseURL) baseURL = ov.baseURL;
         }
       }
     } catch {}
@@ -130,18 +130,12 @@ class LLMProvider {
     // Look up provider in registry
     const entry = PROVIDER_REGISTRY[provider];
     if (!entry) {
-      vlog.write('LLM', 'CONFIG', `Unknown provider "${provider}", falling back to opencode CLI`);
-      return { backend: new LLMOpenCodeProvider({ provider, model }), provider, model };
+      throw new Error(`Unknown LLM provider "${provider}". Configure a valid provider (openrouter, openai, google, anthropic, ollama) in 00_state_ledger/llm_config.json, env vars, or the onboarding console.`);
     }
 
     // Apply default baseURL and auth key from registry config
     if (entry.config) {
       if (!baseURL && entry.config.baseURL) baseURL = entry.config.baseURL;
-      if (!apiKey && entry.config.authKey) {
-        const auth = readAuthKeys();
-        const authEntry = auth[entry.config.authKey];
-        if (authEntry && authEntry.key) apiKey = authEntry.key;
-      }
     }
 
     // For OpenAI-compatible providers: need both apiKey + baseURL
@@ -152,8 +146,7 @@ class LLMProvider {
         vlog.write('LLM', 'CONFIG', `OpenAI-compatible: ${provider}/${model} via ${baseURL}${skipNative ? ' (embedded tools)' : ''}`);
         return { backend: new LLMOpenAIProvider({ apiKey, model, baseURL, toolChoice: 'auto', skipNativeTools: skipNative }), provider, model };
       }
-      vlog.write('LLM', 'CONFIG', `No API key for ${provider}, falling back to CLI mode`);
-      return { backend: new LLMOpenCodeProvider({ provider, model }), provider, model };
+      throw new Error(`No API key for ${provider}. Set apiKey in 00_state_ledger/llm_config.json or LLM_API_KEY/OPENAI_API_KEY env var.`);
     }
 
     // Ollama: no API key required
@@ -173,8 +166,7 @@ class LLMProvider {
       return { backend: new entry.cls(opts), provider, model };
     }
 
-    vlog.write('LLM', 'CONFIG', `No API key for ${provider}, falling back to CLI mode`);
-    return { backend: new LLMOpenCodeProvider({ provider, model }), provider, model };
+    throw new Error(`No API key for ${provider}. Set apiKey in 00_state_ledger/llm_config.json or ${provider.toUpperCase()}_API_KEY env var.`);
   }
 
   static fromEnv(options = {}) { return new LLMProvider(options); }
