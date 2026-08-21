@@ -2,7 +2,7 @@
 
 > Persisted 2026-08-19 so work can resume in a new session after folder rename.
 > Status: UPDATED 2026-08-21 — Phase A + Phase B split committed/pushed (PR #39, #40).
-> STATUS 2026-08-21 (PM): B6 multi-port dev-server IMPLEMENTED + VERIFIED (all 3 ports 200 + isolation), but NOT yet committed. See "Resume Next Session" below.
+> STATUS 2026-08-21 (EVENING): B6 multi-port dev-server COMMITTED (187162c). Phase B COMPLETE. All GitHub Actions CI gates PASS on PR #40. Only Vercel deployment still fails (dashboard-side rootDirectory config, needs Vercel access — not a merge blocker, develop unprotected). See "Resume Next Session" below.
 
 ## Locked Decisions
 
@@ -48,38 +48,34 @@
 - [x] B3. `apps/framework-console` → console UI + QA + 43 APIs → **port 3000**, clean root URLs, `?project=` dropped, defaults to default_project; middleware allows console routes only; new minimal root layout (no AuthProvider)
 - [x] B4. `apps/petemart` → product UI + `api/v1/*` + `api/token-usage` → **port 3001**; keep AuthProvider/Toaster; middleware blocks `/agentic-console*`, `/qa*`, `/api/agentic-console*`
 - [x] B5. QA dashboard → **port 3458** standalone (per earlier decision), middleware only `/qa-dashboard*` + `/api/qa/*`
-- [x] B6. Update `dev-server.js`, `scripts/start-dev.ps1`, `scripts/serve-qa-dashboard.ps1`, `package.json` scripts (`dev:console` 3000, `dev:product` 3001, `dev:qa` 3458) — **DONE + VERIFIED (all 3 ports 200, isolation 404s). NOT yet committed.** See "Resume Next Session".
+- [x] B6. Update `dev-server.js`, `scripts/start-dev.ps1`, `scripts/serve-qa-dashboard.ps1`, `package.json` scripts (`dev:console` 3000, `dev:product` 3001, `dev:qa` 3458) — **DONE + COMMITTED (187162c) + CI GREEN. Phase B COMPLETE.**
 
-## Resume Next Session (B6 commit pending)
-**Goal**: Commit the multi-port dev-server work through the pre-commit gate on `feature/productforge-monorepo-rename`, push to PR #40.
+## Resume Next Session (B6 committed; PR #40 CI green; Phase C/D next)
+**Status**: B6 multi-port dev-server COMPLETE + committed + pushed. All GitHub Actions CI gates PASS on PR #40. Only Vercel deployment fails (dashboard-side rootDirectory, needs Vercel access — NOT a merge blocker; develop is unprotected).
 
-### Implemented + VERIFIED this session (all 3 ports HTTP 200; cross-app routes correctly 404)
-- `dev-server.js` (root): refactored to spawn all 3 Next apps as child processes. No args → all (console 3000, product 3001, QA 3458). `-p <port>` → single app. Boots supervisor daemon + error-handler; logs each app to `dev-<name>.log` / `dev-<name>-err.log`. QA uses `NEXT_DIST_DIR=.next-qa` to avoid `.next` conflict with console (same app dir, two ports).
-- `apps/framework-console/next.config.ts`: added `distDir: process.env.NEXT_DIST_DIR || '.next'` (enables the QA `.next-qa` isolation).
-- `scripts/start-dev.ps1`: param `-Mode all|console|product|qa` (default all), starts `node dev-server.js [ -p port ]` detached, saves PID to `.dev-server-pid`, verifies health (console /api/agentic-console/health, product /api/v1/health, QA /qa-dashboard) with 20x6s retry loop.
-- `scripts/stop-all.ps1`: now kills console 3000, product 3001, QA 3458, + stale supervisor/runtime PIDs (renumbered [1/4]-[4/4]).
-- `scripts/clean-dev.ps1`: NEW — clears `.next`, `.next-qa` (console), `.next` (petemart), root `.next`.
-- `package.json`: root scripts now `dev`/`dev:all` → `node dev-server.js`; `dev:console`/`dev:product`/`dev:qa` → `dev-server.js -p <port>`; added `dev:stop`, `stop:all`, `dev:clean`, `serve:qa`.
-- `.gitignore`: added `.next-qa` and `__tests__/runtime/_test_comp/`.
+### Committed this session (all via pre-commit gate, no --no-verify)
+- `187162c` — B6 multi-port dev-server (dev-server.js spawns 3 apps; start-dev.ps1 -Mode; stop-all.ps1 kills 3000/3001/3458; clean-dev.ps1; next.config.ts distDir; package.json scripts; .gitignore .next-qa + _test_comp)
+- `eecf15a` — typecheck fix: root tsconfig wildcard path aliases (`@/app/api/v1/*` etc.) — resolved 30 root tsc errors
+- `e579c12` — gitleaks allowlist (MD5 hashes false positives) for ARTIFACT_HASHES.json etc.
+- `c0b9faa` — renamed gitleaks config → `.gitleaks.toml` (leading dot) — gitleaks v8.24.3 looks for `.gitleaks.toml`
+- `d5f8df2` — QA Periodic workflow fix: quoted heredoc `<< 'PYEOF'` → `<< PYEOF` (was `ValueError: invalid literal for int()`)
+- `432b7eb` — Vercel: rootDirectory → apps/framework-console
+- `96aa363` — Vercel: installCommand installs workspace deps from monorepo root
 
-### VERIFICATION DONE (servers since stopped — ports free)
-- `node -c dev-server.js` → OK; package.json JSON-valid.
-- Started `node dev-server.js`: ports 3000, 3001, 3458 all LISTENING.
-- Health: console /api/agentic-console/health → 200; product /api/v1/health → 200; QA /qa-dashboard → 200.
-- Isolation: console /api/v1/health → 404; product /api/agentic-console/health → 404.
-- Killed all PIDs (23808/38120/13008/30344); no ports listening.
+### PR #40 CI status (all GitHub Actions PASS)
+Build+TypeCheck+Tests ✅ | Sanity (Build/Lint/TypeCheck/Test) ✅ | Secrets & Credentials Scan ✅ | Full Security Audit ✅ | QA Periodic ✅ | SonarQube ✅ | CodeQL ✅ | Reviewdog ✅ | AI PR Review ✅ | Detect Test Tier ✅
+- **Vercel deployment: FAIL** — Vercel native GitHub integration (dashboard-managed). Needs root directory set in Vercel project dashboard (`apps/framework-console`). vercel.json is correct repo-side; verify via `npx vercel inspect <dpl_id> --logs` with credentials. Not a merge blocker.
 
-### PENDING — finish B6 commit (NEXT SESSION)
-1. `git add` the changed files: `dev-server.js`, `apps/framework-console/next.config.ts`, `package.json`, `scripts/start-dev.ps1`, `scripts/stop-all.ps1`, `scripts/clean-dev.ps1`, `.gitignore`, `current_todo.md`. Do NOT stage daemon files (`00_state_ledger/*` — never committed).
-2. Verify `.next-qa/` + `_test_comp/` ignored (`git status` clean of them).
-3. Commit via husky hook (NO `--no-verify`): message must include `#40` + required commit-msg fields (## Component, ## Bug/Feature ID, ## Code Review, ## Code Review Fix, ## Tests Run, ## Fix Details, ## Change Done By, ## Branch, ## Version, ## Tag).
-4. If hook blocks, read error, fix, re-stage, retry. Run full test suite + typecheck.
-5. Push feature branch → PR #40 → CI → merge to develop.
-6. Update `context_lake/latest.json` + this todo (mark B6 verified, checklist) with PR reference.
+### NEXT SESSION priorities
+1. **Merge PR #40** to develop (squash merge; user decision — mergeable + all GH checks green).
+2. **Vercel**: set root directory on Vercel dashboard to `apps/framework-console` (needs Vercel credentials).
+3. **Phase C** (project CRUD + user management) — see checklist below.
+4. **Phase D** (product QA linkage) — see checklist below.
+5. Update `context_lake/latest.json` (this session's work).
 
 ### NOTE
-- `apps/framework-console/tsconfig.json` + `next-env.d.ts` show as modified (auto-regenerated by Next build) — review whether to include.
-- `dev:qa`/QA now served from framework-console on `.next-qa` (matches "same build, two ports" architecture). `serve-qa-dashboard.ps1` unchanged — still valid, or may be superseded by `dev-server.js -p 3458`.
+- `apps/framework-console/tsconfig.json` + `next-env.d.ts` were reverted (auto-regenerated `.next-qa` artifacts). Do NOT commit next-env.d.ts pointing to `.next-qa` — it breaks normal console build.
+- Daemon files (`00_state_ledger/*`, ARTIFACT_HASHES.json, STATE_MATRIX.json etc.) are NEVER committed.
 
 ### After B6 committed → continue to Phase C (project CRUD + users) then Phase D (product QA linkage)
 - [ ] C1. Project API POST/PATCH/DELETE (scaffold `projects/{id}/STATE_MATRIX.json` + register in `projects_index.json`)
