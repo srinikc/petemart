@@ -81,7 +81,7 @@ jobs:
           echo "pass_rate=$PASS_RATE" >> $GITHUB_OUTPUT
           echo "total=$TOTAL passed=$PASSED failed=$FAILED rate=$PASS_RATE%"
 
-          python3 << 'PYEOF'
+          python3 << PYEOF
           import json, os
           results_path = "$OUTPUT"
           history_path = "$HISTORY"
