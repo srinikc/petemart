@@ -19,6 +19,7 @@
       "@/lib/api-helpers/*": ["./apps/petemart/lib/api-helpers/*"],
       "@/lib/qa/*": ["./apps/framework-console/lib/qa/*"],
       "@/app/api/qa/*": ["./apps/framework-console/app/api/qa/*"],
+      "@/app/api/agentic-console/*": ["./apps/framework-console/app/api/agentic-console/*"],
       "@/app/api/v1/*": ["./apps/petemart/app/api/v1/*"],
       "@/qa-dashboard/*": ["./apps/framework-console/qa-dashboard/*"],
       "@productforge/framework-core": ["./packages/framework-core/src/index.ts"],

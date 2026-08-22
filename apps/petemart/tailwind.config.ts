@@ -1,12 +1,15 @@
 import type { Config } from 'tailwindcss';
 import animatePlugin from 'tailwindcss-animate';
+import path from 'path';
+
+const abs = (p: string) => path.resolve(__dirname, p).replace(/\\/g, '/');
 
 const config: Config = {
   content: [
-    './app/**/*.{js,ts,jsx,tsx,mdx}',
-    './lib/**/*.{js,ts,jsx,tsx,mdx}',
-    '../../packages/shared/src/**/*.{js,ts,jsx,tsx,mdx}',
-    '../../packages/ui/src/**/*.{js,ts,jsx,tsx,mdx}',
+    abs('./app/**/*.{js,ts,jsx,tsx,mdx}'),
+    abs('./lib/**/*.{js,ts,jsx,tsx,mdx}'),
+    abs('../../packages/shared/src/**/*.{js,ts,jsx,tsx,mdx}'),
+    abs('../../packages/ui/src/**/*.{js,ts,jsx,tsx,mdx}'),
   ],
   theme: {
     extend: {

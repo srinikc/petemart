@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Shield, Menu, X, Activity, Bot, Settings, Server, Radio, ChevronDown, Globe } from 'lucide-react';
+import { Shield, Menu, X, Activity, Bot, Settings, Server, Radio, ChevronDown, Globe, Folder, Users, Plus } from 'lucide-react';
 import { GLOBAL_NAV_ITEMS, fetchProjectsIndex, ProjectInfo, withProject } from './shared';
 import Breadcrumbs from './breadcrumbs';
 import { getPlatformConfig } from '@productforge/shared';
@@ -10,7 +10,7 @@ import { getPlatformConfig } from '@productforge/shared';
 const platform = getPlatformConfig();
 
 const ICON_MAP: Record<string, React.ElementType> = {
-    Activity, Bot, Shield, Settings, Server, Radio,
+    Activity, Bot, Shield, Settings, Server, Radio, Folder, Users,
 };
 
 function isActivePath(pathname: string, href: string) {
@@ -102,6 +102,15 @@ export default function AgenticConsoleLayout({ children }: { children: React.Rea
                                             </div>
                                         </button>
                                     ))}
+                                    <div className="border-t my-1" />
+                                    <button onClick={() => {
+                                        router.push('/agentic-console/projects?new=1');
+                                        setShowProjectMenu(false);
+                                    }}
+                                        className="w-full text-left px-3 py-2 text-xs hover:bg-indigo-50 text-indigo-600 flex items-center gap-2">
+                                        <Plus size={14} />
+                                        Add Project
+                                    </button>
                                 </div>
                             </>
                         )}
@@ -151,6 +160,14 @@ export default function AgenticConsoleLayout({ children }: { children: React.Rea
                                     {p.name}
                                 </button>
                             ))}
+                            <button onClick={() => {
+                                router.push('/agentic-console/projects?new=1');
+                                setMobileOpen(false);
+                            }}
+                                className="flex items-center gap-2 px-3 py-2 text-sm rounded-md text-indigo-600">
+                                <Plus size={16} />
+                                Add Project
+                            </button>
                         </div>
                         {GLOBAL_NAV_ITEMS.map(item => {
                             const Icon = ICON_MAP[item.icon] || Activity;

@@ -192,6 +192,8 @@ export const AGENT_ICONS: Record<string, string> = {
 export const GLOBAL_NAV_ITEMS = [
     { href: '/agentic-console', label: 'Dashboard', icon: 'Activity' },
     { href: '/agentic-console/agents', label: 'Agent Pipeline', icon: 'Bot' },
+    { href: '/agentic-console/projects', label: 'Projects', icon: 'Folder' },
+    { href: '/agentic-console/users', label: 'Users', icon: 'Users' },
     { href: '/agentic-console/quality', label: 'Quality', icon: 'Shield' },
     { href: '/agentic-console/logs', label: 'Logs', icon: 'Terminal' },
     { href: '/agentic-console/health', label: 'Health', icon: 'Activity' },
@@ -283,6 +285,13 @@ export type ProjectInfo = {
     created_at: string;
     agent_count?: number;
     completed_pct?: number;
+    llm_override?: { provider?: string; model?: string; baseURL?: string };
+    folder_path?: string;
+    platforms?: string[];
+    complexity?: string;
+    market_scope?: string;
+    monetization?: string[];
+    logo_path?: string;
 };
 
 export type ProjectsIndex = {
@@ -305,6 +314,37 @@ export async function fetchProjectsIndex(): Promise<ProjectsIndex | null> {
         if (!res.ok) return null;
         return await res.json();
     } catch { return null; }
+}
+
+export async function createProject(body: Partial<ProjectInfo> & { llm_override?: { provider?: string; model?: string; baseURL?: string } }): Promise<ProjectInfo | null> {
+    try {
+        const res = await fetch('/api/agentic-console/projects', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+        });
+        if (!res.ok) return null;
+        const json = await res.json();
+        return json.project || null;
+    } catch { return null; }
+}
+
+export async function updateProject(body: Partial<ProjectInfo>): Promise<ProjectInfo | null> {
+    try {
+        const res = await fetch('/api/agentic-console/projects', {
+            method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+        });
+        if (!res.ok) return null;
+        const json = await res.json();
+        return json.project || null;
+    } catch { return null; }
+}
+
+export async function deleteProject(id: string): Promise<boolean> {
+    try {
+        const res = await fetch(`/api/agentic-console/projects?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
+        return res.ok;
+    } catch { return false; }
 }
 
 export function withProject(url: string, project?: string | null): string {

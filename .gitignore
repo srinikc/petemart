@@ -158,6 +158,9 @@ opencode_pricing_reference.*
 
 # Framework LLM credentials (onboarding config — NEVER commit API keys)
 00_state_ledger/llm_config.json
+00_state_ledger/projects/*/llm_config.json
+projects/*/llm_config.json
+projects/*/llm_config.*
 
 # Tool caches / temp / junk
 .understand-anything/

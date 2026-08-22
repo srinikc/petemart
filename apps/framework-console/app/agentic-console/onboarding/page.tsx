@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@productforge/ui";
 import { Button } from "@productforge/ui";
-import { getPlatformConfig } from "@productforge/shared";
+import { getPlatformConfig, inferFromIdea, AGENT_ROSTER } from "@productforge/shared";
 
 const platform = getPlatformConfig();
 
@@ -42,6 +42,44 @@ export default function EnterpriseOnboardingCockpit() {
   const [llmModel, setLlmModel] = useState('deepseek-v4-flash');
   const [llmBaseUrl, setLlmBaseUrl] = useState('');
   const [llmConfigSaved, setLlmConfigSaved] = useState(false);
+  const [createdProjectId, setCreatedProjectId] = useState<string | null>(null);
+
+  const deriveProjectName = () => {
+    const firstSentence = (idea || '').split(/[.\n]/)[0].trim();
+    const words = firstSentence.split(/\s+/).slice(0, 6).join(' ');
+    return words ? words : 'Untitled Project';
+  };
+
+  const buildProjectPayload = () => {
+    const inference = inferFromIdea(idea);
+    const base = AGENT_ROSTER.filter((a) => a.base);
+    const suggested = AGENT_ROSTER.filter((a) => inference.suggested_agents.includes(a.id));
+    const enabled = [...base.map((a) => a.id), ...suggested.map((a) => a.id)];
+    const agents: Record<string, any> = {};
+    for (const a of [...base, ...suggested]) {
+      agents[a.id] = {
+        provider: a.recommended.provider,
+        model: a.recommended.model,
+        baseURL: '', // runtime resolves provider default
+        apiKey: a.id === '00_supervisor_agent' && (llmApiKey || llmProvider === 'ollama') ? llmApiKey : '',
+      };
+    }
+    return {
+      name: deriveProjectName(),
+      description: idea,
+      idea_prompt: idea,
+      completed_pct: 0,
+      platforms: inference.platforms,
+      complexity: inference.complexity,
+      market_scope: inference.market_scope,
+      monetization: inference.monetization,
+      billing_model: billingModel,
+      llm_defaults: { provider: llmProvider, model: llmModel, ...(llmBaseUrl ? { baseURL: llmBaseUrl } : {}) },
+      agents,
+      enabled_agents: enabled,
+      suggested_agents: suggested.map((a) => a.id),
+    };
+  };
 
   // Simulation for active logs
   useEffect(() => {
@@ -80,10 +118,18 @@ export default function EnterpriseOnboardingCockpit() {
         });
         setLlmConfigSaved(true);
       }
+      const projectRes = await fetch('/api/agentic-console/projects', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(buildProjectPayload()),
+      });
+      if (projectRes.ok) {
+        const json = await projectRes.json();
+        setCreatedProjectId(json.project?.id || null);
+      }
     } catch {}
     setTimeout(() => {
       setLoading(false);
-      setStep(4); 
+      setStep(4);
     }, 1000);
   };
 
@@ -338,6 +384,12 @@ export default function EnterpriseOnboardingCockpit() {
                 <div className="flex items-center space-x-3 mb-2">
                   <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_#10b981]" />
                   <span className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.3em]">PIPELINE LIVE</span>
+                  {createdProjectId && (
+                    <a href={`/agentic-console?project=${encodeURIComponent(createdProjectId)}`}
+                      className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest hover:text-indigo-300 transition-colors">
+                      Project: {createdProjectId} →
+                    </a>
+                  )}
                 </div>
                 <h1 className="text-4xl font-black tracking-tight text-white uppercase italic">Silk Road Marketplace <span className="text-slate-600 font-light not-italic">v1.0</span></h1>
                 <p className="text-slate-500 text-sm font-medium mt-1">Multi-tenant wholesaling hub for Bangalore silk merchants • Active Sprint: 01</p>

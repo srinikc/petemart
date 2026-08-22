@@ -7,6 +7,7 @@ export default defineConfig({
       { find: '@/lib/api-helpers', replacement: path.resolve(__dirname, 'apps/petemart/lib/api-helpers') },
       { find: '@/lib/qa', replacement: path.resolve(__dirname, 'apps/framework-console/lib/qa') },
       { find: '@/app/api/qa', replacement: path.resolve(__dirname, 'apps/framework-console/app/api/qa') },
+      { find: '@/app/api/agentic-console', replacement: path.resolve(__dirname, 'apps/framework-console/app/api/agentic-console') },
       { find: '@/app/api/v1', replacement: path.resolve(__dirname, 'apps/petemart/app/api/v1') },
       { find: '@/qa-dashboard', replacement: path.resolve(__dirname, 'apps/framework-console/qa-dashboard') },
       { find: '@', replacement: path.resolve(__dirname, '.') },
