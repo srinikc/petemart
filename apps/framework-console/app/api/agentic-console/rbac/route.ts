@@ -290,7 +290,50 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ success: true, user: config.users[user_id] });
         }
 
-        return NextResponse.json({ error: 'Unknown action. Use: login, logout, set_role, set_project_access, add_user' }, { status: 400 });
+        if (action === 'delete_user') {
+            const { target_user_id } = body;
+            if (!target_user_id) {
+                return NextResponse.json({ error: 'target_user_id required' }, { status: 400 });
+            }
+            if (!config.users[target_user_id]) {
+                return NextResponse.json({ error: 'User not found' }, { status: 404 });
+            }
+
+            delete config.users[target_user_id];
+            delete config.project_access[target_user_id];
+            for (const token of Object.keys(config.session_store)) {
+                if (config.session_store[token].user_id === target_user_id) {
+                    delete config.session_store[token];
+                }
+            }
+
+            config.audit_log.push({
+                action: 'delete_user',
+                user_id: target_user_id,
+                timestamp: new Date().toISOString(),
+            });
+
+            writeConfig(config);
+            return NextResponse.json({ success: true, deleted: target_user_id });
+        }
+
+        if (action === 'list_sessions') {
+            const { user_id } = body;
+            const sessions = Object.entries(config.session_store)
+                .map(([token, s]) => ({
+                    token: user_id ? undefined : token,
+                    user_id: s.user_id,
+                    role: s.role,
+                    projects: s.projects,
+                    created_at: s.created_at,
+                    expires_at: s.expires_at,
+                    active: s.expires_at > new Date().toISOString(),
+                }))
+                .filter(s => !user_id || s.user_id === user_id);
+            return NextResponse.json({ success: true, sessions });
+        }
+
+        return NextResponse.json({ error: 'Unknown action. Use: login, logout, set_role, set_project_access, add_user, delete_user, list_sessions' }, { status: 400 });
     } catch (err: unknown) {
         return NextResponse.json({ error: err instanceof Error ? err.message : 'Unknown error' }, { status: 500 });
     }

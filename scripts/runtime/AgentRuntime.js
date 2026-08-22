@@ -137,12 +137,38 @@ class AgentRuntime {
 
   loadAgentDef(agentId) {
     const reg = this._safeReadJSON(REGISTRY_PATH());
-    if (!reg?.agents?.[agentId]) throw new Error(`Agent ${agentId} not found in AGENT_REGISTRY.json`);
+if (!reg?.agents?.[agentId]) throw new Error(`Agent ${agentId} not found in AGENT_REGISTRY.json`);
     return reg.agents[agentId];
+  }
+
+  /**
+   * Apply per-agent LLM override from the project STATE_MATRIX (agent_states[id].llm_override)
+   * chosen in the project configuration. Rebuilds this.llm with the agent's provider/model.
+   */
+  _applyAgentLlmContext(agentId) {
+    try {
+      const st = this._getState();
+      const ag = st?.agent_states?.[agentId];
+      const ov = ag?.llm_override;
+      if (ov?.provider) {
+        const opts = {
+          provider: ov.provider,
+          model: ov.model,
+          baseURL: ov.baseURL || undefined,
+          project: this.project,
+          agentId,
+        };
+        this.llm = new LLMProvider(opts);
+        vlog.write('RUNTIME', agentId, `LLM override applied: ${ov.provider}/${ov.model}${ov.baseURL ? ' @ ' + ov.baseURL : ''}`);
+      }
+    } catch (err) {
+      vlog.write('RUNTIME', agentId, `LLM override apply failed: ${err.message}`);
+    }
   }
 
   async runAgent(agentId, context = {}) {
     this._agentId = agentId;
+    this._applyAgentLlmContext(agentId);
     const traceLogger = getTracer();
     const runSpan = traceLogger.startSpan('agent_run', { agentId });
     const startTime = Date.now();

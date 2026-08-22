@@ -4,4 +4,7 @@ export * from './data';
 export * from './cart-store';
 export * from './api-client';
 export * from './platform-config';
+export * from './llm-catalog';
+export * from './agent-roster';
+export * from './idea-inference';
 export { AuthProvider, useAuth } from './AuthContext';

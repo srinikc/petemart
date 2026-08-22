@@ -8,6 +8,8 @@ import { ChevronRight, Home } from 'lucide-react';
 const PAGE_LABELS: Record<string, string> = {
     'agentic-console': 'Dashboard',
     'agents': 'Agent Pipeline',
+    'projects': 'Projects',
+    'users': 'Users',
     'quality': 'Quality',
     'logs': 'Logs',
     'health': 'Health',

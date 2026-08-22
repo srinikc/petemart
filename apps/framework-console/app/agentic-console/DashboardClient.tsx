@@ -9,6 +9,7 @@ import {
   Layers, Server, Globe, BookOpen, UserCheck, Camera, Settings,
   Coins, Lock, Lightbulb, Layout, Truck, GitMerge, Bell, Play,
   ChevronRight, Clock, BarChart3, MessageSquare, Square, Send,
+  Plus,
 } from 'lucide-react';
 
 import {
@@ -1482,6 +1483,10 @@ function GlobalPipelineView({ projects, router }: { projects: Record<string, any
         <Globe size={22} className="text-indigo-600" />
         <h2 className="text-lg font-bold">Global Pipeline View</h2>
         <span className="text-[11px] text-gray-400 ml-auto">{projectEntries.length} project(s)</span>
+        <button onClick={() => router.push('/agentic-console/projects?new=1')}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md bg-indigo-600 text-white hover:bg-indigo-700 transition-colors">
+          <Plus size={13} /> Add Project
+        </button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {projectEntries.map(([id, data]) => {

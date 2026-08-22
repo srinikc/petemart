@@ -2,7 +2,8 @@
 
 > Persisted 2026-08-19 so work can resume in a new session after folder rename.
 > Status: UPDATED 2026-08-21 — Phase A + Phase B split committed/pushed (PR #39, #40).
-> STATUS 2026-08-21 (EVENING): B6 multi-port dev-server COMMITTED (187162c). Phase B COMPLETE. All GitHub Actions CI gates PASS on PR #40. Only Vercel deployment still fails (dashboard-side rootDirectory config, needs Vercel access — not a merge blocker, develop unprotected). See "Resume Next Session" below.
+> STATUS 2026-08-22: Phase C (project CRUD + user management) COMPLETE on branch `feature/phase-c-project-crud-users` — 12 new tests, full suite 179/179, typecheck + console build green. Next: PR for Phase C → Phase D.
+> STATUS 2026-08-22 (LATE): **Comprehensive project creation** added on same branch — LLM catalog (Mymoney-style), 30-agent roster (base 19 + optional 16-26), idea auto-inference (platforms/scope/monetization/suggested agents), full project API (folder, logo, tech stack, per-agent LLM → project_config.json + gitignored llm_config.json + per-agent STATE_MATRIX llm_override), AgentRosterEditor + ProjectConfigModal UI, runtime per-agent LLM override hook, 15 new tests (suite 194/194, typecheck + build green), CSS Tailwind repair, root redirect.
 
 ## Locked Decisions
 
@@ -69,7 +70,7 @@ Build+TypeCheck+Tests ✅ | Sanity (Build/Lint/TypeCheck/Test) ✅ | Secrets & C
 ### NEXT SESSION priorities
 1. **Merge PR #40** to develop (squash merge; user decision — mergeable + all GH checks green).
 2. **Vercel**: set root directory on Vercel dashboard to `apps/framework-console` (needs Vercel credentials).
-3. **Phase C** (project CRUD + user management) — see checklist below.
+3. **Phase C**: COMPLETE on `feature/phase-c-project-crud-users` (not yet committed/pushed). Commit → push → PR to develop.
 4. **Phase D** (product QA linkage) — see checklist below.
 5. Update `context_lake/latest.json` (this session's work).
 
@@ -78,22 +79,24 @@ Build+TypeCheck+Tests ✅ | Sanity (Build/Lint/TypeCheck/Test) ✅ | Secrets & C
 - Daemon files (`00_state_ledger/*`, ARTIFACT_HASHES.json, STATE_MATRIX.json etc.) are NEVER committed.
 
 ### After B6 committed → continue to Phase C (project CRUD + users) then Phase D (product QA linkage)
-- [ ] C1. Project API POST/PATCH/DELETE (scaffold `projects/{id}/STATE_MATRIX.json` + register in `projects_index.json`)
-- [ ] C2. "Add Project" button in layout dropdown + Dashboard
-- [ ] C3. Wire onboarding DISPATCH to create project
-- [ ] C4. `/agentic-console/projects` page + edit modal + nav
-- [ ] C5. `/agentic-console/users` page wired to RBAC + nav
-- [ ] C6. `delete_user` + `list_sessions` in RBAC API
+- [x] C1. Project API POST/PATCH/DELETE (scaffold `projects/{id}/STATE_MATRIX.json` + register in `projects_index.json`)
+- [x] C2. "Add Project" button in layout dropdown + Dashboard
+- [x] C3. Wire onboarding DISPATCH to create project
+- [x] C4. `/agentic-console/projects` page + edit modal + nav
+- [x] C5. `/agentic-console/users` page wired to RBAC + nav
+- [x] C6. `delete_user` + `list_sessions` in RBAC API
 - [ ] D1. Keep QA dashboard framework-focused
 - [ ] D2. Product QA link + read-only summary on QA agents detail page
 
-### Phase C — Project create/edit + user management (fix "Add Project" gap)
-- [ ] C1. Project API: extend `app/api/agentic-console/projects/route.ts` with `POST`/`PATCH`/`DELETE` — create scaffolds `projects/{id}/STATE_MATRIX.json` + registers in `projects_index.json`; edit (name, description, state_path, completed_pct, llm_override); delete
-- [ ] C2. Layout project dropdown + Dashboard: add **"Add Project"** button
-- [ ] C3. Wire onboarding "DISPATCH" button to actually create the project
-- [ ] C4. New `/agentic-console/projects` page: list + **Edit modal** (mirrors onboarding fields: name, description, LLM provider/model/baseURL, % complete) + nav item
-- [ ] C5. New `/agentic-console/users` page wired to RBAC API (list/add user, set role, set project access, active sessions) + nav item
-- [ ] C6. Add `delete_user` + `list_sessions` actions to `app/api/agentic-console/rbac/route.ts`
+### Phase C — Project create/edit + user management (DONE 2026-08-22, branch `feature/phase-c-project-crud-users`)
+- [x] C1. `apps/framework-console/app/api/agentic-console/projects/route.ts`: added `POST` (slug-id, scaffolds `00_state_ledger/projects/{id}/STATE_MATRIX.json` + registers in `projects_index.json`, accepts `llm_override`), `PATCH` (name/description/state_path/completed_pct/llm_override — syncs llm_override into project STATE_MATRIX), `DELETE` (removes from index, re-points default_project, deletes project state dir). Helper fns `createProject`/`updateProject`/`deleteProject` added to `shared.tsx`; `ProjectInfo` gained `llm_override`.
+- [x] C2. "Add Project" button in layout dropdown + mobile nav + Dashboard Global Pipeline View header (`/agentic-console/projects?new=1`).
+- [x] C3. Onboarding DISPATCH now POSTs `/projects` (derived name from idea, description, completed_pct 0, llm_override) + cockpit shows created project link.
+- [x] C4. New `/agentic-console/projects` page: list + create/edit modal (name, description, % complete, LLM provider/model/baseURL) + delete confirm; nav item "Projects" (Folder icon) + breadcrumb label.
+- [x] C5. New `/agentic-console/users` page: list users, add user, set role, set project access (multi-select from projects), delete user, sessions viewer; nav item "Users" + breadcrumb label.
+- [x] C6. RBAC API: added `delete_user` (removes user + project_access + their sessions) and `list_sessions` (optional `user_id` filter, `active` flag).
+- [x] Tests: `__tests__/agentic-console/unit/projects-rbac.test.ts` (12 tests, in-memory fs mock). Added `@/app/api/agentic-console` alias to `vitest.config.ts`.
+- [x] Verification: `npm run typecheck` (all 5 workspaces) PASS · `npx vitest run` 179/179 PASS · `npm run build:console` PASS (new pages in output).
 
 ### Phase D — Product QA linkage
 - [ ] D1. Keep QA dashboard framework-focused

@@ -30,15 +30,21 @@ const PROVIDER_ALIASES = {
 const LLM_CONFIG_PATH = path.join(process.cwd(), '00_state_ledger', 'llm_config.json');
 
 /**
- * Read LLM credentials/config from the gitignored onboarding config file
- * (00_state_ledger/llm_config.json). Format:
- *   { "provider": "openrouter", "model": "...", "baseURL": "...", "apiKey": "..." }
+ * Read LLM credentials/config from the gitignored onboarding config file.
+ * Supports a per-project file (00_state_ledger/projects/{project}/llm_config.json)
+ * with an `agents` map for per-agent keys, falling back to the global
+ * 00_state_ledger/llm_config.json. Format:
+ *   { "provider": "...", "model": "...", "baseURL": "...", "apiKey": "...",
+ *     "agents": { "<agentId>": { provider, model, baseURL, apiKey } } }
  * API keys NEVER come from opencode's auth.json or committed state files.
  */
-function readLlmConfig() {
+function readLlmConfig(project) {
+  const fp = project
+    ? path.join(process.cwd(), '00_state_ledger', 'projects', project, 'llm_config.json')
+    : LLM_CONFIG_PATH;
   try {
-    if (fs.existsSync(LLM_CONFIG_PATH)) {
-      return JSON.parse(fs.readFileSync(LLM_CONFIG_PATH, 'utf-8')) || {};
+    if (fs.existsSync(fp)) {
+      return JSON.parse(fs.readFileSync(fp, 'utf-8')) || {};
     }
   } catch {}
   return {};
@@ -103,11 +109,34 @@ class LLMProvider {
   }
 
   _resolveConfig(options) {
-    const cfg = readLlmConfig();
+    const cfg = readLlmConfig(options.project);
     let rawProvider = (options.provider || process.env.LLM_PROVIDER || cfg.provider || 'openrouter').toLowerCase();
     let model = options.model || process.env.LLM_MODEL || cfg.model || 'deepseek-v4-flash';
     let apiKey = options.apiKey || process.env.LLM_API_KEY || process.env.OPENAI_API_KEY || cfg.apiKey || '';
     let baseURL = options.baseURL || process.env.LLM_BASE_URL || cfg.baseURL || '';
+
+    // Per-agent llm_override from the project STATE_MATRIX agent_states (preferred
+    // source for per-agent provider/model/baseURL chosen in the project config).
+    if (options.agentId) {
+      try {
+        const stateFile = options.project
+          ? path.join(process.cwd(), '00_state_ledger', 'projects', options.project, 'STATE_MATRIX.json')
+          : path.join(process.cwd(), '00_state_ledger/STATE_MATRIX.json');
+        if (fs.existsSync(stateFile)) {
+          const st = JSON.parse(fs.readFileSync(stateFile, 'utf-8'));
+          const ov = st?.agent_states?.[options.agentId]?.llm_override;
+          if (ov) {
+            if (!options.provider && !process.env.LLM_PROVIDER && !cfg.provider && ov.provider) rawProvider = ov.provider;
+            if (!options.model && !process.env.LLM_MODEL && !cfg.model && ov.model) model = ov.model;
+            if (!options.baseURL && !process.env.LLM_BASE_URL && !cfg.baseURL && ov.baseURL) baseURL = ov.baseURL;
+          }
+          // Project-level per-agent API key (gitignored)
+          const pcfg = readLlmConfig(options.project);
+          const ak = pcfg?.agents?.[options.agentId]?.apiKey;
+          if (ak && !options.apiKey && !process.env.LLM_API_KEY && !process.env.OPENAI_API_KEY && !cfg.apiKey) apiKey = ak;
+        }
+      } catch {}
+    }
 
     // STATE_MATRIX llm_override fills in anything not set by options/env/config
     try {
