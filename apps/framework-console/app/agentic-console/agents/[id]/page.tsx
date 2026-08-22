@@ -6,11 +6,20 @@ import {
   ArrowLeft, Loader2, CheckCircle, XCircle, AlertTriangle, RefreshCw,
   Send, FileText, MessageSquare, Server, Shield, Bot, Play, Clock,
   Radio, Download, Eye, BookOpen, Code, Terminal, Users, Activity,
-  Database, ExternalLink, GitPullRequest,
+  Database, ExternalLink, GitPullRequest, Bug,
 } from 'lucide-react';
 import { StatusBadge, fetchWithTimeout, PHASE_LABELS } from '../../shared';
 
-type TabId = 'overview' | 'prompts' | 'artifacts' | 'logs' | 'comm' | 'mcp';
+function PassRateBar({ pct, height = 6 }: { pct: number; height?: number }) {
+  const color = pct >= 90 ? 'bg-green-500' : pct >= 70 ? 'bg-amber-500' : 'bg-red-500';
+  return (
+    <div className="w-full bg-gray-200 rounded-full" style={{ height }}>
+      <div className={`${color} rounded-full transition-all duration-500`} style={{ width: `${Math.min(pct, 100)}%`, height }} />
+    </div>
+  );
+}
+
+type TabId = 'overview' | 'prompts' | 'artifacts' | 'logs' | 'comm' | 'mcp' | 'product-qa';
 const TABS: { id: TabId; label: string; icon: React.ElementType }[] = [
   { id: 'overview', label: 'Overview', icon: Shield },
   { id: 'prompts', label: 'Prompts', icon: BookOpen },
@@ -18,6 +27,7 @@ const TABS: { id: TabId; label: string; icon: React.ElementType }[] = [
   { id: 'logs', label: 'Run Logs', icon: Terminal },
   { id: 'comm', label: 'Comm', icon: MessageSquare },
   { id: 'mcp', label: 'MCP Tools', icon: Server },
+  { id: 'product-qa', label: 'Product QA', icon: Bug },
 ];
 
 export default function AgentDetailPage() {
@@ -52,6 +62,8 @@ export default function AgentDetailPage() {
   const [showTrace, setShowTrace] = useState(false);
   const [traces, setTraces] = useState<any[]>([]);
   const [lifecycleData, setLifecycleData] = useState<any>(null);
+  const [productQA, setProductQA] = useState<any>(null);
+  const [productQLoading, setProductQLoading] = useState(false);
   const [expandedSteps, setExpandedSteps] = useState<Set<string>>(new Set());
   const [expandedIterations, setExpandedIterations] = useState<Set<string>>(new Set());
 
@@ -78,10 +90,23 @@ export default function AgentDetailPage() {
     } catch {}
   }, [agentId]);
 
+  const loadProductQA = useCallback(async () => {
+    setProductQLoading(true);
+    try {
+      const res = await fetch('/api/qa/results?project=petemart');
+      if (res.ok) {
+        const json = await res.json();
+        setProductQA(json);
+      }
+    } catch {}
+    setProductQLoading(false);
+  }, []);
+
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
 
   useEffect(() => {
     if (!agentId) return;
+    loadProductQA();
     const es = new EventSource('/api/agentic-console/events');
     const load = async () => {
       try {
@@ -1200,6 +1225,179 @@ export default function AgentDetailPage() {
           )}
         </div>
       </div>
+
+      {/* ═══ PRODUCT QA TAB ═══ */}
+      {activeTab === 'product-qa' && (
+        <div className="space-y-5">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xs font-semibold text-gray-500 flex items-center gap-1.5">
+              <Bug size={12} /> Product QA (PeteMart)
+            </h3>
+            <button onClick={loadProductQA} disabled={productQLoading}
+              className="text-[9px] px-2 py-1 rounded border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-50">
+              {productQLoading ? 'Loading...' : 'Refresh'}
+            </button>
+          </div>
+
+          {productQLoading && (
+            <div className="text-center py-8">
+              <Loader2 size={24} className="animate-spin text-indigo-500 mx-auto mb-2" />
+              <p className="text-sm text-gray-400">Loading product QA results...</p>
+            </div>
+          )}
+
+          {productQA && (
+            <div className="space-y-4">
+              {/* Summary Cards */}
+              {productQA.summary && (
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs text-blue-500 font-medium">Total Tests</span>
+                    </div>
+                    <div className="text-2xl font-bold text-blue-700">{productQA.summary.totalTests}</div>
+                  </div>
+                  <div className="bg-green-50 rounded-lg p-3 border border-green-200">
+                    <div className="text-xs font-medium mb-1">Pass Rate</div>
+                    <div className="text-2xl font-bold text-green-700">{productQA.summary.passRate}%</div>
+                  </div>
+                  <div className="bg-purple-50 rounded-lg p-3 border border-purple-200">
+                    <div className="text-xs font-medium mb-1">Test Types</div>
+                    <div className="text-2xl font-bold text-purple-700">{productQA.summary.testTypesImplemented}/{productQA.summary.testTypesTotal}</div>
+                  </div>
+                  <div className={`${productQA.summary.openDefects > 0 ? 'bg-red-50 border-red-200' : 'bg-green-50 border-green-200'} rounded-lg p-3`}>
+                    <div className="text-xs font-medium mb-1">Open Defects</div>
+                    <div className={`${productQA.summary.openDefects > 0 ? 'text-red-600' : 'text-green-600'} text-2xl font-bold`}>{productQA.summary.openDefects}</div>
+                  </div>
+                </div>
+              )}
+
+              {/* Test Types */}
+              {productQA.testTypes && productQA.testTypes.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="text-xs font-semibold text-gray-500">Test Types</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {productQA.testTypes.map((tt: any) => {
+                      const runPct = tt.total > 0 ? Math.round((tt.passed / tt.total) * 100) : 0;
+                      const statusColor = runPct >= 90 ? 'border-green-300' : runPct >= 70 ? 'border-amber-300' : 'border-red-300';
+                      return (
+                        <div key={tt.id} className={`border rounded-lg p-3 ${statusColor} hover:shadow-md transition-shadow`}>
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="font-semibold text-sm truncate">{tt.name}</span>
+                            <span className="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full
+                              {tt.status === 'implemented' ? 'bg-green-100 text-green-700' :
+                               tt.status === 'partial' ? 'bg-amber-100 text-amber-700' :
+                               'bg-gray-100 text-gray-500'}">
+                              {tt.status === 'implemented' ? '✓' : tt.status === 'partial' ? '~' : '—'}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs text-gray-500 mb-1.5">
+                            <span><span className="font-bold text-gray-700">{tt.passed}</span> / {tt.total} passed</span>
+                            {tt.failed > 0 && <span className="text-red-500 font-bold">{tt.failed} failed</span>}
+                          </div>
+                          <PassRateBar pct={runPct} height={4} />
+                          <div className="flex items-center justify-between mt-1.5">
+                            <span className="text-xs font-mono">{runPct}%</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Quality Gates */}
+              {productQA.qualityGates && productQA.qualityGates.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="text-xs font-semibold text-gray-500">Quality Gates</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {productQA.qualityGates.map((g: any) => (
+                      <div key={g.id} className="flex items-start gap-2 p-2.5 rounded-lg border border-gray-200 hover:bg-gray-50">
+                        <div className="mt-0.5 shrink-0">
+                          <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
+                            g.status === 'pass' ? 'bg-green-100 text-green-700' :
+                            g.status === 'fail' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-500'
+                          }`}>
+                            {g.status === 'pass' ? 'PASS' : g.status === 'fail' ? 'FAIL' : 'N/E'}
+                          </span>
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-xs font-semibold text-gray-700">{g.name}</div>
+                          <div className="text-[10px] text-gray-400 mt-0.5 line-clamp-2">{g.description}</div>
+                          <span className="text-[10px] text-gray-400 font-mono mt-0.5 inline-block">{g.category}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Defects */}
+              {productQA.defects && productQA.defects.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="text-xs font-semibold text-gray-500">Open Defects ({productQA.defects.length})</h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-xs">
+                      <thead>
+                        <tr className="border-b text-left text-gray-500">
+                          <th className="pb-2 pr-2 font-medium">ID</th>
+                          <th className="pb-2 pr-3 font-medium">Title</th>
+                          <th className="pb-2 pr-2 font-medium">Severity</th>
+                          <th className="pb-2 pr-2 font-medium">Status</th>
+                          <th className="pb-2 pr-3 font-medium">Test File</th>
+                          <th className="pb-2 font-medium">Found</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100">
+                        {productQA.defects.map((d: any) => (
+                          <tr key={d.id} className="border-b last:border-0 hover:bg-gray-50">
+                            <td className="py-2 pr-2">
+                              <a href={`#defect-${d.id}`} className="font-mono text-indigo-600 hover:underline font-medium text-xs">
+                                {d.id}
+                              </a>
+                            </td>
+                            <td className="py-2 pr-3 text-gray-700 max-w-[250px] truncate" title={d.title}>{d.title}</td>
+                            <td className="py-2 pr-2">
+                              <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold border ${
+                                d.severity === 'critical' ? 'bg-red-100 text-red-700 border-red-200' :
+                                d.severity === 'high' ? 'bg-orange-100 text-orange-700 border-orange-200' :
+                                d.severity === 'medium' ? 'bg-amber-100 text-amber-700 border-amber-200' :
+                                'bg-green-100 text-green-700 border-green-200'
+                              }`}>
+                                {d.severity.toUpperCase()}
+                              </span>
+                            </td>
+                            <td className="py-2 pr-2">
+                              <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold border ${
+                                d.status === 'open' ? 'bg-red-100 text-red-700 border-red-200' :
+                                d.status === 'in_progress' ? 'bg-blue-100 text-blue-700 border-blue-200' :
+                                d.status === 'fixed' ? 'bg-green-100 text-green-700 border-green-200' :
+                                'bg-gray-100 text-gray-500 border-gray-200'
+                              }`}>
+                                {d.status.replace('_', ' ').toUpperCase()}
+                              </span>
+                            </td>
+                            <td className="py-2 pr-3 text-gray-500 max-w-[180px] truncate font-mono text-[10px]" title={d.testFile}>{d.testFile || '-'}</td>
+                            <td className="py-2 text-gray-400 text-[10px]">{new Date(d.foundAt).toLocaleString()}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {!productQA.summary && !productQA.testTypes?.length && !productQA.qualityGates?.length && !productQA.defects?.length && (
+                <div className="text-center py-8">
+                  <CheckCircle size={32} className="text-green-400 mx-auto mb-2" />
+                  <p className="text-sm text-gray-400">No test results available for PeteMart yet.</p>
+                  <p className="text-xs text-gray-500 mt-1">Run tests from the product app to populate this view.</p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Action Bar — sticky bottom */}
       <div className="bg-white border rounded-xl shadow-sm p-4 sticky bottom-4">
